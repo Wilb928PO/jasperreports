@@ -1,0 +1,161 @@
+<project name="JasperReports" default="compile" basedir=".">
+
+	<description>Helps build the JasperReports distribution files.</description>
+
+	<property name="version" value="1.0.0"/>
+
+	<target name="compile" description="Compiles the java source files of the library.">
+		<mkdir dir="./build/classes"/> 
+		<condition property="using.jdk.1.4">
+			<or>
+			<equals arg1="${ant.java.version}" arg2="1.4"/>
+			<equals arg1="${ant.java.version}" arg2="1.5"/>
+			</or>
+		</condition>
+		<javac srcdir="./src" destdir="./build/classes" debug="true" optimize="false" deprecation="true">
+			<exclude name="**/JRPrintServiceExporter.java" unless="using.jdk.1.4"/>
+			<exclude name="**/JRPrintServiceExporterParameter.java" unless="using.jdk.1.4"/>
+			<classpath>
+				<pathelement location="./build/classes"/>
+				<fileset dir="./lib">
+					<include name="**/*.jar"/>
+				</fileset>
+			</classpath>
+		</javac>
+		<copy todir="./build/classes">
+			<fileset dir="./src">
+				<include name="**/*.dtd"/>
+				<include name="**/*.properties"/>
+				<include name="**/*.GIF"/>
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="jar" depends="compile, applet" description="Builds the JasperReports JAR file.">
+		<mkdir dir="./dist"/> 
+		<jar jarfile="./dist/jasperreports-${version}.jar">
+			<manifest>
+				<attribute name="Built-By" value="JasperReports"/>
+				<section name="net/sf/jasperreports/engine/">
+					<attribute name="Specification-Title" value="JasperReports Library"/>
+					<attribute name="Specification-Version" value="${version}"/>
+					<attribute name="Specification-Vendor" value="JasperReports"/>
+					<attribute name="Implementation-Title" value="net.sf.jasperreports.engine"/>
+					<attribute name="Implementation-Version" value="${version}"/> 
+					<attribute name="Implementation-Vendor" value="JasperReports"/>
+				</section>
+			</manifest>		
+			<fileset dir="./build/classes"/>
+			<fileset dir="./">
+				<include name="**/lgpl.txt"/>
+				<include name="**/license.txt"/>
+			</fileset>
+		</jar>
+	</target>
+
+	<target name="applet" depends="compile" description="Builds the jasperreports-applet.jar file.">
+		<mkdir dir="./dist"/> 
+		<jar jarfile="./dist/jasperreports-${version}-applet.jar">
+			<fileset dir="./build/classes">
+				<include name="**/net/sf/jasperreports/charts/util/CategoryLabelGenerator.class"/>
+				<include name="**/net/sf/jasperreports/charts/util/DefaultXYZDataset.class"/>
+				<include name="**/net/sf/jasperreports/charts/util/PieLabelGenerator.class"/>
+				<include name="**/net/sf/jasperreports/charts/util/TimePeriodSeriesLabelGenerator.class"/>
+				<include name="**/net/sf/jasperreports/charts/util/TimeSeriesLabelGenerator.class"/>
+				<include name="**/net/sf/jasperreports/charts/util/XYDatasetLabelGenerator.class"/>
+				<include name="**/net/sf/jasperreports/charts/util/XYZElement.class"/>
+				<include name="**/net/sf/jasperreports/engine/JasperPrint*.class"/>
+				<include name="**/net/sf/jasperreports/engine/JRAbstractExporter.class"/>
+				<include name="**/net/sf/jasperreports/engine/JRAbstractSvgRenderer.class"/>
+				<include name="**/net/sf/jasperreports/engine/JRAlignment.class"/>
+				<include name="**/net/sf/jasperreports/engine/JRAnchor.class"/>
+				<include name="**/net/sf/jasperreports/engine/JRBox.class"/>
+				<include name="**/net/sf/jasperreports/engine/JRChart.class"/>
+				<include name="**/net/sf/jasperreports/engine/JRChild.class"/>
+				<include name="**/net/sf/jasperreports/engine/JRDefaultFontProvider.class"/>
+				<include name="**/net/sf/jasperreports/engine/JRElement.class"/>
+				<include name="**/net/sf/jasperreports/engine/JREllipse.class"/>
+				<include name="**/net/sf/jasperreports/engine/JRException.class"/>
+				<include name="**/net/sf/jasperreports/engine/JRExporter.class"/>
+				<include name="**/net/sf/jasperreports/engine/JRExporterParameter.class"/>
+				<include name="**/net/sf/jasperreports/engine/JRExpression.class"/>
+				<include name="**/net/sf/jasperreports/engine/JRExpressionChunk.class"/>
+				<include name="**/net/sf/jasperreports/engine/JRFont.class"/>
+				<include name="**/net/sf/jasperreports/engine/JRGraphicElement.class"/>
+				<include name="**/net/sf/jasperreports/engine/JRHyperlink.class"/>
+				<include name="**/net/sf/jasperreports/engine/JRImage.class"/>
+				<include name="**/net/sf/jasperreports/engine/JRImageRenderer.class"/>
+				<include name="**/net/sf/jasperreports/engine/JRLine.class"/>
+				<include name="**/net/sf/jasperreports/engine/JRPrint*.class"/>
+				<include name="**/net/sf/jasperreports/engine/JRRectangle.class"/>
+				<include name="**/net/sf/jasperreports/engine/JRRenderable.class"/>
+				<include name="**/net/sf/jasperreports/engine/JRReportFont.class"/>
+				<include name="**/net/sf/jasperreports/engine/JRRuntimeException.class"/>
+				<include name="**/net/sf/jasperreports/engine/JRStaticText.class"/>
+				<include name="**/net/sf/jasperreports/engine/JRTextElement.class"/>
+				<include name="**/net/sf/jasperreports/engine/JRTextField.class"/>
+				<include name="**/net/sf/jasperreports/engine/base/JRBaseBox.class"/>
+				<include name="**/net/sf/jasperreports/engine/base/JRBaseFont.class"/>
+				<include name="**/net/sf/jasperreports/engine/base/JRBasePrintPage.class"/>
+				<include name="**/net/sf/jasperreports/engine/base/JRBaseReportFont.class"/>
+				<include name="**/net/sf/jasperreports/engine/design/JRDesignFont.class"/>
+				<include name="**/net/sf/jasperreports/engine/design/JRDesignReportFont.class"/>
+				<include name="**/net/sf/jasperreports/engine/export/JRExportProgressMonitor.class"/>
+				<include name="**/net/sf/jasperreports/engine/export/JRGraphics2DExporter.class"/>
+				<include name="**/net/sf/jasperreports/engine/export/JRGraphics2DExporterParameter.class"/>
+				<include name="**/net/sf/jasperreports/engine/export/TextRenderer.class"/>
+				<include name="**/net/sf/jasperreports/engine/fill/JRTemplate*.class"/>
+				<include name="**/net/sf/jasperreports/engine/print/JRPrinterAWT.class"/>
+				<include name="**/net/sf/jasperreports/engine/util/JRClassLoader.class"/>
+				<include name="**/net/sf/jasperreports/engine/util/JRGraphEnvInitializer.class"/>
+				<include name="**/net/sf/jasperreports/engine/util/JRImageLoader.class"/>
+				<include name="**/net/sf/jasperreports/engine/util/JRLoader.class"/>
+				<include name="**/net/sf/jasperreports/engine/util/JRSaver.class"/>
+				<include name="**/net/sf/jasperreports/engine/util/JRStringUtil.class"/>
+				<include name="**/net/sf/jasperreports/engine/util/JRStyledText*.class"/>
+				<include name="**/net/sf/jasperreports/engine/util/JRTextAttribute.class"/>
+				<include name="**/net/sf/jasperreports/renderers/JCommonDrawableRenderer.class"/>
+				<include name="**/net/sf/jasperreports/view/JasperViewer*.class"/>
+				<include name="**/net/sf/jasperreports/view/JRSaveContributor.class"/>
+				<include name="**/net/sf/jasperreports/view/JRHyperlinkListener.class"/>
+				<include name="**/net/sf/jasperreports/view/JRViewer*.class"/>
+				<include name="**/net/sf/jasperreports/view/viewer.properties"/>
+				<include name="**/net/sf/jasperreports/view/images/*.GIF"/>
+			</fileset>
+		</jar>
+	</target>
+
+	<target name="clean" description="Deletes all the .class files.">
+		<delete dir="./build"/>
+		<delete dir="./dist"/>
+	</target>
+
+	<target name="docs" depends="compile" description="Compiles the library API documentation.">
+		<mkdir dir="./docs/api"/> 
+		<delete dir="./docs/api/net"/>
+		<delete>
+			<fileset dir="./docs/api" includes="**/*.*" />
+		</delete>
+		<copy todir="./docs/dtds">
+			<fileset dir="./src/net/sf/jasperreports/engine/dtds"/>
+		</copy>
+		<javadoc packagenames="net.sf.jasperreports.*, org.w3c.tools.codec.*"
+				sourcepath="./src"
+				destdir="./docs/api"
+				author="true"
+				version="true"
+				use="true"
+				windowtitle="JasperReports API version ${version}"
+				excludepackagenames="org.w3c.tools.codec">
+			<doctitle><![CDATA[<span style="font-family:verdana,arial,helvetica,sans-serif;font-size:16pt;font-style:normal;color:#000000;"><b>^<font color="#808080">Jasper</font><font color="#990000">Reports</font></b></span><br><span style="font-family:verdana,arial,helvetica,sans-serif;font-size:10pt;font-weight:bold;color:#000000;">version 1.0.0</span>]]></doctitle>
+			<bottom><![CDATA[<span style="font-decoration:none;font-family:verdana,arial,helvetica,sans-serif;font-size:8pt;font-style:normal;color:#000000;">&copy; 2001-2005 JasperSoft Corporation <a href="http://www.jaspersoft.com" target="_blank" style="color:#000000;">www.jaspersoft.com</a></span>]]></bottom>
+			<classpath>
+				<fileset dir="./lib">
+					<include name="**/*.jar"/>
+				</fileset>
+				<pathelement location="./build/classes"/>
+			</classpath>
+		</javadoc>
+	</target>
+
+</project>
