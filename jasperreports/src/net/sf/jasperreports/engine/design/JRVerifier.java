@@ -587,7 +587,7 @@ public class JRVerifier
 					
 					if (incrementType == JRVariable.RESET_TYPE_COLUMN || incrementType == JRVariable.RESET_TYPE_PAGE)
 					{
-						brokenRules.add("Variable " + variable.getName() + " of dataset " + dataset.getName() + " cannot have Column or Page incremente type.");
+						brokenRules.add("Variable " + variable.getName() + " of dataset " + dataset.getName() + " cannot have Column or Page increment type.");
 					}
 				}
 			}
@@ -1238,17 +1238,33 @@ public class JRVerifier
 
 	private void verifyChartDataset(JRChartDataset dataset)
 	{
-		verifyDatasetRun(dataset.getDatasetRun());
+		JRDatasetRun datasetRun = dataset.getDatasetRun();
+		
+		if (datasetRun != null)
+		{
+			byte incrementType = dataset.getIncrementType();
+			if (incrementType == JRVariable.RESET_TYPE_PAGE || incrementType == JRVariable.RESET_TYPE_COLUMN)
+			{
+				brokenRules.add("Chart datasets with dataset run cannont have Column or Page increment type.");
+			}
+			
+			byte resetType = dataset.getResetType();
+			if (resetType == JRVariable.RESET_TYPE_PAGE || resetType == JRVariable.RESET_TYPE_COLUMN)
+			{
+				brokenRules.add("Chart datasets with dataset run cannont have Column or Page reset type.");
+			}
+			else if (resetType != JRVariable.RESET_TYPE_REPORT)
+			{
+				//doesn't make sense, but let it go
+			}
+			
+			verifyDatasetRun(datasetRun);
+		}
 	}
 
 
 	private void verifyDatasetRun(JRDatasetRun datasetRun)
 	{
-		if (datasetRun == null)
-		{
-			return;
-		}
-		
 		JRDesignDataset dataset = null;
 		
 		String datasetName = datasetRun.getDatasetName();
