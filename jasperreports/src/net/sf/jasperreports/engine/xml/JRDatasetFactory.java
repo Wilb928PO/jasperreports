@@ -25,27 +25,40 @@
  * San Francisco CA 94107
  * http://www.jaspersoft.com
  */
-package net.sf.jasperreports.engine.fill;
+package net.sf.jasperreports.engine.xml;
 
-import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.design.JRDesignDataset;
 
+import org.xml.sax.Attributes;
 
 /**
- * @author Teodor Danciu (teodord@users.sourceforge.net)
+ * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
-public interface JRIncrementer
+public class JRDatasetFactory extends JRBaseFactory
 {
+	private static final String ATTRIBUTE_name = "name";
+	private static final String ATTRIBUTE_scriptletClass = "scriptletClass";
+	private static final String ATTRIBUTE_resourceBundle = "resourceBundle";
+	private static final String ATTRIBUTE_whenResourceMissingType = "whenResourceMissingType";
 
+	
+	public Object createObject(Attributes attributes)
+	{
+		JRDesignDataset dataset = new JRDesignDataset(false);
+		
+		dataset.setName(attributes.getValue(ATTRIBUTE_name));
+		dataset.setScriptletClass(attributes.getValue(ATTRIBUTE_scriptletClass));
+		
+		dataset.setResourceBundle(attributes.getValue(ATTRIBUTE_resourceBundle));
 
-	/**
-	 *
-	 */
-	public Object increment(
-		JRCalculable calculable, 
-		Object expressionValue, 
-		AbstractValueProvider valueProvider
-		) throws JRException;
+		String resMissingAttr = attributes.getValue(ATTRIBUTE_whenResourceMissingType);
+		if (resMissingAttr != null && resMissingAttr.length() > 0)
+		{
+			Byte whenResourceMissingType = (Byte) JRXmlConstants.getWhenResourceMissingTypeMap().get(resMissingAttr);
+			dataset.setWhenResourceMissingType(whenResourceMissingType.byteValue());
+		}
 
-
+		return dataset;
+	}
 }

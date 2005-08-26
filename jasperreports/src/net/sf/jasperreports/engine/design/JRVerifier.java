@@ -35,6 +35,10 @@ import java.util.Map;
 
 import net.sf.jasperreports.engine.JRAnchor;
 import net.sf.jasperreports.engine.JRBand;
+import net.sf.jasperreports.engine.JRChart;
+import net.sf.jasperreports.engine.JRChartDataset;
+import net.sf.jasperreports.engine.JRDataset;
+import net.sf.jasperreports.engine.JRDatasetRun;
 import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRExpressionChunk;
@@ -53,6 +57,7 @@ import net.sf.jasperreports.engine.JRSubreportParameter;
 import net.sf.jasperreports.engine.JRTextElement;
 import net.sf.jasperreports.engine.JRTextField;
 import net.sf.jasperreports.engine.JRVariable;
+import net.sf.jasperreports.engine.crosstab.JRCrosstab;
 
 
 /**
@@ -106,25 +111,11 @@ public class JRVerifier
 		verifyDesignAttributes();
 
 		/*   */
-		verifyExpressions();
-
-		/*   */
 		verifyReportFonts();
-
-		/*   */
-		verifyParameters();
-
-		/*   */
-		verifyQuery();
-
-		/*   */
-		verifyFields();
-
-		/*   */
-		verifyVariables();
-
-		/*   */
-		verifyGroups();
+		
+		verifyDataset(jasperDesign.getMainDesignDataset());
+		
+		verifyDatasets();
 
 		/*   */
 		verifyBand(jasperDesign.getBackground());
@@ -301,15 +292,15 @@ public class JRVerifier
 	/**
 	 *
 	 */
-	private void verifyQuery()
+	private void verifyQuery(JRDesignDataset dataset)
 	{
-		JRQuery query = jasperDesign.getQuery();
+		JRQuery query = dataset.getQuery();
 		if (query != null)
 		{
 			JRQueryChunk[] chunks = query.getChunks();
 			if (chunks != null && chunks.length > 0)
 			{
-				Map parametersMap = jasperDesign.getParametersMap();
+				Map parametersMap = dataset.getParametersMap();
 	
 				for(int j = 0; j < chunks.length; j++)
 				{
@@ -348,14 +339,14 @@ public class JRVerifier
 	/**
 	 *
 	 */
-	private void verifyExpressions()
+	private void verifyExpressions(JRDesignDataset dataset)
 	{
-		Collection expressions = jasperDesign.getExpressions();
+		Collection expressions = jasperDesign.getExpressions(dataset);
 		if (expressions != null && expressions.size() > 0)
 		{
-			Map parametersMap = jasperDesign.getParametersMap();
-			Map fieldsMap = jasperDesign.getFieldsMap();
-			Map variablesMap = jasperDesign.getVariablesMap();
+			Map parametersMap = dataset.getParametersMap();
+			Map fieldsMap = dataset.getFieldsMap();
+			Map variablesMap = dataset.getVariablesMap();
 
 			for(Iterator it = expressions.iterator(); it.hasNext();)
 			{
@@ -429,9 +420,9 @@ public class JRVerifier
 	/**
 	 *
 	 */
-	private void verifyParameters()
+	private void verifyParameters(JRDesignDataset dataset)
 	{
-		JRParameter[] parameters = jasperDesign.getParameters();
+		JRParameter[] parameters = dataset.getParameters();
 		if (parameters != null && parameters.length > 0)
 		{
 			for(int index = 0; index < parameters.length; index++)
@@ -472,9 +463,9 @@ public class JRVerifier
 	/**
 	 *
 	 */
-	private void verifyFields()
+	private void verifyFields(JRDesignDataset dataset)
 	{
-		JRField[] fields = jasperDesign.getFields();
+		JRField[] fields = dataset.getFields();
 		if (fields != null && fields.length > 0)
 		{
 			for(int index = 0; index < fields.length; index++)
@@ -500,11 +491,12 @@ public class JRVerifier
 	/**
 	 *
 	 */
-	private void verifyVariables()
+	private void verifyVariables(JRDesignDataset dataset)
 	{
-		JRVariable[] variables = jasperDesign.getVariables();
+		JRVariable[] variables = dataset.getVariables();
 		if (variables != null && variables.length > 0)
 		{
+			boolean isMainDataset = dataset.isMainDataset();
 			for(int index = 0; index < variables.length; index++)
 			{
 				JRVariable variable = variables[index];
@@ -550,7 +542,8 @@ public class JRVerifier
 					}
 				}
 				
-				if (variable.getResetType() == JRVariable.RESET_TYPE_GROUP)
+				byte resetType = variable.getResetType();
+				if (resetType == JRVariable.RESET_TYPE_GROUP)
 				{
 					if (variable.getResetGroup() == null)
 					{
@@ -558,7 +551,7 @@ public class JRVerifier
 					}
 					else
 					{
-						Map groupsMap = jasperDesign.getGroupsMap();
+						Map groupsMap = dataset.getGroupsMap();
 		
 						if (!groupsMap.containsKey(variable.getResetGroup().getName()))
 						{
@@ -567,7 +560,8 @@ public class JRVerifier
 					}
 				}
 
-				if (variable.getIncrementType() == JRVariable.RESET_TYPE_GROUP)
+				byte incrementType = variable.getIncrementType();
+				if (incrementType == JRVariable.RESET_TYPE_GROUP)
 				{
 					if (variable.getIncrementGroup() == null)
 					{
@@ -575,12 +569,25 @@ public class JRVerifier
 					}
 					else
 					{
-						Map groupsMap = jasperDesign.getGroupsMap();
+						Map groupsMap = dataset.getGroupsMap();
 		
 						if (!groupsMap.containsKey(variable.getIncrementGroup().getName()))
 						{
 							brokenRules.add("Increment group \"" + variable.getIncrementGroup().getName() + "\" not found for variable : " + variable.getName());
 						}
+					}
+				}
+				
+				if (!isMainDataset)
+				{
+					if (resetType == JRVariable.RESET_TYPE_COLUMN || resetType == JRVariable.RESET_TYPE_PAGE)
+					{
+						brokenRules.add("Variable " + variable.getName() + " of dataset " + dataset.getName() + " cannot have Column or Page reset type.");
+					}
+					
+					if (incrementType == JRVariable.RESET_TYPE_COLUMN || incrementType == JRVariable.RESET_TYPE_PAGE)
+					{
+						brokenRules.add("Variable " + variable.getName() + " of dataset " + dataset.getName() + " cannot have Column or Page incremente type.");
 					}
 				}
 			}
@@ -591,11 +598,12 @@ public class JRVerifier
 	/**
 	 *
 	 */
-	private void verifyGroups()
+	private void verifyGroups(JRDesignDataset dataset)
 	{
-		JRGroup[] groups = jasperDesign.getGroups();
+		JRGroup[] groups = dataset.getGroups();
 		if (groups != null && groups.length > 0)
 		{
+			boolean isMainDataset = dataset.isMainDataset();
 			for(int index = 0; index < groups.length; index++)
 			{
 				JRGroup group = groups[index];
@@ -605,66 +613,15 @@ public class JRVerifier
 					brokenRules.add("Group name missing.");
 				}
 
-				if (jasperDesign.isTitleNewPage())
+				if (isMainDataset)
 				{
-					if (
-						jasperDesign.getTopMargin() +
-						(jasperDesign.getPageHeader() != null ? jasperDesign.getPageHeader().getHeight() : 0) +
-						(jasperDesign.getColumnHeader() != null ? jasperDesign.getColumnHeader().getHeight() : 0) +
-						(group.getGroupHeader() != null ? group.getGroupHeader().getHeight() : 0) +
-						(jasperDesign.getColumnFooter() != null ? jasperDesign.getColumnFooter().getHeight() : 0) +
-						(jasperDesign.getPageFooter() != null ? jasperDesign.getPageFooter().getHeight() : 0) +
-						jasperDesign.getBottomMargin() >
-						jasperDesign.getPageHeight()
-						)
-					{
-						brokenRules.add("The '" + group.getName() + "' group header section, the page and column headers and footers and the margins do not fit the page height.");
-					}
-	
-					if (
-						jasperDesign.getTopMargin() +
-						(jasperDesign.getPageHeader() != null ? jasperDesign.getPageHeader().getHeight() : 0) +
-						(jasperDesign.getColumnHeader() != null ?  jasperDesign.getColumnHeader().getHeight() : 0) +
-						(group.getGroupFooter() != null ? group.getGroupFooter().getHeight() : 0) +
-						(jasperDesign.getColumnFooter() != null ? jasperDesign.getColumnFooter().getHeight() : 0) +
-						(jasperDesign.getPageFooter() != null ? jasperDesign.getPageFooter().getHeight() : 0) +
-						jasperDesign.getBottomMargin() >
-						jasperDesign.getPageHeight()
-						)
-					{
-						brokenRules.add("The '" + group.getName() + "' group footer section, the page and column headers and footers and the margins do not fit the page height.");
-					}
+					verifyGroupHeaderAndFooter(group);
 				}
 				else
 				{
-					if (
-						jasperDesign.getTopMargin() +
-						(jasperDesign.getTitle() != null ? jasperDesign.getTitle().getHeight() : 0) +
-						(jasperDesign.getPageHeader() != null ? jasperDesign.getPageHeader().getHeight() : 0) +
-						(jasperDesign.getColumnHeader() != null ? jasperDesign.getColumnHeader().getHeight() : 0) +
-						(group.getGroupHeader() != null ? group.getGroupHeader().getHeight() : 0) +
-						(jasperDesign.getColumnFooter() != null ? jasperDesign.getColumnFooter().getHeight() : 0) +
-						(jasperDesign.getPageFooter() != null ? jasperDesign.getPageFooter().getHeight() : 0) +
-						jasperDesign.getBottomMargin() >
-						jasperDesign.getPageHeight()
-						)
+					if (group.getGroupHeader() != null || group.getGroupFooter() != null)
 					{
-						brokenRules.add("The '" + group.getName() + "' group header section, the title, the page and column headers and footers and the margins do not fit the first page height.");
-					}
-	
-					if (
-						jasperDesign.getTopMargin() +
-						(jasperDesign.getTitle() != null ? jasperDesign.getTitle().getHeight() : 0) +
-						(jasperDesign.getPageHeader() != null ? jasperDesign.getPageHeader().getHeight() : 0) +
-						(jasperDesign.getColumnHeader() != null ? jasperDesign.getColumnHeader().getHeight() : 0) +
-						(group.getGroupFooter() != null ? group.getGroupFooter().getHeight() : 0) +
-						(jasperDesign.getColumnFooter() != null ? jasperDesign.getColumnFooter().getHeight() : 0) +
-						(jasperDesign.getPageFooter() != null ? jasperDesign.getPageFooter().getHeight() : 0) +
-						jasperDesign.getBottomMargin() >
-						jasperDesign.getPageHeight()
-						)
-					{
-						brokenRules.add("The '" + group.getName() + "' group footer section, the title, the page and column headers and footers and the margins do not fit the first page height.");
+						brokenRules.add("Group " + group.getName() + " cannot have header or footer sections.");
 					}
 				}
 				
@@ -680,8 +637,78 @@ public class JRVerifier
 					}
 				}
 
-				verifyBand(group.getGroupHeader());
-				verifyBand(group.getGroupFooter());
+				if (isMainDataset)
+				{
+					verifyBand(group.getGroupHeader());
+					verifyBand(group.getGroupFooter());
+				}
+			}
+		}
+	}
+
+
+	private void verifyGroupHeaderAndFooter(JRGroup group)
+	{
+		if (jasperDesign.isTitleNewPage())
+		{
+			if (
+				jasperDesign.getTopMargin() +
+				(jasperDesign.getPageHeader() != null ? jasperDesign.getPageHeader().getHeight() : 0) +
+				(jasperDesign.getColumnHeader() != null ? jasperDesign.getColumnHeader().getHeight() : 0) +
+				(group.getGroupHeader() != null ? group.getGroupHeader().getHeight() : 0) +
+				(jasperDesign.getColumnFooter() != null ? jasperDesign.getColumnFooter().getHeight() : 0) +
+				(jasperDesign.getPageFooter() != null ? jasperDesign.getPageFooter().getHeight() : 0) +
+				jasperDesign.getBottomMargin() >
+				jasperDesign.getPageHeight()
+				)
+			{
+				brokenRules.add("The '" + group.getName() + "' group header section, the page and column headers and footers and the margins do not fit the page height.");
+			}
+
+			if (
+				jasperDesign.getTopMargin() +
+				(jasperDesign.getPageHeader() != null ? jasperDesign.getPageHeader().getHeight() : 0) +
+				(jasperDesign.getColumnHeader() != null ?  jasperDesign.getColumnHeader().getHeight() : 0) +
+				(group.getGroupFooter() != null ? group.getGroupFooter().getHeight() : 0) +
+				(jasperDesign.getColumnFooter() != null ? jasperDesign.getColumnFooter().getHeight() : 0) +
+				(jasperDesign.getPageFooter() != null ? jasperDesign.getPageFooter().getHeight() : 0) +
+				jasperDesign.getBottomMargin() >
+				jasperDesign.getPageHeight()
+				)
+			{
+				brokenRules.add("The '" + group.getName() + "' group footer section, the page and column headers and footers and the margins do not fit the page height.");
+			}
+		}
+		else
+		{
+			if (
+				jasperDesign.getTopMargin() +
+				(jasperDesign.getTitle() != null ? jasperDesign.getTitle().getHeight() : 0) +
+				(jasperDesign.getPageHeader() != null ? jasperDesign.getPageHeader().getHeight() : 0) +
+				(jasperDesign.getColumnHeader() != null ? jasperDesign.getColumnHeader().getHeight() : 0) +
+				(group.getGroupHeader() != null ? group.getGroupHeader().getHeight() : 0) +
+				(jasperDesign.getColumnFooter() != null ? jasperDesign.getColumnFooter().getHeight() : 0) +
+				(jasperDesign.getPageFooter() != null ? jasperDesign.getPageFooter().getHeight() : 0) +
+				jasperDesign.getBottomMargin() >
+				jasperDesign.getPageHeight()
+				)
+			{
+				brokenRules.add("The '" + group.getName() + "' group header section, the title, the page and column headers and footers and the margins do not fit the first page height.");
+			}
+
+			if (
+				jasperDesign.getTopMargin() +
+				(jasperDesign.getTitle() != null ? jasperDesign.getTitle().getHeight() : 0) +
+				(jasperDesign.getPageHeader() != null ? jasperDesign.getPageHeader().getHeight() : 0) +
+				(jasperDesign.getColumnHeader() != null ? jasperDesign.getColumnHeader().getHeight() : 0) +
+				(group.getGroupFooter() != null ? group.getGroupFooter().getHeight() : 0) +
+				(jasperDesign.getColumnFooter() != null ? jasperDesign.getColumnFooter().getHeight() : 0) +
+				(jasperDesign.getPageFooter() != null ? jasperDesign.getPageFooter().getHeight() : 0) +
+				jasperDesign.getBottomMargin() >
+				jasperDesign.getPageHeight()
+				)
+			{
+				brokenRules.add("The '" + group.getName() + "' group footer section, the title, the page and column headers and footers and the margins do not fit the first page height.");
 			}
 		}
 	}
@@ -770,11 +797,19 @@ public class JRVerifier
 					{
 						verifySubreport((JRSubreport)element);
 					}
+					else if (element instanceof JRCrosstab)
+					{
+						verifyCrosstab((JRCrosstab) element);
+					}
+					else if (element instanceof JRChart)
+					{
+						verifyChart((JRChart) element);
+					}
 				}
 			}
 		}
 	}
-		
+
 
 	/**
 	 *
@@ -1185,6 +1220,180 @@ public class JRVerifier
 		
 		return subreportClassNames;
 	}
+	
+
+	private void verifyCrosstab(JRCrosstab crosstab)
+	{
+		// TODO luci measure incrementer is extended
+		// TODO luci bucket class is comparable or comparator is not null
+		// TODO luci numeric values if percentage
+	}
 
 
+	private void verifyChart(JRChart chart)
+	{
+		verifyChartDataset(chart.getDataset());
+	}
+
+
+	private void verifyChartDataset(JRChartDataset dataset)
+	{
+		verifyDatasetRun(dataset.getDatasetRun());
+	}
+
+
+	private void verifyDatasetRun(JRDatasetRun datasetRun)
+	{
+		if (datasetRun == null)
+		{
+			return;
+		}
+		
+		JRDesignDataset dataset = null;
+		
+		String datasetName = datasetRun.getDatasetName();
+		if (datasetName == null || datasetName.length() == 0)
+		{
+			brokenRules.add("Dataset name is missing for dataset run.");
+		}
+		else
+		{
+			dataset = (JRDesignDataset) jasperDesign.getDatasetMap().get(datasetName);
+			
+			if (dataset == null)
+			{
+				brokenRules.add("Unknown dataset name " + datasetName + ".");
+			}
+		}
+
+		JRExpression parametersMapExpression = datasetRun.getParametersMapExpression();
+
+		if (parametersMapExpression != null)
+		{
+			Class clazz = parametersMapExpression.getValueClass();
+
+			if (clazz == null)
+			{
+				brokenRules.add("Class not set for dataset " + datasetName + " parameters map expression.");
+			}
+			else if (!java.util.Map.class.isAssignableFrom(clazz))
+			{
+				brokenRules.add("Class " + clazz + " not supported for dataset " + datasetName + " parameters map expression. Use java.util.Map instead.");
+			}
+		}
+
+		JRSubreportParameter[] parameters = datasetRun.getParameters();
+		if (parameters != null && parameters.length > 0)
+		{
+			for(int index = 0; index < parameters.length; index++)
+			{
+				JRSubreportParameter parameter = parameters[index];
+
+				String paramName = parameter.getName();
+				if (paramName == null || paramName.trim().length() == 0)
+				{
+					brokenRules.add("Dataset " + datasetName + " parameter name missing.");
+				}
+				
+				JRParameter datasetParam = null;
+				if (dataset != null)
+				{
+					datasetParam = (JRParameter) dataset.getParametersMap().get(paramName);
+					
+					if (datasetParam == null)
+					{
+						brokenRules.add("Unknown parameter " + paramName + " in dataset " + datasetName + ".");
+					}
+				}
+
+				JRExpression expression = parameter.getExpression();
+				
+				if (expression != null)
+				{
+					Class clazz = expression.getValueClass();
+	
+					if (clazz == null)
+					{
+						brokenRules.add("Class not set for dataset " + datasetName + " parameter expression : " + paramName + ".");
+					}
+					else if (datasetParam != null && !datasetParam.getValueClass().isAssignableFrom(clazz))
+					{
+						brokenRules.add("Class " + clazz + " not supported for parameter " + paramName + " of dataset " + datasetName + ". Use " + datasetParam.getValueClass() + " instead.");
+					}
+				}
+			}
+		}
+				
+		JRExpression connectionExpression = datasetRun.getConnectionExpression();
+		JRExpression dataSourceExpression = datasetRun.getDataSourceExpression();
+		
+		if (connectionExpression != null && dataSourceExpression != null)
+		{
+			brokenRules.add("Dataset " + datasetName + " cannot have both connection expresion and data source expression.");
+		}
+
+		if (connectionExpression != null)
+		{
+			Class clazz = connectionExpression.getValueClass();
+
+			if (clazz == null)
+			{
+				brokenRules.add("Class not set for dataset " + datasetName + " connection expression.");
+			}
+			else if (!java.sql.Connection.class.isAssignableFrom(clazz))
+			{
+				brokenRules.add("Class " + clazz + " not supported for dataset " + datasetName + " connection expression. Use java.sql.Connection instead.");
+			}
+		}
+
+		if (dataSourceExpression != null)
+		{
+			Class clazz = dataSourceExpression.getValueClass();
+
+			if (clazz == null)
+			{
+				brokenRules.add("Class not set for dataset " + datasetName + " data source expression.");
+			}
+			else if (!net.sf.jasperreports.engine.JRDataSource.class.isAssignableFrom(clazz))
+			{
+				brokenRules.add("Class " + clazz + " not supported for dataset " + datasetName + " data source expression. Use net.sf.jasperreports.engine.JRDataSource instead.");
+			}
+		}
+	}
+
+
+	private void verifyDatasets()
+	{
+		JRDataset[] datasets = jasperDesign.getDatasets();
+		if (datasets != null && datasets.length > 0)
+		{
+			for (int i = 0; i < datasets.length; ++i)
+			{
+				JRDesignDataset dataset = (JRDesignDataset) datasets[i];
+				
+				if (dataset.getName() == null || dataset.getName().trim().length() == 0)
+				{
+					brokenRules.add("Dataset name is missing.");
+				}
+				
+				verifyDataset(dataset);
+			}
+		}
+	}
+
+
+	private void verifyDataset(JRDesignDataset dataset)
+	{
+		verifyExpressions(dataset);
+		
+		verifyParameters(dataset);
+
+		verifyQuery(dataset);
+
+		verifyFields(dataset);
+
+		verifyVariables(dataset);
+
+		verifyGroups(dataset);
+	}
 }

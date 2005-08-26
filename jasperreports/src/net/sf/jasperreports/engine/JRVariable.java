@@ -188,6 +188,10 @@ public interface JRVariable
 	 * to conserve the value users have calculated, from one iteration in the data source to the next.
 	 */
 	public static final byte CALCULATION_SYSTEM = 8;
+	
+	
+	public static final byte CALCULATION_FIRST = 9;
+	public static final byte CALCULATION_LAST = 10;
 
 
 

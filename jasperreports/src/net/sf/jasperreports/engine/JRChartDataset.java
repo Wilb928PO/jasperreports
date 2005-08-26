@@ -42,6 +42,8 @@ public interface JRChartDataset
 	public static final byte TIMESERIES_DATASET = 6;
 	public static final byte HIGHLOW_DATASET = 7;
 	
+	public static final byte CROSSTAB = 8;
+	
 	/**
 	 *
 	 */
@@ -72,4 +74,11 @@ public interface JRChartDataset
 	 */
 	public void collectExpressions(JRExpressionCollector collector);
 
+	
+	/**
+	 * Returns the sub dataset run for this chart dataset.
+	 * 
+	 * @return the sub dataset run for this chart dataset
+	 */
+	public JRDatasetRun getDatasetRun();
 }

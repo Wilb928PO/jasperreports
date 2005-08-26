@@ -27,25 +27,11 @@
  */
 package net.sf.jasperreports.engine.fill;
 
-import net.sf.jasperreports.engine.JRException;
-
-
 /**
- * @author Teodor Danciu (teodord@users.sourceforge.net)
+ * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
-public interface JRIncrementer
+public interface JRExtendedIncrementerFactory extends JRIncrementerFactory
 {
-
-
-	/**
-	 *
-	 */
-	public Object increment(
-		JRCalculable calculable, 
-		Object expressionValue, 
-		AbstractValueProvider valueProvider
-		) throws JRException;
-
-
+	public JRExtendedIncrementer getExtendedIncrementer(byte calculation);
 }

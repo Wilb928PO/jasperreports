@@ -25,27 +25,24 @@
  * San Francisco CA 94107
  * http://www.jaspersoft.com
  */
-package net.sf.jasperreports.engine.fill;
+package net.sf.jasperreports.engine.design;
+
+import java.io.File;
 
 import net.sf.jasperreports.engine.JRException;
 
-
 /**
- * @author Teodor Danciu (teodord@users.sourceforge.net)
+ * Base class for multiple class compilers.
+ * 
+ * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
-public interface JRIncrementer
+public abstract class JRAbstractMultiClassCompiler extends JRAbstractClassCompiler
 {
 
-
-	/**
-	 *
-	 */
-	public Object increment(
-		JRCalculable calculable, 
-		Object expressionValue, 
-		AbstractValueProvider valueProvider
-		) throws JRException;
-
+	public String compileClass(File sourceFile, String classpath) throws JRException
+	{
+		return compileClasses(new File[]{sourceFile}, classpath);
+	}
 
 }

@@ -67,7 +67,7 @@ public abstract class JRCalculator
 	private JRFillVariable pageNumber = null;
 	private JRFillVariable columnNumber = null;
 	
-	protected JRBaseFiller filler;
+	protected JRFillDataset dataset;
 
 
 	/**
@@ -81,16 +81,16 @@ public abstract class JRCalculator
 	/**
 	 *
 	 */
-	protected void init(JRBaseFiller parentFiller) throws JRException
+	protected void init(JRFillDataset parentDataset) throws JRException
 	{
-		filler = parentFiller;
+		dataset = parentDataset;
 		
-		parsm = filler.parametersMap;
-		fldsm = filler.fieldsMap;
-		varsm = filler.variablesMap;
-		variables = filler.variables;
-		groups = filler.groups;
-		datasets = filler.datasets;
+		parsm = dataset.parametersMap;
+		fldsm = dataset.fieldsMap;
+		varsm = dataset.variablesMap;
+		variables = dataset.variables;
+		groups = dataset.groups;
+		datasets = dataset.chartDatasets;
 
 		resourceBundle = (JRFillParameter)parsm.get(JRParameter.REPORT_RESOURCE_BUNDLE);
 		pageNumber = (JRFillVariable)varsm.get(JRVariable.PAGE_NUMBER);
@@ -158,12 +158,12 @@ public abstract class JRCalculator
 		{
 			for(int i = 0; i < datasets.length; i++)
 			{
-				JRFillChartDataset dataset = datasets[i];
-				dataset.evaluate(this);
+				JRFillChartDataset chartDataset = datasets[i];
+				chartDataset.evaluate(this);
 
-				if (dataset.getIncrementType() == JRVariable.RESET_TYPE_NONE)
+				if (chartDataset.getIncrementType() == JRVariable.RESET_TYPE_NONE)
 				{
-					dataset.increment();
+					chartDataset.increment();
 				}
 			}
 		}
@@ -326,9 +326,9 @@ public abstract class JRCalculator
 	/**
 	 *
 	 */
-	private void incrementDataset(JRFillChartDataset dataset, byte incrementType)
+	private void incrementDataset(JRFillChartDataset chartDataset, byte incrementType)
 	{
-		if (dataset.getIncrementType() != JRVariable.RESET_TYPE_NONE)
+		if (chartDataset.getIncrementType() != JRVariable.RESET_TYPE_NONE)
 		{
 			boolean toIncrement = false;
 			switch (incrementType)
@@ -342,21 +342,21 @@ public abstract class JRCalculator
 				{
 					toIncrement = 
 						(
-						dataset.getIncrementType() == JRVariable.RESET_TYPE_PAGE || 
-						dataset.getIncrementType() == JRVariable.RESET_TYPE_COLUMN
+						chartDataset.getIncrementType() == JRVariable.RESET_TYPE_PAGE || 
+						chartDataset.getIncrementType() == JRVariable.RESET_TYPE_COLUMN
 						);
 					break;
 				}
 				case JRVariable.RESET_TYPE_COLUMN :
 				{
-					toIncrement = (dataset.getIncrementType() == JRVariable.RESET_TYPE_COLUMN);
+					toIncrement = (chartDataset.getIncrementType() == JRVariable.RESET_TYPE_COLUMN);
 					break;
 				}
 				case JRVariable.RESET_TYPE_GROUP :
 				{
-					if (dataset.getIncrementType() == JRVariable.RESET_TYPE_GROUP)
+					if (chartDataset.getIncrementType() == JRVariable.RESET_TYPE_GROUP)
 					{
-						JRFillGroup group = (JRFillGroup)dataset.getIncrementGroup();
+						JRFillGroup group = (JRFillGroup)chartDataset.getIncrementGroup();
 						toIncrement = group.hasChanged();
 					}
 					break;
@@ -369,7 +369,7 @@ public abstract class JRCalculator
 
 			if (toIncrement)
 			{
-				dataset.increment();
+				chartDataset.increment();
 			}
 		}
 		else
@@ -446,7 +446,7 @@ public abstract class JRCalculator
 	/**
 	 *
 	 */
-	private void initializeDataset(JRFillChartDataset dataset, byte resetType)
+	private void initializeDataset(JRFillChartDataset chartDataset, byte resetType)
 	{
 		//if (jrVariable.getCalculation() != JRVariable.CALCULATION_NOTHING)
 //		if (dataset.getResetType() != JRVariable.RESET_TYPE_NONE)
@@ -463,21 +463,21 @@ public abstract class JRCalculator
 				{
 					toInitialize = 
 						(
-						dataset.getResetType() == JRVariable.RESET_TYPE_PAGE || 
-						dataset.getResetType() == JRVariable.RESET_TYPE_COLUMN
+						chartDataset.getResetType() == JRVariable.RESET_TYPE_PAGE || 
+						chartDataset.getResetType() == JRVariable.RESET_TYPE_COLUMN
 						);
 					break;
 				}
 				case JRVariable.RESET_TYPE_COLUMN :
 				{
-					toInitialize = (dataset.getResetType() == JRVariable.RESET_TYPE_COLUMN);
+					toInitialize = (chartDataset.getResetType() == JRVariable.RESET_TYPE_COLUMN);
 					break;
 				}
 				case JRVariable.RESET_TYPE_GROUP :
 				{
-					if (dataset.getResetType() == JRVariable.RESET_TYPE_GROUP)
+					if (chartDataset.getResetType() == JRVariable.RESET_TYPE_GROUP)
 					{
-						JRFillGroup group = (JRFillGroup)dataset.getResetGroup();
+						JRFillGroup group = (JRFillGroup)chartDataset.getResetGroup();
 						toInitialize = group.hasChanged();
 					}
 					break;
@@ -495,7 +495,7 @@ public abstract class JRCalculator
 //					);
 //				dataset.setInitialized(true);
 //				dataset.setIncrementedValue(null);
-				dataset.initialize();
+				chartDataset.initialize();
 			}
 //		}FIXME NOW verify that reset type none does not make any sense
 //		else
@@ -699,7 +699,7 @@ public abstract class JRCalculator
 	protected String handleMissingResource(String key, Exception e) throws JRRuntimeException
 	{
 		String str;
-		switch (filler.whenResourceMissingType)
+		switch (dataset.getWhenResourceMissingType())
 		{
 			case JRReport.WHEN_RESOURCE_MISSING_TYPE_EMPTY:
 			{

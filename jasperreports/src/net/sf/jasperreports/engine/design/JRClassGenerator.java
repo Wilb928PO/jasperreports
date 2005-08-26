@@ -41,11 +41,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRExpressionChunk;
 import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.JRParameter;
+import net.sf.jasperreports.engine.JRReport;
 import net.sf.jasperreports.engine.JRVariable;
 import net.sf.jasperreports.engine.util.JRStringUtil;
 
@@ -67,6 +69,8 @@ public class JRClassGenerator
 	 *
 	 */
 	private JasperDesign jasperDesign = null;
+	
+	private JRDesignDataset dataset;
 
 	private static Map fieldPrefixMap = null;
 	private static Map variablePrefixMap = null;
@@ -74,11 +78,15 @@ public class JRClassGenerator
 
 
 	/**
-	 *
+	 * Creates an instance for a dataset of a report.
+	 * 
+	 * @param jrDesign the report
+	 * @param dataset the dataset
 	 */
-	protected JRClassGenerator(JasperDesign jrDesign)
+	protected JRClassGenerator(JasperDesign jrDesign, JRDesignDataset dataset)
 	{
 		jasperDesign = jrDesign;
+		this.dataset = dataset;
 
 		fieldPrefixMap = new HashMap();
 		fieldPrefixMap.put(new Byte(JRExpression.EVALUATION_OLD),       "Old");
@@ -96,16 +104,45 @@ public class JRClassGenerator
 		methodSuffixMap.put(new Byte(JRExpression.EVALUATION_DEFAULT),   "");
 	}
 
-
+	
 	/**
-	 *
+	 * Creates an instance for the main dataset of a report.
+	 * 
+	 * @param jrDesign the report
 	 */
-	public static String generateClass(JasperDesign jrDesign) throws JRException
+	protected JRClassGenerator(JasperDesign jrDesign)
 	{
-		JRClassGenerator generator = new JRClassGenerator(jrDesign);
+		this(jrDesign, jrDesign.getMainDesignDataset());
+	}
+
+	
+	/**
+	 * Generates Java source code for evaluating the expressions of a dataset.
+	 * 
+	 * @param jrDesign the report
+	 * @param dataset the dataset
+	 * @return the source code
+	 * @throws JRException
+	 */
+	public static String generateClass(JasperDesign jrDesign, JRDesignDataset dataset) throws JRException
+	{
+		JRClassGenerator generator = new JRClassGenerator(jrDesign, dataset);
 		return generator.generateClass();
 	}
 
+	
+	/**
+	 * Generates Java source code for evaluating the expressions of the main dataset of a report.
+	 * 
+	 * @param jrDesign the report
+	 * @return the source code
+	 * @throws JRException
+	 */
+	public static String generateClass(JasperDesign jrDesign) throws JRException
+	{
+		return generateClass(jrDesign, jrDesign.getMainDesignDataset());
+	}
+	
 
 	/**
 	 *
@@ -149,7 +186,7 @@ public class JRClassGenerator
 		sb.append(" *\n");
 		sb.append(" */\n");
 		sb.append("public class ");
-		sb.append(jasperDesign.getName());
+		sb.append(getClassName(jasperDesign, dataset));
 		sb.append(" extends JRCalculator\n");
 		sb.append("{\n"); 
 		sb.append("\n");
@@ -159,7 +196,7 @@ public class JRClassGenerator
 		sb.append("     */\n");
 
 		/*   */
-		Map parametersMap = jasperDesign.getParametersMap();
+		Map parametersMap = dataset.getParametersMap();
 		if (parametersMap != null && parametersMap.size() > 0)
 		{
 			Collection parameterNames = parametersMap.keySet();
@@ -175,7 +212,7 @@ public class JRClassGenerator
 		sb.append("\n");
 
 		/*   */
-		Map fieldsMap = jasperDesign.getFieldsMap();
+		Map fieldsMap = dataset.getFieldsMap();
 		if (fieldsMap != null && fieldsMap.size() > 0)
 		{
 			Collection fieldNames = fieldsMap.keySet();
@@ -191,7 +228,7 @@ public class JRClassGenerator
 		sb.append("\n");
 
 		/*   */
-		JRVariable[] variables = jasperDesign.getVariables();
+		JRVariable[] variables = dataset.getVariables();
 		if (variables != null && variables.length > 0)
 		{
 			for (int i = 0; i < variables.length; i++)
@@ -205,13 +242,37 @@ public class JRClassGenerator
 		/*   */
 		this.generateInitMethod(sb);
 
-		sb.append(this.generateMethod(JRExpression.EVALUATION_DEFAULT));
-		sb.append(this.generateMethod(JRExpression.EVALUATION_OLD));
-		sb.append(this.generateMethod(JRExpression.EVALUATION_ESTIMATED));
+		Collection expressions = jasperDesign.getExpressions(dataset);
+		sb.append(this.generateMethod(expressions, JRExpression.EVALUATION_DEFAULT));
+		sb.append(this.generateMethod(expressions, JRExpression.EVALUATION_OLD));
+		sb.append(this.generateMethod(expressions, JRExpression.EVALUATION_ESTIMATED));
 
 		sb.append("}\n");
 
 		return sb.toString();
+	}
+
+	
+	/**
+	 * Returns the name of the expression evaluator class for a dataset of a report.
+	 * 
+	 * @param report the report
+	 * @param dataset the dataset
+	 * @return the generated expression evaluator class name
+	 */
+	public static String getClassName(JRReport report, JRDataset dataset)
+	{
+		String className;
+		if (dataset.isMainDataset())
+		{
+			className = report.getName();
+		}
+		else
+		{
+			className = report.getName() + "_" + dataset.getName();
+		}
+		
+		return className;
 	}		
 
 
@@ -240,7 +301,7 @@ public class JRClassGenerator
 		sb.append("\n");
 
 		/*   */
-		Map parametersMap = jasperDesign.getParametersMap();
+		Map parametersMap = dataset.getParametersMap();
 		Iterator parIt = null;
 		if (parametersMap != null && parametersMap.size() > 0) 
 		{
@@ -253,7 +314,7 @@ public class JRClassGenerator
 		generateInitParamsMethod(sb, parIt, 0);
 
 		/*   */
-		Map fieldsMap = jasperDesign.getFieldsMap();
+		Map fieldsMap = dataset.getFieldsMap();
 		Iterator fieldIt = null;
 		if (fieldsMap != null && fieldsMap.size() > 0) 
 		{
@@ -266,7 +327,7 @@ public class JRClassGenerator
 		generateInitFieldsMethod(sb, fieldIt, 0);
 
 		/*   */
-		JRVariable[] variables = jasperDesign.getVariables();
+		JRVariable[] variables = dataset.getVariables();
 		Iterator varIt = null;
 		if (variables != null && variables.length > 0) 
 		{
@@ -406,12 +467,11 @@ public class JRClassGenerator
 	/**
 	 *
 	 */
-	private String generateMethod(byte evaluationType) throws JRException
+	private String generateMethod(Collection expressions, byte evaluationType) throws JRException
 	{
 		StringBuffer sb = new StringBuffer();
 
-		Collection expressions = jasperDesign.getExpressions();
-		if (expressions != null && expressions.size() > 0)
+		if (expressions != null && !expressions.isEmpty())
 		{
 			sb.append(generateMethod(expressions.iterator(), 0, evaluationType));
 		}
@@ -519,9 +579,9 @@ public class JRClassGenerator
 		byte evaluationType
 		)
 	{
-		Map parametersMap = jasperDesign.getParametersMap();
-		Map fieldsMap = jasperDesign.getFieldsMap();
-		Map variablesMap = jasperDesign.getVariablesMap();
+		Map parametersMap = dataset.getParametersMap();
+		Map fieldsMap = dataset.getFieldsMap();
+		Map variablesMap = dataset.getVariablesMap();
 
 		JRParameter jrParameter = null;
 		JRField jrField = null;

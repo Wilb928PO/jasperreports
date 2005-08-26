@@ -27,6 +27,7 @@
  */
 package net.sf.jasperreports.engine.fill;
 
+import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRVariable;
 
 
@@ -34,7 +35,7 @@ import net.sf.jasperreports.engine.JRVariable;
  * @author Teodor Danciu (teodord@users.sourceforge.net)
  * @version $Id$
  */
-public class JRDefaultIncrementerFactory implements JRIncrementerFactory
+public class JRDefaultIncrementerFactory extends JRAbstractExtendedIncrementerFactory
 {
 
 
@@ -64,9 +65,9 @@ public class JRDefaultIncrementerFactory implements JRIncrementerFactory
 	/**
 	 *
 	 */
-	public JRIncrementer getIncrementer(byte calculation)
+	public JRExtendedIncrementer getExtendedIncrementer(byte calculation)
 	{
-		JRIncrementer incrementer = null;
+		JRExtendedIncrementer incrementer = null;
 
 		switch (calculation)
 		{
@@ -75,7 +76,13 @@ public class JRDefaultIncrementerFactory implements JRIncrementerFactory
 				incrementer = JRDefaultSystemIncrementer.getInstance();
 				break;
 			}
+			case JRVariable.CALCULATION_FIRST :
+			{
+				incrementer = JRDefaultFirstIncrementer.getInstance();
+				break;
+			}
 			case JRVariable.CALCULATION_NOTHING :
+			case JRVariable.CALCULATION_LAST :
 			case JRVariable.CALCULATION_COUNT :
 			case JRVariable.CALCULATION_SUM :
 			case JRVariable.CALCULATION_AVERAGE :
@@ -94,9 +101,9 @@ public class JRDefaultIncrementerFactory implements JRIncrementerFactory
 	}
 
 
-	public static JRIncrementerFactory getFactory (Class valueClass)
+	public static JRExtendedIncrementerFactory getFactory (Class valueClass)
 	{
-		JRIncrementerFactory factory;
+		JRExtendedIncrementerFactory factory;
 		
 		if (java.math.BigDecimal.class.equals(valueClass))
 		{
@@ -146,7 +153,7 @@ public class JRDefaultIncrementerFactory implements JRIncrementerFactory
 /**
  *
  */
-class JRDefaultNothingIncrementer implements JRIncrementer
+class JRDefaultNothingIncrementer implements JRExtendedIncrementer
 {
 
 
@@ -177,7 +184,7 @@ class JRDefaultNothingIncrementer implements JRIncrementer
 	 *
 	 */
 	public Object increment(
-		JRFillVariable variable, 
+		JRCalculable variable, 
 		Object expressionValue,
 		AbstractValueProvider valueProvider
 		)
@@ -186,13 +193,23 @@ class JRDefaultNothingIncrementer implements JRIncrementer
 	}
 
 
+	public Object combine(JRCalculable calculable, JRCalculable calculableValue, AbstractValueProvider valueProvider) throws JRException
+	{
+		Object newValue = calculableValue.getValue();
+		return newValue == null ? calculable.getValue() : newValue; 
+	}
+
+	public Object initialValue()
+	{
+		return null;
+	}
 }
 
 
 /**
  *
  */
-class JRDefaultSystemIncrementer implements JRIncrementer
+class JRDefaultSystemIncrementer implements JRExtendedIncrementer
 {
 	/**
 	 *
@@ -218,11 +235,65 @@ class JRDefaultSystemIncrementer implements JRIncrementer
 	 *
 	 */
 	public Object increment(
-		JRFillVariable variable, 
+		JRCalculable variable, 
 		Object expressionValue,
 		AbstractValueProvider valueProvider
 		)
 	{
 		return variable.getValue();
+	}
+
+	public Object combine(JRCalculable calculable, JRCalculable calculableValue, AbstractValueProvider valueProvider) throws JRException
+	{
+		return calculable.getValue();
+	}
+	
+	public Object initialValue()
+	{
+		return null;
+	}
+}
+
+class JRDefaultFirstIncrementer implements JRExtendedIncrementer
+{
+	private static final JRDefaultFirstIncrementer instance = new JRDefaultFirstIncrementer();
+
+	private JRDefaultFirstIncrementer()
+	{
+	}
+	
+	public static JRDefaultFirstIncrementer getInstance()
+	{
+		return instance;
+	}
+	
+	public Object initialValue()
+	{
+		return null;
+	}
+
+	public Object combine(JRCalculable calculable, JRCalculable calculableValue, AbstractValueProvider valueProvider) throws JRException
+	{
+		if (!calculable.isInitialized())
+		{
+			return calculable.getValue();
+		}
+		
+		if (!calculableValue.isInitialized())
+		{
+			return calculableValue.getValue();
+		}
+		
+		return null;
+	}
+
+	public Object increment(JRCalculable calculable, Object expressionValue, AbstractValueProvider valueProvider) throws JRException
+	{
+		if (calculable.isInitialized())
+		{
+			return expressionValue;
+		}
+
+		return calculable.getIncrementedValue();
 	}
 }

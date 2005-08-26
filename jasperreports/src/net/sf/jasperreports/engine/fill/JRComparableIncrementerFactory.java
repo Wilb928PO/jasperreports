@@ -27,6 +27,7 @@
  */
 package net.sf.jasperreports.engine.fill;
 
+import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRVariable;
 
 
@@ -34,7 +35,7 @@ import net.sf.jasperreports.engine.JRVariable;
  * @author Teodor Danciu (teodord@users.sourceforge.net)
  * @version $Id$
  */
-public class JRComparableIncrementerFactory implements JRIncrementerFactory
+public class JRComparableIncrementerFactory extends JRAbstractExtendedIncrementerFactory
 {
 
 
@@ -64,9 +65,9 @@ public class JRComparableIncrementerFactory implements JRIncrementerFactory
 	/**
 	 *
 	 */
-	public JRIncrementer getIncrementer(byte calculation)
+	public JRExtendedIncrementer getExtendedIncrementer(byte calculation)
 	{
-		JRIncrementer incrementer = null;
+		JRExtendedIncrementer incrementer = null;
 
 		switch (calculation)
 		{
@@ -87,24 +88,24 @@ public class JRComparableIncrementerFactory implements JRIncrementerFactory
 			case JRVariable.CALCULATION_AVERAGE :
 			case JRVariable.CALCULATION_STANDARD_DEVIATION :
 			case JRVariable.CALCULATION_VARIANCE :
+			case JRVariable.CALCULATION_FIRST :
+			case JRVariable.CALCULATION_LAST :
 			default :
 			{
-				incrementer = JRDefaultIncrementerFactory.getInstance().getIncrementer(calculation);
+				incrementer = JRDefaultIncrementerFactory.getInstance().getExtendedIncrementer(calculation);
 				break;
 			}
 		}
 		
 		return incrementer;
 	}
-
-
 }
 
 
 /**
  *
  */
-class JRComparableLowestIncrementer implements JRIncrementer
+class JRComparableLowestIncrementer implements JRExtendedIncrementer
 {
 	/**
 	 *
@@ -130,7 +131,7 @@ class JRComparableLowestIncrementer implements JRIncrementer
 	 *
 	 */
 	public Object increment(
-		JRFillVariable variable, 
+		JRCalculable variable, 
 		Object expressionValue,
 		AbstractValueProvider valueProvider
 		)
@@ -148,13 +149,25 @@ class JRComparableLowestIncrementer implements JRIncrementer
 				
 		return newValue;
 	}
+
+	
+	public Object combine(JRCalculable calculable, JRCalculable calculableValue, AbstractValueProvider valueProvider) throws JRException
+	{
+		return increment(calculable, calculableValue.getValue(), valueProvider);
+	}
+
+	
+	public Object initialValue()
+	{
+		return null;
+	}
 }
 
 
 /**
  *
  */
-class JRComparableHighestIncrementer implements JRIncrementer
+class JRComparableHighestIncrementer implements JRExtendedIncrementer
 {
 	/**
 	 *
@@ -180,7 +193,7 @@ class JRComparableHighestIncrementer implements JRIncrementer
 	 *
 	 */
 	public Object increment(
-		JRFillVariable variable, 
+		JRCalculable variable, 
 		Object expressionValue,
 		AbstractValueProvider valueProvider
 		)
@@ -197,5 +210,17 @@ class JRComparableHighestIncrementer implements JRIncrementer
 		}
 				
 		return newValue;
+	}
+
+	
+	public Object combine(JRCalculable calculable, JRCalculable calculableValue, AbstractValueProvider valueProvider) throws JRException
+	{
+		return increment(calculable, calculableValue.getValue(), valueProvider);
+	}
+
+	
+	public Object initialValue()
+	{
+		return null;
 	}
 }

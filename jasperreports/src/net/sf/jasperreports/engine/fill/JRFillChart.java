@@ -137,7 +137,6 @@ public class JRFillChart extends JRFillElement implements JRChart
 	private String hyperlinkReference = null;
 	private String hyperlinkAnchor = null;
 	private Integer hyperlinkPage = null;
-	
 
 	/**
 	 *
@@ -524,6 +523,8 @@ public class JRFillChart extends JRFillElement implements JRChart
 	 */
 	protected void evaluateImage(byte evaluation) throws JRException
 	{
+		evaluateDatasetRun(evaluation);
+		
 		switch(chartType) {
 			case CHART_TYPE_AREA:
 				evaluateAreaImage(evaluation);
@@ -1305,5 +1306,11 @@ public class JRFillChart extends JRFillElement implements JRChart
 		evaluateImage(evaluation);
 
 		copy((JRPrintImage) element);
+	}
+
+
+	private void evaluateDatasetRun(byte evaluation) throws JRException
+	{
+		((JRFillChartDataset) dataset).evaluateDatasetRun(evaluation);
 	}
 }

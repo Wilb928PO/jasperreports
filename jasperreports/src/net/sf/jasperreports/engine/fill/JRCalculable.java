@@ -27,25 +27,34 @@
  */
 package net.sf.jasperreports.engine.fill;
 
-import net.sf.jasperreports.engine.JRException;
-
-
 /**
- * @author Teodor Danciu (teodord@users.sourceforge.net)
+ * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
-public interface JRIncrementer
+public interface JRCalculable
 {
-
-
 	/**
-	 *
+	 * Constant for the count helper variable.
 	 */
-	public Object increment(
-		JRCalculable calculable, 
-		Object expressionValue, 
-		AbstractValueProvider valueProvider
-		) throws JRException;
+	static final byte HELPER_COUNT = 0;
+	
+	/**
+	 * Constant for the count sum variable.
+	 */
+	static final byte HELPER_SUM = 1;
+	
+	/**
+	 * Constant for the count variance variable.
+	 */
+	static final byte HELPER_VARIANCE = 2;
+	
+	static final int HELPER_SIZE = 3;
 
+	boolean isInitialized();
 
+	Object getIncrementedValue();
+
+	Object getValue();
+
+	JRCalculable getHelperVariable(byte helperType);
 }

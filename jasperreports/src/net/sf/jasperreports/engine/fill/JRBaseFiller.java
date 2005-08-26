@@ -34,9 +34,6 @@
 package net.sf.jasperreports.engine.fill;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -46,36 +43,25 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
 import java.util.Set;
 
 import net.sf.jasperreports.engine.JRAbstractScriptlet;
 import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRDefaultFontProvider;
-import net.sf.jasperreports.engine.JRDefaultScriptlet;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExpression;
-import net.sf.jasperreports.engine.JRField;
-import net.sf.jasperreports.engine.JRGroup;
 import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JRPrintElement;
 import net.sf.jasperreports.engine.JRPrintPage;
-import net.sf.jasperreports.engine.JRQuery;
 import net.sf.jasperreports.engine.JRReport;
 import net.sf.jasperreports.engine.JRReportFont;
-import net.sf.jasperreports.engine.JRResultSetDataSource;
-import net.sf.jasperreports.engine.JRVariable;
 import net.sf.jasperreports.engine.JRVirtualizer;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.base.JRBasePrintPage;
 import net.sf.jasperreports.engine.base.JRVirtualPrintPage;
-import net.sf.jasperreports.engine.design.JRDefaultCompiler;
-import net.sf.jasperreports.engine.design.JRDesignVariable;
-import net.sf.jasperreports.engine.util.JRClassLoader;
 import net.sf.jasperreports.engine.util.JRGraphEnvInitializer;
-import net.sf.jasperreports.engine.util.JRQueryExecuter;
 import net.sf.jasperreports.engine.util.JRStyledTextParser;
 
 import org.apache.commons.logging.Log;
@@ -295,10 +281,6 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 
 	protected boolean isFloatColumnFooter = false;
 
-	protected String scriptletClassName = null;
-
-	protected String resourceBundleBaseName = null;
-
 	/**
 	 * the resource missing handling type
 	 */
@@ -308,20 +290,11 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 
 	protected JRReportFont[] fonts = null;
 
-	protected JRFillParameter[] parameters = null;
-
-	protected Map parametersMap = null;
-
-	protected JRQuery query = null;
-
-	protected JRFillField[] fields = null;
-
-	protected Map fieldsMap = null;
-
-	protected JRFillVariable[] variables = null;
-
-	protected Map variablesMap = null;
-
+	/**
+	 * Main report dataset.
+	 */
+	protected JRFillDataset mainDataset;
+	
 	protected JRFillGroup[] groups = null;
 
 	protected JRFillBand missingFillBand = null;
@@ -344,21 +317,7 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 
 	protected JRFillBand summary = null;
 
-	protected JRCalculator calculator = null;
-
-	protected Locale locale = null;
-
-	protected ResourceBundle resourceBundle = null;
-
-	protected JRAbstractScriptlet scriptlet = null;
-
-	protected JRDataSource dataSource = null;
-
 	protected JRVirtualizer virtualizer = null;
-
-	protected Integer reportMaxCount = null;
-
-	protected int reportCount = 0;
 
 	protected List formattedTextFields = new ArrayList();
 
@@ -405,8 +364,6 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 	 */
 	protected boolean isParametersAlreadySet = false;
 
-	protected JRFillChartDataset[] datasets;
-
 	/**
 	 * List of {@link JRFillBand JRFillBand} objects containing all bands of the
 	 * report.
@@ -420,39 +377,14 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 
 	private Thread fillingThread;
 
-	private PreparedStatement dataSourceStatement;
+	protected JRCalculator calculator;
 
-	private static class VariableCalculationReq
-	{
-		String variableName;
-
-		byte calculation;
-
-		VariableCalculationReq(String variableName, byte calculation)
-		{
-			this.variableName = variableName;
-			this.calculation = calculation;
-		}
-
-		public boolean equals(Object o)
-		{
-			if (o == null || !(o instanceof VariableCalculationReq))
-			{
-				return false;
-			}
-
-			VariableCalculationReq r = (VariableCalculationReq) o;
-
-			return variableName.equals(r.variableName) && calculation == r.calculation;
-		}
-
-		public int hashCode()
-		{
-			return 31 * calculation + variableName.hashCode();
-		}
-	}
-
-	protected Set variableCalculationReqs;
+	protected JRAbstractScriptlet scriptlet;
+	
+	/**
+	 * Map of datasets ({@link JRFillDataset JRFillDataset} objects} indexed by name.
+	 */
+	protected Map datasetMap;
 
 	/**
 	 * 
@@ -460,7 +392,7 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 	protected JRBaseFiller(JasperReport jasperReport, JRBaseFiller parentFiller) throws JRException
 	{
 		JRGraphEnvInitializer.initializeGraphEnv();
-
+		
 		/*   */
 		this.parentFiller = parentFiller;
 		
@@ -490,8 +422,6 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 		isTitleNewPage = jasperReport.isTitleNewPage();
 		isSummaryNewPage = jasperReport.isSummaryNewPage();
 		isFloatColumnFooter = jasperReport.isFloatColumnFooter();
-		scriptletClassName = jasperReport.getScriptletClass();
-		resourceBundleBaseName = jasperReport.getResourceBundle();
 		whenResourceMissingType = jasperReport.getWhenResourceMissingType();
 
 		jasperPrint = new JasperPrint();
@@ -512,62 +442,11 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 				fonts[i] = factory.getReportFont(jrFonts[i]);
 			}
 		}
-
-		/*   */
-		JRParameter[] jrParameters = jasperReport.getParameters();
-		if (jrParameters != null && jrParameters.length > 0)
-		{
-			parameters = new JRFillParameter[jrParameters.length];
-			parametersMap = new HashMap();
-			for (int i = 0; i < parameters.length; i++)
-			{
-				parameters[i] = factory.getParameter(jrParameters[i]);
-				parametersMap.put(parameters[i].getName(), parameters[i]);
-			}
-		}
-
-		/*   */
-		query = jasperReport.getQuery();
-
-		/*   */
-		JRField[] jrFields = jasperReport.getFields();
-		if (jrFields != null && jrFields.length > 0)
-		{
-			fields = new JRFillField[jrFields.length];
-			fieldsMap = new HashMap();
-			for (int i = 0; i < fields.length; i++)
-			{
-				fields[i] = factory.getField(jrFields[i]);
-				fieldsMap.put(fields[i].getName(), fields[i]);
-			}
-		}
-
-		/*   */
-		JRVariable[] jrVariables = jasperReport.getVariables();
-		if (jrVariables != null && jrVariables.length > 0)
-		{
-			List variableList = new ArrayList(jrVariables.length * 3);
-
-			variablesMap = new HashMap();
-			for (int i = 0; i < jrVariables.length; i++)
-			{
-				addVariable(jrVariables[i], variableList, factory);
-			}
-
-			setVariables(variableList);
-		}
-
-		/*   */
-		JRGroup[] jrGroups = jasperReport.getGroups();
-		if (jrGroups != null && jrGroups.length > 0)
-		{
-			groups = new JRFillGroup[jrGroups.length];
-			for (int i = 0; i < groups.length; i++)
-			{
-				groups[i] = factory.getGroup(jrGroups[i]);
-			}
-		}
-
+		
+		createDatasets(jasperReport, factory);
+		mainDataset = factory.getDataset(jasperReport.getMainDataset());
+		groups = mainDataset.groups;
+		
 		/*   */
 		missingFillBand = factory.getBand(null);
 		background = factory.getBand(jasperReport.getBackground());
@@ -580,9 +459,10 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 		lastPageFooter = factory.getBand(jasperReport.getLastPageFooter());
 		summary = factory.getBand(jasperReport.getSummary());
 
-		datasets = factory.getDatasets();
+		mainDataset.initChartDatasets(factory);		
+		initDatasets(factory);
 
-		checkVariableCalculationReqs(factory);
+		mainDataset.checkVariableCalculationReqs(factory);
 
 		/***********************************************************************
 		 * resourceBundle = loadResourceBundle(resourceBundleBaseName);
@@ -593,19 +473,60 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 		 */
 
 		/*   */
-		scriptlet = createScriptlet();
+		scriptlet = mainDataset.initScriptlet();
 
 		/*   */
-		scriptlet.setData(parametersMap, fieldsMap, variablesMap, groups);
-
-		/*   */
-		calculator = new JRDefaultCompiler().loadCalculator(jasperReport);
-
-		calculator.init(this);
+		calculator = mainDataset.createCalculator(jasperReport);
+		mainDataset.initCalculator();
 
 		initBands();
 	}
 
+
+	/**
+	 * Returns the report parameters indexed by name.
+	 * 
+	 * @return the report parameters map
+	 */
+	protected Map getParametersMap()
+	{
+		return mainDataset.parametersMap;
+	}
+
+	
+	/**
+	 * Returns the report fields indexed by name.
+	 * 
+	 * @return the report fields map
+	 */
+	protected Map getFieldsMap()
+	{
+		return mainDataset.fieldsMap;
+	}
+
+	
+	/**
+	 * Returns the report variables indexed by name.
+	 * 
+	 * @return the report variables map
+	 */
+	protected Map getVariablesMap()
+	{
+		return mainDataset.variablesMap;
+	}
+	
+	
+	/**
+	 * Returns a report variable.
+	 * 
+	 * @param variableName the variable name
+	 * @return the variable
+	 */
+	protected JRFillVariable getVariable(String variableName)
+	{
+		return (JRFillVariable) mainDataset.variablesMap.get(variableName);
+	}
+	
 	private void initBands()
 	{
 		bands = new ArrayList(8 + (groups == null ? 0 : (2 * groups.length)));
@@ -727,76 +648,18 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 		}
 
 		/*   */
-		if (conn == null)
-		{
-			conn = (Connection) parameterValues.get(JRParameter.REPORT_CONNECTION);
-		}
-		if (conn == null)
-		{
-			parameterValues.remove(JRParameter.REPORT_CONNECTION);
-		}
-		else
-		{
-			parameterValues.put(JRParameter.REPORT_CONNECTION, conn);
-		}
-		JRFillParameter parameter = (JRFillParameter) parametersMap.get(JRParameter.REPORT_CONNECTION);
-		if (parameter != null)
-		{
-			setParameter(parameter, conn);
-		}
-
-		if (conn == null)
-		{
-			if (log.isWarnEnabled())
-				log.warn("The supplied java.sql.Connection object is null.");
-		}
-
-		PreparedStatement pstmt = null;
-
 		try
 		{
-			JRDataSource ds = null;
-
-			pstmt = JRQueryExecuter.getStatement(query, parametersMap, parameterValues, conn);
-
-			if (pstmt != null)
-			{
-				if (reportMaxCount != null)
-				{
-					pstmt.setMaxRows(reportMaxCount.intValue());
-				}
-
-				dataSourceStatement = pstmt;
-
-				ResultSet rs = pstmt.executeQuery();
-
-				dataSourceStatement = null;
-
-				ds = new JRResultSetDataSource(rs);
-			}
-
+			JRDataSource ds = mainDataset.createDataSource(parameterValues, conn);
 			fill(parameterValues, ds);
-		}
-		catch (SQLException e)
-		{
-			throw new JRException("Error executing SQL statement for report : " + name, e);
 		}
 		finally
 		{
 			fillingThread = null;
-			dataSourceStatement = null;
-
-			if (pstmt != null)
-			{
-				try
-				{
-					pstmt.close();
-				}
-				catch (SQLException e)
-				{
-				}
-			}
+			
+			mainDataset.closeStatement();
 		}
+
 
 		return jasperPrint;
 	}
@@ -809,8 +672,6 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 		fillingThread = Thread.currentThread();
 		try
 		{
-			dataSource = ds;
-
 			if (parameterValues == null)
 			{
 				parameterValues = new HashMap();
@@ -825,39 +686,7 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 			}
 
 			/*   */
-			if (dataSource == null)
-			{
-				dataSource = (JRDataSource) parameterValues.get(JRParameter.REPORT_DATA_SOURCE);
-			}
-			if (dataSource == null)
-			{
-				parameterValues.remove(JRParameter.REPORT_DATA_SOURCE);
-			}
-			else
-			{
-				parameterValues.put(JRParameter.REPORT_DATA_SOURCE, dataSource);
-			}
-			JRFillParameter parameter = (JRFillParameter) parametersMap.get(JRParameter.REPORT_DATA_SOURCE);
-			if (parameter != null)
-			{
-				setParameter(parameter, dataSource);
-			}
-
-			/*   */
-			parameterValues.put(JRParameter.REPORT_SCRIPTLET, scriptlet);
-			parameter = (JRFillParameter) parametersMap.get(JRParameter.REPORT_SCRIPTLET);
-			if (parameter != null)
-			{
-				setParameter(parameter, scriptlet);
-			}
-
-			/*   */
-			parameterValues.put(JRParameter.REPORT_PARAMETERS_MAP, parameterValues);
-			parameter = (JRFillParameter) parametersMap.get(JRParameter.REPORT_PARAMETERS_MAP);
-			if (parameter != null)
-			{
-				setParameter(parameter, parameterValues);
-			}
+			mainDataset.setDatasource(parameterValues, ds);
 
 			jasperPrint.setName(name);
 			jasperPrint.setPageWidth(pageWidth);
@@ -933,7 +762,7 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 			}
 
 			/*   */
-			reportCount = 0;
+			mainDataset.start();
 
 			/*   */
 			fillReport();
@@ -950,88 +779,6 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 	 * 
 	 */
 	protected abstract void fillReport() throws JRException;
-
-	/**
-	 * 
-	 */
-	protected ResourceBundle loadResourceBundle()
-	{
-		ResourceBundle tmpResourceBundle = null;
-
-		if (resourceBundleBaseName != null)
-		{
-			ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-			if (classLoader != null)
-			{
-				try
-				{
-					tmpResourceBundle = ResourceBundle.getBundle(resourceBundleBaseName, locale, classLoader);
-				}
-				catch (MissingResourceException e)
-				{
-					// if (log.isWarnEnabled())
-					// log.warn("Failure using
-					// Thread.currentThread().getContextClassLoader() in
-					// JRClassLoader class. Using
-					// JRClassLoader.class.getClassLoader() instead.");
-				}
-			}
-
-			if (tmpResourceBundle == null)
-			{
-				classLoader = JRClassLoader.class.getClassLoader();
-
-				if (classLoader == null)
-				{
-					tmpResourceBundle = ResourceBundle.getBundle(resourceBundleBaseName, locale);
-				}
-				else
-				{
-					tmpResourceBundle = ResourceBundle.getBundle(resourceBundleBaseName, locale, classLoader);
-				}
-			}
-		}
-
-		return tmpResourceBundle;
-	}
-
-	/**
-	 * 
-	 */
-	protected JRAbstractScriptlet createScriptlet() throws JRException
-	{
-		JRAbstractScriptlet tmpScriptlet = null;
-
-		if (scriptletClassName != null)
-		{
-			Class clazz = null;
-
-			try
-			{
-				clazz = JRClassLoader.loadClassForName(scriptletClassName);
-			}
-			catch (ClassNotFoundException e)
-			{
-				throw new JRException("Error loading scriptlet class : " + scriptletClassName, e);
-			}
-
-			try
-			{
-				tmpScriptlet = (JRAbstractScriptlet) clazz.newInstance();
-			}
-			catch (Exception e)
-			{
-				throw new JRException("Error creating scriptlet class instance : " + scriptletClassName, e);
-			}
-		}
-
-		if (tmpScriptlet == null)
-		{
-			tmpScriptlet = new JRDefaultScriptlet();
-		}
-
-		return tmpScriptlet;
-	}
 
 	/**
 	 * 
@@ -1056,57 +803,12 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 		{
 			return;
 		}
-
-		/*   */
-		reportMaxCount = (Integer) parameterValues.get(JRParameter.REPORT_MAX_COUNT);
-
-		/*   */
-		locale = (Locale) parameterValues.get(JRParameter.REPORT_LOCALE);
-		if (locale == null)
-		{
-			locale = Locale.getDefault();
-		}
-		if (locale == null)
-		{
-			parameterValues.remove(JRParameter.REPORT_LOCALE);
-		}
-		else
-		{
-			parameterValues.put(JRParameter.REPORT_LOCALE, locale);
-		}
-		JRFillParameter parameter = (JRFillParameter) parametersMap.get(JRParameter.REPORT_LOCALE);
-		if (parameter != null)
-		{
-			setParameter(parameter, locale);
-		}
-
-		/*   */
-		resourceBundle = (ResourceBundle) parameterValues.get(JRParameter.REPORT_RESOURCE_BUNDLE);
-		if (resourceBundle == null)
-		{
-			resourceBundle = loadResourceBundle();
-		}
-		if (resourceBundle == null)
-		{
-			parameterValues.remove(JRParameter.REPORT_RESOURCE_BUNDLE);
-		}
-		else
-		{
-			parameterValues.put(JRParameter.REPORT_RESOURCE_BUNDLE, resourceBundle);
-		}
-		parameter = (JRFillParameter) parametersMap.get(JRParameter.REPORT_RESOURCE_BUNDLE);
-		if (parameter != null)
-		{
-			setParameter(parameter, resourceBundle);
-		}
-
+		
+		mainDataset.setParameters(parameterValues);
+		
 		/* Virtualizer */
 		virtualizer = (JRVirtualizer) parameterValues.get(JRParameter.REPORT_VIRTUALIZER);
-		parameter = (JRFillParameter) parametersMap.get(JRParameter.REPORT_VIRTUALIZER);
-		if (parameter != null)
-		{
-			setParameter(parameter, virtualizer);
-		}
+		setParameter(JRParameter.REPORT_VIRTUALIZER, virtualizer);
 		
 		if (virtualizer != null)
 		{
@@ -1146,51 +848,46 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 			setPageHeight(Integer.MAX_VALUE);
 		}
 
-		/*   */
-		if (parameters != null && parameters.length > 0)
-		{
-			Object value = null;
-			for (int i = 0; i < parameters.length; i++)
-			{
-				if (parameterValues.containsKey(parameters[i].getName()))
-				{
-					setParameter(parameters[i], parameterValues.get(parameters[i].getName()));
-				}
-				else if (!parameters[i].isSystemDefined())
-				{
-					value = calculator.evaluate(parameters[i].getDefaultValueExpression(), JRExpression.EVALUATION_DEFAULT);
-					if (value != null)
-					{
-						parameterValues.put(parameters[i].getName(), value);
-					}
-					setParameter(parameters[i], value);
-				}
-			}
-		}
+		mainDataset.setParameterValues(parameterValues);
 
 		isParametersAlreadySet = true;
 	}
+	
+	
+	/**
+	 * Returns the report locale.
+	 * 
+	 * @return the report locale
+	 */
+	protected Locale getLocale()
+	{
+		return mainDataset.locale;
+	}
+	
+	
+	/**
+	 * Sets a parameter's value.
+	 * 
+	 * @param parameterName the parameter name
+	 * @param value the value
+	 * @throws JRException
+	 */
+	protected void setParameter(String parameterName, Object value) throws JRException
+	{
+		mainDataset.setParameter(parameterName, value);
+	}
+	
 
 	/**
+	 * Sets a parameter's value.
 	 * 
+	 * @param parameter the parameter
+	 * @param value the value
+	 * @throws JRException
 	 */
 	protected void setParameter(JRFillParameter parameter, Object value) throws JRException
 	{
-		if (value != null)
-		{
-			if (parameter.getValueClass().isInstance(value))
-			{
-				parameter.setValue(value);
-			}
-			else
-			{
-				throw new JRException("Incompatible value assigned to parameter " + parameter.getName() + " : " + name);
-			}
-		}
-		else
-		{
-			parameter.setValue(value);
-		}
+		mainDataset.setParameter(parameter, value);
 	}
 
 	/**
@@ -1198,40 +895,7 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 	 */
 	protected boolean next() throws JRException
 	{
-		boolean hasNext = false;
-
-		if (dataSource != null)
-		{
-			hasNext = (reportMaxCount == null || reportMaxCount.intValue() > reportCount++) && dataSource.next();
-
-			if (hasNext)
-			{
-				/*   */
-				if (fields != null && fields.length > 0)
-				{
-					JRFillField field = null;
-					for (int i = 0; i < fields.length; i++)
-					{
-						field = fields[i];
-						field.setOldValue(field.getValue());
-						field.setValue(dataSource.getFieldValue(field));
-					}
-				}
-
-				/*   */
-				if (variables != null && variables.length > 0)
-				{
-					JRFillVariable variable = null;
-					for (int i = 0; i < variables.length; i++)
-					{
-						variable = variables[i];
-						variable.setOldValue(variable.getValue());
-					}
-				}
-			}
-		}
-
-		return hasNext;
+		return mainDataset.next();
 	}
 
 	private void resolveBoundElements(Collection elements, Map boundElements, byte evaluation) throws JRException
@@ -1386,12 +1050,7 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 	 */
 	protected Object getVariableValue(String variableName) throws JRException
 	{
-		JRFillVariable var = (JRFillVariable) variablesMap.get(variableName);
-		if (var == null)
-		{
-			throw new JRException("No such variable " + variableName);
-		}
-		return var.getValue();
+		return mainDataset.getVariableValue(variableName);
 	}
 
 	/**
@@ -1541,68 +1200,7 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 		}
 	}
 
-	private JRFillVariable addVariable(JRVariable parentVariable, List variableList, JRFillObjectFactory factory)
-	{
-		JRFillVariable variable = factory.getVariable(parentVariable);
-
-		byte calculation = variable.getCalculation();
-		switch (calculation)
-		{
-			case JRVariable.CALCULATION_AVERAGE:
-			case JRVariable.CALCULATION_VARIANCE:
-			{
-				JRVariable countVar = createHelperVariable(parentVariable, "_COUNT", JRVariable.CALCULATION_COUNT);
-				JRFillVariable fillCountVar = addVariable(countVar, variableList, factory);
-				variable.setHelperVariable(fillCountVar, JRFillVariable.HELPER_COUNT);
-
-				JRVariable sumVar = createHelperVariable(parentVariable, "_SUM", JRVariable.CALCULATION_SUM);
-				JRFillVariable fillSumVar = addVariable(sumVar, variableList, factory);
-				variable.setHelperVariable(fillSumVar, JRFillVariable.HELPER_SUM);
-
-				break;
-			}
-			case JRVariable.CALCULATION_STANDARD_DEVIATION:
-			{
-				JRVariable varianceVar = createHelperVariable(parentVariable, "_VARIANCE", JRVariable.CALCULATION_VARIANCE);
-				JRFillVariable fillVarianceVar = addVariable(varianceVar, variableList, factory);
-				variable.setHelperVariable(fillVarianceVar, JRFillVariable.HELPER_VARIANCE);
-
-				break;
-			}
-		}
-
-		variableList.add(variable);
-		return variable;
-	}
-
-	private void setVariables(List variableList)
-	{
-		variables = new JRFillVariable[variableList.size()];
-		variables = (JRFillVariable[]) variableList.toArray(variables);
-
-		for (int i = 0; i < variables.length; i++)
-		{
-			variablesMap.put(variables[i].getName(), variables[i]);
-		}
-	}
-
-	private JRVariable createHelperVariable(JRVariable variable, String nameSuffix, byte calculation)
-	{
-		JRDesignVariable helper = new JRDesignVariable();
-		helper.setName(variable.getName() + nameSuffix);
-		helper.setValueClassName(variable.getValueClassName());
-		helper.setIncrementerFactoryClassName(variable.getIncrementerFactoryClassName());
-		helper.setResetType(variable.getResetType());
-		helper.setResetGroup(variable.getResetGroup());
-		helper.setIncrementType(variable.getIncrementType());
-		helper.setIncrementGroup(variable.getIncrementGroup());
-		helper.setCalculation(calculation);
-		helper.setSystemDefined(true);
-		helper.setExpression(variable.getExpression());
-
-		return helper;
-	}
-
+	
 	/**
 	 * Adds a variable calculation request.
 	 * 
@@ -1613,70 +1211,10 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 	 */
 	protected void addVariableCalculationReq(String variableName, byte calculation)
 	{
-		if (variableCalculationReqs == null)
-		{
-			variableCalculationReqs = new HashSet();
-		}
-
-		variableCalculationReqs.add(new VariableCalculationReq(variableName, calculation));
+		mainDataset.addVariableCalculationReq(variableName, calculation);
 	}
 
-	private void checkVariableCalculationReqs(JRFillObjectFactory factory)
-	{
-		if (variableCalculationReqs != null && !variableCalculationReqs.isEmpty())
-		{
-			List variableList = new ArrayList(variables.length * 2);
-
-			for (int i = 0; i < variables.length; i++)
-			{
-				JRFillVariable variable = variables[i];
-				checkVariableCalculationReq(variable, variableList, factory);
-			}
-
-			setVariables(variableList);
-		}
-	}
-
-	private void checkVariableCalculationReq(JRFillVariable variable, List variableList, JRFillObjectFactory factory)
-	{
-		if (hasVariableCalculationReq(variable, JRVariable.CALCULATION_AVERAGE) || hasVariableCalculationReq(variable, JRVariable.CALCULATION_VARIANCE))
-		{
-			if (variable.getHelperVariable(JRFillVariable.HELPER_COUNT) == null)
-			{
-				JRVariable countVar = createHelperVariable(variable, "_COUNT", JRVariable.CALCULATION_COUNT);
-				JRFillVariable fillCountVar = factory.getVariable(countVar);
-				checkVariableCalculationReq(fillCountVar, variableList, factory);
-				variable.setHelperVariable(fillCountVar, JRFillVariable.HELPER_COUNT);
-			}
-
-			if (variable.getHelperVariable(JRFillVariable.HELPER_SUM) == null)
-			{
-				JRVariable sumVar = createHelperVariable(variable, "_SUM", JRVariable.CALCULATION_SUM);
-				JRFillVariable fillSumVar = factory.getVariable(sumVar);
-				checkVariableCalculationReq(fillSumVar, variableList, factory);
-				variable.setHelperVariable(fillSumVar, JRFillVariable.HELPER_SUM);
-			}
-		}
-
-		if (hasVariableCalculationReq(variable, JRVariable.CALCULATION_STANDARD_DEVIATION))
-		{
-			if (variable.getHelperVariable(JRFillVariable.HELPER_VARIANCE) == null)
-			{
-				JRVariable varianceVar = createHelperVariable(variable, "_VARIANCE", JRVariable.CALCULATION_VARIANCE);
-				JRFillVariable fillVarianceVar = factory.getVariable(varianceVar);
-				checkVariableCalculationReq(fillVarianceVar, variableList, factory);
-				variable.setHelperVariable(fillVarianceVar, JRFillVariable.HELPER_VARIANCE);
-			}
-		}
-
-		variableList.add(variable);
-	}
-
-	private boolean hasVariableCalculationReq(JRVariable var, byte calculation)
-	{
-		return variableCalculationReqs.contains(new VariableCalculationReq(var.getName(), calculation));
-	}
-
+	
 	/**
 	 * Cancells the fill process.
 	 * 
@@ -1684,19 +1222,18 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 	 */
 	public void cancelFill() throws JRException
 	{
-		PreparedStatement s = dataSourceStatement;
-		if (s != null)
+		boolean cancelled = mainDataset.cancellDBStatement();
+		
+		if (!cancelled && !datasetMap.isEmpty())
 		{
-			try
+			for (Iterator it = datasetMap.values().iterator(); !cancelled && it.hasNext();)
 			{
-				s.cancel();
-			}
-			catch (Throwable t)
-			{
-				throw new JRException("Error cancelling SQL statement", t);
+				JRFillDataset dataset = (JRFillDataset) it.next();
+				cancelled = dataset.cancellDBStatement();
 			}
 		}
-		else
+		
+		if (!cancelled)
 		{
 			Thread t = fillingThread;
 			if (t != null)
@@ -1817,6 +1354,48 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 				providers.put(printPage, provider);
 			}
 			return provider;
+		}
+	}
+	
+	
+	/**
+	 * Evaluates an expression
+	 * @param expression the expression
+	 * @param evaluation the evaluation type
+	 * @return the evaluation result
+	 * @throws JRException
+	 */
+	public Object evaluateExpression(JRExpression expression, byte evaluation) throws JRException
+	{
+		return mainDataset.calculator.evaluate(expression, evaluation);
+	}
+
+	
+	private void createDatasets(JasperReport jasperReport, JRFillObjectFactory factory) throws JRException
+	{
+		datasetMap = new HashMap();
+		
+		JRDataset[] datasets = jasperReport.getDatasets();
+		if (datasets != null && datasets.length > 0)
+		{
+			for (int i = 0; i < datasets.length; i++)
+			{
+				JRFillDataset fillDataset = factory.getDataset(datasets[i]);	
+				fillDataset.createCalculator(jasperReport);
+				
+				datasetMap.put(datasets[i].getName(), fillDataset);
+			}
+		}
+	}
+
+	
+	private void initDatasets(JRFillObjectFactory factory)
+	{
+		for (Iterator it = datasetMap.values().iterator(); it.hasNext();)
+		{
+			JRFillDataset dataset = (JRFillDataset) it.next();
+			dataset.inheritFromMain();
+			dataset.initChartDatasets(factory);
 		}
 	}
 }

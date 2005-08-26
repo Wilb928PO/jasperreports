@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!ELEMENT jasperReport (property*, import*, reportFont*, parameter*, queryString?, field*, variable*, group*, background?, title?, pageHeader?, columnHeader?, detail?, columnFooter?, pageFooter?, lastPageFooter?, summary?)>
+<!ELEMENT jasperReport (property*, import*, reportFont*, subDataset*, parameter*, queryString?, field*, variable*, group*, background?, title?, pageHeader?, columnHeader?, detail?, columnFooter?, pageFooter?, lastPageFooter?, summary?)>
 <!ATTLIST jasperReport
 	name NMTOKEN #REQUIRED
 	language NMTOKEN "java"
@@ -47,6 +47,14 @@
 	pdfFontName CDATA "Helvetica"
 	pdfEncoding CDATA "CP1252"
 	isPdfEmbedded (true | false) "false"
+>
+
+<!ELEMENT subDataset (parameter*, queryString?, field*, variable*, group*)>
+<!ATTLIST subDataset
+	name NMTOKEN #REQUIRED
+	scriptletClass NMTOKEN #IMPLIED
+	resourceBundle NMTOKEN #IMPLIED
+	whenResourceMissingType (Null | Empty | Key | Error) "Null"
 >
 
 <!ELEMENT parameter (parameterDescription?, defaultValueExpression?)>
@@ -285,12 +293,17 @@
 <!ELEMENT labelExpression (#PCDATA)>
 <!ELEMENT piePlot (plot)>
 
-<!ELEMENT dataset EMPTY>
+<!ELEMENT dataset (datasetRun?)>
 <!ATTLIST dataset
 	resetType (None | Report | Page | Column | Group) "Report"
 	resetGroup CDATA #IMPLIED
 	incrementType (None | Report | Page | Column | Group) "None"
 	incrementGroup CDATA #IMPLIED
+>
+
+<!ELEMENT datasetRun (parametersMapExpression?, subreportParameter*, (connectionExpression | dataSourceExpression)?)>
+<!ATTLIST datasetRun
+	subDataset NMTOKEN #REQUIRED
 >
 
 <!ELEMENT plot EMPTY>
@@ -411,4 +424,65 @@
 <!ELEMENT candlestickPlot (plot, timeAxisLabelExpression?, valueAxisLabelExpression?)>
 <!ATTLIST candlestickPlot
 	isShowVolume (true | false) "true"
+>
+
+
+<!ELEMENT crosstab (reportElement, dataset, rowGroup*, columnGroup*, measure*, crosstabCell*)>
+<!ATTLIST crosstab
+	name NMTOKEN #REQUIRED
+	isDataPreSorted (true | false) "false"
+	fillOrder (Horizontal | Vertical) "Horizontal"
+	isRepeatColumnHeaders (true | false) "true"
+	isRepeatRowHeaders (true | false) "true"
+>
+
+<!ELEMENT rowGroup (bucket, crosstabRowHeader?, crosstabTotalRowHeader?)>
+<!ATTLIST rowGroup
+	name NMTOKEN #REQUIRED
+	headerWidth NMTOKEN #IMPLIED
+	totalPosition (Start | End | None) "None"
+>
+
+<!ELEMENT crosstabRowHeader ((line | rectangle | ellipse | image | staticText | textField | elementGroup)*)>
+
+<!ELEMENT crosstabTotalRowHeader ((line | rectangle | ellipse | image | staticText | textField | elementGroup)*)>
+
+<!ELEMENT columnGroup (bucket, crosstabColumnHeader?, crosstabTotalColumnHeader?)>
+<!ATTLIST columnGroup
+	name NMTOKEN #REQUIRED
+	headerHeight NMTOKEN #IMPLIED
+	totalPosition (Start | End | None) "None"
+>
+
+<!ELEMENT crosstabColumnHeader ((line | rectangle | ellipse | image | staticText | textField | elementGroup)*)>
+
+<!ELEMENT crosstabTotalColumnHeader ((line | rectangle | ellipse | image | staticText | textField | elementGroup)*)>
+
+<!ELEMENT bucket (bucketExpression, comparatorExpression?)>
+<!ATTLIST bucket
+	class NMTOKEN "java.lang.String"
+	order (Ascending | Descending) "Ascending"
+>
+
+<!ELEMENT bucketExpression (#PCDATA)>
+
+<!ELEMENT comparatorExpression (#PCDATA)>
+
+<!ELEMENT measure (measureExpression)>
+<!ATTLIST measure
+	name NMTOKEN #REQUIRED
+	class NMTOKEN #REQUIRED
+	calculation (Count | Sum | Average | Lowest | Highest | StandardDeviation | Variance | First | Last) "Count"
+	incrementerFactoryClass NMTOKEN #IMPLIED
+	percentageOf (None | GrandTotal) "None"
+>
+
+<!ELEMENT measureExpression (#PCDATA)>
+
+<!ELEMENT crosstabCell ((line | rectangle | ellipse | image | staticText | textField | elementGroup)*)>
+<!ATTLIST crosstabCell
+	width NMTOKEN #IMPLIED
+	height NMTOKEN #IMPLIED
+	rowTotalGroup NMTOKEN #REQUIRED
+	columnTotalGroup NMTOKEN #REQUIRED
 >

@@ -44,6 +44,7 @@ import net.sf.jasperreports.engine.JRExpressionChunk;
 import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JRVariable;
+import net.sf.jasperreports.engine.design.JRDesignDataset;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.util.JRStringUtil;
 
@@ -60,6 +61,7 @@ public class JRBshGenerator
 	 *
 	 */
 	private JasperDesign jasperDesign = null;
+	private JRDesignDataset dataset;
 
 	private static Map fieldPrefixMap = null;
 	private static Map variablePrefixMap = null;
@@ -69,9 +71,10 @@ public class JRBshGenerator
 	/**
 	 *
 	 */
-	protected JRBshGenerator(JasperDesign jrDesign)
+	protected JRBshGenerator(JasperDesign jrDesign, JRDesignDataset dataset)
 	{
 		jasperDesign = jrDesign;
+		this.dataset = dataset;
 
 		fieldPrefixMap = new HashMap();
 		fieldPrefixMap.put(new Byte(JRExpression.EVALUATION_OLD),       "Old");
@@ -93,9 +96,9 @@ public class JRBshGenerator
 	/**
 	 *
 	 */
-	public static String generateScript(JasperDesign jrDesign) throws JRException
+	public static String generateScript(JasperDesign jrDesign, JRDesignDataset dataset) throws JRException
 	{
-		JRBshGenerator generator = new JRBshGenerator(jrDesign);
+		JRBshGenerator generator = new JRBshGenerator(jrDesign, dataset);
 		return generator.generateScript();
 	}
 
@@ -146,7 +149,7 @@ public class JRBshGenerator
 		sb.append("\n");
 
 		/*   */
-		Map parametersMap = jasperDesign.getParametersMap();
+		Map parametersMap = dataset.getParametersMap();
 		if (parametersMap != null && parametersMap.size() > 0)
 		{
 			Collection parameterNames = parametersMap.keySet();
@@ -162,7 +165,7 @@ public class JRBshGenerator
 		sb.append("\n");
 
 		/*   */
-		Map fieldsMap = jasperDesign.getFieldsMap();
+		Map fieldsMap = dataset.getFieldsMap();
 		if (fieldsMap != null && fieldsMap.size() > 0)
 		{
 			Collection fieldNames = fieldsMap.keySet();
@@ -178,13 +181,13 @@ public class JRBshGenerator
 		sb.append("\n");
 
 		/*   */
-		JRVariable[] variables = jasperDesign.getVariables();
+		JRVariable[] variables = dataset.getVariables();
 		if (variables != null && variables.length > 0)
 		{
 			for (int i = 0; i < variables.length; i++)
 			{
 				sb.append("    JRFillVariable variable_");
-				sb.append(JRStringUtil.getLiteral((String)variables[i].getName()));
+				sb.append(JRStringUtil.getLiteral(variables[i].getName()));
 				sb.append(" = null;\n");
 			}
 		}
@@ -203,7 +206,7 @@ public class JRBshGenerator
 		sb.append("\n");
 
 		/*   */
-		parametersMap = jasperDesign.getParametersMap();
+		parametersMap = dataset.getParametersMap();
 		if (parametersMap != null && parametersMap.size() > 0)
 		{
 			Collection parameterNames = parametersMap.keySet();
@@ -223,7 +226,7 @@ public class JRBshGenerator
 		sb.append("\n");
 
 		/*   */
-		fieldsMap = jasperDesign.getFieldsMap();
+		fieldsMap = dataset.getFieldsMap();
 		if (fieldsMap != null && fieldsMap.size() > 0)
 		{
 			Collection fieldNames = fieldsMap.keySet();
@@ -243,7 +246,7 @@ public class JRBshGenerator
 		sb.append("\n");
 
 		/*   */
-		variables = jasperDesign.getVariables();
+		variables = dataset.getVariables();
 		if (variables != null && variables.length > 0)
 		{
 			String variableName = null;
@@ -263,9 +266,10 @@ public class JRBshGenerator
 		sb.append("\n");
 		sb.append("\n");
 
-		sb.append(this.generateMethod(JRExpression.EVALUATION_DEFAULT));
-		sb.append(this.generateMethod(JRExpression.EVALUATION_OLD));
-		sb.append(this.generateMethod(JRExpression.EVALUATION_ESTIMATED));
+		Collection expressions = jasperDesign.getExpressions(dataset);
+		sb.append(this.generateMethod(expressions, JRExpression.EVALUATION_DEFAULT));
+		sb.append(this.generateMethod(expressions, JRExpression.EVALUATION_OLD));
+		sb.append(this.generateMethod(expressions, JRExpression.EVALUATION_ESTIMATED));
 
 		sb.append("\n"); 
 		sb.append("    str(String key)\n");
@@ -298,7 +302,7 @@ public class JRBshGenerator
 	/**
 	 *
 	 */
-	private String generateMethod(byte evaluationType) throws JRException
+	private String generateMethod(Collection expressions, byte evaluationType)
 	{
 		StringBuffer sb = new StringBuffer();
 
@@ -312,8 +316,7 @@ public class JRBshGenerator
 		sb.append("        switch (id)\n");
 		sb.append("        {\n");
 
-		Collection expressions = jasperDesign.getExpressions();
-		if (expressions != null && expressions.size() > 0)
+		if (expressions != null && !expressions.isEmpty())
 		{
 			JRExpression expression = null;
 			for (Iterator it = expressions.iterator(); it.hasNext();)
@@ -357,11 +360,11 @@ public class JRBshGenerator
 	private String generateExpression(
 		JRExpression expression,
 		byte evaluationType
-		) throws JRException
+		)
 	{
-		Map parametersMap = jasperDesign.getParametersMap();
-		Map fieldsMap = jasperDesign.getFieldsMap();
-		Map variablesMap = jasperDesign.getVariablesMap();
+		Map parametersMap = dataset.getParametersMap();
+		Map fieldsMap = dataset.getFieldsMap();
+		Map variablesMap = dataset.getVariablesMap();
 
 		JRParameter jrParameter = null;
 		JRField jrField = null;

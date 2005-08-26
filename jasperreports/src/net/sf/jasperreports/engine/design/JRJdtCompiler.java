@@ -147,35 +147,61 @@ public class JRJdtCompiler extends JRAbstractJavaCompiler
 		}
 
 		//Report design OK
-
-		//Generating expressions class source code
-		String sourceCode = JRClassGenerator.generateClass(jasperDesign);
-
-		boolean isKeepJavaFile = JRProperties.getBooleanProperty(JRProperties.COMPILER_KEEP_JAVA_FILE); 
+		
+		boolean isKeepJavaFile = JRProperties.getBooleanProperty(JRProperties.COMPILER_KEEP_JAVA_FILE);
+		File tempDirFile = null;
 		if (isKeepJavaFile)
 		{
 			String tempDirStr = JRProperties.getProperty(JRProperties.COMPILER_TEMP_DIR);
 
-			File tempDirFile = new File(tempDirStr);
+			tempDirFile = new File(tempDirStr);
 			if (!tempDirFile.exists() || !tempDirFile.isDirectory())
 			{
 				throw new JRException("Temporary directory not found : " + tempDirStr);
 			}
-		
-			File javaFile = new File(tempDirFile, jasperDesign.getName() + ".java");
-
-			//Creating expression class source file
-			JRSaver.saveClassSource(sourceCode, javaFile);
 		}
 
+		//Generating expressions class source code
+		String sourceCode = generateSourceCode(jasperDesign, jasperDesign.getMainDesignDataset(), tempDirFile);
+		
+		Map datasetMap = jasperDesign.getDatasetMap();
+		
+		String[] sources = new String[datasetMap.size() + 1];
+		String[] classNames = new String[datasetMap.size() + 1];
+		sources[0] = sourceCode;
+		classNames[0] = jasperDesign.getName();
+		
+		Map datasetClasses = new HashMap();
+		int sourcesCount = 1;
+		for (Iterator it = datasetMap.entrySet().iterator(); it.hasNext(); ++sourcesCount)
+		{
+			Map.Entry  entry = (Map.Entry ) it.next();
+			JRDesignDataset dataset = (JRDesignDataset) entry.getValue();
+			
+			String datasetCode = generateSourceCode(jasperDesign, dataset, tempDirFile);
+			
+			sources[sourcesCount] = datasetCode;
+			classNames[sourcesCount] = JRClassGenerator.getClassName(jasperDesign, dataset);
+			
+			datasetClasses.put(entry.getKey(), new Integer(sourcesCount));
+		}
+		
 		try
 		{
-			ClassFile[] classFiles = new ClassFile[1];
+			ClassFile[] classFiles = new ClassFile[sources.length];
+			
 			//Compiling expression class source file
-			String compileErrors = compileClass(sourceCode, jasperDesign.getName(), classFiles);
+			String compileErrors = compileClasses(sources, classNames, classFiles);
 			if (compileErrors != null)
 			{
 				throw new JRException("Errors were encountered when compiling report expressions class file:\n" + compileErrors);
+			}
+			
+			for (Iterator it = datasetClasses.entrySet().iterator(); it.hasNext();)
+			{
+				Map.Entry entry = (Map.Entry) it.next();
+				int sourceIndex = ((Integer) entry.getValue()).intValue();
+				entry.setValue(classFiles[sourceIndex].getBytes());
 			}
 
 			//Reading class byte codes from compiled class file
@@ -183,7 +209,8 @@ public class JRJdtCompiler extends JRAbstractJavaCompiler
 				new JasperReport(
 					jasperDesign,
 					JRJavacCompiler.class.getName(),
-					classFiles[0].getBytes()
+					classFiles[0].getBytes(),
+					datasetClasses
 					);
 		}
 		catch (JRException e)
@@ -199,18 +226,34 @@ public class JRJdtCompiler extends JRAbstractJavaCompiler
 	}
 
 	
+	private String generateSourceCode(JasperDesign jasperDesign, JRDesignDataset dataset, File saveSourceDir) throws JRException
+	{
+		String sourceCode = JRClassGenerator.generateClass(jasperDesign, dataset);
+		
+		if (saveSourceDir != null)
+		{
+			File javaFile = new File(saveSourceDir, JRClassGenerator.getClassName(jasperDesign, dataset) + ".java");
+
+			//Creating expression class source file
+			JRSaver.saveClassSource(sourceCode, javaFile);
+		}
+		
+		return sourceCode;
+	}
+	
+	
 	/**
 	 *
 	 */
-	private String compileClass(final String sourceCode, final String targetClassName, final ClassFile[] classFiles)
+	private String compileClasses(final String[] sources, final String[] targetClassNames, final ClassFile[] classFiles)
 	{
 		final StringBuffer problemBuffer = new StringBuffer();
 
 
 		class CompilationUnit implements ICompilationUnit 
 		{
-			private String srcCode;
-			private String className;
+			protected String srcCode;
+			protected String className;
 
 			public CompilationUnit(String srcCode, String className) 
 			{
@@ -268,15 +311,36 @@ public class JRJdtCompiler extends JRAbstractJavaCompiler
 				return findType(result);
 			}
 
+			private int getClassIndex(String className)
+			{
+				int classIdx;
+				for (classIdx = 0; classIdx < targetClassNames.length; ++classIdx)
+				{
+					if (className.equals(targetClassNames[classIdx]))
+					{
+						break;
+					}
+				}
+				
+				if (classIdx >= targetClassNames.length)
+				{
+					classIdx = -1;
+				}
+
+				return classIdx;
+			}
+			
 			private NameEnvironmentAnswer findType(String className) 
 			{
 				try 
 				{
-					if (className.equals(targetClassName)) 
+					int classIdx = getClassIndex(className);
+					
+					if (classIdx >= 0)
 					{
 						ICompilationUnit compilationUnit = 
 							new CompilationUnit(
-								sourceCode, className);
+								sources[classIdx], className);
 						if (is2ArgsConstr)
 						{
 							return (NameEnvironmentAnswer) constrNameEnvAnsCompUnit2Args.newInstance(new Object[] { compilationUnit, null });
@@ -284,6 +348,7 @@ public class JRJdtCompiler extends JRAbstractJavaCompiler
 
 						return (NameEnvironmentAnswer) constrNameEnvAnsCompUnit.newInstance(new Object[] { compilationUnit });
 					}
+					
 					String resourceName = className.replace('.', '/') + ".class";
 					InputStream is = getResource(resourceName);
 					if (is != null) 
@@ -339,10 +404,12 @@ public class JRJdtCompiler extends JRAbstractJavaCompiler
 
 			private boolean isPackage(String result) 
 			{
-				if (result.equals(targetClassName)) 
+				int classIdx = getClassIndex(result);
+				if (classIdx >= 0) 
 				{
 					return false;
 				}
+				
 				String resourceName = result.replace('.', '/') + ".class";
 				InputStream is = getResource(resourceName);
 				return is == null;
@@ -405,8 +472,21 @@ public class JRJdtCompiler extends JRAbstractJavaCompiler
 			{
 				public void acceptResult(CompilationResult result) 
 				{
+					String className = ((CompilationUnit) result.getCompilationUnit()).className;
+					
+					int classIdx;
+					for (classIdx = 0; classIdx < targetClassNames.length; ++classIdx)
+					{
+						if (className.equals(targetClassNames[classIdx]))
+						{
+							break;
+						}
+					}
+					
 					if (result.hasErrors()) 
 					{
+						String sourceCode = sources[classIdx];
+						
 						IProblem[] problems = result.getErrors();
 						for (int i = 0; i < problems.length; i++) 
 						{
@@ -421,7 +501,7 @@ public class JRJdtCompiler extends JRAbstractJavaCompiler
 									problem.getSourceStart() >= 0
 									&& problem.getSourceEnd() >= 0
 									)
-								{
+								{									
 									int problemStartIndex = sourceCode.lastIndexOf("\n", problem.getSourceStart()) + 1;
 									int problemEndIndex = sourceCode.indexOf("\n", problem.getSourceEnd());
 									if (problemEndIndex < 0)
@@ -467,14 +547,17 @@ public class JRJdtCompiler extends JRAbstractJavaCompiler
 						ClassFile[] resultClassFiles = result.getClassFiles();
 						for (int i = 0; i < resultClassFiles.length; i++) 
 						{
-							classFiles[0] = resultClassFiles[i];
+							classFiles[classIdx] = resultClassFiles[i];
 						}
 					}
 				}
 			};
 
-		ICompilationUnit[] compilationUnits = new ICompilationUnit[1];
-		compilationUnits[0] = new CompilationUnit(sourceCode, targetClassName);
+		ICompilationUnit[] compilationUnits = new ICompilationUnit[sources.length];
+		for (int i = 0; i < compilationUnits.length; i++)
+		{
+			compilationUnits[i] = new CompilationUnit(sources[i], targetClassNames[i]);
+		}
 
 		Compiler compiler = 
 			new Compiler(env, policy, settings, requestor, problemFactory);

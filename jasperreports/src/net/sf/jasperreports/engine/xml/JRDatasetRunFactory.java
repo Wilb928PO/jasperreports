@@ -25,27 +25,27 @@
  * San Francisco CA 94107
  * http://www.jaspersoft.com
  */
-package net.sf.jasperreports.engine.fill;
+package net.sf.jasperreports.engine.xml;
 
-import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.design.JRDesignDatasetRun;
 
+import org.xml.sax.Attributes;
 
 /**
- * @author Teodor Danciu (teodord@users.sourceforge.net)
+ * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
-public interface JRIncrementer
+public class JRDatasetRunFactory extends JRBaseFactory
 {
-
-
-	/**
-	 *
-	 */
-	public Object increment(
-		JRCalculable calculable, 
-		Object expressionValue, 
-		AbstractValueProvider valueProvider
-		) throws JRException;
-
+	private static final String ATTRIBUTE_subDataset = "subDataset";
+	
+	public Object createObject(Attributes atts)
+	{
+		JRDesignDatasetRun datasetRun = new JRDesignDatasetRun();
+		
+		datasetRun.setDatasetName(atts.getValue(ATTRIBUTE_subDataset));
+		
+		return datasetRun;
+	}
 
 }

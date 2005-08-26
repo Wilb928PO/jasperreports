@@ -27,6 +27,8 @@
  */
 package net.sf.jasperreports.engine;
 
+import java.util.Map;
+
 import net.sf.jasperreports.engine.base.JRBaseReport;
 
 
@@ -48,23 +50,51 @@ public class JasperReport extends JRBaseReport
 	 */
 	private String compilerClass = null;
 	private Object compileData = null;
+	
+	/**
+	 * Map containing compiled data per sub dataset name.
+	 */
+	private Map datasetCompileData;
 
 
 	/**
-	 *
+	 * Constructs a report by specifying the template report and compile information.
+	 * 
+	 * @param report the report template
+	 * @param compilerClass the name of the class used to compile the report
+	 * @param compileData the report/main dataset compile data
+	 * @param datasetCompileData the map of sub dataset compile data, indexed by dataset name
 	 */
 	public JasperReport(
 		JRReport report,
 		String compilerClass, 
-		Object compileData
+		Object compileData,
+		Map datasetCompileData
 		)
 	{
 		super(report);
 		
 		this.compilerClass = compilerClass;
 		this.compileData = compileData;
+		this.datasetCompileData = datasetCompileData;
 	}
 
+	
+	/**
+	 * Constructs a report by specifying the template report and compile information.
+	 * This constructor should be used only when there are no sub datasets.
+	 * 
+	 * @param report the report template
+	 * @param compilerClass the name of the class used to compile the report
+	 * @param compileData the main report compile data
+	 */
+	public JasperReport(
+			JRReport report,
+			String compilerClass, 
+			Object compileData)
+	{
+		this(report, compilerClass, compileData, null);
+	}
 
 	/**
 	 *
@@ -83,5 +113,26 @@ public class JasperReport extends JRBaseReport
 		return this.compileData;
 	}
 
+
+	/**
+	 * Returns the compile data for a dataset.
+	 * 
+	 * @param dataset the dataset
+	 * @return the data saved when the report was compiled
+	 */
+	public Object getDatasetCompileData(JRDataset dataset)
+	{
+		Object data;
+		if (dataset.isMainDataset())
+		{
+			data = this.compileData;
+		}
+		else
+		{
+			data = datasetCompileData.get(dataset.getName());
+		}
+		
+		return data; 
+	}
 
 }

@@ -29,7 +29,9 @@ package net.sf.jasperreports.engine.design;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRReport;
@@ -43,9 +45,8 @@ import net.sf.jasperreports.engine.util.JRSaver;
  * @author Teodor Danciu (teodord@users.sourceforge.net)
  * @version $Id$
  */
-public abstract class JRAbstractClassCompiler extends JRAbstractJavaCompiler implements JRClassCompiler
+public abstract class JRAbstractClassCompiler extends JRAbstractJavaCompiler implements JRMultiClassCompiler
 {
-
 
 	/**
 	 *
@@ -79,11 +80,6 @@ public abstract class JRAbstractClassCompiler extends JRAbstractJavaCompiler imp
 
 		//Report design OK
 
-		//Generating expressions class source code
-		String sourceCode = JRClassGenerator.generateClass(jasperDesign);
-
-		boolean isKeepJavaFile = JRProperties.getBooleanProperty(JRProperties.COMPILER_KEEP_JAVA_FILE); 
-
 		String tempDirStr = JRProperties.getProperty(JRProperties.COMPILER_TEMP_DIR);
 
 		File tempDirFile = new File(tempDirStr);
@@ -91,22 +87,50 @@ public abstract class JRAbstractClassCompiler extends JRAbstractJavaCompiler imp
 		{
 			throw new JRException("Temporary directory not found : " + tempDirStr);
 		}
-	
-		File javaFile = new File(tempDirFile, jasperDesign.getName() + ".java");
-		File classFile = new File(tempDirFile, jasperDesign.getName() + ".class");
 
-		//Creating expression class source file
-		JRSaver.saveClassSource(sourceCode, javaFile);
+		File[] javaFiles = new File[jasperDesign.getDatasets().length + 1];
+		File[] classFiles = new File[jasperDesign.getDatasets().length + 1];
+		
+		File[] files = generateSource(jasperDesign, jasperDesign.getMainDesignDataset(), tempDirFile);
+		javaFiles[0] = files[0];
+		classFiles[0] = files[1];
+		
+		Map datasetMap = jasperDesign.getDatasetMap();
 
+		Map datasetClasses = new HashMap();
+		int sourcesCount = 1;
+		for (Iterator it = datasetMap.entrySet().iterator(); it.hasNext(); ++sourcesCount)
+		{
+			Map.Entry  entry = (Map.Entry ) it.next();
+			JRDesignDataset dataset = (JRDesignDataset) entry.getValue();
+			
+			files = generateSource(jasperDesign, dataset, tempDirFile);
+			
+			javaFiles[sourcesCount] = files[0];
+			classFiles[sourcesCount] = files[1];
+			
+			datasetClasses.put(entry.getKey(), new Integer(sourcesCount));
+		}
+
+		
 		String classpath = JRProperties.getProperty(JRProperties.COMPILER_CLASSPATH);
+
+		boolean isKeepJavaFile = JRProperties.getBooleanProperty(JRProperties.COMPILER_KEEP_JAVA_FILE); 
 
 		try
 		{
 			//Compiling expression class source file
-			String compileErrors = compileClass(javaFile, classpath);
+			String compileErrors = compileClasses(javaFiles, classpath);
 			if (compileErrors != null)
 			{
 				throw new JRException("Errors were encountered when compiling report expressions class file:\n" + compileErrors);
+			}
+			
+			for (Iterator it = datasetClasses.entrySet().iterator(); it.hasNext();)
+			{
+				Map.Entry entry = (Map.Entry) it.next();
+				int sourceIndex = ((Integer) entry.getValue()).intValue();
+				entry.setValue(JRLoader.loadBytes(classFiles[sourceIndex]));
 			}
 
 			//Reading class byte codes from compiled class file
@@ -114,7 +138,8 @@ public abstract class JRAbstractClassCompiler extends JRAbstractJavaCompiler imp
 				new JasperReport(
 					jasperDesign,
 					getClass().getName(),
-					JRLoader.loadBytes(classFile)
+					JRLoader.loadBytes(classFiles[0]),
+					datasetClasses
 					);
 		}
 		catch (JRException e)
@@ -127,15 +152,42 @@ public abstract class JRAbstractClassCompiler extends JRAbstractJavaCompiler imp
 		}
 		finally
 		{
-			if (!isKeepJavaFile)
+			for (int i = 0; i < javaFiles.length; ++i)
 			{
-				javaFile.delete();
+				if (!isKeepJavaFile)
+				{
+					javaFiles[i].delete();
+				}
+				classFiles[i].delete();
 			}
-			classFile.delete();
 		}
 
 		return jasperReport;
 	}
-
 	
+	
+	/**
+	 * Generates a Java source file for a dataset.
+	 * 
+	 * @param jasperDesign the report
+	 * @param dataset the dataset
+	 * @param tempDirFile the temporary directory
+	 * @return an array containing the *.java and *.class files
+	 * @throws JRException
+	 */
+	protected File[] generateSource(JasperDesign jasperDesign, JRDesignDataset dataset, File tempDirFile) throws JRException
+	{
+		//Generating expressions class source code
+		String sourceCode = JRClassGenerator.generateClass(jasperDesign, dataset);
+
+		String className = JRClassGenerator.getClassName(jasperDesign, dataset);
+		File javaFile = new File(tempDirFile, className + ".java");
+		File classFile = new File(tempDirFile, className + ".class");
+
+		//Creating expression class source file
+		JRSaver.saveClassSource(sourceCode, javaFile);
+
+		return new File[]{javaFile, classFile};
+	}
+
 }

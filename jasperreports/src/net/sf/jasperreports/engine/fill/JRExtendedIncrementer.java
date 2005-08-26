@@ -29,23 +29,36 @@ package net.sf.jasperreports.engine.fill;
 
 import net.sf.jasperreports.engine.JRException;
 
-
 /**
- * @author Teodor Danciu (teodord@users.sourceforge.net)
+ * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
-public interface JRIncrementer
+public interface JRExtendedIncrementer extends JRIncrementer
 {
 
+	/**
+	 * Returns the initial value for this calculation.
+	 * <p>
+	 * This method should return a neutral value for this calculation
+	 * (e.g. 0 for sum, 1 for product, etc) or a default value if no neutral value exists.
+	 * 
+	 * @return the initial value for this calculation
+	 */
+	public Object initialValue();
 
 	/**
-	 *
+	 * Combines two calculated values into one.
+	 * 
+	 * @param calculable the first calculated value
+	 * @param calculableValue the second calculated value
+	 * @param valueProvider the value provider used for the helper variables
+	 * @return the combined value
+	 * @throws JRException
 	 */
-	public Object increment(
+	public Object combine(
 		JRCalculable calculable, 
-		Object expressionValue, 
+		JRCalculable calculableValue, 
 		AbstractValueProvider valueProvider
 		) throws JRException;
-
 
 }

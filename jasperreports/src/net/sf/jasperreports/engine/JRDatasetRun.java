@@ -25,72 +25,61 @@
  * San Francisco CA 94107
  * http://www.jaspersoft.com
  */
-package net.sf.jasperreports.engine.base;
-
-import java.io.Serializable;
-
-import net.sf.jasperreports.engine.JRExpression;
-import net.sf.jasperreports.engine.JRSubreportParameter;
-
+package net.sf.jasperreports.engine;
 
 /**
- * @author Teodor Danciu (teodord@users.sourceforge.net)
+ * Interface of an sub dataset instantiation.
+ * 
+ * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
+ * @see net.sf.jasperreports.engine.JRDataset
+ * @see net.sf.jasperreports.engine.JRChartDataset#getDatasetRun()
  */
-public class JRBaseSubreportParameter implements JRSubreportParameter, Serializable
+public interface JRDatasetRun
 {
-
-
 	/**
-	 *
+	 * Returns the sub dataset name.
+	 * 
+	 * @return the sub dataset name
 	 */
-	private static final long serialVersionUID = 10000;
-
-	/**
-	 *
-	 */
-	protected String name = null;
-	protected JRExpression expression = null;
-
-
-	/**
-	 *
-	 */
-	protected JRBaseSubreportParameter()
-	{
-	}
+	public String getDatasetName();
 	
 	
 	/**
-	 *
+	 * Returns the parameters map expression.
+	 * <p>
+	 * The result of this expression is used as the parameters map when instantiating the dataset.
+	 * 
+	 * @return the parameters map expression
 	 */
-	protected JRBaseSubreportParameter(JRSubreportParameter subreportParameter, JRBaseObjectFactory factory)
-	{
-		if (factory != null)
-		{
-			factory.put(subreportParameter, this);
-		}
-
-		name = subreportParameter.getName();
-		expression = subreportParameter.getExpression();
-	}
-		
-
+	public JRExpression getParametersMapExpression();
+	
+	
 	/**
-	 *
+	 * Returns the list of parameter values.
+	 * 
+	 * @return the list of parameter values
 	 */
-	public String getName()
-	{
-		return this.name;
-	}
-		
-	/**
-	 *
-	 */
-	public JRExpression getExpression()
-	{
-		return this.expression;
-	}
+	public JRSubreportParameter[] getParameters();
 
+	
+	/**
+	 * Returns the DB connection expression.
+	 * <p>
+	 * The result of this expression is used as the DB connection when instantiating the dataset.
+	 * 
+	 * @return the DB connection expression
+	 */
+	public JRExpression getConnectionExpression();
+
+	
+	/**
+	 * Returns the data source expression.
+	 * <p>
+	 * The result of this expression is used as the data source when instantiating the dataset.
+	 * 
+	 * @return the data source expression
+	 */
+	public JRExpression getDataSourceExpression();
 
 }

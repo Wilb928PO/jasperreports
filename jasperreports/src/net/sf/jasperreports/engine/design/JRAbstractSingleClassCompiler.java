@@ -25,27 +25,35 @@
  * San Francisco CA 94107
  * http://www.jaspersoft.com
  */
-package net.sf.jasperreports.engine.fill;
+package net.sf.jasperreports.engine.design;
+
+import java.io.File;
 
 import net.sf.jasperreports.engine.JRException;
 
-
 /**
- * @author Teodor Danciu (teodord@users.sourceforge.net)
+ * Base class that can be used by single source file compilers to implement multiple compilation.
+ * 
+ * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
-public interface JRIncrementer
+public abstract class JRAbstractSingleClassCompiler extends JRAbstractClassCompiler
 {
 
-
-	/**
-	 *
-	 */
-	public Object increment(
-		JRCalculable calculable, 
-		Object expressionValue, 
-		AbstractValueProvider valueProvider
-		) throws JRException;
-
-
+	public String compileClasses(File[] sourceFiles, String classpath) throws JRException
+	{
+		if (sourceFiles.length == 1)
+		{
+			return compileClass(sourceFiles[0], classpath);
+		}
+		
+		StringBuffer errors = new StringBuffer();
+		for (int i = 0; i < sourceFiles.length; ++i)
+		{
+			errors.append(compileClass(sourceFiles[i], classpath));
+		}
+		
+		return errors.toString();
+	}
+	
 }

@@ -344,23 +344,6 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport, Runna
 				if (jasperReport != null)
 				{
 					/*   */
-					expression = getParametersMapExpression();
-					parameterValues = (Map)filler.calculator.evaluate(expression, evaluation);
-					
-					if (parameterValues != null)
-					{
-						parameterValues.remove(JRParameter.REPORT_LOCALE);
-						parameterValues.remove(JRParameter.REPORT_RESOURCE_BUNDLE);
-						parameterValues.remove(JRParameter.REPORT_CONNECTION);
-						parameterValues.remove(JRParameter.REPORT_MAX_COUNT);
-						parameterValues.remove(JRParameter.REPORT_DATA_SOURCE);
-						parameterValues.remove(JRParameter.REPORT_SCRIPTLET);
-						parameterValues.remove(JRParameter.REPORT_VIRTUALIZER);
-						parameterValues.remove(JRParameter.IS_IGNORE_PAGINATION);
-						parameterValues.remove(JRParameter.REPORT_PARAMETERS_MAP);
-					}
-
-					/*   */
 					expression = getConnectionExpression();
 					connection = (Connection)filler.calculator.evaluate(expression, evaluation);
 			
@@ -368,29 +351,7 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport, Runna
 					expression = getDataSourceExpression();
 					dataSource = (JRDataSource)filler.calculator.evaluate(expression, evaluation);
 					
-					/*   */
-					JRSubreportParameter[] subreportParameters = getParameters();
-					if (subreportParameters != null && subreportParameters.length > 0)
-					{
-						if (parameterValues == null)
-						{
-							parameterValues = new HashMap();
-						}
-						Object parameterValue = null;
-						for(int i = 0; i < subreportParameters.length; i++)
-						{
-							expression = subreportParameters[i].getExpression();
-							parameterValue = filler.calculator.evaluate(expression, evaluation);
-							if (parameterValue == null)
-							{
-								parameterValues.remove(subreportParameters[i].getName());
-							}
-							else
-							{
-								parameterValues.put(subreportParameters[i].getName(), parameterValue);
-							}
-						}
-					}
+					parameterValues = getParameterValues(filler, getParametersMapExpression(), getParameters(), evaluation);
 
 					if (subreportFiller != null)
 					{
@@ -416,6 +377,55 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport, Runna
 				}
 			}
 		}
+	}
+
+
+	public static Map getParameterValues(JRBaseFiller filler, JRExpression parametersMapExpression, JRSubreportParameter[] subreportParameters, byte evaluation) throws JRException
+	{
+		Map parameterValues = null;
+		if (parametersMapExpression != null)
+		{
+			parameterValues = (Map) filler.calculator.evaluate(parametersMapExpression, evaluation);
+		}		
+		
+		if (parameterValues != null)
+		{
+			parameterValues.remove(JRParameter.REPORT_LOCALE);
+			parameterValues.remove(JRParameter.REPORT_RESOURCE_BUNDLE);
+			parameterValues.remove(JRParameter.REPORT_CONNECTION);
+			parameterValues.remove(JRParameter.REPORT_MAX_COUNT);
+			parameterValues.remove(JRParameter.REPORT_DATA_SOURCE);
+			parameterValues.remove(JRParameter.REPORT_SCRIPTLET);
+			parameterValues.remove(JRParameter.REPORT_VIRTUALIZER);
+			parameterValues.remove(JRParameter.IS_IGNORE_PAGINATION);
+			parameterValues.remove(JRParameter.REPORT_PARAMETERS_MAP);
+		}
+		
+		if (parameterValues == null)
+		{
+			parameterValues = new HashMap();
+		}
+		
+		/*   */
+		if (subreportParameters != null && subreportParameters.length > 0)
+		{
+			Object parameterValue = null;
+			for(int i = 0; i < subreportParameters.length; i++)
+			{
+				JRExpression expression = subreportParameters[i].getExpression();
+				parameterValue = filler.calculator.evaluate(expression, evaluation);
+				if (parameterValue == null)
+				{
+					parameterValues.remove(subreportParameters[i].getName());
+				}
+				else
+				{
+					parameterValues.put(subreportParameters[i].getName(), parameterValue);
+				}
+			}
+		}
+		
+		return parameterValues;
 	}
 
 
@@ -763,7 +773,7 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport, Runna
 			{
 				try
 				{
-					JRFillVariable variable = (JRFillVariable) filler.variablesMap.get(returnValues[i].getToVariable());
+					JRFillVariable variable = filler.getVariable(returnValues[i].getToVariable());
 					Object value = subreportFiller.getVariableValue(returnValues[i].getSubreportVariable());
 					
 					Object newValue = returnValues[i].getIncrementer().increment(variable, value, AbstractValueProvider.getCurrentValueProvider());
@@ -792,13 +802,13 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport, Runna
 			{
 				JRSubreportReturnValue returnValue = returnValues[i];
 				String subreportVariableName = returnValue.getSubreportVariable();
-				JRVariable subrepVariable = (JRVariable) subreportFiller.variablesMap.get(subreportVariableName);
+				JRVariable subrepVariable = subreportFiller.getVariable(subreportVariableName);
 				if (subrepVariable == null)
 				{
 					throw new JRException("Subreport variable " + subreportVariableName + " not found.");
 				}
 				
-				JRVariable variable = (JRVariable) filler.variablesMap.get(returnValue.getToVariable());
+				JRVariable variable = filler.getVariable(returnValue.getToVariable());
 				if (returnValue.getCalculation() == JRVariable.CALCULATION_COUNT)
 				{
 					if (!Number.class.isAssignableFrom(variable.getValueClass()))

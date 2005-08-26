@@ -25,27 +25,29 @@
  * San Francisco CA 94107
  * http://www.jaspersoft.com
  */
-package net.sf.jasperreports.engine.fill;
+package net.sf.jasperreports.engine.design;
+
+import java.io.File;
 
 import net.sf.jasperreports.engine.JRException;
 
-
 /**
- * @author Teodor Danciu (teodord@users.sourceforge.net)
+ * Interface implemented by classes able to compile multiple source files.
+ * 
+ * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
-public interface JRIncrementer
+public interface JRMultiClassCompiler extends JRClassCompiler
 {
-
-
+	
 	/**
-	 *
+	 * Compile a set of source files.
+	 * 
+	 * @param sourceFiles the source files
+	 * @param classpath the classpath to be used when compiling
+	 * @return a <code>String</code> containing compile errors
+	 * @throws JRException
 	 */
-	public Object increment(
-		JRCalculable calculable, 
-		Object expressionValue, 
-		AbstractValueProvider valueProvider
-		) throws JRException;
-
+	public String compileClasses(File[] sourceFiles, String classpath) throws JRException;
 
 }

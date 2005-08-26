@@ -27,6 +27,7 @@
  */
 package net.sf.jasperreports.engine.design;
 
+import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.fill.JRCalculator;
@@ -110,7 +111,7 @@ public class JRDefaultCompiler implements JRCompiler
 	/**
 	 *
 	 */
-	public JRCalculator loadCalculator(JasperReport jasperReport) throws JRException
+	public JRCalculator loadCalculator(JasperReport jasperReport, JRDataset dataset) throws JRException
 	{
 		JRCompiler compiler = null;
 		
@@ -160,7 +161,13 @@ public class JRDefaultCompiler implements JRCompiler
 			throw new JRException("Could not instantiate report compiler : " + compilerClassName, e);
 		}
 		
-		return compiler.loadCalculator(jasperReport);
+		return compiler.loadCalculator(jasperReport, dataset);
+	}
+
+
+	public JRCalculator loadCalculator(JasperReport jasperReport) throws JRException
+	{
+		return loadCalculator(jasperReport, jasperReport.getMainDataset());
 	}
 
 

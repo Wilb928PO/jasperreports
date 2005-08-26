@@ -29,19 +29,15 @@ package net.sf.jasperreports.engine.design;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.ResourceBundle;
 
-import net.sf.jasperreports.engine.JRAbstractScriptlet;
 import net.sf.jasperreports.engine.JRBand;
-import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExpressionCollector;
 import net.sf.jasperreports.engine.JRField;
@@ -50,7 +46,6 @@ import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JRQuery;
 import net.sf.jasperreports.engine.JRReportFont;
 import net.sf.jasperreports.engine.JRVariable;
-import net.sf.jasperreports.engine.JRVirtualizer;
 import net.sf.jasperreports.engine.base.JRBaseReport;
 
 
@@ -158,176 +153,26 @@ public class JasperDesign extends JRBaseReport
 	/**
 	 *
 	 */
-	private static final Object[] BUILT_IN_PARAMETERS = new Object[] 
-	{
-		JRParameter.REPORT_PARAMETERS_MAP, java.util.Map.class,
-		JRParameter.REPORT_CONNECTION, Connection.class,
-		JRParameter.REPORT_MAX_COUNT, Integer.class,
-		JRParameter.REPORT_DATA_SOURCE, JRDataSource.class,
-		JRParameter.REPORT_SCRIPTLET, JRAbstractScriptlet.class,
-		JRParameter.REPORT_LOCALE, Locale.class,
-		JRParameter.REPORT_RESOURCE_BUNDLE, ResourceBundle.class,
-		JRParameter.REPORT_VIRTUALIZER, JRVirtualizer.class,
-		JRParameter.IS_IGNORE_PAGINATION, Boolean.class
-	};
-
-	/**
-	 *
-	 */
 	private Map fontsMap = new HashMap();
 	private List fontsList = new ArrayList();
-	private Map parametersMap = new HashMap();
-	private List parametersList = new ArrayList();
-	private Map fieldsMap = new HashMap();
-	private List fieldsList = new ArrayList();
-	private Map variablesMap = new HashMap();
-	private List variablesList = new ArrayList();
-	private Map groupsMap = new HashMap();
-	private List groupsList = new ArrayList();
 
+	/**
+	 * Main report dataset.
+	 */
+	private JRDesignDataset mainDesignDataset;
 
+	/**
+	 * Report sub datasets indexed by name.
+	 */
+	private Map datasetMap = new HashMap();
+	private List datasetList = new ArrayList();
+	
 	/**
 	 *
 	 */
 	public JasperDesign()
 	{
-		/*   */
-		for (int i = 0; i < BUILT_IN_PARAMETERS.length; i++)
-		{
-			JRDesignParameter parameter = new JRDesignParameter();
-			parameter.setName((String)BUILT_IN_PARAMETERS[i++]);
-			parameter.setValueClass((Class)BUILT_IN_PARAMETERS[i]);
-			parameter.setSystemDefined(true);
-			try 
-			{
-				addParameter(parameter);
-			}
-			catch (JRException e)
-			{
-				//never reached
-			}
-		}
-
-
-		/*   */
-		JRDesignVariable variable = new JRDesignVariable();
-		variable.setName(JRVariable.PAGE_NUMBER);
-		variable.setValueClass(Integer.class);
-		//variable.setResetType(JRVariable.RESET_TYPE_PAGE);
-		variable.setResetType(JRVariable.RESET_TYPE_REPORT);
-		variable.setCalculation(JRVariable.CALCULATION_SYSTEM);
-		variable.setSystemDefined(true);
-		JRDesignExpression expression = new JRDesignExpression();
-		expression.setValueClass(Integer.class);
-		//expression.setText("($V{PAGE_NUMBER} != null)?(new Integer($V{PAGE_NUMBER}.intValue() + 1)):(new Integer(1))");
-		expression.setText("new Integer(1)");
-		variable.setInitialValueExpression(expression);
-		try 
-		{
-			addVariable(variable);
-		}
-		catch (JRException e)
-		{
-			//never reached
-		}
-
-
-		/*   */
-		variable = new JRDesignVariable();
-		variable.setName(JRVariable.COLUMN_NUMBER);
-		variable.setValueClass(Integer.class);
-		//variable.setResetType(JRVariable.RESET_TYPE_COLUMN);
-		variable.setResetType(JRVariable.RESET_TYPE_REPORT);
-		variable.setCalculation(JRVariable.CALCULATION_SYSTEM);
-		variable.setSystemDefined(true);
-		expression = new JRDesignExpression();
-		expression.setValueClass(Integer.class);
-		//expression.setText("($V{COLUMN_NUMBER} != null)?(new Integer($V{COLUMN_NUMBER}.intValue() + 1)):(new Integer(1))");
-		expression.setText("new Integer(1)");
-		variable.setInitialValueExpression(expression);
-		try 
-		{
-			addVariable(variable);
-		}
-		catch (JRException e)
-		{
-			//never reached
-		}
-
-
-		/*   */
-		variable = new JRDesignVariable();
-		variable.setName(JRVariable.REPORT_COUNT);
-		variable.setValueClass(Integer.class);
-		variable.setResetType(JRVariable.RESET_TYPE_REPORT);
-		variable.setCalculation(JRVariable.CALCULATION_COUNT);
-		variable.setSystemDefined(true);
-		expression = new JRDesignExpression();
-		expression.setValueClass(Integer.class);
-		expression.setText("new Integer(1)");
-		variable.setExpression(expression);
-		expression = new JRDesignExpression();
-		expression.setValueClass(Integer.class);
-		expression.setText("new Integer(0)");
-		variable.setInitialValueExpression(expression);
-		try 
-		{
-			addVariable(variable);
-		}
-		catch (JRException e)
-		{
-			//never reached
-		}
-
-
-		/*   */
-		variable = new JRDesignVariable();
-		variable.setName(JRVariable.PAGE_COUNT);
-		variable.setValueClass(Integer.class);
-		variable.setResetType(JRVariable.RESET_TYPE_PAGE);
-		variable.setCalculation(JRVariable.CALCULATION_COUNT);
-		variable.setSystemDefined(true);
-		expression = new JRDesignExpression();
-		expression.setValueClass(Integer.class);
-		expression.setText("new Integer(1)");
-		variable.setExpression(expression);
-		expression = new JRDesignExpression();
-		expression.setValueClass(Integer.class);
-		expression.setText("new Integer(0)");
-		variable.setInitialValueExpression(expression);
-		try 
-		{
-			addVariable(variable);
-		}
-		catch (JRException e)
-		{
-			//never reached
-		}
-
-
-		/*   */
-		variable = new JRDesignVariable();
-		variable.setName(JRVariable.COLUMN_COUNT);
-		variable.setValueClass(Integer.class);
-		variable.setResetType(JRVariable.RESET_TYPE_COLUMN);
-		variable.setCalculation(JRVariable.CALCULATION_COUNT);
-		variable.setSystemDefined(true);
-		expression = new JRDesignExpression();
-		expression.setValueClass(Integer.class);
-		expression.setText("new Integer(1)");
-		variable.setExpression(expression);
-		expression = new JRDesignExpression();
-		expression.setValueClass(Integer.class);
-		expression.setText("new Integer(0)");
-		variable.setInitialValueExpression(expression);
-		try 
-		{
-			addVariable(variable);
-		}
-		catch (JRException e)
-		{
-			//never reached
-		}
+		setMainDataset(new JRDesignDataset(true));
 	}
 
 
@@ -624,15 +469,9 @@ public class JasperDesign extends JRBaseReport
 	 */
 	public void setScriptletClass(String scriptletClass)
 	{
-		Object oldValue = this.scriptletClass;
-		this.scriptletClass = scriptletClass;
-		if (scriptletClass == null) {
-			((JRDesignParameter)parametersMap.get(JRParameter.REPORT_SCRIPTLET)).setValueClass(JRAbstractScriptlet.class);
-		}
-		else {
-			((JRDesignParameter)parametersMap.get(JRParameter.REPORT_SCRIPTLET)).setValueClassName(scriptletClass);
-		}
-		getPropertyChangeSupport().firePropertyChange(SCRIPTLET_CLASS_PROPERTY, oldValue, this.scriptletClass);
+		Object oldValue = mainDesignDataset.getScriptletClass();
+		mainDesignDataset.setScriptletClass(scriptletClass);
+		getPropertyChangeSupport().firePropertyChange(SCRIPTLET_CLASS_PROPERTY, oldValue, scriptletClass);
 	}
 		
 
@@ -641,9 +480,9 @@ public class JasperDesign extends JRBaseReport
 	 */
 	public void setResourceBundle(String resourceBundle)
 	{
-		Object oldValue = this.resourceBundle;
-		this.resourceBundle = resourceBundle;
-		getPropertyChangeSupport().firePropertyChange(RESOURCE_BUNDLE_PROPERTY, oldValue, this.resourceBundle);
+		Object oldValue = mainDesignDataset.getResourceBundle();
+		mainDesignDataset.setResourceBundle(resourceBundle);
+		getPropertyChangeSupport().firePropertyChange(RESOURCE_BUNDLE_PROPERTY, oldValue, resourceBundle);
 	}
 		
 
@@ -763,19 +602,6 @@ public class JasperDesign extends JRBaseReport
 
 		return reportFont;
 	}
-
-
-	/**
-	 *
-	 */
-	public JRParameter[] getParameters()
-	{
-		JRParameter[] parametersArray = new JRParameter[parametersList.size()];
-
-		parametersList.toArray(parametersArray);
-
-		return parametersArray;
-	}
 	
 
 	/**
@@ -783,7 +609,7 @@ public class JasperDesign extends JRBaseReport
 	 */
 	public List getParametersList()
 	{
-		return parametersList;
+		return mainDesignDataset.getParametersList();
 	}
 	
 
@@ -792,7 +618,7 @@ public class JasperDesign extends JRBaseReport
 	 */
 	public Map getParametersMap()
 	{
-		return parametersMap;
+		return mainDesignDataset.getParametersMap();
 	}
 	
 
@@ -801,13 +627,7 @@ public class JasperDesign extends JRBaseReport
 	 */
 	public void addParameter(JRParameter parameter) throws JRException
 	{
-		if (parametersMap.containsKey(parameter.getName()))
-		{
-			throw new JRException("Duplicate declaration of parameter : " + parameter.getName());
-		}
-
-		parametersList.add(parameter);
-		parametersMap.put(parameter.getName(), parameter);
+		mainDesignDataset.addParameter(parameter);
 	}
 	
 
@@ -816,9 +636,7 @@ public class JasperDesign extends JRBaseReport
 	 */
 	public JRParameter removeParameter(String parameterName)
 	{
-		return removeParameter(
-			(JRParameter)parametersMap.get(parameterName)
-			);
+		return mainDesignDataset.removeParameter(parameterName);
 	}
 
 
@@ -827,13 +645,7 @@ public class JasperDesign extends JRBaseReport
 	 */
 	public JRParameter removeParameter(JRParameter parameter)
 	{
-		if (parameter != null)
-		{
-			parametersList.remove(parameter);
-			parametersMap.remove(parameter.getName());
-		}
-		
-		return parameter;
+		return mainDesignDataset.removeParameter(parameter);
 	}
 
 
@@ -842,9 +654,9 @@ public class JasperDesign extends JRBaseReport
 	 */
 	public void setQuery(JRQuery query)
 	{
-		Object oldValue = this.query;
-		this.query = query;
-		getPropertyChangeSupport().firePropertyChange(QUERY_PROPERTY, oldValue, this.query);
+		Object oldValue = mainDesignDataset.getQuery();
+		mainDesignDataset.setQuery(query);
+		getPropertyChangeSupport().firePropertyChange(QUERY_PROPERTY, oldValue, query);
 	}
 
 	/**
@@ -886,18 +698,6 @@ public class JasperDesign extends JRBaseReport
 		}
 		return propSupport;
 	}
-
-	/**
-	 *
-	 */
-	public JRField[] getFields()
-	{
-		JRField[] fieldsArray = new JRField[fieldsList.size()];
-		
-		fieldsList.toArray(fieldsArray);
-
-		return fieldsArray;
-	}
 	
 
 	/**
@@ -905,7 +705,7 @@ public class JasperDesign extends JRBaseReport
 	 */
 	public List getFieldsList()
 	{
-		return fieldsList;
+		return mainDesignDataset.getFieldsList();
 	}
 	
 
@@ -914,7 +714,7 @@ public class JasperDesign extends JRBaseReport
 	 */
 	public Map getFieldsMap()
 	{
-		return fieldsMap;
+		return mainDesignDataset.getFieldsMap();
 	}
 	
 
@@ -923,13 +723,7 @@ public class JasperDesign extends JRBaseReport
 	 */
 	public void addField(JRField field) throws JRException
 	{
-		if (fieldsMap.containsKey(field.getName()))
-		{
-			throw new JRException("Duplicate declaration of field : " + field.getName());
-		}
-
-		fieldsList.add(field);
-		fieldsMap.put(field.getName(), field);
+		mainDesignDataset.addField(field);
 	}
 	
 
@@ -938,9 +732,7 @@ public class JasperDesign extends JRBaseReport
 	 */
 	public JRField removeField(String fieldName)
 	{
-		return removeField(
-			(JRField)fieldsMap.get(fieldName)
-			);
+		return mainDesignDataset.removeField(fieldName);
 	}
 
 
@@ -949,26 +741,7 @@ public class JasperDesign extends JRBaseReport
 	 */
 	public JRField removeField(JRField field)
 	{
-		if (field != null)
-		{
-			fieldsList.remove(field);
-			fieldsMap.remove(field.getName());
-		}
-		
-		return field;
-	}
-
-
-	/**
-	 *
-	 */
-	public JRVariable[] getVariables()
-	{
-		JRVariable[] variablesArray = new JRVariable[variablesList.size()];
-		
-		variablesList.toArray(variablesArray);
-
-		return variablesArray;
+		return mainDesignDataset.removeField(field);
 	}
 	
 
@@ -977,7 +750,7 @@ public class JasperDesign extends JRBaseReport
 	 */
 	public List getVariablesList()
 	{
-		return variablesList;
+		return mainDesignDataset.getVariablesList();
 	}
 	
 
@@ -986,7 +759,7 @@ public class JasperDesign extends JRBaseReport
 	 */
 	public Map getVariablesMap()
 	{
-		return variablesMap;
+		return mainDesignDataset.getVariablesMap();
 	}
 	
 
@@ -995,13 +768,7 @@ public class JasperDesign extends JRBaseReport
 	 */
 	public void addVariable(JRDesignVariable variable) throws JRException
 	{
-		if (variablesMap.containsKey(variable.getName()))
-		{
-			throw new JRException("Duplicate declaration of variable : " + variable.getName());
-		}
-
-		variablesList.add(variable);
-		variablesMap.put(variable.getName(), variable);
+		mainDesignDataset.addVariable(variable);
 	}
 	
 
@@ -1010,9 +777,7 @@ public class JasperDesign extends JRBaseReport
 	 */
 	public JRVariable removeVariable(String variableName)
 	{
-		return removeVariable(
-			(JRVariable)variablesMap.get(variableName)
-			);
+		return mainDesignDataset.removeVariable(variableName);
 	}
 
 
@@ -1021,26 +786,7 @@ public class JasperDesign extends JRBaseReport
 	 */
 	public JRVariable removeVariable(JRVariable variable)
 	{
-		if (variable != null)
-		{
-			variablesList.remove(variable);
-			variablesMap.remove(variable.getName());
-		}
-		
-		return variable;
-	}
-
-
-	/**
-	 *
-	 */
-	public JRGroup[] getGroups()
-	{
-		JRGroup[] groupsArray = new JRGroup[groupsList.size()];
-		
-		groupsList.toArray(groupsArray);
-
-		return groupsArray;
+		return mainDesignDataset.removeVariable(variable);
 	}
 	
 
@@ -1049,7 +795,7 @@ public class JasperDesign extends JRBaseReport
 	 */
 	public List getGroupsList()
 	{
-		return groupsList;
+		return mainDesignDataset.getGroupsList();
 	}
 	
 
@@ -1058,7 +804,7 @@ public class JasperDesign extends JRBaseReport
 	 */
 	public Map getGroupsMap()
 	{
-		return groupsMap;
+		return mainDesignDataset.getGroupsMap();
 	}
 	
 
@@ -1067,33 +813,7 @@ public class JasperDesign extends JRBaseReport
 	 */
 	public void addGroup(JRDesignGroup group) throws JRException
 	{
-		if (groupsMap.containsKey(group.getName()))
-		{
-			throw new JRException("Duplicate declaration of group : " + group.getName());
-		}
-		
-		JRDesignVariable countVariable = new JRDesignVariable();
-		countVariable.setName(group.getName() + "_COUNT");
-		countVariable.setValueClass(Integer.class);
-		countVariable.setResetType(JRVariable.RESET_TYPE_GROUP);
-		countVariable.setResetGroup(group);
-		countVariable.setCalculation(JRVariable.CALCULATION_COUNT);
-		countVariable.setSystemDefined(true);
-		JRDesignExpression expression = new JRDesignExpression();
-		expression.setValueClass(Integer.class);
-		expression.setText("new Integer(1)");
-		countVariable.setExpression(expression);
-		expression = new JRDesignExpression();
-		expression.setValueClass(Integer.class);
-		expression.setText("new Integer(0)");
-		countVariable.setInitialValueExpression(expression);
-
-		addVariable(countVariable);
-
-		group.setCountVariable(countVariable);
-
-		groupsList.add(group);
-		groupsMap.put(group.getName(), group);
+		mainDesignDataset.addGroup(group);
 	}
 	
 
@@ -1102,9 +822,7 @@ public class JasperDesign extends JRBaseReport
 	 */
 	public JRGroup removeGroup(String groupName)
 	{
-		return removeGroup(
-			(JRGroup)groupsMap.get(groupName)
-			);
+		return mainDesignDataset.removeGroup(groupName);
 	}
 
 
@@ -1113,14 +831,7 @@ public class JasperDesign extends JRBaseReport
 	 */
 	public JRGroup removeGroup(JRGroup group)
 	{
-		if (group != null)
-		{
-			removeVariable(group.getCountVariable());
-			groupsList.remove(group);
-			groupsMap.remove(group.getName());
-		}
-		
-		return group;
+		return mainDesignDataset.removeGroup(group);
 	}
 
 
@@ -1129,7 +840,131 @@ public class JasperDesign extends JRBaseReport
 	 */
 	public Collection getExpressions()
 	{
-		return new JRExpressionCollector().collect(this);
+		JRExpressionCollector expressionCollector = new JRExpressionCollector();
+		return expressionCollector.collect(this);
 	}
 
+	
+	public Collection getExpressions(JRDataset dataset)
+	{
+		JRExpressionCollector expressionCollector = new JRExpressionCollector();
+		
+		//TODO luci optimize?
+		Collection expressions;
+		if (dataset.isMainDataset())
+		{
+			expressions = expressionCollector.collect(this);
+		}
+		else
+		{
+			expressionCollector.collect(this);
+			expressions = expressionCollector.getExpressions(dataset);
+		}
+		
+		return expressions;
+	}
+
+	
+	public JRDataset[] getDatasets()
+	{
+		JRDataset[] datasetArray = new JRDataset[datasetList.size()];
+		datasetList.toArray(datasetArray);
+		return datasetArray;
+	}
+	
+	
+	/**
+	 * Returns the list of report sub datasets.
+	 * 
+	 * @return list of {@link JRDesignDataset JRDesignDataset} objects
+	 */
+	public List getDatasetsList()
+	{
+		return datasetList;
+	}
+	
+	
+	/**
+	 * Returns the sub datasets of the report indexed by name.
+	 * 
+	 * @return the sub datasets of the report indexed by name
+	 */
+	public Map getDatasetMap()
+	{
+		return datasetMap;
+	}
+	
+	
+	/**
+	 * Adds a sub dataset to the report.
+	 * 
+	 * @param dataset the dataset
+	 * @throws JRException
+	 */
+	public void addDataset(JRDesignDataset dataset) throws JRException
+	{
+		if (datasetMap.containsKey(dataset.getName()))
+		{
+			throw new JRException("Duplicate declaration of dataset : " + dataset.getName());
+		}
+
+		datasetList.add(dataset);
+		datasetMap.put(dataset.getName(), dataset);
+	}
+	
+
+	/**
+	 * Removes a sub dataset from the report.
+	 * 
+	 * @param datasetName the dataset name
+	 * @return the removed dataset
+	 */
+	public JRDataset removeDataset(String datasetName)
+	{
+		return removeDataset(
+			(JRDataset)datasetMap.get(datasetName)
+			);
+	}
+
+
+	/**
+	 * Removes a sub dataset from the report.
+	 * 
+	 * @param dataset the dataset to be removed
+	 * @return the dataset
+	 */
+	public JRDataset removeDataset(JRDataset dataset)
+	{
+		if (dataset != null)
+		{
+			datasetList.remove(dataset);
+			datasetMap.remove(dataset.getName());
+		}
+		
+		return dataset;
+	}
+	
+	
+	/**
+	 * Returns the main report dataset.
+	 * 
+	 * @return the main report dataset
+	 */
+	public JRDesignDataset getMainDesignDataset()
+	{
+		return mainDesignDataset;
+	}
+	
+	
+	/**
+	 * Sets the main report dataset.
+	 * <p>
+	 * This method can be used as an alternative to setting the parameters, fields, etc directly on the report. 
+	 * 
+	 * @param dataset the dataset
+	 */
+	public void setMainDataset(JRDesignDataset dataset)
+	{
+		this.mainDataset = this.mainDesignDataset = dataset;
+	}
 }

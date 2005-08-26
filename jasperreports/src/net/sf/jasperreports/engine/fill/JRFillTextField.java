@@ -636,7 +636,7 @@ public class JRFillTextField extends JRFillTextElement implements JRTextField
 		Class expressionClass = getExpression().getValueClass();
 		if (java.util.Date.class.isAssignableFrom(expressionClass))
 		{
-			format = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, filler.locale);
+			format = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, filler.getLocale());
 			if (
 				pattern != null && pattern.trim().length() > 0
 				&& format instanceof SimpleDateFormat
@@ -649,7 +649,7 @@ public class JRFillTextField extends JRFillTextElement implements JRTextField
 		{
 			if (pattern != null && pattern.trim().length() > 0)
 			{
-				format = NumberFormat.getNumberInstance(filler.locale);
+				format = NumberFormat.getNumberInstance(filler.getLocale());
 				if (format instanceof DecimalFormat)
 				{
 					((DecimalFormat)format).applyPattern(pattern);

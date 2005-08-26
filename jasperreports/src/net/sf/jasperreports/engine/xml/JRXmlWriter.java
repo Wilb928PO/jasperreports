@@ -64,6 +64,8 @@ import net.sf.jasperreports.engine.JRChart;
 import net.sf.jasperreports.engine.JRChartDataset;
 import net.sf.jasperreports.engine.JRChartPlot;
 import net.sf.jasperreports.engine.JRChild;
+import net.sf.jasperreports.engine.JRDataset;
+import net.sf.jasperreports.engine.JRDatasetRun;
 import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRElementGroup;
 import net.sf.jasperreports.engine.JREllipse;
@@ -84,11 +86,12 @@ import net.sf.jasperreports.engine.JRReportFont;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JRStaticText;
 import net.sf.jasperreports.engine.JRSubreport;
-import net.sf.jasperreports.engine.JRSubreportReturnValue;
 import net.sf.jasperreports.engine.JRSubreportParameter;
+import net.sf.jasperreports.engine.JRSubreportReturnValue;
 import net.sf.jasperreports.engine.JRTextElement;
 import net.sf.jasperreports.engine.JRTextField;
 import net.sf.jasperreports.engine.JRVariable;
+import net.sf.jasperreports.engine.crosstab.JRCrosstab;
 import net.sf.jasperreports.engine.util.JRStringUtil;
 
 import org.jfree.chart.plot.PlotOrientation;
@@ -377,59 +380,17 @@ public class JRXmlWriter
 				writeReportFont(fonts[i]);
 			}
 		}
-
-		/*   */
-		JRParameter[] parameters = report.getParameters();
-		if (parameters != null && parameters.length > 0)
+		
+		JRDataset[] datasets = report.getDatasets();
+		if (datasets != null && datasets.length > 0)
 		{
-			for(int i = 0; i < parameters.length; i++)
+			for (int i = 0; i < datasets.length; ++i)
 			{
-				if (!parameters[i].isSystemDefined())
-				{
-					writeParameter(parameters[i]);
-				}
+				writeDataset(datasets[i]);
 			}
 		}
 
-		/*   */
-		if(report.getQuery() != null)
-		{
-			writeQuery(report.getQuery());
-		}
-
-		/*   */
-		JRField[] fields = report.getFields();
-		if (fields != null && fields.length > 0)
-		{
-			for(int i = 0; i < fields.length; i++)
-			{
-				writeField(fields[i]);
-			}
-		}
-
-		/*   */
-		JRVariable[] variables = report.getVariables();
-		if (variables != null && variables.length > 0)
-		{
-			for(int i = 0; i < variables.length; i++)
-			{
-				if (!variables[i].isSystemDefined())
-				{
-					writeVariable(variables[i]);
-				}
-			}
-		}
-
-		/*   */
-		JRGroup[] groups = report.getGroups();
-		if (groups != null && groups.length > 0)
-		{
-			for(int i = 0; i < groups.length; i++)
-			{
-				writeGroup(groups[i]);
-			}
-		}
-
+		writeDatasetContents(report.getMainDataset());
 		
 		if (report.getBackground() != null)
 		{
@@ -558,9 +519,10 @@ public class JRXmlWriter
 	/**
 	 *
 	 */
-	private void writeParameter(JRParameter parameter)
+	private void writeParameter(String indent, JRParameter parameter)
 	{
-		sb.append("\t<parameter");
+		sb.append(indent);
+		sb.append("<parameter");
 
 		sb.append(" name=\"");
 		sb.append(parameter.getName());
@@ -581,28 +543,32 @@ public class JRXmlWriter
 
 		if (parameter.getDescription() != null)
 		{
-			sb.append("\t\t<parameterDescription><![CDATA[");
+			sb.append(indent);
+			sb.append("\t<parameterDescription><![CDATA[");
 			sb.append(parameter.getDescription());
 			sb.append("]]></parameterDescription>\n");
 		}
 
 		if (parameter.getDefaultValueExpression() != null)
 		{
-			sb.append("\t\t<defaultValueExpression><![CDATA[");
+			sb.append(indent);
+			sb.append("\t<defaultValueExpression><![CDATA[");
 			sb.append(parameter.getDefaultValueExpression().getText());
 			sb.append("]]></defaultValueExpression>\n");
 		}
 
-		sb.append("\t</parameter>\n");
+		sb.append(indent);
+		sb.append("</parameter>\n");
 	}
 
 
 	/**
 	 *
 	 */
-	private void writeQuery(JRQuery query)
+	private void writeQuery(String indent, JRQuery query)
 	{
-		sb.append("\t<queryString><![CDATA[");
+		sb.append(indent);
+		sb.append("<queryString><![CDATA[");
 
 		sb.append(query.getText());
 
@@ -611,11 +577,13 @@ public class JRXmlWriter
 
 
 	/**
+	 * @param indent 
 	 *
 	 */
-	private void writeField(JRField field)
+	private void writeField(String indent, JRField field)
 	{
-		sb.append("\t<field");
+		sb.append(indent);
+		sb.append("<field");
 
 		sb.append(" name=\"");
 		sb.append(field.getName());
@@ -629,21 +597,24 @@ public class JRXmlWriter
 
 		if (field.getDescription() != null)
 		{
-			sb.append("\t\t<fieldDescription><![CDATA[");
+			sb.append(indent);
+			sb.append("\t<fieldDescription><![CDATA[");
 			sb.append(field.getDescription());
 			sb.append("]]></fieldDescription>\n");
 		}
 
-		sb.append("\t</field>\n");
+		sb.append(indent);
+		sb.append("</field>\n");
 	}
 
 
 	/**
 	 *
 	 */
-	private void writeVariable(JRVariable variable)
+	private void writeVariable(String indent, JRVariable variable)
 	{
-		sb.append("\t<variable");
+		sb.append(indent);
+		sb.append("<variable");
 
 		sb.append(" name=\"");
 		sb.append(variable.getName());
@@ -699,28 +670,32 @@ public class JRXmlWriter
 
 		if (variable.getExpression() != null)
 		{
-			sb.append("\t\t<variableExpression><![CDATA[");
+			sb.append(indent);
+			sb.append("\t<variableExpression><![CDATA[");
 			sb.append(variable.getExpression().getText());
 			sb.append("]]></variableExpression>\n");
 		}
 
 		if (variable.getInitialValueExpression() != null)
 		{
-			sb.append("\t\t<initialValueExpression><![CDATA[");
+			sb.append(indent);
+			sb.append("\t<initialValueExpression><![CDATA[");
 			sb.append(variable.getInitialValueExpression().getText());
 			sb.append("]]></initialValueExpression>\n");
 		}
 
-		sb.append("\t</variable>\n");
+		sb.append(indent);
+		sb.append("</variable>\n");
 	}
 
 
 	/**
 	 *
 	 */
-	private void writeGroup(JRGroup group)
+	private void writeGroup(String indent, JRGroup group)
 	{
-		sb.append("\t<group");
+		sb.append(indent);
+		sb.append("<group");
 
 		sb.append(" name=\"");
 		sb.append(group.getName());
@@ -765,7 +740,8 @@ public class JRXmlWriter
 
 		if (group.getExpression() != null)
 		{
-			sb.append("\t\t<groupExpression><![CDATA[");
+			sb.append(indent);
+			sb.append("\t<groupExpression><![CDATA[");
 			sb.append(group.getExpression().getText());
 			sb.append("]]></groupExpression>\n");
 		}
@@ -784,7 +760,8 @@ public class JRXmlWriter
 			sb.append("\t\t</groupFooter>\n");
 		}
 
-		sb.append("\t</group>\n");
+		sb.append(indent);
+		sb.append("</group>\n");
 	}
 
 
@@ -1642,7 +1619,7 @@ public class JRXmlWriter
 		{
 			for(int i = 0; i < parameters.length; i++)
 			{
-				writeSubreportParameter(parameters[i]);
+				writeSubreportParameter("\t\t\t\t", parameters[i]);
 			}
 		}
 
@@ -1690,9 +1667,10 @@ public class JRXmlWriter
 	/**
 	 *
 	 */
-	private void writeSubreportParameter(JRSubreportParameter subreportParameter)
+	private void writeSubreportParameter(String indent, JRSubreportParameter subreportParameter)
 	{
-		sb.append("\t\t\t\t<subreportParameter");
+		sb.append(indent);
+		sb.append("<subreportParameter");
 
 		sb.append(" name=\"");
 		sb.append(subreportParameter.getName());
@@ -1702,12 +1680,14 @@ public class JRXmlWriter
 
 		if (subreportParameter.getExpression() != null)
 		{
-			sb.append("\t\t\t\t\t<subreportParameterExpression><![CDATA[");
+			sb.append(indent);
+			sb.append("\t<subreportParameterExpression><![CDATA[");
 			sb.append(subreportParameter.getExpression().getText());
 			sb.append("]]></subreportParameterExpression>\n");
 		}
 
-		sb.append("\t\t\t\t</subreportParameter>\n");
+		sb.append(indent);
+		sb.append("</subreportParameter>\n");
 	}
 
 
@@ -1784,7 +1764,7 @@ public class JRXmlWriter
 	 *
 	 * @param dataset
 	 */
-	private void writeDataset(JRChartDataset dataset)
+	private void writeChartDataset(JRChartDataset dataset)
 	{
 		sb.append("\t\t\t\t\t<dataset");
 
@@ -1800,7 +1780,17 @@ public class JRXmlWriter
 		if (dataset.getIncrementType() == JRVariable.RESET_TYPE_GROUP)
 			sb.append(" incrementGroup=\"" + dataset.getIncrementGroup().getName() + "\"");
 
-		sb.append("/>\n");
+		JRDatasetRun datasetRun = dataset.getDatasetRun();
+		if (datasetRun == null)
+		{			
+			sb.append("/>\n");	
+		}
+		else
+		{
+			sb.append(">\n");
+			writeDatasetRun(datasetRun);
+			sb.append("\t\t\t\t\t</dataset>\n");
+		}
 	}
 
 
@@ -1812,7 +1802,7 @@ public class JRXmlWriter
 	{
 		sb.append("\t\t\t\t<categoryDataset>\n");
 
-		writeDataset(dataset);
+		writeChartDataset(dataset);
 
 		/*   */
 		JRCategorySeries[] categorySeries = dataset.getSeries();
@@ -1833,7 +1823,7 @@ public class JRXmlWriter
 		sb.append( " timePeriod=\"" + JRXmlConstants.getTimePeriodName( dataset.getTimePeriod() ) + "\"" );
 		sb.append(">\n" );
 		
-		writeDataset( dataset );
+		writeChartDataset( dataset );
 		
 		JRTimeSeries[] timeSeries = dataset.getSeries();
 		if( timeSeries != null && timeSeries.length > 0 ){
@@ -1848,7 +1838,7 @@ public class JRXmlWriter
 	
 	private void writeTimePeriodDataset( JRTimePeriodDataset dataset ){
 		sb.append( "\t\t\t\t<timePeriodDataset>\n");
-		writeDataset( dataset );
+		writeChartDataset( dataset );
 		
 		JRTimePeriodSeries[] timePeriodSeries = dataset.getSeries();
 		if( timePeriodSeries != null && timePeriodSeries.length > 0 ){
@@ -1895,7 +1885,7 @@ public class JRXmlWriter
 	 */
 	private void writeXyzDataset( JRXyzDataset dataset ){
 		sb.append( "\t\t\t\t<xyzDataset>\n" );
-		writeDataset( dataset );
+		writeChartDataset( dataset );
 		
 		JRXyzSeries[] series = dataset.getSeries();
 		if( series != null && series.length > 0 ){
@@ -1969,7 +1959,7 @@ public class JRXmlWriter
 	{
 		sb.append("\t\t\t\t<xyDataset>\n");
 
-		writeDataset(dataset);
+		writeChartDataset(dataset);
 
 		/*   */
 		JRXySeries[] xySeries = dataset.getSeries();
@@ -2085,7 +2075,7 @@ public class JRXmlWriter
 		JRPieDataset dataset = (JRPieDataset) chart.getDataset();
 		sb.append("\t\t\t\t<pieDataset>\n");
 
-		writeDataset(dataset);
+		writeChartDataset(dataset);
 
 		sb.append("\t\t\t\t\t<keyExpression><![CDATA[");
 		sb.append(dataset.getKeyExpression().getText());
@@ -2126,7 +2116,7 @@ public class JRXmlWriter
 		JRPieDataset dataset = (JRPieDataset) chart.getDataset();
 		sb.append("\t\t\t\t<pieDataset>\n");
 
-		writeDataset(dataset);
+		writeChartDataset(dataset);
 
 		sb.append("\t\t\t\t\t<keyExpression><![CDATA[");
 		sb.append(dataset.getKeyExpression().getText());
@@ -2408,7 +2398,7 @@ public class JRXmlWriter
 	{
 		sb.append("\t\t\t\t<highLowDataset>\n");
 
-		writeDataset(dataset);
+		writeChartDataset(dataset);
 
 		sb.append("\t\t\t\t\t<seriesExpression><![CDATA[");
 		sb.append(dataset.getSeriesExpression().getText());
@@ -2729,5 +2719,147 @@ public class JRXmlWriter
 			sb.append(returnValue.getIncrementerFactoryClassName());
 		}
 		sb.append("\"/>\n");
+	}
+
+
+	public void writeCrosstab(JRCrosstab crosstab)
+	{
+		//TODO luci write
+	}
+	
+	
+	public void writeDataset(JRDataset dataset)
+	{
+		sb.append("\t<subDataset name=\"");
+		sb.append(dataset.getName());
+		sb.append("\"");
+
+		if(dataset.getScriptletClass() != null)
+		{
+			sb.append(" scriptletClass=\"");
+			sb.append(dataset.getScriptletClass());
+			sb.append("\"");
+		}
+
+		if(dataset.getResourceBundle() != null)
+		{
+			sb.append(" resourceBundle=\"");
+			sb.append(dataset.getResourceBundle());
+			sb.append("\"");
+		}
+
+		if(dataset.getWhenResourceMissingType() != JRReport.WHEN_RESOURCE_MISSING_TYPE_NULL)
+		{
+			sb.append(" whenResourceMissingType=\"");
+			sb.append((String)JRXmlConstants.getWhenResourceMissingTypeMap().get(new Byte(dataset.getWhenResourceMissingType())));
+			sb.append("\"");
+		}
+		
+		sb.append(">\n");
+		
+		writeDatasetContents(dataset);
+		
+		sb.append("\t</subDataset>\n");
+	}
+	
+	protected void writeDatasetContents(JRDataset dataset)
+	{
+		String indent = dataset.isMainDataset() ? "\t" : "\t\t";
+		
+		/*   */
+		JRParameter[] parameters = dataset.getParameters();
+		if (parameters != null && parameters.length > 0)
+		{
+			for(int i = 0; i < parameters.length; i++)
+			{
+				if (!parameters[i].isSystemDefined())
+				{
+					writeParameter(indent, parameters[i]);
+				}
+			}
+		}
+
+		/*   */
+		if(dataset.getQuery() != null)
+		{
+			writeQuery(indent, dataset.getQuery());
+		}
+
+		/*   */
+		JRField[] fields = dataset.getFields();
+		if (fields != null && fields.length > 0)
+		{
+			for(int i = 0; i < fields.length; i++)
+			{
+				writeField(indent, fields[i]);
+			}
+		}
+
+		/*   */
+		JRVariable[] variables = dataset.getVariables();
+		if (variables != null && variables.length > 0)
+		{
+			for(int i = 0; i < variables.length; i++)
+			{
+				if (!variables[i].isSystemDefined())
+				{
+					writeVariable(indent, variables[i]);
+				}
+			}
+		}
+
+		/*   */
+		JRGroup[] groups = dataset.getGroups();
+		if (groups != null && groups.length > 0)
+		{
+			for(int i = 0; i < groups.length; i++)
+			{
+				writeGroup(indent, groups[i]);
+			}
+		}
+	}
+	
+	
+	protected void writeDatasetRun(JRDatasetRun datasetRun)
+	{
+		sb.append("\t\t\t\t\t\t<datasetRun");
+		
+		sb.append(" subDataset=\"");
+		sb.append(datasetRun.getDatasetName());
+		sb.append("\">\n");
+		
+		if (datasetRun.getParametersMapExpression() != null)
+		{
+			sb.append("\t\t\t\t\t\t\t<parametersMapExpression><![CDATA[");
+			sb.append(datasetRun.getParametersMapExpression().getText());
+			sb.append("]]></parametersMapExpression>\n");
+		}
+
+		/*   */
+		JRSubreportParameter[] parameters = datasetRun.getParameters();
+		if (parameters != null && parameters.length > 0)
+		{
+			for(int i = 0; i < parameters.length; i++)
+			{
+				writeSubreportParameter("\t\t\t\t\t\t\t", parameters[i]);
+			}
+		}
+
+		if (datasetRun.getConnectionExpression() != null)
+		{
+			sb.append("\t\t\t\t\t\t\t<connectionExpression><![CDATA[");
+			sb.append(datasetRun.getConnectionExpression().getText());
+			sb.append("]]></connectionExpression>\n");
+		}
+
+		if (datasetRun.getDataSourceExpression() != null)
+		{
+			sb.append("\t\t\t\t\t\t\t<dataSourceExpression><![CDATA[");
+			sb.append(datasetRun.getDataSourceExpression().getText());
+			sb.append("]]></dataSourceExpression>\n");
+		}
+		
+		sb.append("\t\t\t\t\t\t</datasetRun>\n");
+		
 	}
 }

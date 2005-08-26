@@ -76,6 +76,8 @@ import net.sf.jasperreports.charts.base.JRBaseXyzSeries;
 import net.sf.jasperreports.engine.JRAbstractObjectFactory;
 import net.sf.jasperreports.engine.JRBand;
 import net.sf.jasperreports.engine.JRChart;
+import net.sf.jasperreports.engine.JRDataset;
+import net.sf.jasperreports.engine.JRDatasetRun;
 import net.sf.jasperreports.engine.JRElementGroup;
 import net.sf.jasperreports.engine.JREllipse;
 import net.sf.jasperreports.engine.JRExpression;
@@ -96,6 +98,18 @@ import net.sf.jasperreports.engine.JRSubreportReturnValue;
 import net.sf.jasperreports.engine.JRSubreportParameter;
 import net.sf.jasperreports.engine.JRTextField;
 import net.sf.jasperreports.engine.JRVariable;
+import net.sf.jasperreports.engine.base.crosstab.JRBaseCrosstab;
+import net.sf.jasperreports.engine.base.crosstab.JRBaseCrosstabBucket;
+import net.sf.jasperreports.engine.base.crosstab.JRBaseCrosstabColumnGroup;
+import net.sf.jasperreports.engine.base.crosstab.JRBaseCrosstabDataset;
+import net.sf.jasperreports.engine.base.crosstab.JRBaseCrosstabMeasure;
+import net.sf.jasperreports.engine.base.crosstab.JRBaseCrosstabRowGroup;
+import net.sf.jasperreports.engine.crosstab.JRCrosstab;
+import net.sf.jasperreports.engine.crosstab.JRCrosstabBucket;
+import net.sf.jasperreports.engine.crosstab.JRCrosstabColumnGroup;
+import net.sf.jasperreports.engine.crosstab.JRCrosstabDataset;
+import net.sf.jasperreports.engine.crosstab.JRCrosstabMeasure;
+import net.sf.jasperreports.engine.crosstab.JRCrosstabRowGroup;
 
 
 /**
@@ -110,6 +124,14 @@ public class JRBaseObjectFactory extends JRAbstractObjectFactory
 	 *
 	 */
 	private JRBaseReport report = null;
+
+
+	/**
+	 *
+	 */
+	protected JRBaseObjectFactory()
+	{
+	}
 
 
 	/**
@@ -990,4 +1012,141 @@ public class JRBaseObjectFactory extends JRAbstractObjectFactory
 		return baseSubreportReturnValue;
 	}
 
+
+	public JRBaseCrosstabDataset getCrosstabDataset(JRCrosstabDataset crosstabDataset)
+	{
+		JRBaseCrosstabDataset baseCrosstabDataset = null;
+
+		if (crosstabDataset != null)
+		{
+			baseCrosstabDataset = (JRBaseCrosstabDataset) get(crosstabDataset);
+			if (baseCrosstabDataset == null)
+			{
+				baseCrosstabDataset = new JRBaseCrosstabDataset(crosstabDataset, this);
+			}
+		}
+		
+		return baseCrosstabDataset;
+	}
+
+
+	public JRBaseCrosstabRowGroup getCrosstabRowGroup(JRCrosstabRowGroup group)
+	{
+		JRBaseCrosstabRowGroup baseCrosstabRowGroup = null;
+
+		if (group != null)
+		{
+			baseCrosstabRowGroup = (JRBaseCrosstabRowGroup) get(group);
+			if (baseCrosstabRowGroup == null)
+			{
+				baseCrosstabRowGroup = new JRBaseCrosstabRowGroup(group, this);
+			}
+		}
+
+		return baseCrosstabRowGroup;
+	}
+
+
+	public JRBaseCrosstabColumnGroup getCrosstabColumnGroup(JRCrosstabColumnGroup group)
+	{
+		JRBaseCrosstabColumnGroup baseCrosstabDataset = null;
+
+		if (group != null)
+		{
+			baseCrosstabDataset = (JRBaseCrosstabColumnGroup) get(group);
+			if (baseCrosstabDataset == null)
+			{
+				baseCrosstabDataset = new JRBaseCrosstabColumnGroup(group, this);
+			}
+		}
+
+		return baseCrosstabDataset;
+	}
+
+
+	public JRBaseCrosstabBucket getCrosstabBucket(JRCrosstabBucket bucket)
+	{
+		JRBaseCrosstabBucket baseCrosstabBucket = null;
+
+		if (bucket != null)
+		{
+			baseCrosstabBucket = (JRBaseCrosstabBucket) get(bucket);
+			if (baseCrosstabBucket == null)
+			{
+				baseCrosstabBucket = new JRBaseCrosstabBucket(bucket, this);
+			}
+		}
+
+		return baseCrosstabBucket;
+	}
+
+
+	public JRBaseCrosstabMeasure getCrosstabMeasure(JRCrosstabMeasure measure)
+	{
+		JRBaseCrosstabMeasure baseCrosstabMeasure = null;
+
+		if (measure != null)
+		{
+			baseCrosstabMeasure = (JRBaseCrosstabMeasure) get(measure);
+			if (baseCrosstabMeasure == null)
+			{
+				baseCrosstabMeasure = new JRBaseCrosstabMeasure(measure, this);
+			}
+		}
+
+		return baseCrosstabMeasure;
+	}
+
+
+	public JRCrosstab getCrosstab(JRCrosstab crosstab)
+	{
+		JRBaseCrosstab baseCrosstab = null;
+
+		if (crosstab != null)
+		{
+			baseCrosstab = (JRBaseCrosstab) get(crosstab);
+			if (baseCrosstab == null)
+			{
+				baseCrosstab = new JRBaseCrosstab(crosstab, this);
+			}
+		}
+
+		return baseCrosstab;
+	}
+
+
+	public JRBaseDataset getDataset(JRDataset dataset)
+	{
+		JRBaseDataset baseDataset = null;
+		
+		if (dataset != null)
+		{
+			baseDataset = (JRBaseDataset)get(dataset);
+			if (baseDataset == null)
+			{
+				baseDataset = new JRBaseDataset(dataset, this);
+			}
+		}
+		
+		return baseDataset;
+	}
+
+
+	public JRDatasetRun getDatasetRun(JRDatasetRun datasetRun)
+	{
+		JRBaseDatasetRun baseDatasetRun = null;
+		
+		if (datasetRun != null)
+		{
+			baseDatasetRun = (JRBaseDatasetRun)get(datasetRun);
+			if (baseDatasetRun == null)
+			{
+				baseDatasetRun = new JRBaseDatasetRun(datasetRun, this);
+			}
+		}
+		
+		return baseDatasetRun;
+	}
+	
+	
 }

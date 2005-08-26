@@ -32,6 +32,7 @@
  */
 package net.sf.jasperreports.engine.design;
 
+import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.fill.JRCalculator;
@@ -53,16 +54,17 @@ public abstract class JRAbstractJavaCompiler implements JRCompiler
 	/**
 	 *
 	 */
-	public JRCalculator loadCalculator(JasperReport jasperReport) throws JRException
+	public JRCalculator loadCalculator(JasperReport jasperReport, JRDataset dataset) throws JRException
 	{
 		JRCalculator calculator = null;
 
+		String className = JRClassGenerator.getClassName(jasperReport, dataset);
 		try
 		{
 			Class clazz = 
 				JRClassLoader.loadClassFromBytes(
-					jasperReport.getName(), 
-					(byte[])jasperReport.getCompileData()
+					className, 
+					(byte[])jasperReport.getDatasetCompileData(dataset)
 					);
 					
 			classFromBytesRef.set(clazz);
@@ -71,11 +73,16 @@ public abstract class JRAbstractJavaCompiler implements JRCompiler
 		}
 		catch (Exception e)
 		{
-			throw new JRException("Error loading expression class : " + jasperReport.getName(), e);
+			throw new JRException("Error loading expression class : " + className, e);
 		}
 		
 		return calculator;
 	}
 
+
+	public JRCalculator loadCalculator(JasperReport jasperReport) throws JRException
+	{
+		return loadCalculator(jasperReport, jasperReport.getMainDataset());
+	}
 
 }

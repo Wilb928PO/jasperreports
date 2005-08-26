@@ -46,11 +46,13 @@ import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import net.sf.jasperreports.engine.JRDatasetRun;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRGroup;
 import net.sf.jasperreports.engine.JRVariable;
 import net.sf.jasperreports.engine.design.JRDesignChart;
 import net.sf.jasperreports.engine.design.JRDesignChartDataset;
+import net.sf.jasperreports.engine.design.JRDesignDataset;
 import net.sf.jasperreports.engine.design.JRDesignElement;
 import net.sf.jasperreports.engine.design.JRDesignImage;
 import net.sf.jasperreports.engine.design.JRDesignTextField;
@@ -452,10 +454,27 @@ public class JRXmlLoader
 	 */
 	private void assignGroupsToDatasets() throws JRException
 	{
-		Map groupsMap = jasperDesign.getGroupsMap();
 		for(Iterator it = groupBoundDatasets.iterator(); it.hasNext();)
 		{
 			JRDesignChartDataset dataset = (JRDesignChartDataset)it.next();
+			
+			JRDatasetRun datasetRun = dataset.getDatasetRun();
+			Map groupsMap;
+			if (datasetRun == null)
+			{
+				groupsMap = jasperDesign.getGroupsMap();
+			}
+			else
+			{
+				Map datasetMap = jasperDesign.getDatasetMap();
+				String datasetName = datasetRun.getDatasetName();
+				JRDesignDataset subDataset = (JRDesignDataset) datasetMap.get(datasetName);
+				if (subDataset == null)
+				{
+					throw new JRException("Unknown sub dataset '" + datasetName + "' for chart dataset.");
+				}
+				groupsMap = subDataset.getGroupsMap();
+			}
 
 			if (dataset.getIncrementType() == JRVariable.RESET_TYPE_GROUP)
 			{

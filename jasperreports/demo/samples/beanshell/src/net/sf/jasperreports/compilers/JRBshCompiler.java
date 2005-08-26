@@ -29,12 +29,17 @@ package net.sf.jasperreports.compilers;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
+import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRReport;
 import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.design.JRClassGenerator;
 import net.sf.jasperreports.engine.design.JRCompiler;
+import net.sf.jasperreports.engine.design.JRDesignDataset;
 import net.sf.jasperreports.engine.design.JRVerifier;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.fill.JRCalculator;
@@ -79,49 +84,77 @@ public class JRBshCompiler implements JRCompiler
 			}
 			throw new JRException(sbuffer.toString());
 		}
-		else
+		
+		//Report design OK
+		
+		boolean isKeepJavaFile = JRProperties.getBooleanProperty(JRProperties.COMPILER_KEEP_JAVA_FILE);
+		File tempDirFile = null;
+		if (isKeepJavaFile) 
 		{
-			//Report design OK
+			String tempDirStr = JRProperties.getProperty(JRProperties.COMPILER_TEMP_DIR);
 
-			//Generating BeanShell script for report expressions
-			String bshScript = JRBshGenerator.generateScript(jasperDesign);
-			
-			boolean isKeepJavaFile = JRProperties.getBooleanProperty(JRProperties.COMPILER_KEEP_JAVA_FILE);
-	
-			if (isKeepJavaFile) 
+			tempDirFile = new File(tempDirStr);
+			if (!tempDirFile.exists() || !tempDirFile.isDirectory())
 			{
-				String tempDirStr = JRProperties.getProperty(JRProperties.COMPILER_TEMP_DIR);
-	
-				File tempDirFile = new File(tempDirStr);
-				if (!tempDirFile.exists() || !tempDirFile.isDirectory())
-				{
-					throw new JRException("Temporary directory not found : " + tempDirStr);
-				}
-			
-				File javaFile = new File(tempDirFile, jasperDesign.getName() + ".bsh");
-				
-				JRSaver.saveClassSource(bshScript, javaFile);
+				throw new JRException("Temporary directory not found : " + tempDirStr);
 			}
-			
-			jasperReport = 
-				new JasperReport(
-					jasperDesign,
-					getClass().getName(),
-					bshScript
-					);
+		}
 
-			/*   */
-			verifyScript(jasperDesign, bshScript);
+		//Generating BeanShell script for report expressions
+		String bshScript = generateSource(jasperDesign, jasperDesign.getMainDesignDataset(), tempDirFile);
+		
+		Map datasetMap = jasperDesign.getDatasetMap();
+		Map datasetSources = new HashMap();
+		for (Iterator it = datasetMap.entrySet().iterator(); it.hasNext();)
+		{
+			Map.Entry entry = (Map.Entry) it.next();
+			JRDesignDataset dataset = (JRDesignDataset) entry.getValue();
+			String datasetScript = generateSource(jasperDesign, dataset, tempDirFile);
+			datasetSources.put(entry.getKey(), datasetScript);
+		}
+		
+		jasperReport = 
+			new JasperReport(
+				jasperDesign,
+				getClass().getName(),
+				bshScript,
+				datasetSources
+				);
+
+		/*   */
+		verifyScript(jasperDesign, jasperDesign.getMainDesignDataset(), bshScript);
+		
+		for (Iterator it = datasetMap.entrySet().iterator(); it.hasNext();)
+		{
+			Map.Entry entry = (Map.Entry) it.next();
+			JRDesignDataset dataset = (JRDesignDataset) entry.getValue();
+			String script = (String) datasetSources.get(entry.getKey());
+			verifyScript(jasperDesign, dataset, script);
 		}
 
 		return jasperReport;
+	}
+
+
+	private String generateSource(JasperDesign jasperDesign, JRDesignDataset dataset, File saveSourceDir) throws JRException
+	{
+		String bshScript = JRBshGenerator.generateScript(jasperDesign, dataset);
+
+		if (saveSourceDir != null) 
+		{
+			File javaFile = new File(saveSourceDir, JRClassGenerator.getClassName(jasperDesign, dataset) + ".bsh");
+			
+			JRSaver.saveClassSource(bshScript, javaFile);
+		}
+		
+		return bshScript;
 	}
 
 	
 	/**
 	 *
 	 */
-	private void verifyScript(JasperDesign jasperDesign, String bshScript) throws JRException
+	private void verifyScript(JasperDesign jasperDesign, JRDesignDataset dataset, String bshScript) throws JRException
 	{
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 		
@@ -139,7 +172,7 @@ public class JRBshCompiler implements JRCompiler
 		Thread.currentThread().setContextClassLoader(classLoader);
 
 		JRBshCalculator bshCalculator = new JRBshCalculator(bshScript);
-		bshCalculator.verify(jasperDesign.getExpressions());
+		bshCalculator.verify(jasperDesign.getExpressions(dataset));
 
 		Thread.currentThread().setContextClassLoader(oldContextClassLoader);
 	}
@@ -151,6 +184,12 @@ public class JRBshCompiler implements JRCompiler
 	public JRCalculator loadCalculator(JasperReport jasperReport) throws JRException
 	{
 		return new JRBshCalculator((String)jasperReport.getCompileData());
+	}
+
+
+	public JRCalculator loadCalculator(JasperReport jasperReport, JRDataset dataset) throws JRException
+	{
+		return new JRBshCalculator((String)jasperReport.getDatasetCompileData(dataset));
 	}
 
 
