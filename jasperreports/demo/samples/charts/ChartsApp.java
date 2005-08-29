@@ -28,6 +28,8 @@
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -72,7 +74,8 @@ public class ChartsApp
 		"TimeSeriesChartReport",
 		"BubbleChartReport",
 		"HighLowChartReport",
-		"CandlestickChartReport"
+		"CandlestickChartReport",
+		"SubDatasetChartReport"
 		};
 	
 	/**
@@ -193,5 +196,18 @@ public class ChartsApp
 		return conn;
 	}
 
+	
+	
+	public static final Date truncateToMonth(Date date)
+	{
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		int year = calendar.get(Calendar.YEAR);
+		int month = calendar.get(Calendar.MONTH);
+		calendar.clear();
+		calendar.set(Calendar.YEAR, year);
+		calendar.set(Calendar.MONTH, month);
+		return calendar.getTime();
+	}
 
 }

@@ -250,7 +250,13 @@ public class JRXmlLoader
 		}
 
 		/*   */
-		this.assignGroupsToVariables();
+		assignGroupsToVariables(jasperDesign.getMainDesignDataset());
+		for (Iterator it = jasperDesign.getDatasetsList().iterator(); it.hasNext();)
+		{
+			JRDesignDataset dataset = (JRDesignDataset) it.next();
+			assignGroupsToVariables(dataset);
+		}
+		
 		this.assignGroupsToElements();
 		this.assignGroupsToImages();
 		this.assignGroupsToTextFields();
@@ -263,12 +269,12 @@ public class JRXmlLoader
 	/**
 	 *
 	 */
-	private void assignGroupsToVariables() throws JRException
+	private static void assignGroupsToVariables(JRDesignDataset dataset) throws JRException
 	{
-		JRVariable[] variables = jasperDesign.getVariables();
+		JRVariable[] variables = dataset.getVariables();
 		if (variables != null && variables.length > 0)
 		{
-			Map groupsMap = jasperDesign.getGroupsMap();
+			Map groupsMap = dataset.getGroupsMap();
 			for(int i = 0; i < variables.length; i++)
 			{
 				JRDesignVariable variable = (JRDesignVariable)variables[i];
