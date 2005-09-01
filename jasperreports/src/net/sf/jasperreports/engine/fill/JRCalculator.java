@@ -36,6 +36,7 @@ import java.util.Map;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExpression;
+import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JRVariable;
 
 
@@ -91,7 +92,9 @@ public class JRCalculator
 		pageNumber = (JRFillVariable)varsm.get(JRVariable.PAGE_NUMBER);
 		columnNumber = (JRFillVariable)varsm.get(JRVariable.COLUMN_NUMBER);
 		
-		evaluator.init(parsm, fldsm,varsm, dataset.getWhenResourceMissingType());
+		JRFillParameter resourceBundle = (JRFillParameter) parsm.get(JRParameter.REPORT_RESOURCE_BUNDLE);
+		byte whenResourceMissingType = dataset.getWhenResourceMissingType();
+		evaluator.init(parsm, fldsm,varsm, resourceBundle, whenResourceMissingType);
 	}
 
 

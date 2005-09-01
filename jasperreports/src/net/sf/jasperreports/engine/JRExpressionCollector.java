@@ -56,6 +56,8 @@ import net.sf.jasperreports.charts.JRXySeries;
 import net.sf.jasperreports.charts.JRXyzDataset;
 import net.sf.jasperreports.charts.JRXyzSeries;
 import net.sf.jasperreports.engine.crosstab.JRCrosstab;
+import net.sf.jasperreports.engine.crosstab.JRCrosstabBucket;
+import net.sf.jasperreports.engine.crosstab.JRCrosstabCell;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabColumnGroup;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabDataset;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabMeasure;
@@ -80,6 +82,10 @@ public class JRExpressionCollector
 	 */
 	private Map datasetCollectors;
 
+	/**
+	 * Collectors for crosstabs.
+	 */
+	private Map crosstabCollectors;
 
 	/**
 	 * Constructs a collector instance.
@@ -90,11 +96,12 @@ public class JRExpressionCollector
 	}
 	
 	
-	private JRExpressionCollector(boolean hasDatasets)
+	private JRExpressionCollector(boolean isMain)
 	{
-		if (hasDatasets)
+		if (isMain)
 		{
 			datasetCollectors = new HashMap();
+			crosstabCollectors = new HashMap();
 		}
 	}
 	
@@ -125,14 +132,14 @@ public class JRExpressionCollector
 		}
 		else
 		{
-			collector = getCollector(datasetRun.getDatasetName());
+			collector = getDatasetCollector(datasetRun.getDatasetName());
 		}
 		
 		return collector;
 	}
 
 	
-	private JRExpressionCollector getCollector(String datasetName)
+	private JRExpressionCollector getDatasetCollector(String datasetName)
 	{
 		JRExpressionCollector collector = (JRExpressionCollector) datasetCollectors.get(datasetName);
 		if (collector == null)
@@ -153,9 +160,22 @@ public class JRExpressionCollector
 		}
 		else
 		{
-			collector = getCollector(dataset.getName());
+			collector = getDatasetCollector(dataset.getName());
 		}
 		
+		return collector;
+	}
+
+	
+	private JRExpressionCollector getCollector(JRCrosstab crosstab)
+	{
+		String name = crosstab.getName();
+		JRExpressionCollector collector = (JRExpressionCollector) crosstabCollectors.get(name);
+		if (collector == null)
+		{
+			collector = new JRExpressionCollector(false);
+			crosstabCollectors.put(name, collector);
+		}
 		return collector;
 	}
 	
@@ -182,6 +202,18 @@ public class JRExpressionCollector
 		return getCollector(dataset).getExpressions();
 	}
 
+	
+	/**
+	 * Returns the expressions collected for a crosstab.
+	 * 
+	 * @param crosstab the crosstab
+	 * @return the expressions
+	 */
+	public List getExpressions(JRCrosstab crosstab)
+	{
+		return getCollector(crosstab).getExpressions();
+	}
+
 
 	public Integer getExpressionId(JRExpression expression)
 	{
@@ -195,18 +227,31 @@ public class JRExpressionCollector
 		{
 			JRExpressionCollector datasetCollector = (JRExpressionCollector) it.next();
 			
-			for (Iterator iter = datasetCollector.expressionIds.entrySet().iterator(); iter.hasNext();)
+			collectIds(datasetCollector);
+		}
+		
+		for (Iterator it = crosstabCollectors.values().iterator(); it.hasNext();)
+		{
+			JRExpressionCollector datasetCollector = (JRExpressionCollector) it.next();
+			
+			collectIds(datasetCollector);
+		}
+	}
+
+
+	private void collectIds(JRExpressionCollector datasetCollector)
+	{
+		for (Iterator iter = datasetCollector.expressionIds.entrySet().iterator(); iter.hasNext();)
+		{
+			Map.Entry entry = (Map.Entry) iter.next();
+			Object key = entry.getKey();
+			
+			if (expressionIds.containsKey(key))
 			{
-				Map.Entry entry = (Map.Entry) iter.next();
-				Object key = entry.getKey();
-				
-				if (expressionIds.containsKey(key))
-				{
-					throw new JRRuntimeException("Same expression found in different datasets.");
-				}
-				
-				expressionIds.put(key, entry.getValue());
+				throw new JRRuntimeException("Same expression found in different datasets.");
 			}
+			
+			expressionIds.put(key, entry.getValue());
 		}
 	}
 
@@ -685,25 +730,52 @@ public class JRExpressionCollector
 	public void collect(JRCrosstab crosstab)
 	{
 		JRCrosstabDataset dataset = crosstab.getDataset();
-		JRExpressionCollector collector = getCollector(dataset);
+		JRExpressionCollector datasetCollector = getCollector(dataset);
+		JRExpressionCollector crosstabCollector = getCollector(crosstab);
+		
 		JRCrosstabRowGroup[] rowGroups = crosstab.getRowGroups();
-		for (int i = 0; i < rowGroups.length; i++)
+		if (rowGroups != null)
 		{
-			collector.addExpression(rowGroups[i].getBucket().getExpression());
-			collector.addExpression(rowGroups[i].getBucket().getComparatorExpression());
+			for (int i = 0; i < rowGroups.length; i++)
+			{
+				JRCrosstabRowGroup rowGroup = rowGroups[i];
+				JRCrosstabBucket bucket = rowGroup.getBucket();
+				datasetCollector.addExpression(bucket.getExpression());
+				datasetCollector.addExpression(bucket.getComparatorExpression());
+				crosstabCollector.collect(rowGroup.getHeader());
+				crosstabCollector.collect(rowGroup.getTotalHeader());
+			}
 		}
 		
 		JRCrosstabColumnGroup[] colGroups = crosstab.getColumnGroups();
-		for (int i = 0; i < colGroups.length; i++)
+		if (colGroups != null)
 		{
-			collector.addExpression(colGroups[i].getBucket().getExpression());
-			collector.addExpression(rowGroups[i].getBucket().getComparatorExpression());
+			for (int i = 0; i < colGroups.length; i++)
+			{
+				JRCrosstabColumnGroup columnGroup = colGroups[i];
+				datasetCollector.addExpression(columnGroup.getBucket().getExpression());
+				datasetCollector.addExpression(columnGroup.getBucket().getComparatorExpression());
+				crosstabCollector.collect(columnGroup.getHeader());
+				crosstabCollector.collect(columnGroup.getTotalHeader());
+			}
 		}
 		
 		JRCrosstabMeasure[] measures = crosstab.getMeasures();
-		for (int i = 0; i < measures.length; i++)
+		if (measures != null)
 		{
-			collector.addExpression(measures[i].getValueExpression());
+			for (int i = 0; i < measures.length; i++)
+			{
+				datasetCollector.addExpression(measures[i].getValueExpression());
+			}
+		}
+		
+		JRCrosstabCell[] cells = crosstab.getCells();
+		if (cells != null)
+		{
+			for (int i = 0; i < cells.length; ++i)
+			{
+				crosstabCollector.collect(cells[i].getContents());
+			}
 		}
 	}
 
@@ -745,6 +817,22 @@ public class JRExpressionCollector
 				for (int i = 0; i < parameters.length; i++)
 				{
 					addExpression(parameters[i].getExpression());
+				}
+			}
+		}
+	}
+	
+	
+	protected void collect(JRCell cell)
+	{
+		if (cell != null)
+		{
+			JRElement[] elements = cell.getElements();
+			if (elements != null && elements.length > 0)
+			{
+				for(int i = 0; i < elements.length; i++)
+				{
+					elements[i].collectExpressions(this);
 				}
 			}
 		}

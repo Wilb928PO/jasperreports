@@ -33,7 +33,6 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JRReport;
 import net.sf.jasperreports.engine.JRRuntimeException;
 
@@ -70,12 +69,15 @@ public abstract class JREvaluator
 	 * @param parametersMap the parameters indexed by name
 	 * @param fieldsMap the fields indexed by name
 	 * @param variablesMap the variables indexed by name
+	 * @param resourceBundleParameter the parameter whose value is the resource bundle 
+	 * to be used for the expression evaluation
 	 * @param resourceMissingType the resource missing type
 	 * @throws JRException
 	 */
-	protected void init(Map parametersMap, Map fieldsMap, Map variablesMap, byte resourceMissingType) throws JRException
+	protected void init(Map parametersMap, Map fieldsMap, Map variablesMap, 
+			JRFillParameter resourceBundleParameter, byte resourceMissingType) throws JRException
 	{
-		resourceBundle = (JRFillParameter) parametersMap.get(JRParameter.REPORT_RESOURCE_BUNDLE);
+		this.resourceBundle = resourceBundleParameter;
 		this.whenResourceMissingType = resourceMissingType;
 
 		customizedInit(parametersMap, fieldsMap, variablesMap);

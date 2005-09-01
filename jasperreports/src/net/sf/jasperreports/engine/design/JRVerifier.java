@@ -1255,6 +1255,7 @@ public class JRVerifier
 		// TODO luci numeric values if percentage
 		// TODO luci cell total groups
 		// TODO luci cell elements position
+		// TODO luci expressions
 	}
 
 
