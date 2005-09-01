@@ -836,32 +836,12 @@ public class JasperDesign extends JRBaseReport
 
 
 	/**
-	 *
+	 * 
 	 */
 	public Collection getExpressions()
 	{
 		JRExpressionCollector expressionCollector = new JRExpressionCollector();
 		return expressionCollector.collect(this);
-	}
-
-	
-	public Collection getExpressions(JRDataset dataset)
-	{
-		JRExpressionCollector expressionCollector = new JRExpressionCollector();
-		
-		//TODO luci optimize?
-		Collection expressions;
-		if (dataset.isMainDataset())
-		{
-			expressions = expressionCollector.collect(this);
-		}
-		else
-		{
-			expressionCollector.collect(this);
-			expressions = expressionCollector.getExpressions(dataset);
-		}
-		
-		return expressions;
 	}
 
 	

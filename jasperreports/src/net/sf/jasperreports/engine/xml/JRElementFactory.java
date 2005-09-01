@@ -154,55 +154,44 @@ public class JRElementFactory extends JRBaseFactory
 		String forecolor = atts.getValue(ATTRIBUTE_forecolor);
 		if (forecolor != null && forecolor.length() > 0)
 		{
-			char firstChar = forecolor.charAt(0);
-			if (firstChar == '#')
-			{
-				element.setForecolor(new Color(Integer.parseInt(forecolor.substring(1), 16)));
-			}
-			else if ('0' <= firstChar && firstChar <= '9')
-			{
-				element.setForecolor(new Color(Integer.parseInt(forecolor)));
-			}
-			else
-			{
-				if (JRXmlConstants.getColorMap().containsKey(forecolor))
-				{
-					element.setForecolor((Color)JRXmlConstants.getColorMap().get(forecolor));
-				}
-				else
-				{
-					element.setForecolor(Color.black);
-				}
-			}
+			element.setForecolor(getColor(forecolor, Color.black));
 		}
 
 		String backcolor = atts.getValue(ATTRIBUTE_backcolor);
 		if (backcolor != null && backcolor.length() > 0)
 		{
-			char firstChar = backcolor.charAt(0);
-			if (firstChar == '#')
-			{
-				element.setBackcolor(new Color(Integer.parseInt(backcolor.substring(1), 16)));
-			}
-			else if ('0' <= firstChar && firstChar <= '9')
-			{
-				element.setBackcolor(new Color(Integer.parseInt(backcolor)));
-			}
-			else
-			{
-				if (JRXmlConstants.getColorMap().containsKey(backcolor))
-				{
-					element.setBackcolor((Color)JRXmlConstants.getColorMap().get(backcolor));
-				}
-				else
-				{
-					element.setBackcolor(Color.white);
-				}
-			}
+			element.setBackcolor(getColor(backcolor, Color.white));
 		}
 
 		return element;
 	}
 	
+	
+	public static Color getColor(String colorAttr, Color defaultColor)
+	{
+		Color color = null;
 
+		char firstChar = colorAttr.charAt(0);
+		if (firstChar == '#')
+		{
+			color = new Color(Integer.parseInt(colorAttr.substring(1), 16));
+		}
+		else if ('0' <= firstChar && firstChar <= '9')
+		{
+			color = new Color(Integer.parseInt(colorAttr));
+		}
+		else
+		{
+			if (JRXmlConstants.getColorMap().containsKey(colorAttr))
+			{
+				color = (Color) JRXmlConstants.getColorMap().get(colorAttr);
+			}
+			else
+			{
+				color = defaultColor;
+			}
+		}
+
+		return color;
+	}
 }

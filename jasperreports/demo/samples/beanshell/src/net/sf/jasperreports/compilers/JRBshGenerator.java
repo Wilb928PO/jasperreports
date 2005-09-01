@@ -36,11 +36,13 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRExpressionChunk;
+import net.sf.jasperreports.engine.JRExpressionCollector;
 import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JRVariable;
@@ -62,6 +64,7 @@ public class JRBshGenerator
 	 */
 	private JasperDesign jasperDesign = null;
 	private JRDesignDataset dataset;
+	private JRExpressionCollector expressionCollector;
 
 	private static Map fieldPrefixMap = null;
 	private static Map variablePrefixMap = null;
@@ -71,10 +74,11 @@ public class JRBshGenerator
 	/**
 	 *
 	 */
-	protected JRBshGenerator(JasperDesign jrDesign, JRDesignDataset dataset)
+	protected JRBshGenerator(JasperDesign jrDesign, JRDesignDataset dataset, JRExpressionCollector expressionCollector)
 	{
 		jasperDesign = jrDesign;
 		this.dataset = dataset;
+		this.expressionCollector = expressionCollector;
 
 		fieldPrefixMap = new HashMap();
 		fieldPrefixMap.put(new Byte(JRExpression.EVALUATION_OLD),       "Old");
@@ -96,9 +100,9 @@ public class JRBshGenerator
 	/**
 	 *
 	 */
-	public static String generateScript(JasperDesign jrDesign, JRDesignDataset dataset) throws JRException
+	public static String generateScript(JasperDesign jrDesign, JRDesignDataset dataset, JRExpressionCollector expressionCollector) throws JRException
 	{
-		JRBshGenerator generator = new JRBshGenerator(jrDesign, dataset);
+		JRBshGenerator generator = new JRBshGenerator(jrDesign, dataset, expressionCollector);
 		return generator.generateScript();
 	}
 
@@ -141,11 +145,11 @@ public class JRBshGenerator
 		/*   */
 		sb.append("\n");
 		sb.append("\n");
-		sb.append("createBshCalculator()\n");
+		sb.append("createBshEvaluator()\n");
 		sb.append("{\n"); 
 		sb.append("\n");
 		sb.append("\n");
-		sb.append("    JRCalculator calculator = null;\n");
+		sb.append("    JREvaluator evaluator = null;\n");
 		sb.append("\n");
 
 		/*   */
@@ -196,13 +200,13 @@ public class JRBshGenerator
 		sb.append("\n");
 		sb.append("\n");
 		sb.append("    init(\n"); 
-		sb.append("        JRCalculator calculator,\n"); 
+		sb.append("        JREvaluator evaluator,\n"); 
 		sb.append("        Map parsm,\n"); 
 		sb.append("        Map fldsm,\n"); 
 		sb.append("        Map varsm\n");
 		sb.append("        )\n");
 		sb.append("    {\n");
-		sb.append("        super.calculator = calculator;\n");
+		sb.append("        super.evaluator = evaluator;\n");
 		sb.append("\n");
 
 		/*   */
@@ -266,30 +270,29 @@ public class JRBshGenerator
 		sb.append("\n");
 		sb.append("\n");
 
-		Collection expressions = jasperDesign.getExpressions(dataset);
-		sb.append(this.generateMethod(expressions, JRExpression.EVALUATION_DEFAULT));
-		sb.append(this.generateMethod(expressions, JRExpression.EVALUATION_OLD));
-		sb.append(this.generateMethod(expressions, JRExpression.EVALUATION_ESTIMATED));
+		sb.append(generateMethod(JRExpression.EVALUATION_DEFAULT));
+		sb.append(generateMethod(JRExpression.EVALUATION_OLD));
+		sb.append(generateMethod(JRExpression.EVALUATION_ESTIMATED));
 
 		sb.append("\n"); 
 		sb.append("    str(String key)\n");
 		sb.append("    {\n");
-		sb.append("        return super.calculator.str(key);\n");
+		sb.append("        return super.evaluator.str(key);\n");
 		sb.append("    }\n");
 		sb.append("\n"); 
 		sb.append("    msg(String pattern, Object arg0)\n");
 		sb.append("    {\n");
-		sb.append("        return super.calculator.msg(pattern, arg0);\n");
+		sb.append("        return super.evaluator.msg(pattern, arg0);\n");
 		sb.append("    }\n");
 		sb.append("\n"); 
 		sb.append("    msg(String pattern, Object arg0, Object arg1)\n");
 		sb.append("    {\n");
-		sb.append("        return super.calculator.msg(pattern, arg0, arg1);\n");
+		sb.append("        return super.evaluator.msg(pattern, arg0, arg1);\n");
 		sb.append("    }\n");
 		sb.append("\n"); 
 		sb.append("    msg(String pattern, Object arg0, Object arg1, Object arg2)\n");
 		sb.append("    {\n");
-		sb.append("        return super.calculator.msg(pattern, arg0, arg1, arg2);\n");
+		sb.append("        return super.evaluator.msg(pattern, arg0, arg1, arg2);\n");
 		sb.append("    }\n");
 		sb.append("\n"); 
 		sb.append("    return this;\n");
@@ -302,7 +305,7 @@ public class JRBshGenerator
 	/**
 	 *
 	 */
-	private String generateMethod(Collection expressions, byte evaluationType)
+	private String generateMethod(byte evaluationType)
 	{
 		StringBuffer sb = new StringBuffer();
 
@@ -316,6 +319,7 @@ public class JRBshGenerator
 		sb.append("        switch (id)\n");
 		sb.append("        {\n");
 
+		List expressions = expressionCollector.getExpressions(dataset);
 		if (expressions != null && !expressions.isEmpty())
 		{
 			JRExpression expression = null;
@@ -324,10 +328,8 @@ public class JRBshGenerator
 				expression = (JRExpression)it.next();
 				
 				sb.append("            case ");
-				sb.append(expression.getId());
-				sb.append(" : // ");
-				sb.append(expression.getId());
-				sb.append("\n");
+				sb.append(expressionCollector.getExpressionId(expression));
+				sb.append(" :\n");
 				sb.append("            {\n");
 				sb.append("                value = (");
 				sb.append(expression.getValueClassName());
@@ -438,7 +440,7 @@ public class JRBshGenerator
 					{
 						jrParameter = (JRParameter)parametersMap.get(chunkText);
 	
-						sbuffer.append("super.calculator.str(\"");
+						sbuffer.append("super.evaluator.str(\"");
 						sbuffer.append(chunkText);
 						sbuffer.append("\")");
 	

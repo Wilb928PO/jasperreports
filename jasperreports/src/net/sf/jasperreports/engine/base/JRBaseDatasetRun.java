@@ -70,9 +70,9 @@ public class JRBaseDatasetRun implements JRDatasetRun, Serializable
 		}
 		
 		datasetName = datasetRun.getDatasetName();
-		parametersMapExpression = datasetRun.getParametersMapExpression();
-		connectionExpression = datasetRun.getConnectionExpression();
-		dataSourceExpression = datasetRun.getDataSourceExpression();
+		parametersMapExpression = factory.getExpression(datasetRun.getParametersMapExpression());
+		connectionExpression = factory.getExpression(datasetRun.getConnectionExpression());
+		dataSourceExpression = factory.getExpression(datasetRun.getDataSourceExpression());
 		
 		JRSubreportParameter[] datasetParams = datasetRun.getParameters();
 		if (datasetParams != null && datasetParams.length > 0)

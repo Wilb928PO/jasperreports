@@ -112,7 +112,7 @@
 <!ELEMENT lastPageFooter (band?)>
 <!ELEMENT summary (band?)>
 
-<!ELEMENT band (printWhenExpression?, (line | rectangle | ellipse | image | staticText | textField | subreport | pieChart | pie3DChart | barChart | bar3DChart | xyBarChart | stackedBarChart | stackedBar3DChart| lineChart | xyLineChart | areaChart | xyAreaChart | scatterChart | bubbleChart | timeSeriesChart | highLowChart | candlestickChart | elementGroup)*)>
+<!ELEMENT band (printWhenExpression?, (line | rectangle | ellipse | image | staticText | textField | subreport | pieChart | pie3DChart | barChart | bar3DChart | xyBarChart | stackedBarChart | stackedBar3DChart| lineChart | xyLineChart | areaChart | xyAreaChart | scatterChart | bubbleChart | timeSeriesChart | highLowChart | candlestickChart | elementGroup | crosstab)*)>
 <!ATTLIST band
 	height NMTOKEN "0"
 	isSplitAllowed (true | false) "true"
@@ -266,7 +266,7 @@
 	class (java.lang.String | java.io.File | java.net.URL | java.io.InputStream | net.sf.jasperreports.engine.JasperReport | dori.jasper.engine.JasperReport) "java.lang.String"
 >
 
-<!ELEMENT elementGroup (line | rectangle | ellipse | image | staticText | textField | subreport | pieChart | pie3DChart | barChart | bar3DChart | xyBarChart | stackedBarChart | stackedBar3DChart| lineChart | xyLineChart | areaChart | xyAreaChart | scatterChart | bubbleChart | timeSeriesChart | highLowChart | candlestickChart | elementGroup)*>
+<!ELEMENT elementGroup (line | rectangle | ellipse | image | staticText | textField | subreport | pieChart | pie3DChart | barChart | bar3DChart | xyBarChart | stackedBarChart | stackedBar3DChart| lineChart | xyLineChart | areaChart | xyAreaChart | scatterChart | bubbleChart | timeSeriesChart | highLowChart | candlestickChart | elementGroup | crosstab)*>
 
 <!ELEMENT chart (reportElement, box?, chartTitle?, chartSubtitle?)>
 <!ATTLIST chart
@@ -443,9 +443,9 @@
 	totalPosition (Start | End | None) "None"
 >
 
-<!ELEMENT crosstabRowHeader ((line | rectangle | ellipse | image | staticText | textField | elementGroup)*)>
+<!ELEMENT crosstabRowHeader (cell?)>
 
-<!ELEMENT crosstabTotalRowHeader ((line | rectangle | ellipse | image | staticText | textField | elementGroup)*)>
+<!ELEMENT crosstabTotalRowHeader (cell?)>
 
 <!ELEMENT columnGroup (bucket, crosstabColumnHeader?, crosstabTotalColumnHeader?)>
 <!ATTLIST columnGroup
@@ -454,9 +454,9 @@
 	totalPosition (Start | End | None) "None"
 >
 
-<!ELEMENT crosstabColumnHeader ((line | rectangle | ellipse | image | staticText | textField | elementGroup)*)>
+<!ELEMENT crosstabColumnHeader (cell?)>
 
-<!ELEMENT crosstabTotalColumnHeader ((line | rectangle | ellipse | image | staticText | textField | elementGroup)*)>
+<!ELEMENT crosstabTotalColumnHeader (cell?)>
 
 <!ELEMENT bucket (bucketExpression, comparatorExpression?)>
 <!ATTLIST bucket
@@ -479,10 +479,15 @@
 
 <!ELEMENT measureExpression (#PCDATA)>
 
-<!ELEMENT crosstabCell ((line | rectangle | ellipse | image | staticText | textField | elementGroup)*)>
+<!ELEMENT crosstabCell (cell?)>
 <!ATTLIST crosstabCell
 	width NMTOKEN #IMPLIED
 	height NMTOKEN #IMPLIED
 	rowTotalGroup NMTOKEN #REQUIRED
 	columnTotalGroup NMTOKEN #REQUIRED
+>
+
+<!ELEMENT cell (box?, (line | rectangle | ellipse | image | staticText | textField | elementGroup)*)>
+<!ATTLIST cell
+	backcolor CDATA #IMPLIED
 >

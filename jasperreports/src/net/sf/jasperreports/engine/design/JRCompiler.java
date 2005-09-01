@@ -30,7 +30,7 @@ package net.sf.jasperreports.engine.design;
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.fill.JRCalculator;
+import net.sf.jasperreports.engine.fill.JREvaluator;
 
 
 /**
@@ -50,7 +50,7 @@ public interface JRCompiler
 	/**
 	 *
 	 */
-	public JRCalculator loadCalculator(JasperReport jasperReport) throws JRException;
+	public JREvaluator loadEvaluator(JasperReport jasperReport) throws JRException;
 
 	
 	/**
@@ -61,6 +61,6 @@ public interface JRCompiler
 	 * @return an instance of the dataset evaluator class
 	 * @throws JRException
 	 */
-	public JRCalculator loadCalculator(JasperReport jasperReport, JRDataset dataset) throws JRException;
+	public JREvaluator loadEvaluator(JasperReport jasperReport, JRDataset dataset) throws JRException;
 
 }

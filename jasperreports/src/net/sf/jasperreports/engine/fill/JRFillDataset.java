@@ -368,7 +368,8 @@ public class JRFillDataset implements JRDataset
 	 */
 	protected JRCalculator createCalculator(JasperReport jasperReport) throws JRException
 	{
-		return calculator = new JRDefaultCompiler().loadCalculator(jasperReport, this);
+		JREvaluator evaluator = new JRDefaultCompiler().loadEvaluator(jasperReport, this);
+		return calculator = new JRCalculator(evaluator);
 	}
 
 

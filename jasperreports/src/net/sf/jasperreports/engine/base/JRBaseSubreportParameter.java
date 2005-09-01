@@ -72,7 +72,7 @@ public class JRBaseSubreportParameter implements JRSubreportParameter, Serializa
 		}
 
 		name = subreportParameter.getName();
-		expression = subreportParameter.getExpression();
+		expression = factory.getExpression(subreportParameter.getExpression());
 	}
 		
 

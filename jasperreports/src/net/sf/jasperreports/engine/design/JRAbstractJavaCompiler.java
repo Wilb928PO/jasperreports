@@ -32,10 +32,10 @@
  */
 package net.sf.jasperreports.engine.design;
 
-import net.sf.jasperreports.engine.JRDataset;
+import java.io.Serializable;
+
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.fill.JRCalculator;
+import net.sf.jasperreports.engine.fill.JREvaluator;
 import net.sf.jasperreports.engine.util.JRClassLoader;
 
 
@@ -43,7 +43,7 @@ import net.sf.jasperreports.engine.util.JRClassLoader;
  * @author Teodor Danciu (teodord@users.sourceforge.net)
  * @version $Id$
  */
-public abstract class JRAbstractJavaCompiler implements JRCompiler
+public abstract class JRAbstractJavaCompiler extends JRAbstractCompiler
 {
 
 
@@ -51,38 +51,29 @@ public abstract class JRAbstractJavaCompiler implements JRCompiler
 	// Reference to the loaded class class in a per thread map
 	private static ThreadLocal classFromBytesRef = new ThreadLocal();
 
-	/**
-	 *
-	 */
-	public JRCalculator loadCalculator(JasperReport jasperReport, JRDataset dataset) throws JRException
-	{
-		JRCalculator calculator = null;
 
-		String className = JRClassGenerator.getClassName(jasperReport, dataset);
+	protected JREvaluator loadEvaluator(Serializable compileData, String className) throws JRException
+	{
+		JREvaluator evaluator = null;
+
 		try
 		{
 			Class clazz = 
 				JRClassLoader.loadClassFromBytes(
 					className, 
-					(byte[])jasperReport.getDatasetCompileData(dataset)
+					(byte[]) compileData
 					);
 					
 			classFromBytesRef.set(clazz);
 		
-			calculator = (JRCalculator)clazz.newInstance();
+			evaluator = (JREvaluator) clazz.newInstance();
 		}
 		catch (Exception e)
 		{
 			throw new JRException("Error loading expression class : " + className, e);
 		}
 		
-		return calculator;
-	}
-
-
-	public JRCalculator loadCalculator(JasperReport jasperReport) throws JRException
-	{
-		return loadCalculator(jasperReport, jasperReport.getMainDataset());
+		return evaluator;
 	}
 
 }

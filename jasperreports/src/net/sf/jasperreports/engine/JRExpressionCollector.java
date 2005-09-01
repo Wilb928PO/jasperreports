@@ -27,9 +27,11 @@
  */
 package net.sf.jasperreports.engine;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import net.sf.jasperreports.charts.JRAreaPlot;
@@ -70,7 +72,8 @@ public class JRExpressionCollector
 	/**
 	 *
 	 */
-	private Collection expressions = new HashSet();
+	private List expressions = new ArrayList();
+	private Map expressionIds = new HashMap();
 
 	/**
 	 * Collectors for sub datasets indexed by dataset name.
@@ -102,7 +105,11 @@ public class JRExpressionCollector
 	{
 		if (expression != null)
 		{
-			expressions.add(expression);
+			if (!expressionIds.containsKey(expression))
+			{
+				expressionIds.put(expression, new Integer(expressions.size()));
+				expressions.add(expression);
+			}
 		}
 	}
 
@@ -158,7 +165,7 @@ public class JRExpressionCollector
 	 * 
 	 * @return the collected expressions
 	 */
-	public Collection getExpressions()
+	public List getExpressions()
 	{
 		return expressions;
 	}
@@ -170,11 +177,40 @@ public class JRExpressionCollector
 	 * @param dataset the dataset
 	 * @return the expressions
 	 */
-	public Collection getExpressions(JRDataset dataset)
+	public List getExpressions(JRDataset dataset)
 	{
 		return getCollector(dataset).getExpressions();
 	}
 
+
+	public Integer getExpressionId(JRExpression expression)
+	{
+		return (Integer) expressionIds.get(expression);
+	}
+
+	
+	private void collectIds()
+	{
+		for (Iterator it = datasetCollectors.values().iterator(); it.hasNext();)
+		{
+			JRExpressionCollector datasetCollector = (JRExpressionCollector) it.next();
+			
+			for (Iterator iter = datasetCollector.expressionIds.entrySet().iterator(); iter.hasNext();)
+			{
+				Map.Entry entry = (Map.Entry) iter.next();
+				Object key = entry.getKey();
+				
+				if (expressionIds.containsKey(key))
+				{
+					throw new JRRuntimeException("Same expression found in different datasets.");
+				}
+				
+				expressionIds.put(key, entry.getValue());
+			}
+		}
+	}
+
+	
 	/**
 	 *
 	 */
@@ -202,9 +238,12 @@ public class JRExpressionCollector
 		collect(report.getLastPageFooter());
 		collect(report.getSummary());
 		
+		collectIds();
+		
 		return expressions;
 	}
-		
+
+
 	/**
 	 *
 	 */

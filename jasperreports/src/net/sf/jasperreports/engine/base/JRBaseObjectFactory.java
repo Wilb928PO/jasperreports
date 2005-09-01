@@ -75,6 +75,7 @@ import net.sf.jasperreports.charts.base.JRBaseXyzDataset;
 import net.sf.jasperreports.charts.base.JRBaseXyzSeries;
 import net.sf.jasperreports.engine.JRAbstractObjectFactory;
 import net.sf.jasperreports.engine.JRBand;
+import net.sf.jasperreports.engine.JRCell;
 import net.sf.jasperreports.engine.JRChart;
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRDatasetRun;
@@ -82,6 +83,7 @@ import net.sf.jasperreports.engine.JRElementGroup;
 import net.sf.jasperreports.engine.JREllipse;
 import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRExpressionChunk;
+import net.sf.jasperreports.engine.JRExpressionCollector;
 import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.JRFont;
 import net.sf.jasperreports.engine.JRGroup;
@@ -92,6 +94,7 @@ import net.sf.jasperreports.engine.JRQuery;
 import net.sf.jasperreports.engine.JRQueryChunk;
 import net.sf.jasperreports.engine.JRRectangle;
 import net.sf.jasperreports.engine.JRReportFont;
+import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JRStaticText;
 import net.sf.jasperreports.engine.JRSubreport;
 import net.sf.jasperreports.engine.JRSubreportReturnValue;
@@ -100,12 +103,14 @@ import net.sf.jasperreports.engine.JRTextField;
 import net.sf.jasperreports.engine.JRVariable;
 import net.sf.jasperreports.engine.base.crosstab.JRBaseCrosstab;
 import net.sf.jasperreports.engine.base.crosstab.JRBaseCrosstabBucket;
+import net.sf.jasperreports.engine.base.crosstab.JRBaseCrosstabCell;
 import net.sf.jasperreports.engine.base.crosstab.JRBaseCrosstabColumnGroup;
 import net.sf.jasperreports.engine.base.crosstab.JRBaseCrosstabDataset;
 import net.sf.jasperreports.engine.base.crosstab.JRBaseCrosstabMeasure;
 import net.sf.jasperreports.engine.base.crosstab.JRBaseCrosstabRowGroup;
 import net.sf.jasperreports.engine.crosstab.JRCrosstab;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabBucket;
+import net.sf.jasperreports.engine.crosstab.JRCrosstabCell;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabColumnGroup;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabDataset;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabMeasure;
@@ -124,6 +129,11 @@ public class JRBaseObjectFactory extends JRAbstractObjectFactory
 	 *
 	 */
 	private JRBaseReport report = null;
+	
+	/**
+	 * Expression collector used to retrieve generated expression IDs.
+	 */
+	private JRExpressionCollector expressionCollector;
 
 
 	/**
@@ -135,11 +145,20 @@ public class JRBaseObjectFactory extends JRAbstractObjectFactory
 
 
 	/**
-	 *
+	 * Constructs a base object factory.
+	 * 
+	 * @param baseReport the report used as a default font provider
+	 * @param expressionCollector the expression collector used as expression ID provider
 	 */
-	protected JRBaseObjectFactory(JRBaseReport baseReport)
+	protected JRBaseObjectFactory(JRBaseReport baseReport, JRExpressionCollector expressionCollector)
 	{
 		this.report = baseReport;
+		this.expressionCollector = expressionCollector;
+	}
+
+	protected JRBaseObjectFactory(JRBaseReport baseReport)
+	{
+		this(baseReport, null);
 	}
 
 
@@ -302,7 +321,17 @@ public class JRBaseObjectFactory extends JRAbstractObjectFactory
 			baseExpression = (JRBaseExpression)get(expression);
 			if (baseExpression == null)
 			{
-				baseExpression = new JRBaseExpression(expression, this);
+				Integer expressionId = null;
+				if (expressionCollector != null)
+				{
+					expressionId = expressionCollector.getExpressionId(expression);
+					if (expressionId == null)
+					{
+						throw new JRRuntimeException("Expression ID not found.");
+					}
+				}
+				
+				baseExpression = new JRBaseExpression(expression, this, expressionId);
 			}
 		}
 		
@@ -1132,7 +1161,7 @@ public class JRBaseObjectFactory extends JRAbstractObjectFactory
 	}
 
 
-	public JRDatasetRun getDatasetRun(JRDatasetRun datasetRun)
+	public JRBaseDatasetRun getDatasetRun(JRDatasetRun datasetRun)
 	{
 		JRBaseDatasetRun baseDatasetRun = null;
 		
@@ -1148,5 +1177,37 @@ public class JRBaseObjectFactory extends JRAbstractObjectFactory
 		return baseDatasetRun;
 	}
 	
-	
+
+	public JRBaseCell getCell(JRCell cell)
+	{
+		JRBaseCell baseCell = null;
+		
+		if (cell != null)
+		{
+			baseCell = (JRBaseCell)get(cell);
+			if (baseCell == null)
+			{
+				baseCell = new JRBaseCell(cell, this);
+			}
+		}
+		
+		return baseCell;
+	}
+
+
+	public JRCrosstabCell getCrosstabCell(JRCrosstabCell cell)
+	{
+		JRBaseCrosstabCell baseCell = null;
+		
+		if (cell != null)
+		{
+			baseCell = (JRBaseCrosstabCell)get(cell);
+			if (baseCell == null)
+			{
+				baseCell = new JRBaseCrosstabCell(cell, this);
+			}
+		}
+		
+		return baseCell;
+	}
 }

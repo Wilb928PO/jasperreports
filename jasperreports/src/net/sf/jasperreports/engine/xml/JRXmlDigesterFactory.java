@@ -75,6 +75,7 @@ import net.sf.jasperreports.charts.xml.JRXyzDatasetFactory;
 import net.sf.jasperreports.charts.xml.JRXyzSeriesFactory;
 import net.sf.jasperreports.engine.JRBand;
 import net.sf.jasperreports.engine.JRBox;
+import net.sf.jasperreports.engine.JRCell;
 import net.sf.jasperreports.engine.JRDatasetRun;
 import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRField;
@@ -85,6 +86,7 @@ import net.sf.jasperreports.engine.JRReportFont;
 import net.sf.jasperreports.engine.JRSubreportReturnValue;
 import net.sf.jasperreports.engine.JRSubreportParameter;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabBucket;
+import net.sf.jasperreports.engine.crosstab.JRCrosstabCell;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabColumnGroup;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabDataset;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabMeasure;
@@ -99,6 +101,7 @@ import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.engine.xml.crosstab.JRCrosstabBucketExpressionFactory;
 import net.sf.jasperreports.engine.xml.crosstab.JRCrosstabBucketFactory;
+import net.sf.jasperreports.engine.xml.crosstab.JRCrosstabCellFactory;
 import net.sf.jasperreports.engine.xml.crosstab.JRCrosstabColumnGroupFactory;
 import net.sf.jasperreports.engine.xml.crosstab.JRCrosstabDatasetFactory;
 import net.sf.jasperreports.engine.xml.crosstab.JRCrosstabFactory;
@@ -690,8 +693,20 @@ public class JRXmlDigesterFactory
 		digester.addFactoryCreate("*/crosstab/rowGroup", JRCrosstabRowGroupFactory.class.getName());		
 		digester.addSetNext("*/crosstab/rowGroup", "addRowGroup", JRCrosstabRowGroup.class.getName());		
 		
+		digester.addFactoryCreate("*/crosstab/rowGroup/crosstabRowHeader/cell", JRCellFactory.class.getName());
+		digester.addSetNext("*/crosstab/rowGroup/crosstabRowHeader/cell", "setHeader", JRCell.class.getName());
+		
+		digester.addFactoryCreate("*/crosstab/rowGroup/crosstabTotalRowHeader/cell", JRCellFactory.class.getName());
+		digester.addSetNext("*/crosstab/rowGroup/crosstabTotalRowHeader/cell", "setTotalHeader", JRCell.class.getName());
+		
 		digester.addFactoryCreate("*/crosstab/columnGroup", JRCrosstabColumnGroupFactory.class.getName());		
 		digester.addSetNext("*/crosstab/columnGroup", "addColumnGroup", JRCrosstabColumnGroup.class.getName());		
+		
+		digester.addFactoryCreate("*/crosstab/columnGroup/crosstabColumnHeader/cell", JRCellFactory.class.getName());
+		digester.addSetNext("*/crosstab/columnGroup/crosstabColumnHeader/cell", "setHeader", JRCell.class.getName());
+		
+		digester.addFactoryCreate("*/crosstab/columnGroup/crosstabTotalColumnHeader/cell", JRCellFactory.class.getName());
+		digester.addSetNext("*/crosstab/columnGroup/crosstabTotalColumnHeader/cell", "setTotalHeader", JRCell.class.getName());
 		
 		digester.addFactoryCreate("*/bucket", JRCrosstabBucketFactory.class.getName());		
 		digester.addSetNext("*/bucket", "setBucket", JRCrosstabBucket.class.getName());
@@ -710,6 +725,11 @@ public class JRXmlDigesterFactory
 		digester.addFactoryCreate("*/crosstab/measure/measureExpression", JRCrosstabMeasureExpressionFactory.class.getName());
 		digester.addSetNext("*/crosstab/measure/measureExpression", "setValueExpression", JRExpression.class.getName());
 		digester.addCallMethod("*/crosstab/measure/measureExpression", "setText", 0);
+		
+		digester.addFactoryCreate("*/crosstab/crosstabCell", JRCrosstabCellFactory.class.getName());
+		digester.addSetNext("*/crosstab/crosstabCell", "addCell", JRCrosstabCell.class.getName());
+		digester.addFactoryCreate("*/crosstab/crosstabCell/cell", JRCellFactory.class.getName());
+		digester.addSetNext("*/crosstab/crosstabCell/cell", "setContents", JRCell.class.getName());
 	}
 	
 	

@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import net.sf.jasperreports.engine.JRAnchor;
@@ -42,6 +43,7 @@ import net.sf.jasperreports.engine.JRDatasetRun;
 import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRExpressionChunk;
+import net.sf.jasperreports.engine.JRExpressionCollector;
 import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.JRFont;
 import net.sf.jasperreports.engine.JRGroup;
@@ -81,6 +83,8 @@ public class JRVerifier
 	 */
 	private JasperDesign jasperDesign = null;
 	private Collection brokenRules = null;
+	
+	private JRExpressionCollector expressionCollector;
 
 
 	/**
@@ -88,18 +92,39 @@ public class JRVerifier
 	 */
 	protected JRVerifier(JasperDesign jrDesign)
 	{
+		this(jrDesign, null);
+	}
+
+
+	protected JRVerifier(JasperDesign jrDesign, JRExpressionCollector expressionCollector)
+	{
 		jasperDesign = jrDesign;
 		brokenRules = new ArrayList();
+		
+		if (expressionCollector != null)
+		{
+			this.expressionCollector = expressionCollector;
+		}
+		else
+		{
+			this.expressionCollector = new JRExpressionCollector();
+			this.expressionCollector.collect(jasperDesign);
+		}
 	}
 
 
 	/**
 	 *
 	 */
+	public static Collection verifyDesign(JasperDesign jasperDesign, JRExpressionCollector expressionCollector)
+	{
+		JRVerifier verifier = new JRVerifier(jasperDesign, expressionCollector);
+		return verifier.verifyDesign();
+	}
+
 	public static Collection verifyDesign(JasperDesign jasperDesign)
 	{
-		JRVerifier verifier = new JRVerifier(jasperDesign);
-		return verifier.verifyDesign();
+		return verifyDesign(jasperDesign, null);
 	}
 
 	/**
@@ -341,7 +366,8 @@ public class JRVerifier
 	 */
 	private void verifyExpressions(JRDesignDataset dataset)
 	{
-		Collection expressions = jasperDesign.getExpressions(dataset);
+		List expressions = expressionCollector.getExpressions(dataset);
+		
 		if (expressions != null && expressions.size() > 0)
 		{
 			Map parametersMap = dataset.getParametersMap();
@@ -1227,6 +1253,8 @@ public class JRVerifier
 		// TODO luci measure incrementer is extended
 		// TODO luci bucket class is comparable or comparator is not null
 		// TODO luci numeric values if percentage
+		// TODO luci cell total groups
+		// TODO luci cell elements position
 	}
 
 

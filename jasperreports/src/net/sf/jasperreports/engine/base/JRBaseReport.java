@@ -36,6 +36,7 @@ import java.util.Set;
 
 import net.sf.jasperreports.engine.JRBand;
 import net.sf.jasperreports.engine.JRDataset;
+import net.sf.jasperreports.engine.JRExpressionCollector;
 import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.JRGroup;
 import net.sf.jasperreports.engine.JRParameter;
@@ -116,9 +117,12 @@ public class JRBaseReport implements JRReport, Serializable
 	}
 	
 	/**
-	 *
+	 * Constructs a copy of a report.
+	 * 
+	 * @param report the original report
+	 * @param expressionCollector expression collector used to provide new expression IDs
 	 */
-	public JRBaseReport(JRReport report)
+	public JRBaseReport(JRReport report, JRExpressionCollector expressionCollector)
 	{
 		/*   */
 		name = report.getName();
@@ -158,7 +162,7 @@ public class JRBaseReport implements JRReport, Serializable
 		}
 
 		/*   */
-		JRBaseObjectFactory factory = new JRBaseObjectFactory(this);
+		JRBaseObjectFactory factory = new JRBaseObjectFactory(this, expressionCollector);
 		
 		/*   */
 		defaultFont = factory.getReportFont(report.getDefaultFont());
@@ -198,7 +202,13 @@ public class JRBaseReport implements JRReport, Serializable
 		summary = factory.getBand(report.getSummary());
 	}
 
+	
+	public JRBaseReport(JRReport report)
+	{
+		this(report, null);
+	}
 
+	
 	/**
 	 *
 	 */
