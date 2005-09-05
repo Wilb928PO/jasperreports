@@ -101,6 +101,16 @@ public class JRDesignTextField extends JRDesignTextElement implements JRTextFiel
 	 */
 	public String getPattern()
 	{
+		if (pattern == null) {
+			if (getStyle() != null && getStyle().getPattern() != null)
+				return getStyle().getPattern();
+			return null;
+		}
+		return pattern;
+	}
+
+	public String getOwnPattern()
+	{
 		return this.pattern;
 	}
 		

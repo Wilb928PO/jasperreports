@@ -58,7 +58,7 @@ public class JRBaseTextField extends JRBaseTextElement implements JRTextField
 	 */
 	protected boolean isStretchWithOverflow = false;
 	protected byte evaluationTime = JRExpression.EVALUATION_TIME_NOW;
-	protected String pattern = null;
+	protected String pattern;
 	protected boolean isBlankWhenNull = false;
 	protected byte hyperlinkType = JRHyperlink.HYPERLINK_TYPE_NONE;
 	protected byte hyperlinkTarget = JRHyperlink.HYPERLINK_TARGET_SELF;
@@ -88,7 +88,7 @@ public class JRBaseTextField extends JRBaseTextElement implements JRTextField
 		
 		isStretchWithOverflow = textField.isStretchWithOverflow();
 		evaluationTime = textField.getEvaluationTime();
-		pattern = textField.getPattern();
+		pattern = textField.getOwnPattern();
 		isBlankWhenNull = textField.isBlankWhenNull();
 		hyperlinkType = textField.getHyperlinkType();
 		hyperlinkTarget = textField.getHyperlinkTarget();
@@ -132,9 +132,19 @@ public class JRBaseTextField extends JRBaseTextElement implements JRTextField
 	 */
 	public String getPattern()
 	{
-		return this.pattern;
+		if (pattern == null) {
+			if (getStyle() != null && getStyle().getPattern() != null)
+				return getStyle().getPattern();
+			return null;
+		}
+		return pattern;
 	}
 		
+	public String getOwnPattern()
+	{
+		return this.pattern;
+	}
+
 	/**
 	 *
 	 */

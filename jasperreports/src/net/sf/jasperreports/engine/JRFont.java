@@ -44,6 +44,15 @@ import java.util.Map;
 public interface JRFont
 {
 
+	public static final String DEFAULT_FONT_NAME = "sansserif";
+	public static final boolean DEFAULT_FONT_BOLD = false;
+	public static final boolean DEFAULT_FONT_ITALIC = false;
+	public static final boolean DEFAULT_FONT_UNDERLINE = false;
+	public static final boolean DEFAULT_FONT_STRIKETHROUGH = false;
+	public static final int DEFAULT_FONT_SIZE = 10;
+	public static final String DEFAULT_PDF_FONT_NAME = "Helvetica";
+	public static final String DEFAULT_PDF_ENCODING = "Cp1252";
+	public static final boolean DEFAULT_PDF_EMBEDDED = false;
 
 	/**
 	 *

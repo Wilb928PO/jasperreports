@@ -48,9 +48,8 @@ import net.sf.jasperreports.engine.JRQuery;
 import net.sf.jasperreports.engine.JRQueryChunk;
 import net.sf.jasperreports.engine.JRReportFont;
 import net.sf.jasperreports.engine.JRSubreport;
-import net.sf.jasperreports.engine.JRSubreportReturnValue;
 import net.sf.jasperreports.engine.JRSubreportParameter;
-import net.sf.jasperreports.engine.JRTextElement;
+import net.sf.jasperreports.engine.JRSubreportReturnValue;
 import net.sf.jasperreports.engine.JRTextField;
 import net.sf.jasperreports.engine.JRVariable;
 
@@ -781,7 +780,7 @@ public class JRVerifier
 	 */
 	private void verifyTextField(JRTextField textField)
 	{
-		verifyTextElement(textField);
+		verifyFont(textField);
 		verifyAnchor(textField);
 		verifyHyperlink(textField);
 
@@ -809,25 +808,17 @@ public class JRVerifier
 	/**
 	 *
 	 */
-	private void verifyTextElement(JRTextElement textElement)
+	private void verifyFont(JRFont font)
 	{
-		if (textElement != null)
+		JRReportFont reportFont = font.getReportFont();
+		
+		if (reportFont != null && reportFont.getName() != null)
 		{
-			JRFont font = textElement.getFont();
-			
-			if (font != null)
+			Map fontsMap = jasperDesign.getFontsMap();
+
+			if (!fontsMap.containsKey(reportFont.getName()))
 			{
-				JRReportFont reportFont = font.getReportFont();
-				
-				if (reportFont != null && reportFont.getName() != null)
-				{
-					Map fontsMap = jasperDesign.getFontsMap();
-	
-					if (!fontsMap.containsKey(reportFont.getName()))
-					{
-						brokenRules.add("Report font not found : " + reportFont.getName());
-					}
-				}
+				brokenRules.add("Report font not found : " + reportFont.getName());
 			}
 		}
 	}

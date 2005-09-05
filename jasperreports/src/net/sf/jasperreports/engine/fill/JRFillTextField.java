@@ -130,6 +130,11 @@ public class JRFillTextField extends JRFillTextElement implements JRTextField
 		return ((JRTextField)parent).getPattern();
 	}
 		
+	public String getOwnPattern()
+	{
+		return ((JRTextField)parent).getOwnPattern();
+	}
+
 	/**
 	 *
 	 */
@@ -257,7 +262,7 @@ public class JRFillTextField extends JRFillTextElement implements JRTextField
 	{
 		if (template == null)
 		{
-			template = new JRTemplateText((JRTextField)parent, getFont());
+			template = new JRTemplateText((JRTextField)parent);
 		}
 		
 		return (JRTemplateText)template;

@@ -85,8 +85,8 @@ import net.sf.jasperreports.engine.JRReportFont;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JRStaticText;
 import net.sf.jasperreports.engine.JRSubreport;
-import net.sf.jasperreports.engine.JRSubreportReturnValue;
 import net.sf.jasperreports.engine.JRSubreportParameter;
+import net.sf.jasperreports.engine.JRSubreportReturnValue;
 import net.sf.jasperreports.engine.JRTextElement;
 import net.sf.jasperreports.engine.JRTextField;
 import net.sf.jasperreports.engine.JRVariable;
@@ -1158,7 +1158,7 @@ public class JRXmlWriter
 		sb.append(">\n");
 
 		writeReportElement(image);
-		writeBox(image.getBox());
+		writeBox(image);
 		writeGraphicElement(image);
 
 		if (image.getExpression() != null)
@@ -1334,7 +1334,7 @@ public class JRXmlWriter
 		sb.append("\t\t\t<staticText>\n");
 
 		writeReportElement(staticText);
-		writeBox(staticText.getBox());
+		writeBox(staticText);
 		writeTextElement(staticText);
 
 		if (staticText.getText() != null)
@@ -1390,7 +1390,7 @@ public class JRXmlWriter
 			sb.append("\"");
 		}
 
-		String font = writeFont(textElement.getFont());
+		String font = writeFont(textElement);
 		if (font != null)
 		{
 			sb.append(">\n");
@@ -1578,7 +1578,7 @@ public class JRXmlWriter
 		sb.append(">\n");
 
 		writeReportElement(textField);
-		writeBox(textField.getBox());
+		writeBox(textField);
 		writeTextElement(textField);
 
 		if (textField.getExpression() != null)

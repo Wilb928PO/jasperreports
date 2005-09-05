@@ -54,16 +54,6 @@ public class JRBaseFont implements JRFont, Serializable
 	/**
 	 *
 	 */
-	private static final String DEFAULT_FONT_NAME = "sansserif";
-	private static final boolean DEFAULT_FONT_BOLD = false;
-	private static final boolean DEFAULT_FONT_ITALIC = false;
-	private static final boolean DEFAULT_FONT_UNDERLINE = false;
-	private static final boolean DEFAULT_FONT_STRIKETHROUGH = false;
-	private static final int DEFAULT_FONT_SIZE = 10;
-	private static final String DEFAULT_PDF_FONT_NAME = "Helvetica";
-	private static final String DEFAULT_PDF_ENCODING = "Cp1252";
-	private static final boolean DEFAULT_PDF_EMBEDDED = false;
-
 	private static JRFont defaultFont = null;
 
 	/**
@@ -627,7 +617,7 @@ public class JRBaseFont implements JRFont, Serializable
 	/**
 	 *
 	 */
-	private static JRFont getDefaultFont()
+	public static JRFont getDefaultFont()
 	{
 		if (defaultFont == null)
 		{
@@ -646,5 +636,4 @@ public class JRBaseFont implements JRFont, Serializable
 		return defaultFont;
 	}
 	
-
 }

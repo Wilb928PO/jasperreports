@@ -52,7 +52,7 @@ public class JRBaseRectangle extends JRBaseGraphicElement implements JRRectangle
 	/**
 	 *
 	 */
-	protected int radius = 0;
+	protected Integer radius;
 
 
 	/**
@@ -67,7 +67,7 @@ public class JRBaseRectangle extends JRBaseGraphicElement implements JRRectangle
 	{
 		super(rectangle, factory);
 
-		radius = rectangle.getRadius();
+		radius = rectangle.getOwnRadius();
 	}
 
 
@@ -75,6 +75,16 @@ public class JRBaseRectangle extends JRBaseGraphicElement implements JRRectangle
 	 *
 	 */
 	public int getRadius()
+	{
+		if (radius == null) {
+			if (style != null && style.getRadius() != null)
+				return style.getRadius().intValue();
+			return 0;
+		}
+		return radius.byteValue();
+	}
+
+	public Integer getOwnRadius()
 	{
 		return this.radius;
 	}
@@ -84,7 +94,7 @@ public class JRBaseRectangle extends JRBaseGraphicElement implements JRRectangle
 	 */
 	public void setRadius(int radius)
 	{
-		this.radius = radius;
+		this.radius = new Integer(radius);
 	}
 
 	/**

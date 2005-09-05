@@ -49,8 +49,8 @@ public abstract class JRDesignGraphicElement extends JRDesignElement implements 
 	/**
 	 *
 	 */
-	protected byte pen = PEN_1_POINT;
-	protected byte fill = FILL_SOLID;
+	protected Byte pen;
+	protected Byte fill;
 
 
 	/**
@@ -59,25 +59,38 @@ public abstract class JRDesignGraphicElement extends JRDesignElement implements 
 	protected JRDesignGraphicElement()
 	{
 		super();
-		
-		this.mode = MODE_OPAQUE;
 	}
 		
 
 	/**
 	 *
 	 */
-	public byte getPen()
+	public byte getMode()
 	{
-		return this.pen;
+		if (mode == null) {
+			if (style != null && style.getMode() != null)
+				return style.getMode().byteValue();
+			return MODE_OPAQUE;
+		}
+		return mode.byteValue();
 	}
-		
+
 	/**
 	 *
 	 */
-	public byte getFill()
+	public byte getPen()
 	{
-		return this.fill;
+		if (pen == null) {
+			if (style != null && style.getPen() != null)
+				return style.getPen().byteValue();
+			return PEN_1_POINT;
+		}
+		return pen.byteValue();
+	}
+
+	public Byte getOwnPen()
+	{
+		return this.pen;
 	}
 
 	/**
@@ -85,16 +98,32 @@ public abstract class JRDesignGraphicElement extends JRDesignElement implements 
 	 */
 	public void setPen(byte pen)
 	{
-		this.pen = pen;
+		this.pen = new Byte(pen);
 	}
-		
+
+	/**
+	 *
+	 */
+	public byte getFill()
+	{
+		if (fill == null) {
+			if (style != null && style.getFill() != null)
+				return style.getFill().byteValue();
+			return FILL_SOLID;
+		}
+		return fill.byteValue();
+	}
+
+	public Byte getOwnFill()
+	{
+		return this.fill;
+	}
+
 	/**
 	 *
 	 */
 	public void setFill(byte fill)
 	{
-		this.fill = fill;
+		this.fill = new Byte(fill);
 	}
-	
-
 }

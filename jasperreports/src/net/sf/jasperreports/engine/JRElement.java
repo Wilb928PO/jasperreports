@@ -101,6 +101,8 @@ public interface JRElement extends JRChild
 	 */
 	public byte getPositionType();
 
+	public Byte getOwnPositionType();
+
 	/**
 	 * Sets the position type for the element.
 	 * @param positionType a byte value that must be one of the position type constants in this class
@@ -113,6 +115,8 @@ public interface JRElement extends JRChild
 	 */
 	public byte getStretchType();
 		
+	public Byte getOwnStretchType();
+
 	/**
 	 * Sets the stretch type for the element.
 	 * @param stretchType a byte value that must be one of the stretch type constants in this class
@@ -141,6 +145,8 @@ public interface JRElement extends JRChild
 	 */
 	public byte getMode();
 	
+	public Byte getOwnMode();
+
 	/**
 	 * Returns the element transparency mode.
 	 * The default value depends on the type of the report element. Graphic elements like rectangles and lines are
@@ -231,6 +237,11 @@ public interface JRElement extends JRChild
 	/**
 	 *
 	 */
+	public Color getOwnForecolor();
+
+	/**
+	 *
+	 */
 	public void setForecolor(Color forecolor);
 	
 	/**
@@ -238,6 +249,11 @@ public interface JRElement extends JRChild
 	 */
 	public Color getBackcolor();
 	
+	/**
+	 *
+	 */
+	public Color getOwnBackcolor();
+
 	/**
 	 *
 	 */
@@ -269,4 +285,5 @@ public interface JRElement extends JRChild
 	public void collectExpressions(JRExpressionCollector collector);
 
 
+	public JRStyle getStyle();
 }

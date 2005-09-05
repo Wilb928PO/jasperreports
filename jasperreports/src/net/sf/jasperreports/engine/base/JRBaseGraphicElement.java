@@ -48,8 +48,8 @@ public abstract class JRBaseGraphicElement extends JRBaseElement implements JRGr
 	/**
 	 *
 	 */
-	protected byte pen = PEN_1_POINT;
-	protected byte fill = FILL_SOLID;
+	protected Byte pen;
+	protected Byte fill;
 
 
 	/**
@@ -58,8 +58,6 @@ public abstract class JRBaseGraphicElement extends JRBaseElement implements JRGr
 	protected JRBaseGraphicElement()
 	{
 		super();
-		
-		this.mode = MODE_OPAQUE;
 	}
 		
 
@@ -75,8 +73,8 @@ public abstract class JRBaseGraphicElement extends JRBaseElement implements JRGr
 	{
 		super(graphicElement, factory);
 		
-		pen = graphicElement.getPen();
-		fill = graphicElement.getFill();
+		pen = graphicElement.getOwnPen();
+		fill = graphicElement.getOwnFill();
 	}
 		
 
@@ -85,15 +83,25 @@ public abstract class JRBaseGraphicElement extends JRBaseElement implements JRGr
 	 */
 	public byte getPen()
 	{
-		return this.pen;
+		if (pen == null) {
+			if (style != null && style.getPen() != null)
+				return style.getPen().byteValue();
+			return PEN_1_POINT;
+		}
+		return pen.byteValue();
 	}
 		
+	public Byte getOwnPen()
+	{
+		return this.pen;
+	}
+
 	/**
 	 *
 	 */
 	public void setPen(byte pen)
 	{
-		this.pen = pen;
+		this.pen = new Byte(pen);
 	}
 		
 	/**
@@ -101,15 +109,25 @@ public abstract class JRBaseGraphicElement extends JRBaseElement implements JRGr
 	 */
 	public byte getFill()
 	{
-		return this.fill;
+		if (fill == null) {
+			if (style != null && style.getFill() != null)
+				return style.getFill().byteValue();
+			return FILL_SOLID;
+		}
+		return fill.byteValue();
 	}
 
+	public Byte getOwnFill()
+	{
+		return this.fill;
+	}
+	
 	/**
 	 *
 	 */
 	public void setFill(byte fill)
 	{
-		this.fill = fill;
+		this.fill = new Byte(fill);
 	}
 	
 

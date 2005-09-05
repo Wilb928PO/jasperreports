@@ -81,8 +81,9 @@ import net.sf.jasperreports.engine.JRFont;
 import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JRQuery;
 import net.sf.jasperreports.engine.JRReportFont;
-import net.sf.jasperreports.engine.JRSubreportReturnValue;
+import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.JRSubreportParameter;
+import net.sf.jasperreports.engine.JRSubreportReturnValue;
 import net.sf.jasperreports.engine.design.JRDesignElement;
 import net.sf.jasperreports.engine.design.JRDesignElementGroup;
 import net.sf.jasperreports.engine.design.JRDesignExpression;
@@ -145,6 +146,10 @@ public class JRXmlDigesterFactory
 		/*   */
 		digester.addFactoryCreate("jasperReport/reportFont", JRReportFontFactory.class.getName());
 		digester.addSetNext("jasperReport/reportFont", "addFont", JRReportFont.class.getName());
+
+		/*   */
+		digester.addFactoryCreate("jasperReport/style", JRStyleFactory.class.getName());
+		digester.addSetNext("jasperReport/style", "addStyle", JRStyle.class.getName());
 
 		/*   */
 		digester.addFactoryCreate("jasperReport/parameter", JRParameterFactory.class.getName());
@@ -268,7 +273,7 @@ public class JRXmlDigesterFactory
 
 		/*   */
 		digester.addFactoryCreate("*/textElement/font", JRFontFactory.class.getName());
-		digester.addSetNext("*/textElement/font", "setFont", JRFont.class.getName());
+//		digester.addSetNext("*/textElement/font", "setFont", JRFont.class.getName());
 
 		/*   */
 		digester.addFactoryCreate("*/textField", JRTextFieldFactory.class.getName());

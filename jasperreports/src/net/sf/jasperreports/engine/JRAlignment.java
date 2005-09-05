@@ -61,6 +61,8 @@ public interface JRAlignment
 	 */
 	public byte getHorizontalAlignment();
 
+	public Byte getOwnHorizontalAlignment();
+
 	/**
 	 * Sets the text horizontal alignment.
 	 * @param horizontalAlignment a value representing one of the horizontal alignment constants in {@link JRAlignment}
@@ -73,6 +75,8 @@ public interface JRAlignment
 	 */
 	public byte getVerticalAlignment();
 		
+	public Byte getOwnVerticalAlignment();
+
 	/**
 	 * Gets the text vertical alignment.
 	 * @param verticalAlignment a value representing one of the vertical alignment constants in {@link JRAlignment}

@@ -28,8 +28,6 @@
 package net.sf.jasperreports.engine;
 
 
-import net.sf.jasperreports.engine.export.JRExportProgressMonitor;
-
 /**
  * Instances of this class are used for defining and setting exporter parameters.
  * <p>

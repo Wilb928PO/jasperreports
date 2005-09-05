@@ -52,7 +52,7 @@ public class JRBaseBox implements JRBox, Serializable
 	/**
 	 *
 	 */
-	protected byte border = JRGraphicElement.PEN_NONE;
+	protected Byte border = null;
 	protected Byte topBorder = null;
 	protected Byte leftBorder = null;
 	protected Byte bottomBorder = null;
@@ -62,7 +62,7 @@ public class JRBaseBox implements JRBox, Serializable
 	protected Color leftBorderColor = null;
 	protected Color bottomBorderColor = null;
 	protected Color rightBorderColor = null;
-	protected int padding = 0;
+	protected Integer padding = null;
 	protected Integer topPadding = null;
 	protected Integer leftPadding = null;
 	protected Integer bottomPadding = null;
@@ -83,6 +83,16 @@ public class JRBaseBox implements JRBox, Serializable
 	 */
 	public byte getBorder()
 	{
+		if (border == null)
+			return JRGraphicElement.PEN_NONE;
+		return border.byteValue();
+	}
+
+	/**
+	 *
+	 */
+	public Byte getOwnBorder()
+	{
 		return border;
 	}
 
@@ -91,7 +101,7 @@ public class JRBaseBox implements JRBox, Serializable
 	 */
 	public void setBorder(byte border)
 	{
-		this.border = border;
+		this.border = new Byte(border);
 	}
 
 	/**
@@ -99,9 +109,16 @@ public class JRBaseBox implements JRBox, Serializable
 	 */
 	public Color getBorderColor()
 	{
+		if (borderColor == null)
+			return Color.black;
 		return borderColor;
 	}
 
+	public Color getOwnBorderColor()
+	{
+		return borderColor;
+	}
+	
 	/**
 	 *
 	 */
@@ -115,15 +132,22 @@ public class JRBaseBox implements JRBox, Serializable
 	 */
 	public int getPadding()
 	{
-		return padding;
+		if (padding == null)
+			return 0;
+		return padding.intValue();
 	}
 
+	public Integer getOwnPadding()
+	{
+		return padding;
+	}
+	
 	/**
 	 *
 	 */
 	public void setPadding(int padding)
 	{
-		this.padding = padding;
+		this.padding = new Integer(padding);
 	}
 
 	/**
@@ -133,7 +157,7 @@ public class JRBaseBox implements JRBox, Serializable
 	{
 		if (topBorder == null)
 		{
-			return border;
+			return getBorder();
 		}
 		return topBorder.byteValue();
 	}
@@ -161,7 +185,7 @@ public class JRBaseBox implements JRBox, Serializable
 	{
 		if (topBorderColor == null)
 		{
-			return borderColor;
+			return getBorderColor();
 		}
 		return topBorderColor;
 	}
@@ -189,7 +213,7 @@ public class JRBaseBox implements JRBox, Serializable
 	{
 		if (topPadding == null)
 		{
-			return padding;
+			return getPadding();
 		}
 		return topPadding.intValue();
 	}
@@ -217,7 +241,7 @@ public class JRBaseBox implements JRBox, Serializable
 	{
 		if (leftBorder == null)
 		{
-			return border;
+			return getBorder();
 		}
 		return leftBorder.byteValue();
 	}
@@ -245,7 +269,7 @@ public class JRBaseBox implements JRBox, Serializable
 	{
 		if (leftBorderColor == null)
 		{
-			return borderColor;
+			return getBorderColor();
 		}
 		return leftBorderColor;
 	}
@@ -273,7 +297,7 @@ public class JRBaseBox implements JRBox, Serializable
 	{
 		if (leftPadding == null)
 		{
-			return padding;
+			return getPadding();
 		}
 		return leftPadding.intValue();
 	}
@@ -301,7 +325,7 @@ public class JRBaseBox implements JRBox, Serializable
 	{
 		if (bottomBorder == null)
 		{
-			return border;
+			return getBorder();
 		}
 		return bottomBorder.byteValue();
 	}
@@ -329,7 +353,7 @@ public class JRBaseBox implements JRBox, Serializable
 	{
 		if (bottomBorderColor == null)
 		{
-			return borderColor;
+			return getBorderColor();
 		}
 		return bottomBorderColor;
 	}
@@ -357,7 +381,7 @@ public class JRBaseBox implements JRBox, Serializable
 	{
 		if (bottomPadding == null)
 		{
-			return padding;
+			return getPadding();
 		}
 		return bottomPadding.intValue();
 	}
@@ -385,7 +409,7 @@ public class JRBaseBox implements JRBox, Serializable
 	{
 		if (rightBorder == null)
 		{
-			return border;
+			return getBorder();
 		}
 		return rightBorder.byteValue();
 	}
@@ -413,7 +437,7 @@ public class JRBaseBox implements JRBox, Serializable
 	{
 		if (rightBorderColor == null)
 		{
-			return borderColor;
+			return getBorderColor();
 		}
 		return rightBorderColor;
 	}
@@ -441,7 +465,7 @@ public class JRBaseBox implements JRBox, Serializable
 	{
 		if (rightPadding == null)
 		{
-			return padding;
+			return getPadding();
 		}
 		return rightPadding.intValue();
 	}

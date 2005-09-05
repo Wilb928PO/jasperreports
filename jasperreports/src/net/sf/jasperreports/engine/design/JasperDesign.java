@@ -49,6 +49,7 @@ import net.sf.jasperreports.engine.JRGroup;
 import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JRQuery;
 import net.sf.jasperreports.engine.JRReportFont;
+import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.JRVariable;
 import net.sf.jasperreports.engine.JRVirtualizer;
 import net.sf.jasperreports.engine.base.JRBaseReport;
@@ -192,6 +193,8 @@ public class JasperDesign extends JRBaseReport
 	private List variablesList = new ArrayList();
 	private Map groupsMap = new HashMap();
 	private List groupsList = new ArrayList();
+	private Map stylesMap = new HashMap();
+	private List stylesList = new ArrayList();
 
 
 	/**
@@ -1152,4 +1155,75 @@ public class JasperDesign extends JRBaseReport
 		return new JRExpressionCollector().collect(this);
 	}
 
+
+	/**
+	 * Gets an array of report level styles. These styles can be referenced by report elements.
+	 */
+	public JRStyle[] getStyles()
+	{
+		JRStyle[] stylesArray = new JRStyle[stylesList.size()];
+
+		stylesList.toArray(stylesArray);
+
+		return stylesArray;
+	}
+
+
+	/**
+	 * Gets a list of report level styles. These styles can be referenced by report elements.
+	 */
+	public List getStylesList()
+	{
+		return stylesList;
+	}
+
+
+	/**
+	 *
+	 */
+	public Map getStylesMap()
+	{
+		return stylesMap;
+	}
+
+
+	/**
+	 * Adds a report style, that can be referenced by report elements.
+	 */
+	public void addStyle(JRStyle style) throws JRException
+	{
+		if (stylesMap.containsKey(style.getName()))
+		{
+			throw new JRException("Duplicate declaration of report style : " + style.getName());
+		}
+
+		stylesList.add(style);
+		stylesMap.put(style.getName(), style);
+	}
+
+
+	/**
+	 * Removes a report font from the list, based on the font name.
+	 */
+	public JRStyle removeStyle(String name)
+	{
+		return removeStyle(
+			(JRStyle)stylesMap.get(name)
+			);
+	}
+
+
+	/**
+	 * Removes a report font from the list.
+	 */
+	public JRStyle removeStyle(JRStyle style)
+	{
+		if (style != null)
+		{
+			stylesList.remove(style);
+			stylesMap.remove(style.getName());
+		}
+
+		return style;
+	}
 }

@@ -94,7 +94,7 @@ public class JRTemplateImage extends JRTemplateGraphicElement
 		setHyperlinkType(image.getHyperlinkType());
 		setHyperlinkTarget(image.getHyperlinkTarget());
 
-		box = image.getBox();
+//		box = image.getBox();
 	}
 
 	/**

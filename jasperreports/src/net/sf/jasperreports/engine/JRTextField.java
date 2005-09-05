@@ -104,6 +104,8 @@ public interface JRTextField extends JRTextElement, JRAnchor, JRHyperlink
 	 */
 	public String getPattern();
 		
+	public String getOwnPattern();
+
 	/**
 	 * Sets the pattern used for this text field. The pattern will be used in a <tt>SimpleDateFormat</tt> for dates
 	 * and a <tt>DecimalFormat</tt> for numeric text fields. The pattern format must follow one of these two classes

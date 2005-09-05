@@ -50,13 +50,23 @@ public class JRDesignRectangle extends JRDesignGraphicElement implements JRRecta
 	/**
 	 *
 	 */
-	protected int radius = 0;
+	protected Integer radius;
 
 
 	/**
 	 *
 	 */
 	public int getRadius()
+	{
+		if (radius == null) {
+			if (style != null && style.getRadius() != null)
+				return style.getRadius().intValue();
+			return 0;
+		}
+		return radius.byteValue();
+	}
+
+	public Integer getOwnRadius()
 	{
 		return this.radius;
 	}
@@ -66,7 +76,7 @@ public class JRDesignRectangle extends JRDesignGraphicElement implements JRRecta
 	 */
 	public void setRadius(int radius)
 	{
-		this.radius = radius;
+		this.radius = new Integer(radius);
 	}
 
 	/**

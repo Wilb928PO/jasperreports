@@ -1110,13 +1110,10 @@ public class JRDesignViewer extends javax.swing.JPanel
 		int bottomPadding = 0;
 		int rightPadding = 0;
 		
-		if (jrImage.getBox() != null)
-		{
-			topPadding = jrImage.getBox().getTopPadding();
-			leftPadding = jrImage.getBox().getLeftPadding();
-			bottomPadding = jrImage.getBox().getBottomPadding();
-			rightPadding = jrImage.getBox().getRightPadding();
-		}
+		topPadding = jrImage.getTopPadding();
+		leftPadding = jrImage.getLeftPadding();
+		bottomPadding = jrImage.getBottomPadding();
+		rightPadding = jrImage.getRightPadding();
 		
 		int availableImageWidth = jrImage.getWidth() - leftPadding - rightPadding;
 		availableImageWidth = (availableImageWidth < 0)?0:availableImageWidth;
@@ -1314,7 +1311,12 @@ public class JRDesignViewer extends javax.swing.JPanel
 			}
 		}
 		
-		if (jrImage.getBox() == null)
+		if (
+				jrImage.getTopBorder() == JRGraphicElement.PEN_NONE &&
+				jrImage.getLeftBorder() == JRGraphicElement.PEN_NONE &&
+				jrImage.getBottomBorder() == JRGraphicElement.PEN_NONE &&
+				jrImage.getRightBorder() == JRGraphicElement.PEN_NONE
+				)
 		{
 			Stroke stroke = getStroke(jrImage.getPen());
 			if (stroke != null)
@@ -1335,7 +1337,7 @@ public class JRDesignViewer extends javax.swing.JPanel
 		{
 			/*   */
 			printBox(
-				jrImage.getBox(),
+				jrImage,
 				jrImage,
 				grx
 				);
@@ -1371,14 +1373,14 @@ public class JRDesignViewer extends javax.swing.JPanel
 		
 		//text = JRStringUtil.treatNewLineChars(text);
 
-		JRFont font = textElement.getFont();
-		if (font == null)
-		{
-			font = getDefaultFont();
-		}
+//		JRFont font = textElement.getFont();
+//		if (font == null)
+//		{
+//			font = getDefaultFont();
+//		}
 
 		Map attributes = new HashMap(); 
-		attributes.putAll(font.getAttributes());
+		attributes.putAll(textElement.getAttributes());
 		attributes.put(TextAttribute.FOREGROUND, textElement.getForecolor());
 		if (textElement.getMode() == JRElement.MODE_OPAQUE)
 		{
@@ -1434,13 +1436,10 @@ public class JRDesignViewer extends javax.swing.JPanel
 		int bottomPadding = 0;
 		int rightPadding = 0;
 		
-		if (text.getBox() != null)
-		{
-			topPadding = text.getBox().getTopPadding();
-			leftPadding = text.getBox().getLeftPadding();
-			bottomPadding = text.getBox().getBottomPadding();
-			rightPadding = text.getBox().getRightPadding();
-		}
+		topPadding = text.getTopPadding();
+		leftPadding = text.getLeftPadding();
+		bottomPadding = text.getBottomPadding();
+		rightPadding = text.getRightPadding();
 		
 		double angle = 0;
 		
@@ -1530,7 +1529,7 @@ public class JRDesignViewer extends javax.swing.JPanel
 
 		/*   */
 		printBox(
-			text.getBox(),
+			text,
 			text,
 			grx
 			);

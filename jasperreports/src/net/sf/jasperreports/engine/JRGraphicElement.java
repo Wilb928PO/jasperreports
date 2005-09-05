@@ -81,7 +81,9 @@ public interface JRGraphicElement extends JRElement
 	 * @return one of the pen constants in this class
 	 */
 	public byte getPen();
-		
+
+	public Byte getOwnPen();
+
 	/**
 	 * Sets the pen type that will used for this element.
 	 * @param pen one of the pen constants in this class
@@ -94,6 +96,8 @@ public interface JRGraphicElement extends JRElement
 	 */
 	public byte getFill();
 
+	public Byte getOwnFill();
+	
 	/**
 	 * Sets the fill type used for this element.
 	 * @param fill one of the pen constants in this class

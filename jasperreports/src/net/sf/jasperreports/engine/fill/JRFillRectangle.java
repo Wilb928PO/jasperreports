@@ -66,6 +66,11 @@ public class JRFillRectangle extends JRFillGraphicElement implements JRRectangle
 		return ((JRRectangle)this.parent).getRadius();
 	}
 		
+	public Integer getOwnRadius()
+	{
+		return ((JRRectangle)this.parent).getOwnRadius();
+	}
+
 	/**
 	 *
 	 */

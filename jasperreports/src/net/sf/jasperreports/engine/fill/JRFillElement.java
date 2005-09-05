@@ -38,6 +38,7 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRGroup;
 import net.sf.jasperreports.engine.JRPrintElement;
+import net.sf.jasperreports.engine.JRStyle;
 
 
 /**
@@ -94,8 +95,8 @@ public abstract class JRFillElement implements JRElement
 	 *
 	 */
 	protected JRFillElement(
-		JRBaseFiller filler, 
-		JRElement element, 
+		JRBaseFiller filler,
+		JRElement element,
 		JRFillObjectFactory factory
 		)
 	{
@@ -126,19 +127,29 @@ public abstract class JRFillElement implements JRElement
 		return this.parent.getPositionType();
 	}
 
+	public Byte getOwnPositionType()
+	{
+		return this.parent.getOwnPositionType();
+	}
+
 	/**
 	 *
 	 */
 	public void setPositionType(byte positionType)
 	{
 	}
-		
+
 	/**
 	 *
 	 */
 	public byte getStretchType()
 	{
 		return this.parent.getStretchType();
+	}
+
+	public Byte getOwnStretchType()
+	{
+		return this.parent.getOwnStretchType();
 	}
 
 	/**
@@ -155,14 +166,14 @@ public abstract class JRFillElement implements JRElement
 	{
 		return this.parent.isPrintRepeatedValues();
 	}
-	
+
 	/**
 	 *
 	 */
 	public void setPrintRepeatedValues(boolean isPrintRepeatedValues)
 	{
 	}
-		
+
 	/**
 	 *
 	 */
@@ -170,14 +181,22 @@ public abstract class JRFillElement implements JRElement
 	{
 		return this.parent.getMode();
 	}
-	
+
+	/**
+	 *
+	 */
+	public Byte getOwnMode()
+	{
+		return this.parent.getOwnMode();
+	}
+
 	/**
 	 *
 	 */
 	public void setMode(byte mode)
 	{
 	}
-	
+
 	/**
 	 *
 	 */
@@ -185,14 +204,14 @@ public abstract class JRFillElement implements JRElement
 	{
 		return this.parent.getX();
 	}
-	
+
 	/**
 	 *
 	 */
 	public void setX(int x)
 	{
 	}
-	
+
 	/**
 	 *
 	 */
@@ -200,7 +219,7 @@ public abstract class JRFillElement implements JRElement
 	{
 		return this.parent.getY();
 	}
-	
+
 	/**
 	 *
 	 */
@@ -208,14 +227,14 @@ public abstract class JRFillElement implements JRElement
 	{
 		return this.parent.getWidth();
 	}
-	
+
 	/**
 	 *
 	 */
 	public void setWidth(int width)
 	{
 	}
-	
+
 	/**
 	 *
 	 */
@@ -223,7 +242,7 @@ public abstract class JRFillElement implements JRElement
 	{
 		return this.parent.getHeight();
 	}
-	
+
 	/**
 	 *
 	 */
@@ -231,14 +250,14 @@ public abstract class JRFillElement implements JRElement
 	{
 		return this.parent.isRemoveLineWhenBlank();
 	}
-	
+
 	/**
 	 *
 	 */
 	public void setRemoveLineWhenBlank(boolean isRemoveLine)
 	{
 	}
-	
+
 	/**
 	 *
 	 */
@@ -246,14 +265,14 @@ public abstract class JRFillElement implements JRElement
 	{
 		return this.parent.isPrintInFirstWholeBand();
 	}
-	
+
 	/**
 	 *
 	 */
 	public void setPrintInFirstWholeBand(boolean isPrint)
 	{
 	}
-	
+
 	/**
 	 *
 	 */
@@ -261,14 +280,14 @@ public abstract class JRFillElement implements JRElement
 	{
 		return this.parent.isPrintWhenDetailOverflows();
 	}
-	
+
 	/**
 	 *
 	 */
 	public void setPrintWhenDetailOverflows(boolean isPrint)
 	{
 	}
-	
+
 	/**
 	 *
 	 */
@@ -276,20 +295,33 @@ public abstract class JRFillElement implements JRElement
 	{
 		return this.parent.getForecolor();
 	}
-	
+
+	public Color getOwnForecolor()
+	{
+		return this.parent.getOwnForecolor();
+	}
+
 	/**
 	 *
 	 */
 	public void setForecolor(Color forecolor)
 	{
 	}
-	
+
 	/**
 	 *
 	 */
 	public Color getBackcolor()
 	{
 		return this.parent.getBackcolor();
+	}
+
+	/**
+	 *
+	 */
+	public Color getOwnBackcolor()
+	{
+		return this.parent.getOwnBackcolor();
 	}
 
 	/**
@@ -306,7 +338,7 @@ public abstract class JRFillElement implements JRElement
 	{
 		return this.parent.getPrintWhenExpression();
 	}
-	
+
 	/**
 	 *
 	 */
@@ -314,7 +346,7 @@ public abstract class JRFillElement implements JRElement
 	{
 		return this.printWhenGroupChanges;
 	}
-	
+
 	/**
 	 *
 	 */
@@ -322,7 +354,7 @@ public abstract class JRFillElement implements JRElement
 	{
 		return this.elementGroup;
 	}
-	
+
 	/**
 	 *
 	 */
@@ -330,7 +362,7 @@ public abstract class JRFillElement implements JRElement
 	{
 		return this.isPrintWhenExpressionNull;
 	}
-	
+
 	/**
 	 *
 	 */
@@ -338,7 +370,7 @@ public abstract class JRFillElement implements JRElement
 	{
 		this.isPrintWhenExpressionNull = isPrintWhenExpressionNull;
 	}
-	
+
 	/**
 	 *
 	 */
@@ -346,7 +378,7 @@ public abstract class JRFillElement implements JRElement
 	{
 		return this.isPrintWhenTrue;
 	}
-	
+
 	/**
 	 *
 	 */
@@ -354,7 +386,7 @@ public abstract class JRFillElement implements JRElement
 	{
 		this.isPrintWhenTrue = isPrintWhenTrue;
 	}
-	
+
 	/**
 	 *
 	 */
@@ -362,7 +394,7 @@ public abstract class JRFillElement implements JRElement
 	{
 		return this.isToPrint;
 	}
-	
+
 	/**
 	 *
 	 */
@@ -370,7 +402,7 @@ public abstract class JRFillElement implements JRElement
 	{
 		this.isToPrint = isToPrint;
 	}
-	
+
 	/**
 	 *
 	 */
@@ -378,7 +410,7 @@ public abstract class JRFillElement implements JRElement
 	{
 		return this.isReprinted;
 	}
-	
+
 	/**
 	 *
 	 */
@@ -386,7 +418,7 @@ public abstract class JRFillElement implements JRElement
 	{
 		this.isReprinted = isReprinted;
 	}
-	
+
 	/**
 	 *
 	 */
@@ -394,7 +426,7 @@ public abstract class JRFillElement implements JRElement
 	{
 		return this.isAlreadyPrinted;
 	}
-	
+
 	/**
 	 *
 	 */
@@ -409,12 +441,12 @@ public abstract class JRFillElement implements JRElement
 	protected JRElement[] getGroupElements()
 	{
 		JRElement[] groupElements = null;
-		
+
 		if (elementGroup != null)
 		{
 			groupElements = elementGroup.getElements();
 		}
-		
+
 		return groupElements;
 	}
 
@@ -543,8 +575,8 @@ public abstract class JRFillElement implements JRElement
 	protected abstract void evaluate(
 		byte evaluation
 		) throws JRException;
-	
-	
+
+
 	/**
 	 *
 	 */
@@ -579,14 +611,14 @@ public abstract class JRFillElement implements JRElement
 	 *
 	 */
 	protected abstract void rewind() throws JRException;
-	
-	
+
+
 	/**
 	 *
 	 */
 	protected abstract JRPrintElement fill() throws JRException;
-	
-	
+
+
 	/**
 	 *
 	 */
@@ -597,8 +629,8 @@ public abstract class JRFillElement implements JRElement
 	{
 		if (
 			this.isPrintWhenExpressionNull() ||
-			( !this.isPrintWhenExpressionNull() && 
-			this.isPrintWhenTrue() )
+			( !this.isPrintWhenExpressionNull() &&
+			  this.isPrintWhenTrue() )
 			)
 		{
 			this.setToPrint(true);
@@ -609,12 +641,12 @@ public abstract class JRFillElement implements JRElement
 		}
 
 		this.setReprinted(false);
-		
+
 		return false;
 	}
-		
-	
-	
+
+
+
 	/**
 	 *
 	 */
@@ -634,7 +666,7 @@ public abstract class JRFillElement implements JRElement
 					//this.setStretchHeight(this.getHeight() + this.getStretchHeightDiff());
 					this.setStretchHeight(this.getHeight() + elementGroup.getStretchHeightDiff());
 				}
-				
+
 				break;
 			}
 			case JRElement.STRETCH_TYPE_NO_STRETCH :
@@ -644,8 +676,8 @@ public abstract class JRFillElement implements JRElement
 			}
 		}
 	}
-	
-	
+
+
 	/**
 	 *
 	 */
@@ -659,20 +691,25 @@ public abstract class JRFillElement implements JRElement
 			for(Iterator it = elements.iterator(); it.hasNext();)
 			{
 				element = (JRFillElement)it.next();
-				
-				diffY = element.getY() - this.getY() - this.getHeight() - 
-					(element.getRelativeY() - this.getRelativeY() - this.getStretchHeight());
-				
+
+				diffY = element.getY() - this.getY() - this.getHeight() -
+						(element.getRelativeY() - this.getRelativeY() - this.getStretchHeight());
+
 				if (diffY < 0)
 				{
 					diffY = 0;
 				}
-				
+
 				element.setRelativeY(element.getRelativeY() + diffY);
 			}
 		}
 	}
-	
+
+	public JRStyle getStyle()
+	{
+		return parent.getStyle();
+	}
+
 
 	/**
 	 *
@@ -683,18 +720,18 @@ public abstract class JRFillElement implements JRElement
 		{
 			this.setTopBottomElements();
 		}
-		
+
 		JRFillElement topElem = null;
 		JRFillElement bottomElem = null;
 
 		if (this.elementGroup != null)
 		{
 			JRElement[] elements = this.elementGroup.getElements();
-	
+
 			if (elements != null && elements.length > 0)
 			{
 				JRFillElement element = null;
-				
+
 				for(int i = 0; i < elements.length; i++)
 				{
 					element = (JRFillElement)elements[i];
@@ -710,7 +747,7 @@ public abstract class JRFillElement implements JRElement
 						{
 							topElem = element;
 						}
-	
+
 						if (
 							bottomElem == null ||
 							(bottomElem != null &&
@@ -743,7 +780,7 @@ public abstract class JRFillElement implements JRElement
 		{
 			diff = 0;
 		}
-		
+
 		return diff;
 	}
 
@@ -756,7 +793,7 @@ public abstract class JRFillElement implements JRElement
 		if (this.elementGroup != null)
 		{
 			JRElement[] elements = this.elementGroup.getElements();
-	
+
 			if (elements != null && elements.length > 0)
 			{
 				for(int i = 0; i < elements.length; i++)
@@ -772,7 +809,7 @@ public abstract class JRFillElement implements JRElement
 						{
 							this.topElementInGroup = elements[i];
 						}
-	
+
 						if (
 							this.bottomElementInGroup == null ||
 							(this.bottomElementInGroup != null &&
@@ -786,7 +823,7 @@ public abstract class JRFillElement implements JRElement
 				}
 			}
 		}
-		
+
 		if (this.topElementInGroup == null)
 		{
 			this.topElementInGroup = this;
@@ -796,7 +833,7 @@ public abstract class JRFillElement implements JRElement
 		{
 			this.bottomElementInGroup = this;
 		}
-		
+
 	}
 	*/
 

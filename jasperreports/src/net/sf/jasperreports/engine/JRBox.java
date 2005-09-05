@@ -45,6 +45,7 @@ public interface JRBox
 	 */
 	public byte getBorder();
 
+	public Byte getOwnBorder();
 
 	/**
 	 * Sets the default border pen size (can be overwritten by individual settings).
@@ -57,6 +58,7 @@ public interface JRBox
 	 */
 	public Color getBorderColor();
 
+	public Color getOwnBorderColor();
 
 	/**
 	 * Sets the default border color (can be overwritten by individual settings).
@@ -69,6 +71,7 @@ public interface JRBox
 	 */
 	public int getPadding();
 
+	public Integer getOwnPadding();
 
 	/**
 	 * Sets the default padding in pixels (can be overwritten by individual settings).
