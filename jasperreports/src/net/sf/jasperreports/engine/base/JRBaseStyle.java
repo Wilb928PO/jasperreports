@@ -689,4 +689,538 @@ public class JRBaseStyle implements JRStyle, Serializable
 	{
 		return mode;
 	}
+
+	/**
+	 *
+	 */
+	public void setPositionType(byte positionType)
+	{
+		setPositionType(new Byte(positionType));
+	}
+	/**
+	 *
+	 */
+	public void setPositionType(Byte positionType)
+	{
+		this.positionType = positionType;
+	}
+
+	/**
+	 *
+	 */
+	public void setStretchType(byte stretchType)
+	{
+		setStretchType(new Byte(stretchType));
+	}
+	/**
+	 *
+	 */
+	public void setStretchType(Byte stretchType)
+	{
+		this.stretchType = stretchType;
+	}
+
+	/**
+	 *
+	 */
+	public void setForecolor(Color forecolor)
+	{
+		this.forecolor = forecolor;
+	}
+
+	/**
+	 *
+	 */
+	public void setBackcolor(Color backcolor)
+	{
+		this.backcolor = backcolor;
+	}
+
+	/**
+	 *
+	 */
+	public void setMode(byte mode)
+	{
+		setMode(new Byte(mode));
+	}
+
+	/**
+	 *
+	 */
+	public void setMode(Byte mode)
+	{
+		this.mode = mode;
+	}
+
+	/**
+	 *
+	 */
+	public void setPen(byte pen)
+	{
+		setPen(new Byte(pen));
+	}
+
+	/**
+	 *
+	 */
+	public void setPen(Byte pen)
+	{
+		this.pen = pen;
+	}
+
+	/**
+	 *
+	 */
+	public void setFill(byte fill)
+	{
+		setFill(new Byte(fill));
+	}
+
+	/**
+	 *
+	 */
+	public void setFill(Byte fill)
+	{
+		this.fill = fill;
+	}
+
+	/**
+	 *
+	 */
+	public void setRadius(int radius)
+	{
+		setRadius(new Integer(radius));
+	}
+
+	/**
+	 *
+	 */
+	public void setRadius(Integer radius)
+	{
+		this.radius = radius;
+	}
+
+	/**
+	 *
+	 */
+	public void setScaleImage(byte scaleImage)
+	{
+		setScaleImage(new Byte(scaleImage));
+	}
+
+	/**
+	 *
+	 */
+	public void setScaleImage(Byte scaleImage)
+	{
+		this.scaleImage = scaleImage;
+	}
+
+	/**
+	 *
+	 */
+	public void setHorizontalAlignment(byte horizontalAlignment)
+	{
+		setHorizontalAlignment(new Byte(horizontalAlignment));
+	}
+
+	/**
+	 *
+	 */
+	public void setHorizontalAlignment(Byte horizontalAlignment)
+	{
+		this.horizontalAlignment = horizontalAlignment;
+	}
+
+	/**
+	 *
+	 */
+	public void setVerticalAlignment(byte verticalAlignment)
+	{
+		setVerticalAlignment(new Byte(verticalAlignment));
+	}
+
+	/**
+	 *
+	 */
+	public void setVerticalAlignment(Byte verticalAlignment)
+	{
+		this.verticalAlignment = verticalAlignment;
+	}
+
+	/**
+	 *
+	 */
+	public void setBorder(byte border)
+	{
+		setBorder(new Byte(border));
+	}
+
+	/**
+	 *
+	 */
+	public void setBorder(Byte border)
+	{
+		this.border = border;
+	}
+
+	/**
+	 *
+	 */
+	public void setBorderColor(Color borderColor)
+	{
+		this.borderColor = borderColor;
+	}
+
+	/**
+	 *
+	 */
+	public void setPadding(int padding)
+	{
+		setPadding(new Integer(padding));
+	}
+
+	/**
+	 *
+	 */
+	public void setPadding(Integer padding)
+	{
+		this.padding = padding;
+	}
+
+	/**
+	 *
+	 */
+	public void setTopBorder(byte topBorder)
+	{
+		setTopBorder(new Byte(topBorder));
+	}
+
+	/**
+	 *
+	 */
+	public void setTopBorder(Byte topBorder)
+	{
+		this.topBorder = topBorder;
+	}
+
+	/**
+	 *
+	 */
+	public void setTopBorderColor(Color topBorderColor)
+	{
+		this.topBorderColor = topBorderColor;
+	}
+
+	/**
+	 *
+	 */
+	public void setTopPadding(int topPadding)
+	{
+		setTopPadding(new Integer(topPadding));
+	}
+
+	/**
+	 *
+	 */
+	public void setTopPadding(Integer topPadding)
+	{
+		this.topPadding = topPadding;
+	}
+
+	/**
+	 *
+	 */
+	public void setLeftBorder(byte leftBorder)
+	{
+		setLeftBorder(new Byte(leftBorder));
+	}
+
+	/**
+	 *
+	 */
+	public void setLeftBorder(Byte leftBorder)
+	{
+		this.leftBorder = leftBorder;
+	}
+
+	/**
+	 *
+	 */
+	public void setLeftBorderColor(Color leftBorderColor)
+	{
+		this.leftBorderColor = leftBorderColor;
+	}
+
+	/**
+	 *
+	 */
+	public void setLeftPadding(int leftPadding)
+	{
+		setLeftPadding(new Integer(leftPadding));
+	}
+
+	/**
+	 *
+	 */
+	public void setLeftPadding(Integer leftPadding)
+	{
+		this.leftPadding = leftPadding;
+	}
+
+	/**
+	 *
+	 */
+	public void setBottomBorder(byte bottomBorder)
+	{
+		setBottomBorder(new Byte(bottomBorder));
+	}
+
+	/**
+	 *
+	 */
+	public void setBottomBorder(Byte bottomBorder)
+	{
+		this.bottomBorder = bottomBorder;
+	}
+
+	/**
+	 *
+	 */
+	public void setBottomBorderColor(Color bottomBorderColor)
+	{
+		this.bottomBorderColor = bottomBorderColor;
+	}
+
+	/**
+	 *
+	 */
+	public void setBottomPadding(int bottomPadding)
+	{
+		setBottomPadding(new Integer(bottomPadding));
+	}
+
+	/**
+	 *
+	 */
+	public void setBottomPadding(Integer bottomPadding)
+	{
+		this.bottomPadding = bottomPadding;
+	}
+
+	/**
+	 *
+	 */
+	public void setRightBorder(byte rightBorder)
+	{
+		setRightBorder(new Byte(rightBorder));
+	}
+
+	/**
+	 *
+	 */
+	public void setRightBorder(Byte rightBorder)
+	{
+		this.rightBorder = rightBorder;
+	}
+
+	/**
+	 *
+	 */
+	public void setRightBorderColor(Color rightBorderColor)
+	{
+		this.rightBorderColor = rightBorderColor;
+	}
+
+	/**
+	 *
+	 */
+	public void setRightPadding(int rightPadding)
+	{
+		setRightPadding(new Integer(rightPadding));
+	}
+
+	/**
+	 *
+	 */
+	public void setRightPadding(Integer rightPadding)
+	{
+		this.rightPadding = rightPadding;
+	}
+
+	/**
+	 *
+	 */
+	public void setRotation(byte rotation)
+	{
+		setRotation(new Byte(rotation));
+	}
+
+	/**
+	 *
+	 */
+	public void setRotation(Byte rotation)
+	{
+		this.rotation = rotation;
+	}
+
+	/**
+	 *
+	 */
+	public void setFontName(String fontName)
+	{
+		this.fontName = fontName;
+	}
+
+	/**
+	 *
+	 */
+	public void setBold(boolean bold)
+	{
+		setBold(Boolean.valueOf(bold));
+	}
+
+	/**
+	 *
+	 */
+	public void setBold(Boolean bold)
+	{
+		isBold = bold;
+	}
+
+	/**
+	 *
+	 */
+	public void setItalic(boolean italic)
+	{
+		setItalic(Boolean.valueOf(italic));
+	}
+
+	/**
+	 *
+	 */
+	public void setItalic(Boolean italic)
+	{
+		isItalic = italic;
+	}
+
+	/**
+	 *
+	 */
+	public void setPdfEmbedded(boolean pdfEmbedded)
+	{
+		setPdfEmbedded(Boolean.valueOf(pdfEmbedded));
+	}
+
+	/**
+	 *
+	 */
+	public void setPdfEmbedded(Boolean pdfEmbedded)
+	{
+		isPdfEmbedded = pdfEmbedded;
+	}
+
+	/**
+	 *
+	 */
+	public void setStrikeThrough(boolean strikeThrough)
+	{
+		setStrikeThrough(Boolean.valueOf(strikeThrough));
+	}
+
+	/**
+	 *
+	 */
+	public void setStrikeThrough(Boolean strikeThrough)
+	{
+		isStrikeThrough = strikeThrough;
+	}
+
+	/**
+	 *
+	 */
+	public void setStyledText(boolean styledText)
+	{
+		setStyledText(Boolean.valueOf(styledText));
+	}
+
+	/**
+	 *
+	 */
+	public void setStyledText(Boolean styledText)
+	{
+		isStyledText = styledText;
+	}
+
+	/**
+	 *
+	 */
+	public void setUnderline(boolean underline)
+	{
+		setUnderline(Boolean.valueOf(underline));
+	}
+
+	/**
+	 *
+	 */
+	public void setUnderline(Boolean underline)
+	{
+		isUnderline = underline;
+	}
+
+	/**
+	 *
+	 */
+	public void setLineSpacing(byte lineSpacing)
+	{
+		setLineSpacing(new Byte(lineSpacing));
+	}
+
+	/**
+	 *
+	 */
+	public void setLineSpacing(Byte lineSpacing)
+	{
+		this.lineSpacing = lineSpacing;
+	}
+
+	/**
+	 *
+	 */
+	public void setPattern(String pattern)
+	{
+		this.pattern = pattern;
+	}
+
+	/**
+	 *
+	 */
+	public void setPdfEncoding(String pdfEncoding)
+	{
+		this.pdfEncoding = pdfEncoding;
+	}
+
+	/**
+	 *
+	 */
+	public void setPdfFontName(String pdfFontName)
+	{
+		this.pdfFontName = pdfFontName;
+	}
+
+	/**
+	 *
+	 */
+	public void setSize(int size)
+	{
+		setSize(new Integer(size));
+	}
+
+	/**
+	 *
+	 */
+	public void setSize(Integer size)
+	{
+		this.size = size;
+	}
 }

@@ -395,7 +395,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 	 */
 	public int getPadding()
 	{
-		if (border == null) {
+		if (padding == null) {
 			if (style != null && style.getPadding() != null)
 				return style.getPadding().intValue();
 			return 0;
@@ -427,6 +427,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 				return border.byteValue();
 			if (style != null && style.getTopBorder() != null)
 				return style.getTopBorder().byteValue();
+			return JRGraphicElement.PEN_NONE;
 		}
 		return topBorder.byteValue();
 	}
@@ -489,6 +490,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 				return padding.intValue();
 			if (style != null && style.getTopPadding() != null)
 				return style.getTopPadding().intValue();
+			return 0;
 		}
 		return topPadding.intValue();
 	}
@@ -520,6 +522,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 				return border.byteValue();
 			if (style != null && style.getLeftBorder() != null)
 				return style.getLeftBorder().byteValue();
+			return JRGraphicElement.PEN_NONE;
 		}
 		return leftBorder.byteValue();
 	}
@@ -582,6 +585,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 				return padding.intValue();
 			if (style != null && style.getLeftPadding() != null)
 				return style.getLeftPadding().intValue();
+			return 0;
 		}
 		return leftPadding.intValue();
 	}
@@ -613,6 +617,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 				return border.byteValue();
 			if (style != null && style.getBottomBorder() != null)
 				return style.getBottomBorder().byteValue();
+			return JRGraphicElement.PEN_NONE;
 		}
 		return bottomBorder.byteValue();
 	}
@@ -675,6 +680,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 				return padding.intValue();
 			if (style != null && style.getBottomPadding() != null)
 				return style.getBottomPadding().intValue();
+			return JRGraphicElement.PEN_NONE;
 		}
 		return bottomPadding.intValue();
 	}
@@ -706,6 +712,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 				return border.byteValue();
 			if (style != null && style.getRightBorder() != null)
 				return style.getRightBorder().byteValue();
+			return JRGraphicElement.PEN_NONE;
 		}
 		return rightBorder.byteValue();
 	}
@@ -768,6 +775,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 				return padding.intValue();
 			if (style != null && style.getRightPadding() != null)
 				return style.getRightPadding().intValue();
+			return JRGraphicElement.PEN_NONE;
 		}
 		return rightPadding.intValue();
 	}

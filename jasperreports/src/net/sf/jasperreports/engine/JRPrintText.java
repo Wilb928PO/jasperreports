@@ -144,22 +144,22 @@ public interface JRPrintText extends JRPrintElement, JRAlignment, JRPrintAnchor,
 	public void setStyledText(boolean isStyledText);
 		
 	/**
-	 *
+	 * @deprecated
 	 */
 	public JRBox getBox();
 
 	/**
-	 *
+	 * @deprecated
 	 */
 	public void setBox(JRBox box);
 
 	/**
-	 *
+	 * @deprecated
 	 */
 	public JRFont getFont();
 
 	/**
-	 *
+	 * @deprecated
 	 */
 	public void setFont(JRFont font);
 		

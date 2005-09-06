@@ -63,24 +63,11 @@ public class JRDesignStyle extends JRBaseStyle
 	/**
 	 *
 	 */
-	public void setForecolor(Color forecolor)
-	{
-		this.forecolor = forecolor;
-	}
-
-	/**
-	 *
-	 */
-	public void setBackcolor(Color backcolor)
-	{
-		this.backcolor = backcolor;
-	}
-
-	/**
-	 *
-	 */
 	public void setParentStyle(JRStyle parentStyle)
 	{
 		this.parentStyle = parentStyle;
 	}
+
+
+
 }
