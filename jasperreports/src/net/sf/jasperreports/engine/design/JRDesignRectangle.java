@@ -29,6 +29,7 @@ package net.sf.jasperreports.engine.design;
 
 import net.sf.jasperreports.engine.JRAbstractObjectFactory;
 import net.sf.jasperreports.engine.JRChild;
+import net.sf.jasperreports.engine.JRDefaultStyleProvider;
 import net.sf.jasperreports.engine.JRExpressionCollector;
 import net.sf.jasperreports.engine.JRRectangle;
 import net.sf.jasperreports.engine.xml.JRXmlWriter;
@@ -52,6 +53,15 @@ public class JRDesignRectangle extends JRDesignGraphicElement implements JRRecta
 	 */
 	protected Integer radius;
 
+
+	/**
+	 *
+	 */
+	public JRDesignRectangle(JRDefaultStyleProvider defaultStyleProvider)
+	{
+		super(defaultStyleProvider);
+	}
+		
 
 	/**
 	 *

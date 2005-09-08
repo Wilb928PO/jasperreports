@@ -75,6 +75,7 @@ import net.sf.jasperreports.engine.JRRenderable;
 import net.sf.jasperreports.engine.JRReport;
 import net.sf.jasperreports.engine.JRReportFont;
 import net.sf.jasperreports.engine.JRRuntimeException;
+import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.JRTextElement;
 import net.sf.jasperreports.engine.JRWrappingSvgRenderer;
 import net.sf.jasperreports.engine.xml.JRXmlConstants;
@@ -103,6 +104,7 @@ public class JRXmlExporter extends JRAbstractExporter
 	protected Map rendererToImagePathMap = null;
 	protected Map imageNameToImageDataMap = null;
 	protected Map fontsMap = new HashMap();
+	protected Map stylesMap = new HashMap();
 
 	/**
 	 *
@@ -353,6 +355,16 @@ public class JRXmlExporter extends JRAbstractExporter
 			}
 		}
 
+		JRStyle[] styles = jasperPrint.getStyles();
+		if (styles != null && styles.length > 0)
+		{
+			for(int i = 0; i < styles.length; i++)
+			{
+				stylesMap.put(styles[i].getName(), styles[i]);
+				exportStyle(styles[i]);
+			}
+		}
+
 		List pages = jasperPrint.getPages();
 		if (pages != null && pages.size() > 0)
 		{
@@ -379,8 +391,6 @@ public class JRXmlExporter extends JRAbstractExporter
 
 	/**
 	 * @throws IOException 
-	 * @throws IOException 
-	 *
 	 */
 	protected void exportReportFont(JRReportFont font) throws IOException
 	{
@@ -431,6 +441,61 @@ public class JRXmlExporter extends JRAbstractExporter
 		writer.write("\"");
 
 		writer.write("/>\n");
+	}
+
+
+	/**
+	 * @throws IOException 
+	 */
+	protected void exportStyle(JRStyle style) throws IOException
+	{//FIXME STYLE
+//		writer.write("\t<reportFont");
+//
+//		writer.write(" name=\"");
+//		writer.write(font.getName());
+//		writer.write("\"");
+//
+//		writer.write(" isDefault=\"");
+//		writer.write(String.valueOf(font.isDefault()));
+//		writer.write("\"");
+//
+//		writer.write(" fontName=\"");
+//		writer.write(font.getFontName());
+//		writer.write("\"");
+//
+//		writer.write(" size=\"");
+//		writer.write(String.valueOf(font.getSize()));
+//		writer.write("\"");
+//
+//		writer.write(" isBold=\"");
+//		writer.write(String.valueOf(font.isBold()));
+//		writer.write("\"");
+//
+//		writer.write(" isItalic=\"");
+//		writer.write(String.valueOf(font.isItalic()));
+//		writer.write("\"");
+//
+//		writer.write(" isUnderline=\"");
+//		writer.write(String.valueOf(font.isUnderline()));
+//		writer.write("\"");
+//
+//		writer.write(" isStrikeThrough=\"");
+//		writer.write(String.valueOf(font.isStrikeThrough()));
+//		writer.write("\"");
+//
+//		writer.write(" pdfFontName=\"");
+//		writer.write(font.getPdfFontName());
+//		writer.write("\"");
+//
+//		writer.write(" pdfEncoding=\"");
+//		writer.write(font.getPdfEncoding());
+//		writer.write("\"");
+//
+//		writer.write(" isPdfEmbedded=\"");
+//		writer.write(String.valueOf(font.isPdfEmbedded()));
+//		writer.write("\"");
+//
+//		writer.write("/>\n");
 	}
 
 

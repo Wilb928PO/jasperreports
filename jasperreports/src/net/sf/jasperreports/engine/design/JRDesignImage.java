@@ -33,6 +33,7 @@ import net.sf.jasperreports.engine.JRAbstractObjectFactory;
 import net.sf.jasperreports.engine.JRAnchor;
 import net.sf.jasperreports.engine.JRBox;
 import net.sf.jasperreports.engine.JRChild;
+import net.sf.jasperreports.engine.JRDefaultStyleProvider;
 import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRExpressionCollector;
 import net.sf.jasperreports.engine.JRGraphicElement;
@@ -114,9 +115,9 @@ public class JRDesignImage extends JRDesignGraphicElement implements JRImage
 	/**
 	 *
 	 */
-	public JRDesignImage()
+	public JRDesignImage(JRDefaultStyleProvider defaultStyleProvider)
 	{
-		super();
+		super(defaultStyleProvider);
 	}
 		
 

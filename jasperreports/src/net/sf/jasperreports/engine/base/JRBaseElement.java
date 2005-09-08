@@ -30,6 +30,7 @@ package net.sf.jasperreports.engine.base;
 import java.awt.Color;
 import java.io.Serializable;
 
+import net.sf.jasperreports.engine.JRDefaultStyleProvider;
 import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRElementGroup;
 import net.sf.jasperreports.engine.JRExpression;
@@ -78,14 +79,16 @@ public abstract class JRBaseElement implements JRElement, Serializable
 	protected JRGroup printWhenGroupChanges = null;
 	protected JRElementGroup elementGroup = null;
 
+	protected JRDefaultStyleProvider defaultStyleProvider;
 	protected JRStyle style;
 
 
 	/**
-	 * Empty constructor.
+	 *
 	 */
-	protected JRBaseElement()
+	protected JRBaseElement(JRDefaultStyleProvider defaultStyleProvider)
 	{
+		this.defaultStyleProvider = defaultStyleProvider;
 	}
 
 

@@ -68,7 +68,7 @@ public class JRFontFactory extends JRBaseFactory
 		JRXmlLoader xmlLoader = (JRXmlLoader)digester.peek(digester.getCount() - 1);
 		JasperDesign jasperDesign = (JasperDesign)digester.peek(digester.getCount() - 2);
 
-//		JRDesignFont font = null;
+//		JRDesignFont font = null;//FIXME STYLE
 		
 		if (atts.getValue(ATTRIBUTE_reportFont) != null)
 		{

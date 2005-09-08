@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.sf.jasperreports.engine.JRBox;
+import net.sf.jasperreports.engine.JRDefaultStyleProvider;
 import net.sf.jasperreports.engine.JRFont;
 import net.sf.jasperreports.engine.JRGraphicElement;
 import net.sf.jasperreports.engine.JRReportFont;
@@ -108,9 +109,9 @@ public abstract class JRDesignTextElement extends JRDesignElement implements JRT
 	/**
 	 * Creates a new text element.
 	 */
-	protected JRDesignTextElement()
+	protected JRDesignTextElement(JRDefaultStyleProvider defaultStyleProvider)
 	{
-		super();
+		super(defaultStyleProvider);
 	}
 
 

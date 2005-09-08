@@ -90,12 +90,14 @@ import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JRRectangle;
 import net.sf.jasperreports.engine.JRReportFont;
 import net.sf.jasperreports.engine.JRStaticText;
+import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.JRSubreport;
 import net.sf.jasperreports.engine.JRSubreportReturnValue;
 import net.sf.jasperreports.engine.JRTextField;
 import net.sf.jasperreports.engine.JRVariable;
 import net.sf.jasperreports.engine.base.JRBaseFont;
 import net.sf.jasperreports.engine.base.JRBaseReportFont;
+import net.sf.jasperreports.engine.base.JRBaseStyle;
 
 
 /**
@@ -153,6 +155,28 @@ public class JRFillObjectFactory extends JRAbstractObjectFactory
 		}
 
 		return fillFont;
+	}
+
+
+	/**
+	 *
+	 */
+	public JRStyle getStyle(JRStyle style)
+	{
+		JRBaseStyle fillStyle = null;
+
+		if (style != null)
+		{
+			fillStyle = (JRBaseStyle)get(style);
+			if (fillStyle == null)
+			{
+				fillStyle = new JRBaseStyle(style, this);
+				//fillStyle.setCachingAttributes(true);FIXME STYLE
+				put(style, fillStyle);
+			}
+		}
+
+		return fillStyle;
 	}
 
 

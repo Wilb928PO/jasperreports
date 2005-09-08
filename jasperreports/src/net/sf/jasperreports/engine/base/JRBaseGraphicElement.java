@@ -54,7 +54,7 @@ public abstract class JRBaseGraphicElement extends JRBaseElement implements JRGr
 
 	/**
 	 * Constructs an empty graphic element. By default graphic elements are opaque.
-	 */
+	 *
 	protected JRBaseGraphicElement()
 	{
 		super();

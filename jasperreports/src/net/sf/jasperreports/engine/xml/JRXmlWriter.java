@@ -84,6 +84,7 @@ import net.sf.jasperreports.engine.JRReport;
 import net.sf.jasperreports.engine.JRReportFont;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JRStaticText;
+import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.JRSubreport;
 import net.sf.jasperreports.engine.JRSubreportParameter;
 import net.sf.jasperreports.engine.JRSubreportReturnValue;
@@ -116,6 +117,7 @@ public class JRXmlWriter
 	 */
 	private StringBuffer sb = null;
 	private Map fontsMap = new HashMap();
+	private Map stylesMap = new HashMap();
 
 	/**
 	 * This color mask is used to delete the alpha byte from a 32-bit RGB component
@@ -381,6 +383,17 @@ public class JRXmlWriter
 		}
 
 		/*   */
+		JRStyle[] styles = report.getStyles();
+		if (styles != null && styles.length > 0)
+		{
+			for(int i = 0; i < styles.length; i++)
+			{
+				stylesMap.put(styles[i].getName(), styles[i]);
+				writeStyle(styles[i]);
+			}
+		}
+
+		/*   */
 		JRParameter[] parameters = report.getParameters();
 		if (parameters != null && parameters.length > 0)
 		{
@@ -554,6 +567,61 @@ public class JRXmlWriter
 		sb.append("\"");
 
 		sb.append("/>\n");
+	}
+
+
+	/**
+	 *
+	 */
+	private void writeStyle(JRStyle style)
+	{//FIXME STYLE
+//		sb.append("\t<reportFont");
+//
+//		sb.append(" name=\"");
+//		sb.append(font.getName());
+//		sb.append("\"");
+//
+//		sb.append(" isDefault=\"");
+//		sb.append(font.isDefault());
+//		sb.append("\"");
+//
+//		sb.append(" fontName=\"");
+//		sb.append(font.getFontName());
+//		sb.append("\"");
+//
+//		sb.append(" size=\"");
+//		sb.append(font.getSize());
+//		sb.append("\"");
+//
+//		sb.append(" isBold=\"");
+//		sb.append(font.isBold());
+//		sb.append("\"");
+//
+//		sb.append(" isItalic=\"");
+//		sb.append(font.isItalic());
+//		sb.append("\"");
+//
+//		sb.append(" isUnderline=\"");
+//		sb.append(font.isUnderline());
+//		sb.append("\"");
+//
+//		sb.append(" isStrikeThrough=\"");
+//		sb.append(font.isStrikeThrough());
+//		sb.append("\"");
+//
+//		sb.append(" pdfFontName=\"");
+//		sb.append(font.getPdfFontName());
+//		sb.append("\"");
+//
+//		sb.append(" pdfEncoding=\"");
+//		sb.append(font.getPdfEncoding());
+//		sb.append("\"");
+//
+//		sb.append(" isPdfEmbedded=\"");
+//		sb.append(font.isPdfEmbedded());
+//		sb.append("\"");
+//
+//		sb.append("/>\n");
 	}
 
 

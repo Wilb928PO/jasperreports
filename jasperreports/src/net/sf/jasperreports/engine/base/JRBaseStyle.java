@@ -30,6 +30,7 @@ package net.sf.jasperreports.engine.base;
 import java.awt.Color;
 import java.io.Serializable;
 
+import net.sf.jasperreports.engine.JRAbstractObjectFactory;
 import net.sf.jasperreports.engine.JRStyle;
 
 /**
@@ -50,6 +51,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 	 */
 	protected String name;
 	protected JRStyle parentStyle;
+	protected boolean isDefault = false;
 
 	protected Byte positionType;
 	protected Byte stretchType;
@@ -109,10 +111,11 @@ public class JRBaseStyle implements JRStyle, Serializable
 	/**
 	 *
 	 */
-	public JRBaseStyle(JRStyle style)
+	public JRBaseStyle(JRStyle style, JRAbstractObjectFactory factory)
 	{
 		this.name= style.getName();
-		this.parentStyle = style.getParentStyle();
+		this.parentStyle = factory.getStyle(style.getParentStyle());
+		isDefault = style.isDefault();
 
 		this.positionType = style.getOwnPositionType();
 		this.stretchType = style.getOwnStretchType();
@@ -164,6 +167,14 @@ public class JRBaseStyle implements JRStyle, Serializable
 	public String getName()
 	{
 		return name;
+	}
+
+	/**
+	 *
+	 */
+	public boolean isDefault()
+	{
+		return isDefault;
 	}
 
 	/**

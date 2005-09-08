@@ -91,6 +91,7 @@ import net.sf.jasperreports.engine.JRQueryChunk;
 import net.sf.jasperreports.engine.JRRectangle;
 import net.sf.jasperreports.engine.JRReportFont;
 import net.sf.jasperreports.engine.JRStaticText;
+import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.JRSubreport;
 import net.sf.jasperreports.engine.JRSubreportParameter;
 import net.sf.jasperreports.engine.JRSubreportReturnValue;
@@ -139,6 +140,27 @@ public class JRBaseObjectFactory extends JRAbstractObjectFactory
 		}
 		
 		return baseFont;
+	}
+
+
+	/**
+	 *
+	 */
+	public JRStyle getStyle(JRStyle style)
+	{
+		JRBaseStyle baseStyle = null;
+		
+		if (style != null)
+		{
+			baseStyle = (JRBaseStyle)get(style);
+			if (baseStyle == null)
+			{
+				baseStyle = new JRBaseStyle(style, this);
+				put(style, baseStyle);
+			}
+		}
+		
+		return baseStyle;
 	}
 
 

@@ -36,10 +36,17 @@ import java.io.Serializable;
  */
 public interface JRStyle extends Serializable
 {
+	/**
+	 * Gets the style unique name.
+	 */
 	public String getName();
 
 	public JRStyle getParentStyle();
 
+	/**
+	 * Gets a flag that specifies if this is the default report style.
+	 */
+	public boolean isDefault();
 
 	/**
 	 * Returns the position type for the element

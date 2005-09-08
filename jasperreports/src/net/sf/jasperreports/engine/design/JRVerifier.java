@@ -407,7 +407,7 @@ public class JRVerifier
 	/**
 	 *
 	 */
-	private void verifyReportFonts()
+	private void verifyReportFonts()//FIXME STYLES
 	{
 		JRReportFont[] fonts = jasperDesign.getFonts();
 		if (fonts != null && fonts.length > 0)

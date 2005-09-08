@@ -72,7 +72,7 @@ public class JRBaseSubreport extends JRBaseElement implements JRSubreport
 
 	/**
 	 *
-	 */
+	 *
 	protected JRBaseSubreport()
 	{
 		super();

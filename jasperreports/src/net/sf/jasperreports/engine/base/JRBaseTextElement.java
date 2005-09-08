@@ -106,7 +106,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 
 	/**
 	 * Constructs an empty text element. By default a text element is transparent.
-	 */
+	 *
 	protected JRBaseTextElement()
 	{
 		super();

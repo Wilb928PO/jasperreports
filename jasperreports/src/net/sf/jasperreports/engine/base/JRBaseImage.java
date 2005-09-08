@@ -111,7 +111,7 @@ public class JRBaseImage extends JRBaseGraphicElement implements JRImage
 
 	/**
 	 *
-	 */
+	 *
 	protected JRBaseImage()
 	{
 		super();

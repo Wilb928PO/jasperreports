@@ -30,6 +30,7 @@ package net.sf.jasperreports.engine.design;
 import net.sf.jasperreports.engine.JRAbstractObjectFactory;
 import net.sf.jasperreports.engine.JRAnchor;
 import net.sf.jasperreports.engine.JRChild;
+import net.sf.jasperreports.engine.JRDefaultStyleProvider;
 import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRExpressionCollector;
 import net.sf.jasperreports.engine.JRGroup;
@@ -79,6 +80,15 @@ public class JRDesignTextField extends JRDesignTextElement implements JRTextFiel
 	 */
 	protected int bookmarkLevel = JRAnchor.NO_BOOKMARK;
 
+
+	/**
+	 *
+	 */
+	public JRDesignTextField(JRDefaultStyleProvider defaultStyleProvider)
+	{
+		super(defaultStyleProvider);
+	}
+		
 
 	/**
 	 *

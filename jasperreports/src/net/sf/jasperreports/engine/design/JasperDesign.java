@@ -126,6 +126,9 @@ public class JasperDesign extends JRBaseReport
 	/** Bean property name for default font. */
 	public static final String DEFAULT_FONT_PROPERTY = "defaultFont";
 
+	/** Bean property name for default style. */
+	public static final String DEFAULT_STYLE_PROPERTY = "defaultStyle";
+
 	/** Bean property name for title. */
 	public static final String TITLE_PROPERTY = "title";
 
@@ -716,6 +719,30 @@ public class JasperDesign extends JRBaseReport
 		fontsList.toArray(fontsArray);
 
 		return fontsArray;
+	}
+	
+
+	/**
+	 *
+	 */
+	public void setDefaultStyle(JRStyle style)
+	{
+		Object oldValue = this.defaultStyle;
+		this.defaultStyle = style;
+		getPropertyChangeSupport().firePropertyChange(DEFAULT_STYLE_PROPERTY, oldValue, this.defaultStyle);
+	}
+		
+
+	/**
+	 * Gets an array of report level styles. These styles can be referenced by report elements.
+	 */
+	public JRStyle[] getStyle()
+	{
+		JRStyle[] stylesArray = new JRStyle[stylesList.size()];
+		
+		stylesList.toArray(stylesArray);
+
+		return stylesArray;
 	}
 	
 

@@ -59,17 +59,19 @@ public class JasperPrint implements Serializable
 {
 	
 	/**
-	 * A small class for implementing just the font provider functionality.
+	 * A small class for implementing just the style provider functionality.
 	 */
-	private static class DefaultFontProvider implements JRDefaultFontProvider, Serializable
+	private static class DefaultStyleProvider implements JRDefaultFontProvider,  JRDefaultStyleProvider, Serializable
 	{
 		private static final long serialVersionUID = 10001;
 		
 		private JRReportFont defaultFont;
+		private JRStyle defaultStyle;
 
-		DefaultFontProvider(JRReportFont font)
+		DefaultStyleProvider(JRReportFont font, JRStyle style)
 		{
 			this.defaultFont = font;
+			this.defaultStyle = style;
 		}
 
 		public JRReportFont getDefaultFont()
@@ -80,6 +82,16 @@ public class JasperPrint implements Serializable
 		void setDefaultFont(JRReportFont font)
 		{
 			this.defaultFont = font;
+		}
+
+		public JRStyle getDefaultStyle()
+		{
+			return this.defaultStyle;
+		}
+
+		void setDefaultStyle(JRStyle style)
+		{
+			this.defaultStyle = style;
 		}
 	}
 
@@ -99,11 +111,13 @@ public class JasperPrint implements Serializable
 
 	private Map fontsMap = new HashMap();
 	private List fontsList = new ArrayList();
+	private Map stylesMap = new HashMap();
+	private List stylesList = new ArrayList();
 
 	private List pages = new ArrayList();
 
 	private transient Map anchorIndexes = null;
-	private DefaultFontProvider defaultFontProvider = null;
+	private DefaultStyleProvider defaultStyleProvider = null;
 
 
 	/**
@@ -111,7 +125,7 @@ public class JasperPrint implements Serializable
 	 */
 	public JasperPrint()
 	{
-		defaultFontProvider = new DefaultFontProvider(null);
+		defaultStyleProvider = new DefaultStyleProvider(null, null);
 	}
 
 	/**
@@ -194,7 +208,7 @@ public class JasperPrint implements Serializable
 	 */
 	public JRReportFont getDefaultFont()
 	{
-		return this.defaultFontProvider.getDefaultFont();
+		return defaultStyleProvider.getDefaultFont();
 	}
 
 	/**
@@ -202,7 +216,7 @@ public class JasperPrint implements Serializable
 	 */
 	public void setDefaultFont(JRReportFont font)
 	{
-		this.defaultFontProvider.setDefaultFont(font);
+		defaultStyleProvider.setDefaultFont(font);
 	}
 
 	/**
@@ -211,7 +225,7 @@ public class JasperPrint implements Serializable
 	 */
 	public JRDefaultFontProvider getDefaultFontProvider()
 	{
-		return this.defaultFontProvider;
+		return defaultStyleProvider;
 	}
 		
 	/**
@@ -288,6 +302,107 @@ public class JasperPrint implements Serializable
 		}
 		
 		return reportFont;
+	}
+
+	/**
+	 * Returns the default report style.
+	 */
+	public JRStyle getDefaultStyle()
+	{
+		return defaultStyleProvider.getDefaultStyle();
+	}
+
+	/**
+	 * Sets the default report style.
+	 */
+	public void setDefaultStyle(JRStyle style)
+	{
+		defaultStyleProvider.setDefaultStyle(style);
+	}
+
+	/**
+	 * When we want to virtualize pages, we want a style provider that
+	 * is <i>not</i> the print object itself.
+	 */
+	public JRDefaultStyleProvider getDefaultStyleProvider()
+	{
+		return defaultStyleProvider;
+	}
+		
+	/**
+	 * Gets an array of report styles.
+	 */
+	public JRStyle[] getStyles()
+	{
+		JRStyle[] stylesArray = new JRStyle[stylesList.size()];
+		
+		stylesList.toArray(stylesArray);
+
+		return stylesArray;
+	}
+
+	/**
+	 * Gets a list of report styles.
+	 */
+	public List getStylesList()
+	{
+		return this.stylesList;
+	}
+
+	/**
+	 * Gets a map of report styles.
+	 */
+	public Map getStylesMap()
+	{
+		return this.fontsMap;
+	}
+
+	/**
+	 * Adds a new style to the report styles.
+	 */
+	public void addStyle(JRStyle style) throws JRException
+	{
+		if (stylesMap.containsKey(style.getName()))
+		{
+			throw new JRException("Duplicate declaration of report style : " + style.getName());
+		}
+
+		fontsList.add(style);
+		fontsMap.put(style.getName(), style);
+		
+		if (style.isDefault())
+		{
+			this.setDefaultStyle(style);
+		}
+	}
+
+	/**
+	 *
+	 */
+	public JRStyle removeStyle(String styleName)
+	{
+		return removeStyle(
+			(JRStyle)stylesMap.get(styleName)
+			);
+	}
+
+	/**
+	 *
+	 */
+	public JRStyle removeStyle(JRStyle style)
+	{
+		if (style != null)
+		{
+			if (style.isDefault())
+			{
+				setDefaultStyle(null);
+			}
+
+			stylesList.remove(style);
+			stylesMap.remove(style.getName());
+		}
+		
+		return style;
 	}
 
 	/**

@@ -25,28 +25,23 @@
  * San Francisco CA 94107
  * http://www.jaspersoft.com
  */
-package net.sf.jasperreports.charts.xml;
-
-import net.sf.jasperreports.engine.JRChart;
-import net.sf.jasperreports.engine.design.JRDesignChart;
-import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.xml.JRBaseFactory;
-
-import org.xml.sax.Attributes;
+package net.sf.jasperreports.engine;
 
 
 /**
- * @author Flavius Sana (flavius_sana@users.sourceforge.net)
- * @version $Id$ 
+ * An interface that provides a default style when none is specified. All classes that might need to return a default style
+ * if one is not specified will implement this interface.
+ * @author Teodor Danciu (teodord@users.sourceforge.net)
+ * @version $Id$
  */
-public class JRBar3DChartFactory extends JRBaseFactory {
+public interface JRDefaultStyleProvider
+{
+
 	
-	public Object createObject( Attributes attrs ){
-		JasperDesign jasperDesign = (JasperDesign)digester.peek(digester.getCount() - 2);
+	/**
+	 * Returns a default style.
+	 */
+	public JRStyle getDefaultStyle();
 
-		JRDesignChart chart = new JRDesignChart(jasperDesign, JRChart.CHART_TYPE_BAR3D);
-
-		return chart;
-	}
 
 }

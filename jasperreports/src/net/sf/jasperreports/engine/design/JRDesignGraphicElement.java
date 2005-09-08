@@ -27,6 +27,7 @@
  */
 package net.sf.jasperreports.engine.design;
 
+import net.sf.jasperreports.engine.JRDefaultStyleProvider;
 import net.sf.jasperreports.engine.JRGraphicElement;
 
 
@@ -56,9 +57,9 @@ public abstract class JRDesignGraphicElement extends JRDesignElement implements 
 	/**
 	 *
 	 */
-	protected JRDesignGraphicElement()
+	protected JRDesignGraphicElement(JRDefaultStyleProvider defaultStyleProvider)
 	{
-		super();
+		super(defaultStyleProvider);
 	}
 		
 

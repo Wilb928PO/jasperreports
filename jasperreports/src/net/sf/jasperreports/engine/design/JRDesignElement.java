@@ -27,6 +27,7 @@
  */
 package net.sf.jasperreports.engine.design;
 
+import net.sf.jasperreports.engine.JRDefaultStyleProvider;
 import net.sf.jasperreports.engine.JRElementGroup;
 import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRGroup;
@@ -49,6 +50,16 @@ public abstract class JRDesignElement extends JRBaseElement
 	 *
 	 */
 	private static final long serialVersionUID = 10001;
+
+
+	/**
+	 *
+	 */
+	protected JRDesignElement(JRDefaultStyleProvider defaultStyleProvider)
+	{
+		super(defaultStyleProvider);
+	}
+
 
 	/**
 	 * Sets the unique identifier for the element.
