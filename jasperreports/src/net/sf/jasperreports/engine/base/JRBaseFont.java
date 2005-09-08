@@ -140,7 +140,7 @@ public class JRBaseFont implements JRFont, Serializable
 		Boolean isPdfEmbeddedAttr = (Boolean)attributes.get(JRTextAttribute.IS_PDF_EMBEDDED);
 		if (isPdfEmbeddedAttr != null)
 		{
-			setPdfEmbedded(isPdfEmbeddedAttr.booleanValue());
+			setPdfEmbedded(isPdfEmbeddedAttr);
 		}
 	}
 		

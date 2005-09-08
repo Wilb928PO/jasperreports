@@ -91,16 +91,16 @@ public class JRFontFactory extends JRBaseFactory
 			element.setFontName(atts.getValue(ATTRIBUTE_fontName));
 
 		if (atts.getValue(ATTRIBUTE_isBold) != null)
-			element.setBold(Boolean.valueOf(atts.getValue(ATTRIBUTE_isBold)).booleanValue());
+			element.setBold(Boolean.valueOf(atts.getValue(ATTRIBUTE_isBold)));
 
 		if (atts.getValue(ATTRIBUTE_isItalic) != null)
-			element.setItalic(Boolean.valueOf(atts.getValue(ATTRIBUTE_isItalic)).booleanValue());
+			element.setItalic(Boolean.valueOf(atts.getValue(ATTRIBUTE_isItalic)));
 
 		if (atts.getValue(ATTRIBUTE_isUnderline) != null)
-			element.setUnderline(Boolean.valueOf(atts.getValue(ATTRIBUTE_isUnderline)).booleanValue());
+			element.setUnderline(Boolean.valueOf(atts.getValue(ATTRIBUTE_isUnderline)));
 
 		if (atts.getValue(ATTRIBUTE_isStrikeThrough) != null)
-			element.setStrikeThrough(Boolean.valueOf(atts.getValue(ATTRIBUTE_isStrikeThrough)).booleanValue());
+			element.setStrikeThrough(Boolean.valueOf(atts.getValue(ATTRIBUTE_isStrikeThrough)));
 
 		if (atts.getValue(ATTRIBUTE_size) != null)
 			element.setSize(Integer.parseInt(atts.getValue(ATTRIBUTE_size)));
@@ -112,7 +112,7 @@ public class JRFontFactory extends JRBaseFactory
 			element.setPdfEncoding(atts.getValue(ATTRIBUTE_pdfEncoding));
 
 		if (atts.getValue(ATTRIBUTE_isPdfEmbedded) != null)
-			element.setPdfEmbedded(Boolean.valueOf(atts.getValue(ATTRIBUTE_isPdfEmbedded)).booleanValue());
+			element.setPdfEmbedded(Boolean.valueOf(atts.getValue(ATTRIBUTE_isPdfEmbedded)));
 
 		return element;
 	}
