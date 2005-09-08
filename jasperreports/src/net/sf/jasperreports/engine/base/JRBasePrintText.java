@@ -336,7 +336,7 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
 	}
 
 	/**
-	 *
+	 * @deprecated
 	 */
 	public JRBox getBox()
 	{
@@ -344,7 +344,7 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
 	}
 
 	/**
-	 *
+	 * @deprecated
 	 */
 	public void setBox(JRBox box)
 	{
@@ -366,7 +366,7 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
 	}
 
 	/**
-	 *
+	 * @deprecated
 	 */
 	public JRFont getFont()
 	{
@@ -374,7 +374,7 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
 	}
 
 	/**
-	 *
+	 * @deprecated
 	 */
 	public void setFont(JRFont font)
 	{

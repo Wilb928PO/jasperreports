@@ -1105,15 +1105,10 @@ public class JRDesignViewer extends javax.swing.JPanel
 				);
 		}
 
-		int topPadding = 0;
-		int leftPadding = 0;
-		int bottomPadding = 0;
-		int rightPadding = 0;
-		
-		topPadding = jrImage.getTopPadding();
-		leftPadding = jrImage.getLeftPadding();
-		bottomPadding = jrImage.getBottomPadding();
-		rightPadding = jrImage.getRightPadding();
+		int topPadding = jrImage.getTopPadding();
+		int leftPadding = jrImage.getLeftPadding();
+		int bottomPadding = jrImage.getBottomPadding();
+		int rightPadding = jrImage.getRightPadding();
 		
 		int availableImageWidth = jrImage.getWidth() - leftPadding - rightPadding;
 		availableImageWidth = (availableImageWidth < 0)?0:availableImageWidth;
@@ -1431,15 +1426,11 @@ public class JRDesignViewer extends javax.swing.JPanel
 		int y = text.getY();
 		int width = text.getWidth();
 		int height = text.getHeight();
-		int topPadding = 0;
-		int leftPadding = 0;
-		int bottomPadding = 0;
-		int rightPadding = 0;
 		
-		topPadding = text.getTopPadding();
-		leftPadding = text.getLeftPadding();
-		bottomPadding = text.getBottomPadding();
-		rightPadding = text.getRightPadding();
+		int topPadding = text.getTopPadding();
+		int leftPadding = text.getLeftPadding();
+		int bottomPadding = text.getBottomPadding();
+		int rightPadding = text.getRightPadding();
 		
 		double angle = 0;
 		

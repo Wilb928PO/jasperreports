@@ -139,7 +139,7 @@ public abstract class JRBaseElement implements JRElement, Serializable
 		if (positionType == null) {
 			if (style != null && style.getPositionType() != null)
 				return style.getPositionType().byteValue();
-			return POSITION_TYPE_FLOAT;
+			return POSITION_TYPE_FIX_RELATIVE_TO_TOP;
 		}
 		return positionType.byteValue();
 	}
