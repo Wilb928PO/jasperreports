@@ -74,7 +74,6 @@ import net.sf.jasperreports.engine.JRSubreport;
 import net.sf.jasperreports.engine.JRTextElement;
 import net.sf.jasperreports.engine.JRTextField;
 import net.sf.jasperreports.engine.JasperCompileManager;
-import net.sf.jasperreports.engine.design.JRDesignFont;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.export.TextRenderer;
 import net.sf.jasperreports.engine.util.JRGraphEnvInitializer;
@@ -1787,7 +1786,7 @@ public class JRDesignViewer extends javax.swing.JPanel
 
 	/**
 	 *
-	 */
+	 *
 	private JRFont getDefaultFont()
 	{
 		if (defaultFont == null)

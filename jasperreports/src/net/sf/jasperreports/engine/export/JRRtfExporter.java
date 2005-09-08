@@ -340,15 +340,11 @@ public class JRRtfExporter extends JRAbstractExporter
 							JRPrintText text = (JRPrintText)element;
 							
 							// create color indices for box border color
-							JRBox box = text.getBox();
-							if(box != null) {
-								getColorIndex(box.getBorderColor());
-								getColorIndex(box.getTopBorderColor());
-								getColorIndex(box.getBottomBorderColor());
-								getColorIndex(box.getLeftBorderColor());
-								getColorIndex(box.getRightBorderColor());
-							}
-							
+							getColorIndex(text.getBorderColor());
+							getColorIndex(text.getTopBorderColor());
+							getColorIndex(text.getBottomBorderColor());
+							getColorIndex(text.getLeftBorderColor());
+							getColorIndex(text.getRightBorderColor());
 							
 							for(int i = 0; i < text.getText().length(); i++ ){
 								if((text.getText().charAt(i)) > 255){
