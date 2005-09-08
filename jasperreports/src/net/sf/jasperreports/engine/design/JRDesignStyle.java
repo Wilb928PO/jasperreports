@@ -27,8 +27,6 @@
  */
 package net.sf.jasperreports.engine.design;
 
-import java.awt.Color;
-
 import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.base.JRBaseStyle;
 

@@ -1566,21 +1566,13 @@ public class JRPdfExporter extends JRAbstractExporter
 		int y = text.getY() + globalOffsetY;
 		int width = text.getWidth();
 		int height = text.getHeight();
-		int topPadding = 0;
-		int leftPadding = 0;
-		int bottomPadding = 0;
-		int rightPadding = 0;
+		int topPadding = text.getTopPadding();
+		int leftPadding = text.getLeftPadding();
+		int bottomPadding = text.getBottomPadding();
+		int rightPadding = text.getRightPadding();
 
 		int xFillCorrection = 0;
 		int yFillCorrection = 0;
-		
-		if (text.getBox() != null)
-		{
-			topPadding = text.getBox().getTopPadding();
-			leftPadding = text.getBox().getLeftPadding();
-			bottomPadding = text.getBox().getBottomPadding();
-			rightPadding = text.getBox().getRightPadding();
-		}
 		
 		double angle = 0;
 		
@@ -1767,14 +1759,11 @@ public class JRPdfExporter extends JRAbstractExporter
 		atrans.rotate(-angle, x, jasperPrint.getPageHeight() - y);
 		pdfContentByte.transform(atrans);
 
-		if (text.getBox() != null)
-		{
-			/*   */
-			exportBox(
-				text.getBox(),
-				text
-				);
-		}
+		/*   */
+		exportBox(
+			text,
+			text
+			);
 	}
 
 		

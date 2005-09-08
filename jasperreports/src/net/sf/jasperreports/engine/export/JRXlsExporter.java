@@ -257,11 +257,11 @@ public class JRXlsExporter extends JRXlsAbstractExporter
 			return;
 		}
 
-		JRFont font = textElement.getFont();
-		if (font == null)
-		{
-			font = getDefaultFont();
-		}
+		JRFont font = textElement;//.getFont();FIXME STYLE test this
+//		if (font == null)
+//		{
+//			font = getDefaultFont();
+//		}
 
 		short forecolor = getNearestColor(textElement.getForecolor()).getIndex();
 
@@ -280,38 +280,26 @@ public class JRXlsExporter extends JRXlsAbstractExporter
 			backcolor = getNearestColor(textElement.getBackcolor()).getIndex();
 		}
 
-		short topBorder = HSSFCellStyle.BORDER_NONE;
-		short topBorderColor = backcolor;
-		short leftBorder = HSSFCellStyle.BORDER_NONE;
-		short leftBorderColor = backcolor;
-		short bottomBorder = HSSFCellStyle.BORDER_NONE;
-		short bottomBorderColor = backcolor;
-		short rightBorder = HSSFCellStyle.BORDER_NONE;
-		short rightBorderColor = backcolor;
-		
-		if (textElement.getBox() != null)
-		{
-			topBorder = getBorder(textElement.getBox().getTopBorder()); 
-			topBorderColor = 
-				getNearestColor(
-					textElement.getBox().getTopBorderColor() == null ? textElement.getForecolor() : textElement.getBox().getTopBorderColor()
-					).getIndex();
-			leftBorder = getBorder(textElement.getBox().getLeftBorder()); 
-			leftBorderColor = 
-				getNearestColor(
-					textElement.getBox().getLeftBorderColor() == null ? textElement.getForecolor() : textElement.getBox().getLeftBorderColor()
-					).getIndex();
-			bottomBorder = getBorder(textElement.getBox().getBottomBorder()); 
-			bottomBorderColor = 
-				getNearestColor(
-					textElement.getBox().getBottomBorderColor() == null ? textElement.getForecolor() : textElement.getBox().getBottomBorderColor()
-					).getIndex();
-			rightBorder = getBorder(textElement.getBox().getRightBorder()); 
-			rightBorderColor = 
-				getNearestColor(
-					textElement.getBox().getRightBorderColor() == null ? textElement.getForecolor() : textElement.getBox().getRightBorderColor()
-					).getIndex();
-		}
+		short topBorder = getBorder(textElement.getTopBorder()); 
+		short topBorderColor = 
+			getNearestColor(
+				textElement.getTopBorderColor() == null ? textElement.getForecolor() : textElement.getTopBorderColor()
+				).getIndex();
+		short leftBorder = getBorder(textElement.getLeftBorder()); 
+		short leftBorderColor = 
+			getNearestColor(
+				textElement.getLeftBorderColor() == null ? textElement.getForecolor() : textElement.getLeftBorderColor()
+				).getIndex();
+		short bottomBorder = getBorder(textElement.getBottomBorder()); 
+		short bottomBorderColor = 
+			getNearestColor(
+				textElement.getBottomBorderColor() == null ? textElement.getForecolor() : textElement.getBottomBorderColor()
+				).getIndex();
+		short rightBorder = getBorder(textElement.getRightBorder()); 
+		short rightBorderColor = 
+			getNearestColor(
+				textElement.getRightBorderColor() == null ? textElement.getForecolor() : textElement.getRightBorderColor()
+				).getIndex();
 		
 		HSSFCellStyle cellStyle = 
 			getLoadedCellStyle(

@@ -378,7 +378,7 @@ public class JRRtfExporter extends JRAbstractExporter
 							}
 							
 							// replace fonts with font from fontMap
-							String fontName = ((JRPrintText) element).getFont().getFontName();
+							String fontName = ((JRPrintText) element).getFontName();
 							if(fontMap != null && fontMap.containsKey(fontName)){
 								fontName = (String)fontMap.get(fontName);
 							}
@@ -723,12 +723,6 @@ public class JRRtfExporter extends JRAbstractExporter
 
 		int textBoxAdjustment = 20;
 		
-		// padding for the text
-		int topPadding = 0;
-		int leftPadding = 0;
-		int bottomPadding = 0;
-		int rightPadding = 0;
-		
 		int textHeight = twip(text.getTextHeight());
 		
 		if(textHeight <= 0) {
@@ -738,14 +732,11 @@ public class JRRtfExporter extends JRAbstractExporter
 			textHeight = height;
 		}
 		
-		if (text.getBox() != null)
-		{
-			
-			topPadding = twip(text.getBox().getTopPadding());
-			leftPadding = twip(text.getBox().getLeftPadding());
-			bottomPadding = twip(text.getBox().getBottomPadding());
-			rightPadding = twip(text.getBox().getRightPadding());
-		}
+		// padding for the text
+		int topPadding = twip(text.getTopPadding());
+		int leftPadding = twip(text.getLeftPadding());
+		int bottomPadding = twip(text.getBottomPadding());
+		int rightPadding = twip(text.getRightPadding());
 		
 		if (text.getMode() == JRElement.MODE_OPAQUE)
 		{
@@ -771,7 +762,7 @@ public class JRRtfExporter extends JRAbstractExporter
 		
 		
 		
-		JRFont font = text.getFont();
+		JRFont font = text;//.getFont();
 		/* 
 		 rtf text box does not allow unicode characters
 		 representation so if the report contains
@@ -808,9 +799,13 @@ public class JRRtfExporter extends JRAbstractExporter
 		writer.write("\\cf" + getColorIndex(text.getForecolor()));
 		writer.write("\\cb" + getColorIndex(text.getBackcolor()));
 		
-		if (text.getBox() != null)
+		if (leftPadding > 0)
 		{
 			writer.write("\\li" + leftPadding);
+		}
+
+		if (rightPadding > 0)
+		{
 			writer.write("\\ri" + rightPadding);
 		}
 
@@ -955,9 +950,8 @@ public class JRRtfExporter extends JRAbstractExporter
 		else {
 			writer.write("\\par}}}\n");
 		}
-		if(text.getBox() != null){
-			exportBox(text.getBox(), x, y, width, height, text.getForecolor(), text.getBackcolor());
-		}	
+
+		exportBox(text, x, y, width, height, text.getForecolor(), text.getBackcolor());
 	}
 	
 	

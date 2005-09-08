@@ -448,54 +448,55 @@ public class JRXmlExporter extends JRAbstractExporter
 	 * @throws IOException 
 	 */
 	protected void exportStyle(JRStyle style) throws IOException
-	{//FIXME STYLE
-//		writer.write("\t<reportFont");
-//
-//		writer.write(" name=\"");
-//		writer.write(font.getName());
-//		writer.write("\"");
-//
-//		writer.write(" isDefault=\"");
-//		writer.write(String.valueOf(font.isDefault()));
-//		writer.write("\"");
-//
-//		writer.write(" fontName=\"");
-//		writer.write(font.getFontName());
-//		writer.write("\"");
-//
-//		writer.write(" size=\"");
-//		writer.write(String.valueOf(font.getSize()));
-//		writer.write("\"");
-//
-//		writer.write(" isBold=\"");
-//		writer.write(String.valueOf(font.isBold()));
-//		writer.write("\"");
-//
-//		writer.write(" isItalic=\"");
-//		writer.write(String.valueOf(font.isItalic()));
-//		writer.write("\"");
-//
-//		writer.write(" isUnderline=\"");
-//		writer.write(String.valueOf(font.isUnderline()));
-//		writer.write("\"");
-//
-//		writer.write(" isStrikeThrough=\"");
-//		writer.write(String.valueOf(font.isStrikeThrough()));
-//		writer.write("\"");
-//
-//		writer.write(" pdfFontName=\"");
-//		writer.write(font.getPdfFontName());
-//		writer.write("\"");
-//
-//		writer.write(" pdfEncoding=\"");
-//		writer.write(font.getPdfEncoding());
-//		writer.write("\"");
-//
-//		writer.write(" isPdfEmbedded=\"");
-//		writer.write(String.valueOf(font.isPdfEmbedded()));
-//		writer.write("\"");
-//
-//		writer.write("/>\n");
+	{
+		//FIXME STYLE
+		writer.write("\t<style");
+
+		writer.write(" name=\"");
+		writer.write(style.getName());
+		writer.write("\"");
+
+		writer.write(" isDefault=\"");
+		writer.write(String.valueOf(style.isDefault()));
+		writer.write("\"");
+
+		writer.write(" fontName=\"");
+		writer.write(style.getFontName());
+		writer.write("\"");
+
+		writer.write(" size=\"");
+		writer.write(String.valueOf(style.getSize()));
+		writer.write("\"");
+
+		writer.write(" isBold=\"");
+		writer.write(String.valueOf(style.isBold()));
+		writer.write("\"");
+
+		writer.write(" isItalic=\"");
+		writer.write(String.valueOf(style.isItalic()));
+		writer.write("\"");
+
+		writer.write(" isUnderline=\"");
+		writer.write(String.valueOf(style.isUnderline()));
+		writer.write("\"");
+
+		writer.write(" isStrikeThrough=\"");
+		writer.write(String.valueOf(style.isStrikeThrough()));
+		writer.write("\"");
+
+		writer.write(" pdfFontName=\"");
+		writer.write(style.getPdfFontName());
+		writer.write("\"");
+
+		writer.write(" pdfEncoding=\"");
+		writer.write(style.getPdfEncoding());
+		writer.write("\"");
+
+		writer.write(" isPdfEmbedded=\"");
+		writer.write(String.valueOf(style.isPdfEmbedded()));
+		writer.write("\"");
+
+		writer.write("/>\n");
 	}
 
 
@@ -994,9 +995,9 @@ public class JRXmlExporter extends JRAbstractExporter
 		writer.write(">\n");
 
 		exportReportElement(text);
-		exportBox(text.getBox());
+		exportBox(text);
 
-		String font = exportFont(text.getFont());
+		String font = exportFont(text);//FIXME STYLE test minimum XML output
 		if (font != null)
 		{
 			writer.write("\t\t\t" + font + "\n");

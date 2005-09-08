@@ -1368,7 +1368,7 @@ public class JRDesignViewer extends javax.swing.JPanel
 		
 		//text = JRStringUtil.treatNewLineChars(text);
 
-//		JRFont font = textElement.getFont();
+//		JRFont font = textElement.getFont();FIXME STYLE test this
 //		if (font == null)
 //		{
 //			font = getDefaultFont();

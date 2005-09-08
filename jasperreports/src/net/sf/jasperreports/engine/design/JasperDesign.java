@@ -1230,12 +1230,12 @@ public class JasperDesign extends JRBaseReport
 
 
 	/**
-	 * Removes a report font from the list, based on the font name.
+	 * Removes a report style from the list, based on the style name.
 	 */
-	public JRStyle removeStyle(String name)
+	public JRStyle removeStyle(String styleName)
 	{
 		return removeStyle(
-			(JRStyle)stylesMap.get(name)
+			(JRStyle)stylesMap.get(styleName)
 			);
 	}
 

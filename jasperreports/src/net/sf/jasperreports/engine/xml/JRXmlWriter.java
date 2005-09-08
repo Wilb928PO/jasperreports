@@ -574,54 +574,55 @@ public class JRXmlWriter
 	 *
 	 */
 	private void writeStyle(JRStyle style)
-	{//FIXME STYLE
-//		sb.append("\t<reportFont");
-//
-//		sb.append(" name=\"");
-//		sb.append(font.getName());
-//		sb.append("\"");
-//
-//		sb.append(" isDefault=\"");
-//		sb.append(font.isDefault());
-//		sb.append("\"");
-//
-//		sb.append(" fontName=\"");
-//		sb.append(font.getFontName());
-//		sb.append("\"");
-//
-//		sb.append(" size=\"");
-//		sb.append(font.getSize());
-//		sb.append("\"");
-//
-//		sb.append(" isBold=\"");
-//		sb.append(font.isBold());
-//		sb.append("\"");
-//
-//		sb.append(" isItalic=\"");
-//		sb.append(font.isItalic());
-//		sb.append("\"");
-//
-//		sb.append(" isUnderline=\"");
-//		sb.append(font.isUnderline());
-//		sb.append("\"");
-//
-//		sb.append(" isStrikeThrough=\"");
-//		sb.append(font.isStrikeThrough());
-//		sb.append("\"");
-//
-//		sb.append(" pdfFontName=\"");
-//		sb.append(font.getPdfFontName());
-//		sb.append("\"");
-//
-//		sb.append(" pdfEncoding=\"");
-//		sb.append(font.getPdfEncoding());
-//		sb.append("\"");
-//
-//		sb.append(" isPdfEmbedded=\"");
-//		sb.append(font.isPdfEmbedded());
-//		sb.append("\"");
-//
-//		sb.append("/>\n");
+	{
+//		FIXME STYLE
+		sb.append("\t<style");
+
+		sb.append(" name=\"");
+		sb.append(style.getName());
+		sb.append("\"");
+
+		sb.append(" isDefault=\"");
+		sb.append(style.isDefault());
+		sb.append("\"");
+
+		sb.append(" fontName=\"");
+		sb.append(style.getFontName());
+		sb.append("\"");
+
+		sb.append(" size=\"");
+		sb.append(style.getSize());
+		sb.append("\"");
+
+		sb.append(" isBold=\"");
+		sb.append(style.isBold());
+		sb.append("\"");
+
+		sb.append(" isItalic=\"");
+		sb.append(style.isItalic());
+		sb.append("\"");
+
+		sb.append(" isUnderline=\"");
+		sb.append(style.isUnderline());
+		sb.append("\"");
+
+		sb.append(" isStrikeThrough=\"");
+		sb.append(style.isStrikeThrough());
+		sb.append("\"");
+
+		sb.append(" pdfFontName=\"");
+		sb.append(style.getPdfFontName());
+		sb.append("\"");
+
+		sb.append(" pdfEncoding=\"");
+		sb.append(style.getPdfEncoding());
+		sb.append("\"");
+
+		sb.append(" isPdfEmbedded=\"");
+		sb.append(style.isPdfEmbedded());
+		sb.append("\"");
+
+		sb.append("/>\n");
 	}
 
 
