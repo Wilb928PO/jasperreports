@@ -780,7 +780,7 @@ public class JRVerifier
 	 */
 	private void verifyTextField(JRTextField textField)
 	{
-		verifyFont(textField);//FIXME verify font in static text too
+		verifyFont(textField);//FIXME STYLE verify font in static text too
 		verifyAnchor(textField);
 		verifyHyperlink(textField);
 

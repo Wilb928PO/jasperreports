@@ -71,7 +71,7 @@ public class JRBoxFactory extends JRBaseFactory
 	{
 		JRElement element = (JRElement) digester.peek();
 
-		// FIXME now
+		// FIXME STYLE
 		if (!(element instanceof JRBox))
 			return element;
 		JRBaseBox box = new JRBaseBox();//FIXME design box?

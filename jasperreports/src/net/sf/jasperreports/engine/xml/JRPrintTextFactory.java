@@ -107,7 +107,7 @@ public class JRPrintTextFactory extends JRBaseFactory
 		String isStyledText = atts.getValue(ATTRIBUTE_isStyledText);
 		if (isStyledText != null && isStyledText.length() > 0)
 		{
-			text.setStyledText(Boolean.valueOf(isStyledText).booleanValue());//FIXME NOW why primitive
+			text.setStyledText(Boolean.valueOf(isStyledText).booleanValue());//FIXME STYLE why primitive
 		}
 
 		String lineSpacingFactor = atts.getValue(ATTRIBUTE_lineSpacingFactor);

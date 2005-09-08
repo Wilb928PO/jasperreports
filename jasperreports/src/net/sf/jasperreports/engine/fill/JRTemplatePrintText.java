@@ -107,7 +107,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	protected int bookmarkLevel = JRAnchor.NO_BOOKMARK;
 
-	protected JRStyle style;//FIXME NOW why not in base class?
+	protected JRStyle style;//FIXME STYLE why not in base class?
 	
 	/**
 	 *
