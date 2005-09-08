@@ -31,6 +31,7 @@ import net.sf.jasperreports.engine.JRAbstractObjectFactory;
 import net.sf.jasperreports.engine.JRChild;
 import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRExpressionCollector;
+import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.JRSubreport;
 import net.sf.jasperreports.engine.JRSubreportParameter;
 import net.sf.jasperreports.engine.JRSubreportReturnValue;
@@ -85,6 +86,7 @@ public class JRBaseSubreport extends JRBaseElement implements JRSubreport
 	public byte getMode()
 	{
 		if (mode == null) {
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getMode() != null)
 				return style.getMode().byteValue();
 			return MODE_TRANSPARENT;

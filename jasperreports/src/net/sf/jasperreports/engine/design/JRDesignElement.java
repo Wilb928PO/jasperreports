@@ -115,6 +115,6 @@ public abstract class JRDesignElement extends JRBaseElement
 	
 	public void setStyle(JRStyle style)
 	{
-		this.style = style;
+		this.parentStyle = style;
 	}
 }

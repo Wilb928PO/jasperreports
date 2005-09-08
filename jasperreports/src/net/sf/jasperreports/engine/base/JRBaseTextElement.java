@@ -36,6 +36,7 @@ import net.sf.jasperreports.engine.JRBox;
 import net.sf.jasperreports.engine.JRFont;
 import net.sf.jasperreports.engine.JRGraphicElement;
 import net.sf.jasperreports.engine.JRReportFont;
+import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.JRTextElement;
 import net.sf.jasperreports.engine.util.JRTextAttribute;
 
@@ -167,6 +168,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 	public byte getTextAlignment()
 	{
 		if (horizontalAlignment == null) {
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getHorizontalAlignment() != null)
 				return style.getHorizontalAlignment().byteValue();
 			return HORIZONTAL_ALIGN_LEFT;
@@ -188,6 +190,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 	public byte getHorizontalAlignment()
 	{
 		if (horizontalAlignment == null) {
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getHorizontalAlignment() != null)
 				return style.getHorizontalAlignment().byteValue();
 			return HORIZONTAL_ALIGN_LEFT;
@@ -214,6 +217,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 	public byte getVerticalAlignment()
 	{
 		if (verticalAlignment == null) {
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getVerticalAlignment() != null)
 				return style.getVerticalAlignment().byteValue();
 			return VERTICAL_ALIGN_TOP;
@@ -240,6 +244,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 	public byte getRotation()
 	{
 		if (rotation == null) {
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getRotation() != null)
 				return style.getRotation().byteValue();
 			return ROTATION_NONE;
@@ -266,6 +271,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 	public byte getLineSpacing()
 	{
 		if (lineSpacing == null) {
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getLineSpacing() != null)
 				return style.getLineSpacing().byteValue();
 			return LINE_SPACING_SINGLE;
@@ -292,6 +298,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 	public boolean isStyledText()
 	{
 		if (isStyledText == null) {
+			JRStyle style = getBaseStyle();
 			if (style != null && style.isStyledText() != null)
 				return style.isStyledText().booleanValue();
 			return false;
@@ -331,6 +338,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 	public byte getMode()
 	{
 		if (mode == null) {
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getMode() != null)
 				return style.getMode().byteValue();
 			return MODE_TRANSPARENT;
@@ -344,6 +352,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 	public byte getBorder()
 	{
 		if (border == null) {
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getBorder() != null)
 				return style.getBorder().byteValue();
 			return JRGraphicElement.PEN_NONE;
@@ -370,6 +379,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 	public Color getBorderColor()
 	{
 		if (borderColor == null) {
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getBorderColor() != null)
 				return style.getBorderColor();
 			return Color.black;
@@ -396,6 +406,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 	public int getPadding()
 	{
 		if (padding == null) {
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getPadding() != null)
 				return style.getPadding().intValue();
 			return 0;
@@ -425,6 +436,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 		{
 			if (border != null)
 				return border.byteValue();
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getTopBorder() != null)
 				return style.getTopBorder().byteValue();
 			return JRGraphicElement.PEN_NONE;
@@ -457,6 +469,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 		{
 			if (borderColor != null)
 				return borderColor;
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getTopBorderColor() != null)
 				return style.getTopBorderColor();
 		}
@@ -488,6 +501,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 		{
 			if (padding != null)
 				return padding.intValue();
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getTopPadding() != null)
 				return style.getTopPadding().intValue();
 			return 0;
@@ -520,6 +534,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 		{
 			if (border != null)
 				return border.byteValue();
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getLeftBorder() != null)
 				return style.getLeftBorder().byteValue();
 			return JRGraphicElement.PEN_NONE;
@@ -552,6 +567,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 		{
 			if (borderColor != null)
 				return borderColor;
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getLeftBorderColor() != null)
 				return style.getLeftBorderColor();
 		}
@@ -583,6 +599,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 		{
 			if (padding != null)
 				return padding.intValue();
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getLeftPadding() != null)
 				return style.getLeftPadding().intValue();
 			return 0;
@@ -615,6 +632,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 		{
 			if (border != null)
 				return border.byteValue();
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getBottomBorder() != null)
 				return style.getBottomBorder().byteValue();
 			return JRGraphicElement.PEN_NONE;
@@ -647,6 +665,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 		{
 			if (borderColor != null)
 				return borderColor;
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getBottomBorderColor() != null)
 				return style.getBottomBorderColor();
 		}
@@ -678,6 +697,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 		{
 			if (padding != null)
 				return padding.intValue();
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getBottomPadding() != null)
 				return style.getBottomPadding().intValue();
 			return JRGraphicElement.PEN_NONE;
@@ -710,6 +730,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 		{
 			if (border != null)
 				return border.byteValue();
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getRightBorder() != null)
 				return style.getRightBorder().byteValue();
 			return JRGraphicElement.PEN_NONE;
@@ -742,6 +763,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 		{
 			if (borderColor != null)
 				return borderColor;
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getRightBorderColor() != null)
 				return style.getRightBorderColor();
 		}
@@ -773,6 +795,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 		{
 			if (padding != null)
 				return padding.intValue();
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getRightPadding() != null)
 				return style.getRightPadding().intValue();
 			return JRGraphicElement.PEN_NONE;
@@ -815,6 +838,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 		{
 			if (reportFont != null)
 				return reportFont.getFontName();
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getFontName() != null)
 				return style.getFontName();
 			return DEFAULT_FONT_NAME;
@@ -848,6 +872,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 		{
 			if (reportFont != null)
 				return reportFont.isBold();
+			JRStyle style = getBaseStyle();
 			if (style != null && style.isBold() != null)
 				return style.isBold().booleanValue();
 			return DEFAULT_FONT_BOLD;
@@ -890,6 +915,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 		{
 			if (reportFont != null)
 				return reportFont.isItalic();
+			JRStyle style = getBaseStyle();
 			if (style != null && style.isItalic() != null)
 				return style.isItalic().booleanValue();
 			return DEFAULT_FONT_ITALIC;
@@ -931,6 +957,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 		{
 			if (reportFont != null)
 				return reportFont.isUnderline();
+			JRStyle style = getBaseStyle();
 			if (style != null && style.isUnderline() != null)
 				return style.isUnderline().booleanValue();
 			return DEFAULT_FONT_UNDERLINE;
@@ -972,6 +999,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 		{
 			if (reportFont != null)
 				return reportFont.isStrikeThrough();
+			JRStyle style = getBaseStyle();
 			if (style != null && style.isStrikeThrough() != null)
 				return style.isStrikeThrough().booleanValue();
 			return DEFAULT_FONT_STRIKETHROUGH;
@@ -1013,6 +1041,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 		{
 			if (reportFont != null)
 				return reportFont.getSize();
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getSize() != null)
 				return style.getSize().intValue();
 			return DEFAULT_FONT_SIZE;
@@ -1054,6 +1083,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 		{
 			if (reportFont != null)
 				return reportFont.getPdfFontName();
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getPdfFontName() != null)
 				return style.getPdfFontName();
 			return DEFAULT_PDF_FONT_NAME;
@@ -1087,6 +1117,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 		{
 			if (reportFont != null)
 				return reportFont.getPdfEncoding();
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getPdfEncoding() != null)
 				return style.getPdfEncoding();
 			return DEFAULT_PDF_ENCODING;
@@ -1120,6 +1151,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 		{
 			if (reportFont != null)
 				return reportFont.isPdfEmbedded();
+			JRStyle style = getBaseStyle();
 			if (style != null && style.isPdfEmbedded() != null)
 				return style.isPdfEmbedded().booleanValue();
 			return DEFAULT_PDF_EMBEDDED;

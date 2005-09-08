@@ -39,6 +39,7 @@ import net.sf.jasperreports.engine.JRGraphicElement;
 import net.sf.jasperreports.engine.JRGroup;
 import net.sf.jasperreports.engine.JRHyperlink;
 import net.sf.jasperreports.engine.JRImage;
+import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.xml.JRXmlWriter;
 
 
@@ -174,6 +175,7 @@ public class JRBaseImage extends JRBaseGraphicElement implements JRImage
 	public byte getPen()
 	{
 		if (pen == null) {
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getPen() != null)
 				return style.getPen().byteValue();
 			return PEN_NONE;
@@ -187,6 +189,7 @@ public class JRBaseImage extends JRBaseGraphicElement implements JRImage
 	public byte getMode()
 	{
 		if (mode == null) {
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getMode() != null)
 				return style.getMode().byteValue();
 			return MODE_TRANSPARENT;
@@ -200,6 +203,7 @@ public class JRBaseImage extends JRBaseGraphicElement implements JRImage
 	public byte getScaleImage()
 	{
 		if (scaleImage == null) {
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getScaleImage() != null)
 				return style.getScaleImage().byteValue();
 			return SCALE_IMAGE_RETAIN_SHAPE;
@@ -226,6 +230,7 @@ public class JRBaseImage extends JRBaseGraphicElement implements JRImage
 	public byte getHorizontalAlignment()
 	{
 		if (horizontalAlignment == null) {
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getHorizontalAlignment() != null)
 				return style.getHorizontalAlignment().byteValue();
 			return HORIZONTAL_ALIGN_LEFT;
@@ -252,6 +257,7 @@ public class JRBaseImage extends JRBaseGraphicElement implements JRImage
 	public byte getVerticalAlignment()
 	{
 		if (verticalAlignment == null) {
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getVerticalAlignment() != null)
 				return style.getVerticalAlignment().byteValue();
 			return VERTICAL_ALIGN_TOP;
@@ -460,6 +466,7 @@ public class JRBaseImage extends JRBaseGraphicElement implements JRImage
 	public byte getBorder()
 	{
 		if (border == null) {
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getBorder() != null)
 				return style.getBorder().byteValue();
 			return JRGraphicElement.PEN_NONE;
@@ -486,6 +493,7 @@ public class JRBaseImage extends JRBaseGraphicElement implements JRImage
 	public Color getBorderColor()
 	{
 		if (borderColor == null) {
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getBorderColor() != null)
 				return style.getBorderColor();
 			return Color.black;
@@ -512,6 +520,7 @@ public class JRBaseImage extends JRBaseGraphicElement implements JRImage
 	public int getPadding()
 	{
 		if (padding == null) {
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getPadding() != null)
 				return style.getPadding().intValue();
 			return 0;
@@ -541,6 +550,7 @@ public class JRBaseImage extends JRBaseGraphicElement implements JRImage
 		{
 			if (border != null)
 				return border.byteValue();
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getTopBorder() != null)
 				return style.getTopBorder().byteValue();
 			return PEN_NONE;
@@ -573,6 +583,7 @@ public class JRBaseImage extends JRBaseGraphicElement implements JRImage
 		{
 			if (borderColor != null)
 				return borderColor;
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getTopBorderColor() != null)
 				return style.getTopBorderColor();
 		}
@@ -604,6 +615,7 @@ public class JRBaseImage extends JRBaseGraphicElement implements JRImage
 		{
 			if (padding != null)
 				return padding.intValue();
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getTopPadding() != null)
 				return style.getTopPadding().intValue();
 			return 0;
@@ -636,6 +648,7 @@ public class JRBaseImage extends JRBaseGraphicElement implements JRImage
 		{
 			if (border != null)
 				return border.byteValue();
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getLeftBorder() != null)
 				return style.getLeftBorder().byteValue();
 			return PEN_NONE;
@@ -668,6 +681,7 @@ public class JRBaseImage extends JRBaseGraphicElement implements JRImage
 		{
 			if (borderColor != null)
 				return borderColor;
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getLeftBorderColor() != null)
 				return style.getLeftBorderColor();
 		}
@@ -699,6 +713,7 @@ public class JRBaseImage extends JRBaseGraphicElement implements JRImage
 		{
 			if (padding != null)
 				return padding.intValue();
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getLeftPadding() != null)
 				return style.getLeftPadding().intValue();
 			return 0;
@@ -731,6 +746,7 @@ public class JRBaseImage extends JRBaseGraphicElement implements JRImage
 		{
 			if (border != null)
 				return border.byteValue();
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getBottomBorder() != null)
 				return style.getBottomBorder().byteValue();
 			return PEN_NONE;
@@ -763,6 +779,7 @@ public class JRBaseImage extends JRBaseGraphicElement implements JRImage
 		{
 			if (borderColor != null)
 				return borderColor;
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getBottomBorderColor() != null)
 				return style.getBottomBorderColor();
 		}
@@ -794,6 +811,7 @@ public class JRBaseImage extends JRBaseGraphicElement implements JRImage
 		{
 			if (padding != null)
 				return padding.intValue();
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getBottomPadding() != null)
 				return style.getBottomPadding().intValue();
 			return 0;
@@ -826,6 +844,7 @@ public class JRBaseImage extends JRBaseGraphicElement implements JRImage
 		{
 			if (border != null)
 				return border.byteValue();
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getRightBorder() != null)
 				return style.getRightBorder().byteValue();
 			return PEN_NONE;
@@ -858,6 +877,7 @@ public class JRBaseImage extends JRBaseGraphicElement implements JRImage
 		{
 			if (borderColor != null)
 				return borderColor;
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getRightBorderColor() != null)
 				return style.getRightBorderColor();
 		}
@@ -889,6 +909,7 @@ public class JRBaseImage extends JRBaseGraphicElement implements JRImage
 		{
 			if (padding != null)
 				return padding.intValue();
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getRightPadding() != null)
 				return style.getRightPadding().intValue();
 			return 0;

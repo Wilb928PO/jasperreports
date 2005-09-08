@@ -32,6 +32,7 @@ import net.sf.jasperreports.engine.JRChild;
 import net.sf.jasperreports.engine.JRDefaultStyleProvider;
 import net.sf.jasperreports.engine.JRExpressionCollector;
 import net.sf.jasperreports.engine.JRRectangle;
+import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.xml.JRXmlWriter;
 
 
@@ -69,6 +70,7 @@ public class JRDesignRectangle extends JRDesignGraphicElement implements JRRecta
 	public int getRadius()
 	{
 		if (radius == null) {
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getRadius() != null)
 				return style.getRadius().intValue();
 			return 0;

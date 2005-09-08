@@ -29,6 +29,7 @@ package net.sf.jasperreports.engine.design;
 
 import net.sf.jasperreports.engine.JRDefaultStyleProvider;
 import net.sf.jasperreports.engine.JRGraphicElement;
+import net.sf.jasperreports.engine.JRStyle;
 
 
 /**
@@ -69,6 +70,7 @@ public abstract class JRDesignGraphicElement extends JRDesignElement implements 
 	public byte getMode()
 	{
 		if (mode == null) {
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getMode() != null)
 				return style.getMode().byteValue();
 			return MODE_OPAQUE;
@@ -82,6 +84,7 @@ public abstract class JRDesignGraphicElement extends JRDesignElement implements 
 	public byte getPen()
 	{
 		if (pen == null) {
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getPen() != null)
 				return style.getPen().byteValue();
 			return PEN_1_POINT;
@@ -108,6 +111,7 @@ public abstract class JRDesignGraphicElement extends JRDesignElement implements 
 	public byte getFill()
 	{
 		if (fill == null) {
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getFill() != null)
 				return style.getFill().byteValue();
 			return FILL_SOLID;

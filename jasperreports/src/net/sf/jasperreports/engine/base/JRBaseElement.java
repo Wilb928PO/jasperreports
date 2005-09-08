@@ -80,7 +80,7 @@ public abstract class JRBaseElement implements JRElement, Serializable
 	protected JRElementGroup elementGroup = null;
 
 	protected JRDefaultStyleProvider defaultStyleProvider;
-	protected JRStyle style;
+	protected JRStyle parentStyle;
 
 
 	/**
@@ -122,9 +122,21 @@ public abstract class JRBaseElement implements JRElement, Serializable
 		printWhenGroupChanges = factory.getGroup(element.getPrintWhenGroupChanges());
 		elementGroup = factory.getElementGroup(element.getElementGroup());
 
-		style = element.getStyle();
+		parentStyle = element.getStyle();
 	}
 
+
+	/**
+	 *
+	 */
+	protected JRStyle getBaseStyle()
+	{
+		if (parentStyle != null)
+			return parentStyle;
+		if (defaultStyleProvider != null)
+			return defaultStyleProvider.getDefaultStyle();
+		return null;
+	}
 
 	/**
 	 *
@@ -140,6 +152,7 @@ public abstract class JRBaseElement implements JRElement, Serializable
 	public byte getPositionType()
 	{
 		if (positionType == null) {
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getPositionType() != null)
 				return style.getPositionType().byteValue();
 			return POSITION_TYPE_FIX_RELATIVE_TO_TOP;
@@ -166,6 +179,7 @@ public abstract class JRBaseElement implements JRElement, Serializable
 	public byte getStretchType()
 	{
 		if (stretchType == null) {
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getStretchType() != null)
 				return style.getStretchType().byteValue();
 			return STRETCH_TYPE_NO_STRETCH;
@@ -208,6 +222,7 @@ public abstract class JRBaseElement implements JRElement, Serializable
 	public byte getMode()
 	{
 		if (mode == null) {
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getMode() != null)
 				return style.getMode().byteValue();
 			return MODE_OPAQUE;
@@ -330,8 +345,9 @@ public abstract class JRBaseElement implements JRElement, Serializable
 	public Color getForecolor()
 	{
 		if (forecolor == null) {
-			if (getStyle() != null && getStyle().getForecolor() != null)
-				return getStyle().getForecolor();
+			JRStyle style = getBaseStyle();
+			if (style != null && style.getForecolor() != null)
+				return style.getForecolor();
 			return Color.black;
 		}
 		return forecolor;
@@ -359,8 +375,9 @@ public abstract class JRBaseElement implements JRElement, Serializable
 	public Color getBackcolor()
 	{
 		if (backcolor == null) {
-			if (getStyle() != null && getStyle().getBackcolor() != null)
-				return getStyle().getBackcolor();
+			JRStyle style = getBaseStyle();
+			if (style != null && style.getBackcolor() != null)
+				return style.getBackcolor();
 			return Color.white;
 		}
 		return backcolor;
@@ -408,6 +425,6 @@ public abstract class JRBaseElement implements JRElement, Serializable
 
 	public JRStyle getStyle()
 	{
-		return style;
+		return parentStyle;
 	}
 }
