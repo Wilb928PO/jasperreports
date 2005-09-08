@@ -252,7 +252,7 @@ public class JRXmlDigesterFactory
 
 		/*   */
 		digester.addFactoryCreate("*/box", JRBoxFactory.class.getName());
-		digester.addSetNext("*/box", "setBox", JRBox.class.getName());
+//		digester.addSetNext("*/box", "setBox", JRBox.class.getName());
 
 		/*   */
 		digester.addFactoryCreate("*/image/imageExpression", JRImageExpressionFactory.class.getName());
@@ -262,7 +262,7 @@ public class JRXmlDigesterFactory
 		/*   */
 		digester.addFactoryCreate("*/staticText", JRStaticTextFactory.class.getName());
 		digester.addSetNext("*/staticText", "addElement", JRDesignElement.class.getName());
-		SetNestedPropertiesRule textRule = new SetNestedPropertiesRule();
+		SetNestedPropertiesRule textRule = new SetNestedPropertiesRule(new String[]{"text", "reportElement", "box", "textElement"}, new String[]{"text"});
 		textRule.setTrimData(false);
 		textRule.setAllowUnknownChildElements(true);
 		digester.addRule("*/staticText", textRule);

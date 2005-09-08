@@ -285,7 +285,7 @@ public abstract class JRDesignTextElement extends JRDesignElement implements JRT
 	 */
 	public void setStyledText(boolean isStyledText)
 	{
-		this.isStyledText = Boolean.valueOf(isStyledText);
+		this.isStyledText = isStyledText ? Boolean.TRUE : Boolean.FALSE;
 	}
 
 	/**

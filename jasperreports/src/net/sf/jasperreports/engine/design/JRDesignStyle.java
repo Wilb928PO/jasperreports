@@ -31,7 +31,6 @@ import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.base.JRBaseStyle;
 
 /**
- * // TODO implement all setters
  * @author Ionut Nedelcu (ionutned@users.sourceforge.net)
  * @version $Id
  */

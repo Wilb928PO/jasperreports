@@ -1088,7 +1088,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 	 */
 	public void setBold(boolean bold)
 	{
-		setBold(Boolean.valueOf(bold));
+		setBold(bold ? Boolean.TRUE : Boolean.FALSE);
 	}
 
 	/**
@@ -1104,7 +1104,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 	 */
 	public void setItalic(boolean italic)
 	{
-		setItalic(Boolean.valueOf(italic));
+		setItalic(italic ? Boolean.TRUE : Boolean.FALSE);
 	}
 
 	/**
@@ -1120,7 +1120,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 	 */
 	public void setPdfEmbedded(boolean pdfEmbedded)
 	{
-		setPdfEmbedded(Boolean.valueOf(pdfEmbedded));
+		setPdfEmbedded(pdfEmbedded ? Boolean.TRUE : Boolean.FALSE);
 	}
 
 	/**
@@ -1136,7 +1136,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 	 */
 	public void setStrikeThrough(boolean strikeThrough)
 	{
-		setStrikeThrough(Boolean.valueOf(strikeThrough));
+		setStrikeThrough(strikeThrough ? Boolean.TRUE : Boolean.FALSE);
 	}
 
 	/**
@@ -1152,7 +1152,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 	 */
 	public void setStyledText(boolean styledText)
 	{
-		setStyledText(Boolean.valueOf(styledText));
+		setStyledText(styledText ? Boolean.TRUE : Boolean.FALSE);
 	}
 
 	/**
@@ -1168,7 +1168,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 	 */
 	public void setUnderline(boolean underline)
 	{
-		setUnderline(Boolean.valueOf(underline));
+		setUnderline(underline ? Boolean.TRUE : Boolean.FALSE);
 	}
 
 	/**

@@ -61,6 +61,7 @@ import net.sf.jasperreports.engine.JRFont;
 import net.sf.jasperreports.engine.JRGroup;
 import net.sf.jasperreports.engine.JRHyperlink;
 import net.sf.jasperreports.engine.JRRuntimeException;
+import net.sf.jasperreports.engine.JRGraphicElement;
 import net.sf.jasperreports.engine.xml.JRXmlWriter;
 
 
@@ -115,6 +116,25 @@ public class JRDesignChart extends JRDesignElement implements JRChart
 
 	protected JRChartDataset dataset = null;
 	protected JRChartPlot plot = null;
+
+	/**
+	 *
+	 */
+	protected Byte border;
+	protected Byte topBorder = null;
+	protected Byte leftBorder = null;
+	protected Byte bottomBorder = null;
+	protected Byte rightBorder = null;
+	protected Color borderColor = null;
+	protected Color topBorderColor = null;
+	protected Color leftBorderColor = null;
+	protected Color bottomBorderColor = null;
+	protected Color rightBorderColor = null;
+	protected Integer padding;
+	protected Integer topPadding = null;
+	protected Integer leftPadding = null;
+	protected Integer bottomPadding = null;
+	protected Integer rightPadding = null;
 
 	/**
 	 * The bookmark level for the anchor associated with this chart.
@@ -626,4 +646,463 @@ public class JRDesignChart extends JRDesignElement implements JRChart
 		this.customizerClass = customizerClass;
 	}
 
+
+	/**
+	 *
+	 */
+	public byte getBorder()
+	{
+		if (border == null) {
+			if (style != null && style.getBorder() != null)
+				return style.getBorder().byteValue();
+			return JRGraphicElement.PEN_NONE;
+		}
+		return border.byteValue();
+	}
+
+	public Byte getOwnBorder()
+	{
+		return border;
+	}
+
+	/**
+	 *
+	 */
+	public void setBorder(byte border)
+	{
+		this.border = new Byte(border);
+	}
+
+	/**
+	 *
+	 */
+	public Color getBorderColor()
+	{
+		if (borderColor == null) {
+			if (style != null && style.getBorderColor() != null)
+				return style.getBorderColor();
+			return Color.black;
+		}
+		return borderColor;
+	}
+
+	public Color getOwnBorderColor()
+	{
+		return borderColor;
+	}
+
+	/**
+	 *
+	 */
+	public void setBorderColor(Color borderColor)
+	{
+		this.borderColor = borderColor;
+	}
+
+	/**
+	 *
+	 */
+	public int getPadding()
+	{
+		if (padding == null) {
+			if (style != null && style.getPadding() != null)
+				return style.getPadding().intValue();
+			return 0;
+		}
+		return padding.intValue();
+	}
+
+	public Integer getOwnPadding()
+	{
+		return padding;
+	}
+
+	/**
+	 *
+	 */
+	public void setPadding(int padding)
+	{
+		this.padding = new Integer(padding);
+	}
+
+	/**
+	 *
+	 */
+	public byte getTopBorder()
+	{
+		if (topBorder == null)
+		{
+			if (border != null)
+				return border.byteValue();
+			if (style != null && style.getTopBorder() != null)
+				return style.getTopBorder().byteValue();
+			return JRGraphicElement.PEN_NONE;
+		}
+		return topBorder.byteValue();
+	}
+
+	/**
+	 *
+	 */
+	public Byte getOwnTopBorder()
+	{
+		return topBorder;
+	}
+
+	/**
+	 *
+	 */
+	public void setTopBorder(byte topBorder)
+	{
+		this.topBorder = new Byte(topBorder);
+	}
+
+	/**
+	 *
+	 */
+	public Color getTopBorderColor()
+	{
+		if (topBorderColor == null)
+		{
+			if (borderColor != null)
+				return borderColor;
+			if (style != null && style.getTopBorderColor() != null)
+				return style.getTopBorderColor();
+		}
+		return topBorderColor;
+	}
+
+	/**
+	 *
+	 */
+	public Color getOwnTopBorderColor()
+	{
+		return topBorderColor;
+	}
+
+	/**
+	 *
+	 */
+	public void setTopBorderColor(Color topBorderColor)
+	{
+		this.topBorderColor = topBorderColor;
+	}
+
+	/**
+	 *
+	 */
+	public int getTopPadding()
+	{
+		if (topPadding == null)
+		{
+			if (padding != null)
+				return padding.intValue();
+			if (style != null && style.getTopPadding() != null)
+				return style.getTopPadding().intValue();
+			return 0;
+		}
+		return topPadding.intValue();
+	}
+
+	/**
+	 *
+	 */
+	public Integer getOwnTopPadding()
+	{
+		return topPadding;
+	}
+
+	/**
+	 *
+	 */
+	public void setTopPadding(int topPadding)
+	{
+		this.topPadding = new Integer(topPadding);
+	}
+
+	/**
+	 *
+	 */
+	public byte getLeftBorder()
+	{
+		if (leftBorder == null)
+		{
+			if (border != null)
+				return border.byteValue();
+			if (style != null && style.getLeftBorder() != null)
+				return style.getLeftBorder().byteValue();
+			return JRGraphicElement.PEN_NONE;
+		}
+		return leftBorder.byteValue();
+	}
+
+	/**
+	 *
+	 */
+	public Byte getOwnLeftBorder()
+	{
+		return leftBorder;
+	}
+
+	/**
+	 *
+	 */
+	public void setLeftBorder(byte leftBorder)
+	{
+		this.leftBorder = new Byte(leftBorder);
+	}
+
+	/**
+	 *
+	 */
+	public Color getLeftBorderColor()
+	{
+		if (leftBorderColor == null)
+		{
+			if (borderColor != null)
+				return borderColor;
+			if (style != null && style.getLeftBorderColor() != null)
+				return style.getLeftBorderColor();
+		}
+		return leftBorderColor;
+	}
+
+	/**
+	 *
+	 */
+	public Color getOwnLeftBorderColor()
+	{
+		return leftBorderColor;
+	}
+
+	/**
+	 *
+	 */
+	public void setLeftBorderColor(Color leftBorderColor)
+	{
+		this.leftBorderColor = leftBorderColor;
+	}
+
+	/**
+	 *
+	 */
+	public int getLeftPadding()
+	{
+		if (leftPadding == null)
+		{
+			if (padding != null)
+				return padding.intValue();
+			if (style != null && style.getLeftPadding() != null)
+				return style.getLeftPadding().intValue();
+			return 0;
+		}
+		return leftPadding.intValue();
+	}
+
+	/**
+	 *
+	 */
+	public Integer getOwnLeftPadding()
+	{
+		return leftPadding;
+	}
+
+	/**
+	 *
+	 */
+	public void setLeftPadding(int leftPadding)
+	{
+		this.leftPadding = new Integer(leftPadding);
+	}
+
+	/**
+	 *
+	 */
+	public byte getBottomBorder()
+	{
+		if (bottomBorder == null)
+		{
+			if (border != null)
+				return border.byteValue();
+			if (style != null && style.getBottomBorder() != null)
+				return style.getBottomBorder().byteValue();
+			return JRGraphicElement.PEN_NONE;
+		}
+		return bottomBorder.byteValue();
+	}
+
+	/**
+	 *
+	 */
+	public Byte getOwnBottomBorder()
+	{
+		return bottomBorder;
+	}
+
+	/**
+	 *
+	 */
+	public void setBottomBorder(byte bottomBorder)
+	{
+		this.bottomBorder = new Byte(bottomBorder);
+	}
+
+	/**
+	 *
+	 */
+	public Color getBottomBorderColor()
+	{
+		if (bottomBorderColor == null)
+		{
+			if (borderColor != null)
+				return borderColor;
+			if (style != null && style.getBottomBorderColor() != null)
+				return style.getBottomBorderColor();
+		}
+		return bottomBorderColor;
+	}
+
+	/**
+	 *
+	 */
+	public Color getOwnBottomBorderColor()
+	{
+		return bottomBorderColor;
+	}
+
+	/**
+	 *
+	 */
+	public void setBottomBorderColor(Color bottomBorderColor)
+	{
+		this.bottomBorderColor = bottomBorderColor;
+	}
+
+	/**
+	 *
+	 */
+	public int getBottomPadding()
+	{
+		if (bottomPadding == null)
+		{
+			if (padding != null)
+				return padding.intValue();
+			if (style != null && style.getBottomPadding() != null)
+				return style.getBottomPadding().intValue();
+			return 0;
+		}
+		return bottomPadding.intValue();
+	}
+
+	/**
+	 *
+	 */
+	public Integer getOwnBottomPadding()
+	{
+		return bottomPadding;
+	}
+
+	/**
+	 *
+	 */
+	public void setBottomPadding(int bottomPadding)
+	{
+		this.bottomPadding = new Integer(bottomPadding);
+	}
+
+	/**
+	 *
+	 */
+	public byte getRightBorder()
+	{
+		if (rightBorder == null)
+		{
+			if (border != null)
+				return border.byteValue();
+			if (style != null && style.getRightBorder() != null)
+				return style.getRightBorder().byteValue();
+			return JRGraphicElement.PEN_NONE;
+		}
+		return rightBorder.byteValue();
+	}
+
+	/**
+	 *
+	 */
+	public Byte getOwnRightBorder()
+	{
+		return rightBorder;
+	}
+
+	/**
+	 *
+	 */
+	public void setRightBorder(byte rightBorder)
+	{
+		this.rightBorder = new Byte(rightBorder);
+	}
+
+	/**
+	 *
+	 */
+	public Color getRightBorderColor()
+	{
+		if (rightBorderColor == null)
+		{
+			if (borderColor != null)
+				return borderColor;
+			if (style != null && style.getRightBorderColor() != null)
+				return style.getRightBorderColor();
+		}
+		return rightBorderColor;
+	}
+
+	/**
+	 *
+	 */
+	public Color getOwnRightBorderColor()
+	{
+		return rightBorderColor;
+	}
+
+	/**
+	 *
+	 */
+	public void setRightBorderColor(Color rightBorderColor)
+	{
+		this.rightBorderColor = rightBorderColor;
+	}
+
+	/**
+	 *
+	 */
+	public int getRightPadding()
+	{
+		if (rightPadding == null)
+		{
+			if (padding != null)
+				return padding.intValue();
+			if (style != null && style.getRightPadding() != null)
+				return style.getRightPadding().intValue();
+			return 0;
+		}
+		return rightPadding.intValue();
+	}
+
+	/**
+	 *
+	 */
+	public Integer getOwnRightPadding()
+	{
+		return rightPadding;
+	}
+
+	/**
+	 *
+	 */
+	public void setRightPadding(int rightPadding)
+	{
+		this.rightPadding = new Integer(rightPadding);
+	}
+	
 }

@@ -734,6 +734,13 @@ public class JRTemplateText extends JRTemplateElement implements JRBox, JRFont
 		return reportFont;
 	}
 
+	/**
+	 *
+	 */
+	public void setReportFont(JRReportFont reportFont)
+	{
+		this.reportFont = reportFont;
+	}
 
 	/**
 	 *

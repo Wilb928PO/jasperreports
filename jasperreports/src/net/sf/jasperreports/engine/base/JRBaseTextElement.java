@@ -316,7 +316,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 	 */
 	public void setStyledText(boolean isStyledText)
 	{
-		this.isStyledText = Boolean.valueOf(isStyledText);
+		this.isStyledText = isStyledText ? Boolean.TRUE : Boolean.FALSE;
 	}
 
 	/**
@@ -828,6 +828,13 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 		return reportFont;
 	}
 
+	/**
+	 *
+	 */
+	public void setReportFont(JRReportFont reportFont)
+	{
+		this.reportFont = reportFont;
+	}
 
 	/**
 	 *

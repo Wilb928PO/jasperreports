@@ -69,12 +69,7 @@ public class JRBoxFactory extends JRBaseFactory
 	 */
 	public Object createObject(Attributes atts)
 	{
-		JRElement element = (JRElement) digester.peek();
-
-		// FIXME STYLE
-		if (!(element instanceof JRBox))
-			return element;
-		JRBaseBox box = new JRBaseBox();//FIXME design box?
+		JRBox box = (JRBox) digester.peek();
 
 		Byte border = (Byte)JRXmlConstants.getPenMap().get(atts.getValue(ATTRIBUTE_border));
 		if (border != null)

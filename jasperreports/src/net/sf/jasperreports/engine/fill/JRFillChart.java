@@ -292,7 +292,7 @@ public class JRFillChart extends JRFillElement implements JRChart
 	 */
 	public JRBox getBox()
 	{
-		return ((JRChart)parent).getBox();
+		return (JRBox)parent;
 	}
 
 	/**
@@ -1345,4 +1345,341 @@ public class JRFillChart extends JRFillElement implements JRChart
 	{
 		return customizerClass;
 	}
+
+	/**
+	 *
+	 */
+	public byte getBorder()
+	{
+		return ((JRBox)parent).getBorder();
+	}
+
+	public Byte getOwnBorder()
+	{
+		return ((JRBox)parent).getOwnBorder();
+	}
+
+	/**
+	 *
+	 */
+	public void setBorder(byte border)
+	{
+	}
+
+	/**
+	 *
+	 */
+	public Color getBorderColor()
+	{
+		return ((JRBox)parent).getBorderColor();
+	}
+
+	public Color getOwnBorderColor()
+	{
+		return ((JRBox)parent).getOwnBorderColor();
+	}
+
+	/**
+	 *
+	 */
+	public void setBorderColor(Color borderColor)
+	{
+	}
+
+	/**
+	 *
+	 */
+	public int getPadding()
+	{
+		return ((JRBox)parent).getPadding();
+	}
+
+	public Integer getOwnPadding()
+	{
+		return ((JRBox)parent).getOwnPadding();
+	}
+
+	/**
+	 *
+	 */
+	public void setPadding(int padding)
+	{
+	}
+
+	/**
+	 *
+	 */
+	public byte getTopBorder()
+	{
+		return ((JRBox)parent).getTopBorder();
+	}
+
+	/**
+	 *
+	 */
+	public Byte getOwnTopBorder()
+	{
+		return ((JRBox)parent).getOwnTopBorder();
+	}
+
+	/**
+	 *
+	 */
+	public void setTopBorder(byte topBorder)
+	{
+	}
+
+	/**
+	 *
+	 */
+	public Color getTopBorderColor()
+	{
+		return ((JRBox)parent).getTopBorderColor();
+	}
+
+	/**
+	 *
+	 */
+	public Color getOwnTopBorderColor()
+	{
+		return ((JRBox)parent).getOwnTopBorderColor();
+	}
+
+	/**
+	 *
+	 */
+	public void setTopBorderColor(Color topBorderColor)
+	{
+	}
+
+	/**
+	 *
+	 */
+	public int getTopPadding()
+	{
+		return ((JRBox)parent).getTopPadding();
+	}
+
+	/**
+	 *
+	 */
+	public Integer getOwnTopPadding()
+	{
+		return ((JRBox)parent).getOwnTopPadding();
+	}
+
+	/**
+	 *
+	 */
+	public void setTopPadding(int topPadding)
+	{
+	}
+
+	/**
+	 *
+	 */
+	public byte getLeftBorder()
+	{
+		return ((JRBox)parent).getLeftBorder();
+	}
+
+	/**
+	 *
+	 */
+	public Byte getOwnLeftBorder()
+	{
+		return ((JRBox)parent).getOwnLeftBorder();
+	}
+
+	/**
+	 *
+	 */
+	public void setLeftBorder(byte leftBorder)
+	{
+	}
+
+	/**
+	 *
+	 */
+	public Color getLeftBorderColor()
+	{
+		return ((JRBox)parent).getLeftBorderColor();
+	}
+
+	/**
+	 *
+	 */
+	public Color getOwnLeftBorderColor()
+	{
+		return ((JRBox)parent).getOwnLeftBorderColor();
+	}
+
+	/**
+	 *
+	 */
+	public void setLeftBorderColor(Color leftBorderColor)
+	{
+	}
+
+	/**
+	 *
+	 */
+	public int getLeftPadding()
+	{
+		return ((JRBox)parent).getLeftPadding();
+	}
+
+	/**
+	 *
+	 */
+	public Integer getOwnLeftPadding()
+	{
+		return ((JRBox)parent).getOwnLeftPadding();
+	}
+
+	/**
+	 *
+	 */
+	public void setLeftPadding(int leftPadding)
+	{
+	}
+
+	/**
+	 *
+	 */
+	public byte getBottomBorder()
+	{
+		return ((JRBox)parent).getBottomBorder();
+	}
+
+	/**
+	 *
+	 */
+	public Byte getOwnBottomBorder()
+	{
+		return ((JRBox)parent).getOwnBottomBorder();
+	}
+
+	/**
+	 *
+	 */
+	public void setBottomBorder(byte bottomBorder)
+	{
+	}
+
+	/**
+	 *
+	 */
+	public Color getBottomBorderColor()
+	{
+		return ((JRBox)parent).getBottomBorderColor();
+	}
+
+	/**
+	 *
+	 */
+	public Color getOwnBottomBorderColor()
+	{
+		return ((JRBox)parent).getOwnBottomBorderColor();
+	}
+
+	/**
+	 *
+	 */
+	public void setBottomBorderColor(Color bottomBorderColor)
+	{
+	}
+
+	/**
+	 *
+	 */
+	public int getBottomPadding()
+	{
+		return ((JRBox)parent).getBottomPadding();
+	}
+
+	/**
+	 *
+	 */
+	public Integer getOwnBottomPadding()
+	{
+		return ((JRBox)parent).getOwnBottomPadding();
+	}
+
+	/**
+	 *
+	 */
+	public void setBottomPadding(int bottomPadding)
+	{
+	}
+
+	/**
+	 *
+	 */
+	public byte getRightBorder()
+	{
+		return ((JRBox)parent).getRightBorder();
+	}
+
+	/**
+	 *
+	 */
+	public Byte getOwnRightBorder()
+	{
+		return ((JRBox)parent).getOwnRightBorder();
+	}
+
+	/**
+	 *
+	 */
+	public void setRightBorder(byte rightBorder)
+	{
+	}
+
+	/**
+	 *
+	 */
+	public Color getRightBorderColor()
+	{
+		return ((JRBox)parent).getRightBorderColor();
+	}
+
+	/**
+	 *
+	 */
+	public Color getOwnRightBorderColor()
+	{
+		return ((JRBox)parent).getOwnRightBorderColor();
+	}
+
+	/**
+	 *
+	 */
+	public void setRightBorderColor(Color rightBorderColor)
+	{
+	}
+
+	/**
+	 *
+	 */
+	public int getRightPadding()
+	{
+		return ((JRBox)parent).getRightPadding();
+	}
+
+	/**
+	 *
+	 */
+	public Integer getOwnRightPadding()
+	{
+		return ((JRBox)parent).getOwnRightPadding();
+	}
+
+	/**
+	 *
+	 */
+	public void setRightPadding(int rightPadding)
+	{
+	}
+
 }

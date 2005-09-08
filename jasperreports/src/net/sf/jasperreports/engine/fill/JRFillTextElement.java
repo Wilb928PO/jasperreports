@@ -878,7 +878,10 @@ public abstract class JRFillTextElement extends JRFillElement implements JRTextE
 		return ((JRFont)parent).getReportFont();
 	}
 
-
+	public void setReportFont(JRReportFont reportFont)
+	{
+	}
+	
 	/**
 	 *
 	 */
