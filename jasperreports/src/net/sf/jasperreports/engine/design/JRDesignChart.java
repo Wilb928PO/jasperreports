@@ -58,10 +58,10 @@ import net.sf.jasperreports.engine.JRDefaultStyleProvider;
 import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRExpressionCollector;
 import net.sf.jasperreports.engine.JRFont;
+import net.sf.jasperreports.engine.JRGraphicElement;
 import net.sf.jasperreports.engine.JRGroup;
 import net.sf.jasperreports.engine.JRHyperlink;
 import net.sf.jasperreports.engine.JRRuntimeException;
-import net.sf.jasperreports.engine.JRGraphicElement;
 import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.xml.JRXmlWriter;
 
@@ -204,7 +204,7 @@ public class JRDesignChart extends JRDesignElement implements JRChart
 	}
 		
 	/**
-	 *
+	 * @deprecated
 	 */
 	public JRBox getBox()
 	{

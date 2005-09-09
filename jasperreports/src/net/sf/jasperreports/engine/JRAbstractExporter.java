@@ -286,11 +286,11 @@ public abstract class JRAbstractExporter implements JRExporter
 		String text = textElement.getText();
 		if (text != null)
 		{
-			JRFont font = textElement.getFont();
-			if (font == null)
-			{
-				font = getDefaultFont();
-			}
+			JRFont font = textElement;//FIXME STYLE .getFont();
+//			if (font == null)
+//			{
+//				font = getDefaultFont();
+//			}
 
 			Map attributes = new HashMap(); 
 			attributes.putAll(font.getAttributes());
