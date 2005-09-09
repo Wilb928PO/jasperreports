@@ -1281,116 +1281,113 @@ public class JRXmlWriter
 	 */
 	private void writeBox(JRBox box)
 	{
-		if (box != null)
+		StringBuffer tmpBuffer = new StringBuffer();
+
+		if (box.getBorder() != JRGraphicElement.PEN_NONE)
 		{
-			StringBuffer tmpBuffer = new StringBuffer();
+			tmpBuffer.append(" border=\"");
+			tmpBuffer.append((String)JRXmlConstants.getPenMap().get(new Byte(box.getBorder())));
+			tmpBuffer.append("\"");
+		}
+		if (box.getBorderColor() != null)
+		{
+			tmpBuffer.append(" borderColor=\"#");
+			tmpBuffer.append(Integer.toHexString(box.getBorderColor().getRGB() & colorMask));
+			tmpBuffer.append("\"");
+		}
+		if (box.getPadding() > 0)
+		{
+			tmpBuffer.append(" padding=\"");
+			tmpBuffer.append(box.getPadding());
+			tmpBuffer.append("\"");
+		}
+	
 
-			if (box.getBorder() != JRGraphicElement.PEN_NONE)
-			{
-				tmpBuffer.append(" border=\"");
-				tmpBuffer.append((String)JRXmlConstants.getPenMap().get(new Byte(box.getBorder())));
-				tmpBuffer.append("\"");
-			}
-			if (box.getBorderColor() != null)
-			{
-				tmpBuffer.append(" borderColor=\"#");
-				tmpBuffer.append(Integer.toHexString(box.getBorderColor().getRGB() & colorMask));
-				tmpBuffer.append("\"");
-			}
-			if (box.getPadding() > 0)
-			{
-				tmpBuffer.append(" padding=\"");
-				tmpBuffer.append(box.getPadding());
-				tmpBuffer.append("\"");
-			}
+		if (box.getOwnTopBorder() != null)
+		{
+			tmpBuffer.append(" topBorder=\"");
+			tmpBuffer.append((String)JRXmlConstants.getPenMap().get(new Byte(box.getOwnTopBorder().byteValue())));
+			tmpBuffer.append("\"");
+		}
+		if (box.getOwnTopBorderColor() != null)
+		{
+			tmpBuffer.append(" topBorderColor=\"#");
+			tmpBuffer.append(Integer.toHexString(box.getOwnTopBorderColor().getRGB() & colorMask));
+			tmpBuffer.append("\"");
+		}
+		if (box.getOwnTopPadding() != null)
+		{
+			tmpBuffer.append(" topPadding=\"");
+			tmpBuffer.append(box.getOwnTopPadding());
+			tmpBuffer.append("\"");
+		}
+
 		
+		if (box.getOwnLeftBorder() != null)
+		{
+			tmpBuffer.append(" leftBorder=\"");
+			tmpBuffer.append((String)JRXmlConstants.getPenMap().get(new Byte(box.getOwnLeftBorder().byteValue())));
+			tmpBuffer.append("\"");
+		}
+		if (box.getOwnLeftBorderColor() != null)
+		{
+			tmpBuffer.append(" leftBorderColor=\"#");
+			tmpBuffer.append(Integer.toHexString(box.getOwnLeftBorderColor().getRGB() & colorMask));
+			tmpBuffer.append("\"");
+		}
+		if (box.getOwnLeftPadding() != null)
+		{
+			tmpBuffer.append(" leftPadding=\"");
+			tmpBuffer.append(box.getOwnLeftPadding());
+			tmpBuffer.append("\"");
+		}
 
-			if (box.getOwnTopBorder() != null)
-			{
-				tmpBuffer.append(" topBorder=\"");
-				tmpBuffer.append((String)JRXmlConstants.getPenMap().get(new Byte(box.getOwnTopBorder().byteValue())));
-				tmpBuffer.append("\"");
-			}
-			if (box.getOwnTopBorderColor() != null)
-			{
-				tmpBuffer.append(" topBorderColor=\"#");
-				tmpBuffer.append(Integer.toHexString(box.getOwnTopBorderColor().getRGB() & colorMask));
-				tmpBuffer.append("\"");
-			}
-			if (box.getOwnTopPadding() != null)
-			{
-				tmpBuffer.append(" topPadding=\"");
-				tmpBuffer.append(box.getOwnTopPadding());
-				tmpBuffer.append("\"");
-			}
+		
+		if (box.getOwnBottomBorder() != null)
+		{
+			tmpBuffer.append(" bottomBorder=\"");
+			tmpBuffer.append((String)JRXmlConstants.getPenMap().get(new Byte(box.getOwnBottomBorder().byteValue())));
+			tmpBuffer.append("\"");
+		}
+		if (box.getOwnBottomBorderColor() != null)
+		{
+			tmpBuffer.append(" bottomBorderColor=\"#");
+			tmpBuffer.append(Integer.toHexString(box.getOwnBottomBorderColor().getRGB() & colorMask));
+			tmpBuffer.append("\"");
+		}
+		if (box.getOwnBottomPadding() != null)
+		{
+			tmpBuffer.append(" bottomPadding=\"");
+			tmpBuffer.append(box.getOwnBottomPadding());
+			tmpBuffer.append("\"");
+		}
 
-			
-			if (box.getOwnLeftBorder() != null)
-			{
-				tmpBuffer.append(" leftBorder=\"");
-				tmpBuffer.append((String)JRXmlConstants.getPenMap().get(new Byte(box.getOwnLeftBorder().byteValue())));
-				tmpBuffer.append("\"");
-			}
-			if (box.getOwnLeftBorderColor() != null)
-			{
-				tmpBuffer.append(" leftBorderColor=\"#");
-				tmpBuffer.append(Integer.toHexString(box.getOwnLeftBorderColor().getRGB() & colorMask));
-				tmpBuffer.append("\"");
-			}
-			if (box.getOwnLeftPadding() != null)
-			{
-				tmpBuffer.append(" leftPadding=\"");
-				tmpBuffer.append(box.getOwnLeftPadding());
-				tmpBuffer.append("\"");
-			}
+		
+		if (box.getOwnRightBorder() != null)
+		{
+			tmpBuffer.append(" rightBorder=\"");
+			tmpBuffer.append((String)JRXmlConstants.getPenMap().get(new Byte(box.getOwnRightBorder().byteValue())));
+			tmpBuffer.append("\"");
+		}
+		if (box.getOwnRightBorderColor() != null)
+		{
+			tmpBuffer.append(" rightBorderColor=\"#");
+			tmpBuffer.append(Integer.toHexString(box.getOwnRightBorderColor().getRGB() & colorMask));
+			tmpBuffer.append("\"");
+		}
+		if (box.getOwnRightPadding() != null)
+		{
+			tmpBuffer.append(" rightPadding=\"");
+			tmpBuffer.append(box.getOwnRightPadding());
+			tmpBuffer.append("\"");
+		}
 
-			
-			if (box.getOwnBottomBorder() != null)
-			{
-				tmpBuffer.append(" bottomBorder=\"");
-				tmpBuffer.append((String)JRXmlConstants.getPenMap().get(new Byte(box.getOwnBottomBorder().byteValue())));
-				tmpBuffer.append("\"");
-			}
-			if (box.getOwnBottomBorderColor() != null)
-			{
-				tmpBuffer.append(" bottomBorderColor=\"#");
-				tmpBuffer.append(Integer.toHexString(box.getOwnBottomBorderColor().getRGB() & colorMask));
-				tmpBuffer.append("\"");
-			}
-			if (box.getOwnBottomPadding() != null)
-			{
-				tmpBuffer.append(" bottomPadding=\"");
-				tmpBuffer.append(box.getOwnBottomPadding());
-				tmpBuffer.append("\"");
-			}
-
-			
-			if (box.getOwnRightBorder() != null)
-			{
-				tmpBuffer.append(" rightBorder=\"");
-				tmpBuffer.append((String)JRXmlConstants.getPenMap().get(new Byte(box.getOwnRightBorder().byteValue())));
-				tmpBuffer.append("\"");
-			}
-			if (box.getOwnRightBorderColor() != null)
-			{
-				tmpBuffer.append(" rightBorderColor=\"#");
-				tmpBuffer.append(Integer.toHexString(box.getOwnRightBorderColor().getRGB() & colorMask));
-				tmpBuffer.append("\"");
-			}
-			if (box.getOwnRightPadding() != null)
-			{
-				tmpBuffer.append(" rightPadding=\"");
-				tmpBuffer.append(box.getOwnRightPadding());
-				tmpBuffer.append("\"");
-			}
-
-			
-			if (tmpBuffer.length() > 0)
-			{
-				sb.append("\t\t\t\t<box");
-				sb.append(tmpBuffer.toString());
-				sb.append("/>\n");
-			}
+		
+		if (tmpBuffer.length() > 0)
+		{
+			sb.append("\t\t\t\t<box");
+			sb.append(tmpBuffer.toString());
+			sb.append("/>\n");
 		}
 	}
 
@@ -1844,7 +1841,7 @@ public class JRXmlWriter
 		sb.append(">\n");
 
 		writeReportElement(chart);
-		writeBox(chart.getBox());
+		writeBox(chart);
 
 		// write title
 		sb.append("\t\t\t\t\t<chartTitle");

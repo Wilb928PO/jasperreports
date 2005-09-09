@@ -29,12 +29,9 @@ package net.sf.jasperreports.engine.xml;
 
 import java.util.Map;
 
-import net.sf.jasperreports.engine.design.JRDesignReportFont;
+import net.sf.jasperreports.engine.JRReportFont;
 import net.sf.jasperreports.engine.design.JRDesignTextElement;
 import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.design.JRDesignFont;
-import net.sf.jasperreports.engine.JRFont;
-import net.sf.jasperreports.engine.JRReportFont;
 
 import org.xml.sax.Attributes;
 

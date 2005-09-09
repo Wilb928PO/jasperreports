@@ -314,7 +314,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	}
 		
 	/**
-	 *
+	 * @deprecated
 	 */
 	public JRBox getBox()
 	{
@@ -322,14 +322,14 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	}
 		
 	/**
-	 *
+	 * @deprecated
 	 */
 	public void setBox(JRBox box)
 	{
 	}
 
 	/**
-	 *
+	 * @deprecated
 	 */
 	public JRFont getFont()
 	{
@@ -337,7 +337,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	}
 		
 	/**
-	 *
+	 * @deprecated
 	 */
 	public void setFont(JRFont font)
 	{

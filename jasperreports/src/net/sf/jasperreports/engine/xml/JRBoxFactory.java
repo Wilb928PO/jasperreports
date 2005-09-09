@@ -30,8 +30,6 @@ package net.sf.jasperreports.engine.xml;
 import java.awt.Color;
 
 import net.sf.jasperreports.engine.JRBox;
-import net.sf.jasperreports.engine.JRElement;
-import net.sf.jasperreports.engine.base.JRBaseBox;
 
 import org.xml.sax.Attributes;
 

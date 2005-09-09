@@ -723,30 +723,6 @@ public class JasperDesign extends JRBaseReport
 	
 
 	/**
-	 *
-	 */
-	public void setDefaultStyle(JRStyle style)
-	{
-		Object oldValue = this.defaultStyle;
-		this.defaultStyle = style;
-		getPropertyChangeSupport().firePropertyChange(DEFAULT_STYLE_PROPERTY, oldValue, this.defaultStyle);
-	}
-		
-
-	/**
-	 * Gets an array of report level styles. These styles can be referenced by report elements.
-	 */
-	public JRStyle[] getStyle()
-	{
-		JRStyle[] stylesArray = new JRStyle[stylesList.size()];
-		
-		stylesList.toArray(stylesArray);
-
-		return stylesArray;
-	}
-	
-
-	/**
 	 * Gets a list of report level fonts. These fonts can be referenced by text elements.
 	 */
 	public List getFontsList()
@@ -815,6 +791,89 @@ public class JasperDesign extends JRBaseReport
 	}
 
 
+	/**
+	 *
+	 */
+	public void setDefaultStyle(JRStyle style)
+	{
+		Object oldValue = this.defaultStyle;
+		this.defaultStyle = style;
+		getPropertyChangeSupport().firePropertyChange(DEFAULT_STYLE_PROPERTY, oldValue, this.defaultStyle);
+	}
+		
+
+	/**
+	 * Gets an array of report level styles. These styles can be referenced by report elements.
+	 */
+	public JRStyle[] getStyles()
+	{
+		JRStyle[] stylesArray = new JRStyle[stylesList.size()];
+
+		stylesList.toArray(stylesArray);
+
+		return stylesArray;
+	}
+
+
+	/**
+	 * Gets a list of report level styles. These styles can be referenced by report elements.
+	 */
+	public List getStylesList()
+	{
+		return stylesList;
+	}
+
+
+	/**
+	 *
+	 */
+	public Map getStylesMap()
+	{
+		return stylesMap;
+	}
+
+
+	/**
+	 * Adds a report style, that can be referenced by report elements.
+	 */
+	public void addStyle(JRStyle style) throws JRException
+	{
+		if (stylesMap.containsKey(style.getName()))
+		{
+			throw new JRException("Duplicate declaration of report style : " + style.getName());
+		}
+
+		stylesList.add(style);
+		stylesMap.put(style.getName(), style);
+	}
+
+
+	/**
+	 * Removes a report style from the list, based on the style name.
+	 */
+	public JRStyle removeStyle(String styleName)
+	{
+		return removeStyle(
+			(JRStyle)stylesMap.get(styleName)
+			);
+	}
+
+
+	/**
+	 * Removes a report style from the list.
+	 */
+	public JRStyle removeStyle(JRStyle style)
+	{
+		if (style != null)
+		{
+			stylesList.remove(style);
+			stylesMap.remove(style.getName());
+		}
+
+		return style;
+	}
+
+	
 	/**
 	 * Gets an array of report parameters (including built-in ones).
 	 */
@@ -1183,74 +1242,4 @@ public class JasperDesign extends JRBaseReport
 	}
 
 
-	/**
-	 * Gets an array of report level styles. These styles can be referenced by report elements.
-	 */
-	public JRStyle[] getStyles()
-	{
-		JRStyle[] stylesArray = new JRStyle[stylesList.size()];
-
-		stylesList.toArray(stylesArray);
-
-		return stylesArray;
-	}
-
-
-	/**
-	 * Gets a list of report level styles. These styles can be referenced by report elements.
-	 */
-	public List getStylesList()
-	{
-		return stylesList;
-	}
-
-
-	/**
-	 *
-	 */
-	public Map getStylesMap()
-	{
-		return stylesMap;
-	}
-
-
-	/**
-	 * Adds a report style, that can be referenced by report elements.
-	 */
-	public void addStyle(JRStyle style) throws JRException
-	{
-		if (stylesMap.containsKey(style.getName()))
-		{
-			throw new JRException("Duplicate declaration of report style : " + style.getName());
-		}
-
-		stylesList.add(style);
-		stylesMap.put(style.getName(), style);
-	}
-
-
-	/**
-	 * Removes a report style from the list, based on the style name.
-	 */
-	public JRStyle removeStyle(String styleName)
-	{
-		return removeStyle(
-			(JRStyle)stylesMap.get(styleName)
-			);
-	}
-
-
-	/**
-	 * Removes a report font from the list.
-	 */
-	public JRStyle removeStyle(JRStyle style)
-	{
-		if (style != null)
-		{
-			stylesList.remove(style);
-			stylesMap.remove(style.getName());
-		}
-
-		return style;
-	}
 }

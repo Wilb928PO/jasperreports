@@ -678,36 +678,6 @@ public class JRBaseStyle implements JRStyle, Serializable
 	/**
 	 *
 	 */
-	public void setPositionType(byte positionType)
-	{
-		setPositionType(new Byte(positionType));
-	}
-	/**
-	 *
-	 */
-	public void setPositionType(Byte positionType)
-	{
-		this.positionType = positionType;
-	}
-
-	/**
-	 *
-	 */
-	public void setStretchType(byte stretchType)
-	{
-		setStretchType(new Byte(stretchType));
-	}
-	/**
-	 *
-	 */
-	public void setStretchType(Byte stretchType)
-	{
-		this.stretchType = stretchType;
-	}
-
-	/**
-	 *
-	 */
 	public void setForecolor(Color forecolor)
 	{
 		this.forecolor = forecolor;

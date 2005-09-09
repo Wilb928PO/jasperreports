@@ -226,7 +226,7 @@ public class JRFillImage extends JRFillGraphicElement implements JRImage
 	}
 		
 	/**
-	 *
+	 * @deprecated
 	 */
 	public JRBox getBox()
 	{

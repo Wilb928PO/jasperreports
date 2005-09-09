@@ -1144,7 +1144,7 @@ public abstract class JRFillTextElement extends JRFillElement implements JRTextE
 
 	/**
 	 *
-	 */
+	 *
 	public boolean isCachingAttributes()
 	{
 		return ((JRTextElement)parent).isCachingAttributes();
@@ -1152,7 +1152,7 @@ public abstract class JRFillTextElement extends JRFillElement implements JRTextE
 
 	/**
 	 *
-	 */
+	 *
 	public void setCachingAttributes(boolean isCachingAttributes)
 	{
 	}
@@ -1160,7 +1160,7 @@ public abstract class JRFillTextElement extends JRFillElement implements JRTextE
 
 	/**
 	 *
-	 */
+	 *
 	public Map getNonPdfAttributes()
 	{
 		return ((JRTextElement)parent).getNonPdfAttributes();

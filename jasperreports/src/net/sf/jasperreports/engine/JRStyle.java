@@ -400,4 +400,319 @@ public interface JRStyle
 	public String getPattern();
 
 	public String getOwnPattern();
+
+	/**
+	 *
+	 */
+	public void setForecolor(Color forecolor);
+
+	/**
+	 *
+	 */
+	public void setBackcolor(Color backcolor);
+
+	/**
+	 *
+	 */
+	public void setMode(byte mode);
+
+	/**
+	 *
+	 */
+	public void setMode(Byte mode);
+
+	/**
+	 *
+	 */
+	public void setPen(byte pen);
+
+	/**
+	 *
+	 */
+	public void setPen(Byte pen);
+
+	/**
+	 *
+	 */
+	public void setFill(byte fill);
+
+	/**
+	 *
+	 */
+	public void setFill(Byte fill);
+
+	/**
+	 *
+	 */
+	public void setRadius(int radius);
+
+	/**
+	 *
+	 */
+	public void setRadius(Integer radius);
+
+	/**
+	 *
+	 */
+	public void setScaleImage(byte scaleImage);
+
+	/**
+	 *
+	 */
+	public void setScaleImage(Byte scaleImage);
+
+	/**
+	 *
+	 */
+	public void setHorizontalAlignment(byte horizontalAlignment);
+
+	/**
+	 *
+	 */
+	public void setHorizontalAlignment(Byte horizontalAlignment);
+
+	/**
+	 *
+	 */
+	public void setVerticalAlignment(byte verticalAlignment);
+
+	/**
+	 *
+	 */
+	public void setVerticalAlignment(Byte verticalAlignment);
+
+	/**
+	 *
+	 */
+	public void setBorder(byte border);
+
+	/**
+	 *
+	 */
+	public void setBorder(Byte border);
+
+	/**
+	 *
+	 */
+	public void setBorderColor(Color borderColor);
+
+	/**
+	 *
+	 */
+	public void setPadding(int padding);
+
+	/**
+	 *
+	 */
+	public void setPadding(Integer padding);
+
+	/**
+	 *
+	 */
+	public void setTopBorder(byte topBorder);
+
+	/**
+	 *
+	 */
+	public void setTopBorder(Byte topBorder);
+
+	/**
+	 *
+	 */
+	public void setTopBorderColor(Color topBorderColor);
+
+	/**
+	 *
+	 */
+	public void setTopPadding(int topPadding);
+
+	/**
+	 *
+	 */
+	public void setTopPadding(Integer topPadding);
+
+	/**
+	 *
+	 */
+	public void setLeftBorder(byte leftBorder);
+
+	/**
+	 *
+	 */
+	public void setLeftBorder(Byte leftBorder);
+
+	/**
+	 *
+	 */
+	public void setLeftBorderColor(Color leftBorderColor);
+
+	/**
+	 *
+	 */
+	public void setLeftPadding(int leftPadding);
+
+	/**
+	 *
+	 */
+	public void setLeftPadding(Integer leftPadding);
+
+	/**
+	 *
+	 */
+	public void setBottomBorder(byte bottomBorder);
+
+	/**
+	 *
+	 */
+	public void setBottomBorder(Byte bottomBorder);
+
+	/**
+	 *
+	 */
+	public void setBottomBorderColor(Color bottomBorderColor);
+
+	/**
+	 *
+	 */
+	public void setBottomPadding(int bottomPadding);
+
+	/**
+	 *
+	 */
+	public void setBottomPadding(Integer bottomPadding);
+
+	/**
+	 *
+	 */
+	public void setRightBorder(byte rightBorder);
+
+	/**
+	 *
+	 */
+	public void setRightBorder(Byte rightBorder);
+
+	/**
+	 *
+	 */
+	public void setRightBorderColor(Color rightBorderColor);
+
+	/**
+	 *
+	 */
+	public void setRightPadding(int rightPadding);
+
+	/**
+	 *
+	 */
+	public void setRightPadding(Integer rightPadding);
+
+	/**
+	 *
+	 */
+	public void setRotation(byte rotation);
+
+	/**
+	 *
+	 */
+	public void setRotation(Byte rotation);
+
+	/**
+	 *
+	 */
+	public void setFontName(String fontName);
+
+	/**
+	 *
+	 */
+	public void setBold(boolean bold);
+
+	/**
+	 *
+	 */
+	public void setBold(Boolean bold);
+
+	/**
+	 *
+	 */
+	public void setItalic(boolean italic);
+
+	/**
+	 *
+	 */
+	public void setItalic(Boolean italic);
+
+	/**
+	 *
+	 */
+	public void setPdfEmbedded(boolean pdfEmbedded);
+
+	/**
+	 *
+	 */
+	public void setPdfEmbedded(Boolean pdfEmbedded);
+
+	/**
+	 *
+	 */
+	public void setStrikeThrough(boolean strikeThrough);
+
+	/**
+	 *
+	 */
+	public void setStrikeThrough(Boolean strikeThrough);
+
+	/**
+	 *
+	 */
+	public void setStyledText(boolean styledText);
+
+	/**
+	 *
+	 */
+	public void setStyledText(Boolean styledText);
+
+	/**
+	 *
+	 */
+	public void setUnderline(boolean underline);
+
+	/**
+	 *
+	 */
+	public void setUnderline(Boolean underline);
+
+	/**
+	 *
+	 */
+	public void setLineSpacing(byte lineSpacing);
+
+	/**
+	 *
+	 */
+	public void setLineSpacing(Byte lineSpacing);
+
+	/**
+	 *
+	 */
+	public void setPattern(String pattern);
+
+	/**
+	 *
+	 */
+	public void setPdfEncoding(String pdfEncoding);
+
+	/**
+	 *
+	 */
+	public void setPdfFontName(String pdfFontName);
+
+	/**
+	 *
+	 */
+	public void setSize(int size);
+
+	/**
+	 *
+	 */
+	public void setSize(Integer size);
 }

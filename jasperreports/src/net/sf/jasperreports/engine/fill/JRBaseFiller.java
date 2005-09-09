@@ -52,8 +52,8 @@ import java.util.Set;
 
 import net.sf.jasperreports.engine.JRAbstractScriptlet;
 import net.sf.jasperreports.engine.JRDataSource;
-import net.sf.jasperreports.engine.JRDefaultFontProvider;
 import net.sf.jasperreports.engine.JRDefaultScriptlet;
+import net.sf.jasperreports.engine.JRDefaultStyleProvider;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRField;
@@ -87,7 +87,7 @@ import org.apache.commons.logging.LogFactory;
  * @author Teodor Danciu (teodord@users.sourceforge.net)
  * @version $Id$
  */
-public abstract class JRBaseFiller implements JRDefaultFontProvider
+public abstract class JRBaseFiller implements JRDefaultStyleProvider//, JRDefaultFontProvider
 {
 
 	/**
@@ -672,6 +672,14 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 	public JRReportFont getDefaultFont()
 	{
 		return defaultFont;
+	}
+
+	/**
+	 * 
+	 */
+	public JRStyle getDefaultStyle()
+	{
+		return defaultStyle;
 	}
 
 	/**

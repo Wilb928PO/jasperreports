@@ -15,8 +15,6 @@ import org.xml.sax.Attributes;
  */
 public class JRStyleFactory extends JRBaseFactory
 {
-	private static final String ATTRIBUTE_positionType = "positionType";
-	private static final String ATTRIBUTE_stretchType = "stretchType";
 	private static final String ATTRIBUTE_name = "name";
 	private static final String ATTRIBUTE_forecolor = "forecolor";
 	private static final String ATTRIBUTE_backcolor = "backcolor";
@@ -89,19 +87,18 @@ public class JRStyleFactory extends JRBaseFactory
 		}
 
 
-
 		// get JRElement attributes
-		Byte positionType = (Byte)JRXmlConstants.getPositionTypeMap().get(atts.getValue(ATTRIBUTE_positionType));
-		if (positionType != null)
-		{
-			style.setPositionType(positionType.byteValue());
-		}
-
-		Byte stretchType = (Byte)JRXmlConstants.getStretchTypeMap().get(atts.getValue(ATTRIBUTE_stretchType));
-		if (stretchType != null)
-		{
-			style.setStretchType(stretchType.byteValue());
-		}
+//		Byte positionType = (Byte)JRXmlConstants.getPositionTypeMap().get(atts.getValue(ATTRIBUTE_positionType));
+//		if (positionType != null)
+//		{
+//			style.setPositionType(positionType.byteValue());
+//		}
+//
+//		Byte stretchType = (Byte)JRXmlConstants.getStretchTypeMap().get(atts.getValue(ATTRIBUTE_stretchType));
+//		if (stretchType != null)
+//		{
+//			style.setStretchType(stretchType.byteValue());
+//		}
 
 		String forecolor = atts.getValue(ATTRIBUTE_forecolor);
 		style.setForecolor(getColor(forecolor, null));

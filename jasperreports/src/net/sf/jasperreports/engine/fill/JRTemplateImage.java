@@ -110,7 +110,7 @@ public class JRTemplateImage extends JRTemplateGraphicElement
 		setHyperlinkType(chart.getHyperlinkType());
 		setHyperlinkTarget(chart.getHyperlinkTarget());
 		
-		box = chart.getBox();
+		//box = chart.getBox();
 	}
 
 	/**

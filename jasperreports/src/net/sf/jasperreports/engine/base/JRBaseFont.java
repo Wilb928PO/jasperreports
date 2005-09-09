@@ -29,12 +29,12 @@ package net.sf.jasperreports.engine.base;
 
 import java.awt.font.TextAttribute;
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Map;
 
 import net.sf.jasperreports.engine.JRDefaultFontProvider;
 import net.sf.jasperreports.engine.JRFont;
 import net.sf.jasperreports.engine.JRReportFont;
+import net.sf.jasperreports.engine.util.JRFontUtil;
 import net.sf.jasperreports.engine.util.JRTextAttribute;
 
 
@@ -61,7 +61,11 @@ public class JRBaseFont implements JRFont, Serializable
 	 */
 	protected JRDefaultFontProvider defaultFontProvider = null;
 
+	/**
+	 *
+	 */
 	protected JRReportFont reportFont = null;
+
 	protected String fontName = null;
 	protected Boolean isBold = null;
 	protected Boolean isItalic = null;
@@ -177,7 +181,7 @@ public class JRBaseFont implements JRFont, Serializable
 		pdfEncoding = font.getOwnPdfEncoding();
 		isPdfEmbedded = font.isOwnPdfEmbedded();
 		
-		isCachingAttributes = font.isCachingAttributes();
+		//isCachingAttributes = font.isCachingAttributes();
 	}
 		
 
@@ -544,42 +548,11 @@ public class JRBaseFont implements JRFont, Serializable
 	/**
 	 *
 	 */
-	public Map getNonPdfAttributes()
-	{
-		Map nonPdfAttributes = new HashMap();
-
-		nonPdfAttributes.put(TextAttribute.FAMILY, getFontName());
-		nonPdfAttributes.put(TextAttribute.SIZE, new Float(getSize()));
-
-		if (isBold())
-		{
-			nonPdfAttributes.put(TextAttribute.WEIGHT, TextAttribute.WEIGHT_BOLD);
-		}
-		if (isItalic())
-		{
-			nonPdfAttributes.put(TextAttribute.POSTURE, TextAttribute.POSTURE_OBLIQUE);
-		}
-		if (isUnderline())
-		{
-			nonPdfAttributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
-		}
-		if (isStrikeThrough())
-		{
-			nonPdfAttributes.put(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON);
-		}
-
-		return nonPdfAttributes;
-	}
-
-
-	/**
-	 *
-	 */
 	public Map getAttributes()
 	{
 		if (attributes == null || !isCachingAttributes)
 		{
-			attributes = getNonPdfAttributes();
+			attributes = JRFontUtil.getNonPdfAttributes(this);
 
 			attributes.put(JRTextAttribute.PDF_FONT_NAME, getPdfFontName());
 			attributes.put(JRTextAttribute.PDF_ENCODING, getPdfEncoding());

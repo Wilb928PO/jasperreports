@@ -28,7 +28,6 @@
 package net.sf.jasperreports.engine.base;
 
 import java.awt.Color;
-import java.awt.font.TextAttribute;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,7 +37,7 @@ import net.sf.jasperreports.engine.JRGraphicElement;
 import net.sf.jasperreports.engine.JRReportFont;
 import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.JRTextElement;
-import net.sf.jasperreports.engine.util.JRTextAttribute;
+import net.sf.jasperreports.engine.util.JRFontUtil;
 
 
 /**
@@ -95,7 +94,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 	protected String pdfEncoding = null;
 	protected Boolean isPdfEmbedded = null;
 
-	protected boolean isCachingAttributes = false;
+//	protected boolean isCachingAttributes = false;
 	protected transient Map attributes = null;
 
 	/**
@@ -1193,7 +1192,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 
 	/**
 	 *
-	 */
+	 *
 	public boolean isCachingAttributes()
 	{
 		return isCachingAttributes;
@@ -1201,7 +1200,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 
 	/**
 	 *
-	 */
+	 *
 	public void setCachingAttributes(boolean isCachingAttributes)
 	{
 		this.isCachingAttributes = isCachingAttributes;
@@ -1212,53 +1211,17 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 	/**
 	 *
 	 */
-	public Map getNonPdfAttributes()
-	{
-		Map nonPdfAttributes = new HashMap();
-
-		nonPdfAttributes.put(TextAttribute.FAMILY, getFontName());
-		nonPdfAttributes.put(TextAttribute.SIZE, new Float(getSize()));
-
-		if (isBold())
-		{
-			nonPdfAttributes.put(TextAttribute.WEIGHT, TextAttribute.WEIGHT_BOLD);
-		}
-		if (isItalic())
-		{
-			nonPdfAttributes.put(TextAttribute.POSTURE, TextAttribute.POSTURE_OBLIQUE);
-		}
-		if (isUnderline())
-		{
-			nonPdfAttributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
-		}
-		if (isStrikeThrough())
-		{
-			nonPdfAttributes.put(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON);
-		}
-
-		return nonPdfAttributes;
-	}
-
-
-	/**
-	 *
-	 */
 	public Map getAttributes()
 	{
-		if (attributes == null || !isCachingAttributes)
+		if (attributes == null)
 		{
-			attributes = getNonPdfAttributes();
-
-			attributes.put(JRTextAttribute.PDF_FONT_NAME, getPdfFontName());
-			attributes.put(JRTextAttribute.PDF_ENCODING, getPdfEncoding());
-
-			if (isPdfEmbedded())
-			{
-				attributes.put(JRTextAttribute.IS_PDF_EMBEDDED, Boolean.TRUE);
-			}
+			attributes = new HashMap();
+			
+			JRFontUtil.setAttributes(attributes, this);
 		}
 
 		return attributes;
 	}
+
 
 }

@@ -114,7 +114,7 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
 	protected boolean isCachingAttributes = false;
 	protected transient Map attributes = null;
 
-	protected JRStyle style;
+	protected JRStyle style;//FIXME STYLE why not in base class?
 	
 	/**
 	 * The bookmark level for the anchor associated with this field.

@@ -74,7 +74,6 @@ import net.sf.jasperreports.charts.xml.JRXySeriesFactory;
 import net.sf.jasperreports.charts.xml.JRXyzDatasetFactory;
 import net.sf.jasperreports.charts.xml.JRXyzSeriesFactory;
 import net.sf.jasperreports.engine.JRBand;
-import net.sf.jasperreports.engine.JRBox;
 import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.JRFont;

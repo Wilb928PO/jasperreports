@@ -75,6 +75,7 @@ import net.sf.jasperreports.engine.JRPrintElement;
 import net.sf.jasperreports.engine.JRPrintImage;
 import net.sf.jasperreports.engine.JRRenderable;
 import net.sf.jasperreports.engine.JRRuntimeException;
+import net.sf.jasperreports.engine.util.JRFontUtil;
 import net.sf.jasperreports.engine.xml.JRXmlWriter;
 import net.sf.jasperreports.renderers.JCommonDrawableRenderer;
 
@@ -288,7 +289,7 @@ public class JRFillChart extends JRFillElement implements JRChart
 	}
 		
 	/**
-	 *
+	 * @deprecated
 	 */
 	public JRBox getBox()
 	{
@@ -806,7 +807,7 @@ public class JRFillChart extends JRFillElement implements JRChart
 
 			JRFont font = getTitleFont();
 			if (font != null) {
-				Map attributes = font.getNonPdfAttributes();
+				Map attributes = JRFontUtil.getNonPdfAttributes(font);
 				title.setFont(new Font(attributes));
 			}
 
@@ -820,7 +821,7 @@ public class JRFillChart extends JRFillElement implements JRChart
 
 			JRFont font = getSubtitleFont();
 			if (font != null) {
-				Map attributes = font.getNonPdfAttributes();
+				Map attributes = JRFontUtil.getNonPdfAttributes(font);
 				subtitle.setFont(new Font(attributes));
 			}
 

@@ -127,11 +127,6 @@ public abstract class JRFillElement implements JRElement
 		return this.parent.getPositionType();//FIXME STYLE optimize this by consolidating style properties
 	}
 
-	public Byte getOwnPositionType()
-	{
-		return this.parent.getOwnPositionType();
-	}
-
 	/**
 	 *
 	 */
@@ -145,11 +140,6 @@ public abstract class JRFillElement implements JRElement
 	public byte getStretchType()
 	{
 		return this.parent.getStretchType();
-	}
-
-	public Byte getOwnStretchType()
-	{
-		return this.parent.getOwnStretchType();
 	}
 
 	/**
