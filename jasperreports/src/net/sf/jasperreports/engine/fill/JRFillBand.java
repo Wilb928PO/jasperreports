@@ -369,7 +369,7 @@ public class JRFillBand extends JRFillElementGroup implements JRBand, JRVirtualP
 		JRExpression expression = this.getPrintWhenExpression();
 		if (expression != null)
 		{
-			Boolean printWhenExpressionValue = (Boolean)this.filler.calculator.evaluate(expression, evaluation);
+			Boolean printWhenExpressionValue = (Boolean)this.filler.evaluateExpression(expression, evaluation);
 			if (printWhenExpressionValue == null)
 			{
 				isPrintTrue = false;

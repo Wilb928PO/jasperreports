@@ -33,6 +33,7 @@ import java.util.Map;
 
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.crosstab.JRCrosstab;
 
 /**
  * Structure used to hold a report's expression evaluator compile data.
@@ -57,6 +58,11 @@ public class JRReportCompileData implements Serializable
 	 */
 	private Map datasetCompileData;
 	
+	/**
+	 * Map containing compiled data per crosstab name.
+	 */
+	private Map crosstabCompileData;
+	
 	
 	/**
 	 * Default constructor.
@@ -64,6 +70,7 @@ public class JRReportCompileData implements Serializable
 	public JRReportCompileData()
 	{
 		datasetCompileData = new HashMap();
+		crosstabCompileData = new HashMap();
 	}
 	
 	
@@ -94,6 +101,18 @@ public class JRReportCompileData implements Serializable
 		{
 			datasetCompileData.put(dataset.getName(), compileData);
 		}
+	}
+	
+	
+	/**
+	 * Sets the compile data for a crosstab.
+	 * 
+	 * @param crosstab the crosstab
+	 * @param compileData the compile data
+	 */
+	public void setCrosstabCompileData(JRCrosstab crosstab, Serializable compileData)
+	{
+		crosstabCompileData.put(crosstab.getName(), compileData);
 	}
 	
 	
@@ -129,6 +148,25 @@ public class JRReportCompileData implements Serializable
 			{
 				throw new JRException("Compile data for dataset " + dataset.getName() + " not found in the report.");
 			}
+		}
+		
+		return compileData;
+	}
+	
+	
+	/**
+	 * Returns the compile data for a crosstab.
+	 * 
+	 * @param crosstab the crosstab
+	 * @return the compile data
+	 * @throws JRException
+	 */
+	public Serializable getCrosstabCompileData(JRCrosstab crosstab) throws JRException
+	{
+		Serializable compileData = (Serializable) crosstabCompileData.get(crosstab.getName());
+		if (compileData == null)
+		{
+			throw new JRException("Compile data for crosstab " + crosstab.getName() + " not found in the report.");
 		}
 		
 		return compileData;

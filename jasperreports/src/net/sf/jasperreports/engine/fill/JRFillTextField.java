@@ -296,7 +296,7 @@ public class JRFillTextField extends JRFillTextElement implements JRTextField
 		byte evaluation
 		) throws JRException
 	{
-		Object textFieldValue = filler.calculator.evaluate(getExpression(), evaluation);
+		Object textFieldValue = evaluateExpression(getExpression(), evaluation);
 
 		if (textFieldValue == null)
 		{
@@ -338,10 +338,10 @@ public class JRFillTextField extends JRFillTextElement implements JRTextField
 			isValueRepeating = false;
 		}
 
-		anchorName = (String)filler.calculator.evaluate(getAnchorNameExpression(), evaluation);
-		hyperlinkReference = (String)filler.calculator.evaluate(getHyperlinkReferenceExpression(), evaluation);
-		hyperlinkAnchor = (String)filler.calculator.evaluate(getHyperlinkAnchorExpression(), evaluation);
-		hyperlinkPage = (Integer)filler.calculator.evaluate(getHyperlinkPageExpression(), evaluation);
+		anchorName = (String) evaluateExpression(getAnchorNameExpression(), evaluation);
+		hyperlinkReference = (String) evaluateExpression(getHyperlinkReferenceExpression(), evaluation);
+		hyperlinkAnchor = (String) evaluateExpression(getHyperlinkAnchorExpression(), evaluation);
+		hyperlinkPage = (Integer) evaluateExpression(getHyperlinkPageExpression(), evaluation);
 	}
 
 

@@ -90,6 +90,7 @@ import net.sf.jasperreports.engine.crosstab.JRCrosstabCell;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabColumnGroup;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabDataset;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabMeasure;
+import net.sf.jasperreports.engine.crosstab.JRCrosstabParameter;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabRowGroup;
 import net.sf.jasperreports.engine.design.JRDesignDataset;
 import net.sf.jasperreports.engine.design.JRDesignElement;
@@ -107,6 +108,8 @@ import net.sf.jasperreports.engine.xml.crosstab.JRCrosstabDatasetFactory;
 import net.sf.jasperreports.engine.xml.crosstab.JRCrosstabFactory;
 import net.sf.jasperreports.engine.xml.crosstab.JRCrosstabMeasureExpressionFactory;
 import net.sf.jasperreports.engine.xml.crosstab.JRCrosstabMeasureFactory;
+import net.sf.jasperreports.engine.xml.crosstab.JRCrosstabParameterFactory;
+import net.sf.jasperreports.engine.xml.crosstab.JRCrosstabParameterValueExpressionFactory;
 import net.sf.jasperreports.engine.xml.crosstab.JRCrosstabRowGroupFactory;
 
 import org.apache.commons.digester.Digester;
@@ -687,6 +690,13 @@ public class JRXmlDigesterFactory
 		digester.addFactoryCreate("*/crosstab", JRCrosstabFactory.class.getName());
 		digester.addSetNext("*/crosstab", "addElement", JRDesignElement.class.getName());
 		
+		digester.addFactoryCreate("*/crosstab/crosstabParameter", JRCrosstabParameterFactory.class.getName());
+		digester.addSetNext("*/crosstab/crosstabParameter", "addParameter", JRCrosstabParameter.class.getName());
+
+		digester.addFactoryCreate("*/crosstab/crosstabParameter/parameterValueExpression", JRCrosstabParameterValueExpressionFactory.class.getName());
+		digester.addSetNext("*/crosstab/crosstabParameter/parameterValueExpression", "setExpression", JRExpression.class.getName());
+		digester.addCallMethod("*/crosstab/crosstabParameter/parameterValueExpression", "setText", 0);
+
 		digester.addFactoryCreate("*/crosstab/dataset", JRCrosstabDatasetFactory.class.getName());
 		digester.addSetNext("*/crosstab/dataset", "setDataset", JRCrosstabDataset.class.getName());
 		

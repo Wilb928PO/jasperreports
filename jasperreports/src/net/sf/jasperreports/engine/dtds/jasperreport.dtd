@@ -427,7 +427,7 @@
 >
 
 
-<!ELEMENT crosstab (reportElement, dataset, rowGroup*, columnGroup*, measure*, crosstabCell*)>
+<!ELEMENT crosstab (reportElement, crosstabParameter*, parametersMapExpression?, dataset, rowGroup*, columnGroup*, measure*, crosstabCell*)>
 <!ATTLIST crosstab
 	name NMTOKEN #REQUIRED
 	isDataPreSorted (true | false) "false"
@@ -435,6 +435,14 @@
 	isRepeatColumnHeaders (true | false) "true"
 	isRepeatRowHeaders (true | false) "true"
 >
+
+<!ELEMENT crosstabParameter (parameterValueExpression?)>
+<!ATTLIST crosstabParameter
+	name CDATA #REQUIRED
+	class NMTOKEN "java.lang.String"
+>
+
+<!ELEMENT parameterValueExpression (#PCDATA)>
 
 <!ELEMENT rowGroup (bucket, crosstabRowHeader?, crosstabTotalRowHeader?)>
 <!ATTLIST rowGroup

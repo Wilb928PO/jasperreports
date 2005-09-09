@@ -174,7 +174,7 @@ public abstract class JRFillChartDataset implements JRChartDataset
 	}
 	
 	
-	protected void evaluateDatasetRun(byte evaluation) throws JRException
+	public void evaluateDatasetRun(byte evaluation) throws JRException
 	{
 		if (datasetRun != null)
 		{

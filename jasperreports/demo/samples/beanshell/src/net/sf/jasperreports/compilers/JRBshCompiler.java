@@ -37,6 +37,7 @@ import net.sf.jasperreports.engine.design.JRAbstractCompiler;
 import net.sf.jasperreports.engine.design.JRCompilationUnit;
 import net.sf.jasperreports.engine.design.JRDesignDataset;
 import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.design.crosstab.JRDesignCrosstab;
 import net.sf.jasperreports.engine.fill.JRCalculator;
 import net.sf.jasperreports.engine.fill.JREvaluator;
 
@@ -72,6 +73,12 @@ public class JRBshCompiler extends JRAbstractCompiler
 	protected String generateSourceCode(JasperDesign jasperDesign, JRDesignDataset dataset, JRExpressionCollector expressionCollector) throws JRException
 	{
 		return JRBshGenerator.generateScript(jasperDesign, dataset, expressionCollector);
+	}
+
+
+	protected String generateSourceCode(JasperDesign jasperDesign, JRDesignCrosstab crosstab, JRExpressionCollector expressionCollector) throws JRException
+	{
+		return JRBshGenerator.generateScript(jasperDesign, crosstab, expressionCollector);
 	}
 
 

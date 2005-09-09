@@ -481,15 +481,6 @@ public class JRFillChart extends JRFillElement implements JRChart
 	/**
 	 *
 	 */
-	protected Object evaluateExpression(JRExpression expression, byte evaluation) throws JRException
-	{
-		return filler.calculator.evaluate(expression, evaluation);
-	}
-
-
-	/**
-	 *
-	 */
 	protected void rewind()
 	{
 	}
@@ -578,10 +569,10 @@ public class JRFillChart extends JRFillElement implements JRChart
 				throw new JRRuntimeException("Chart type " + getChartType() + " not supported.");
 		}
 
-		anchorName = (String)filler.calculator.evaluate(getAnchorNameExpression(), evaluation);
-		hyperlinkReference = (String)filler.calculator.evaluate(getHyperlinkReferenceExpression(), evaluation);
-		hyperlinkAnchor = (String)filler.calculator.evaluate(getHyperlinkAnchorExpression(), evaluation);
-		hyperlinkPage = (Integer)filler.calculator.evaluate(getHyperlinkPageExpression(), evaluation);
+		anchorName = (String) evaluateExpression(getAnchorNameExpression(), evaluation);
+		hyperlinkReference = (String) evaluateExpression(getHyperlinkReferenceExpression(), evaluation);
+		hyperlinkAnchor = (String) evaluateExpression(getHyperlinkAnchorExpression(), evaluation);
+		hyperlinkPage = (Integer) evaluateExpression(getHyperlinkPageExpression(), evaluation);
 	}
 
 

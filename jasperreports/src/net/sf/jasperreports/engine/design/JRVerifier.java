@@ -30,6 +30,7 @@ package net.sf.jasperreports.engine.design;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -60,6 +61,7 @@ import net.sf.jasperreports.engine.JRTextElement;
 import net.sf.jasperreports.engine.JRTextField;
 import net.sf.jasperreports.engine.JRVariable;
 import net.sf.jasperreports.engine.crosstab.JRCrosstab;
+import net.sf.jasperreports.engine.design.crosstab.JRDesignCrosstab;
 
 
 /**
@@ -364,16 +366,10 @@ public class JRVerifier
 	/**
 	 *
 	 */
-	private void verifyExpressions(JRDesignDataset dataset)
+	private void verifyExpressions(List expressions, Map parametersMap, Map fieldsMap, Map variablesMap)
 	{
-		List expressions = expressionCollector.getExpressions(dataset);
-		
 		if (expressions != null && expressions.size() > 0)
 		{
-			Map parametersMap = dataset.getParametersMap();
-			Map fieldsMap = dataset.getFieldsMap();
-			Map variablesMap = dataset.getVariablesMap();
-
 			for(Iterator it = expressions.iterator(); it.hasNext();)
 			{
 				JRExpression expression = (JRExpression)it.next();
@@ -422,6 +418,15 @@ public class JRVerifier
 	}
 
 
+	private void verifyExpressions(JRDesignDataset dataset)
+	{
+		verifyExpressions(
+				expressionCollector.getExpressions(dataset), 
+				dataset.getParametersMap(), 
+				dataset.getFieldsMap(), 
+				dataset.getVariablesMap());
+	}
+	
 	/**
 	 *
 	 */
@@ -825,7 +830,7 @@ public class JRVerifier
 					}
 					else if (element instanceof JRCrosstab)
 					{
-						verifyCrosstab((JRCrosstab) element);
+						verifyCrosstab((JRDesignCrosstab) element);
 					}
 					else if (element instanceof JRChart)
 					{
@@ -1248,14 +1253,28 @@ public class JRVerifier
 	}
 	
 
-	private void verifyCrosstab(JRCrosstab crosstab)
+	private void verifyCrosstab(JRDesignCrosstab crosstab)
 	{
+		verifyExpressions(crosstab);
+		
 		// TODO luci measure incrementer is extended
 		// TODO luci bucket class is comparable or comparator is not null
 		// TODO luci numeric values if percentage
 		// TODO luci cell total groups
 		// TODO luci cell elements position
 		// TODO luci expressions
+		// TODO luci parameters
+		// TODO luci no subreps, etc in cell contents
+		// TODO luci no delayed evaluation in cell contents
+	}
+
+
+	private void verifyExpressions(JRDesignCrosstab crosstab)
+	{
+		verifyExpressions(expressionCollector.getExpressions(crosstab), 
+				crosstab.getParametersMap(), 
+				new HashMap(), 
+				crosstab.getVariablesMap());
 	}
 
 

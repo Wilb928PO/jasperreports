@@ -30,6 +30,7 @@ package net.sf.jasperreports.engine.design;
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.crosstab.JRCrosstab;
 import net.sf.jasperreports.engine.fill.JREvaluator;
 
 
@@ -62,5 +63,16 @@ public interface JRCompiler
 	 * @throws JRException
 	 */
 	public JREvaluator loadEvaluator(JasperReport jasperReport, JRDataset dataset) throws JRException;
+
+	
+	/**
+	 * Loads a expression evaluator class for a crosstab of a report.
+	 * 
+	 * @param jasperReport the report
+	 * @param crosstab the crosstab
+	 * @return an instance of the dataset evaluator class
+	 * @throws JRException
+	 */
+	public JREvaluator loadEvaluator(JasperReport jasperReport, JRCrosstab crosstab) throws JRException;
 
 }

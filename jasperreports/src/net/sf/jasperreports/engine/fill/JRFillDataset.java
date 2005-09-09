@@ -363,13 +363,22 @@ public class JRFillDataset implements JRDataset
 	/**
 	 * Creates the calculator
 	 * @param jasperReport the report
-	 * @return the create calculator
 	 * @throws JRException
 	 */
-	protected JRCalculator createCalculator(JasperReport jasperReport) throws JRException
+	protected void createCalculator(JasperReport jasperReport) throws JRException
 	{
-		JREvaluator evaluator = new JRDefaultCompiler().loadEvaluator(jasperReport, this);
-		return calculator = new JRCalculator(evaluator);
+		setCalculator(createCalculator(jasperReport, this));
+	}
+
+	protected void setCalculator(JRCalculator calculator)
+	{
+		this.calculator = calculator;
+	}
+
+	protected static JRCalculator createCalculator(JasperReport jasperReport, JRDataset dataset) throws JRException
+	{
+		JREvaluator evaluator = new JRDefaultCompiler().loadEvaluator(jasperReport, dataset);
+		return new JRCalculator(evaluator);
 	}
 
 
@@ -659,10 +668,9 @@ public class JRFillDataset implements JRDataset
 				}
 
 				dataSourceStatement = pstmt;
+				filler.fillContext.setRunningStatement(dataSourceStatement);
 
 				ResultSet rs = pstmt.executeQuery();
-
-				dataSourceStatement = null;
 
 				ds = new JRResultSetDataSource(rs);
 			}
@@ -675,7 +683,7 @@ public class JRFillDataset implements JRDataset
 		}
 		finally
 		{
-			dataSourceStatement = null;
+			filler.fillContext.clearRunningStatement();
 		}
 	}
 
@@ -789,32 +797,6 @@ public class JRFillDataset implements JRDataset
 
 		return hasNext;
 	}
-
-	
-	/**
-	 * Cancels the statement used to fire the query.
-	 * 
-	 * @return <code>true</code> if the statement was still active
-	 * @throws JRException
-	 */
-	protected boolean cancellDBStatement() throws JRException
-	{
-		PreparedStatement s = dataSourceStatement;
-		if (s != null)
-		{
-			try
-			{
-				s.cancel();
-				return true;
-			}
-			catch (Throwable t)
-			{
-				throw new JRException("Error cancelling SQL statement", t);
-			}
-		}
-		
-		return false;
-	}
 	
 	
 	/**
@@ -882,7 +864,7 @@ public class JRFillDataset implements JRDataset
 	/**
 	 * Class used to hold expression calculation  requirements.
 	 */
-	private static class VariableCalculationReq
+	protected static class VariableCalculationReq
 	{
 		String variableName;
 

@@ -33,6 +33,7 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRReport;
 import net.sf.jasperreports.engine.JRRuntimeException;
 
@@ -74,7 +75,7 @@ public abstract class JREvaluator
 	 * @param resourceMissingType the resource missing type
 	 * @throws JRException
 	 */
-	protected void init(Map parametersMap, Map fieldsMap, Map variablesMap, 
+	public void init(Map parametersMap, Map fieldsMap, Map variablesMap, 
 			JRFillParameter resourceBundleParameter, byte resourceMissingType) throws JRException
 	{
 		this.resourceBundle = resourceBundleParameter;
@@ -154,6 +155,87 @@ public abstract class JREvaluator
 		}
 
 		return str;
+	}
+
+
+	/**
+	 *
+	 */
+	public Object evaluate(JRExpression expression) throws JRExpressionEvalException
+	{
+		Object value = null;
+		
+		try
+		{
+			value = evaluate(expression.getId());
+		}
+		catch (NullPointerException e)
+		{
+		}
+		catch (OutOfMemoryError e)
+		{
+			throw e;
+		}
+		catch (Throwable e)
+		{
+			throw new JRExpressionEvalException(expression, e); 
+		}
+		
+		return value;
+	}
+	
+
+	/**
+	 *
+	 */
+	public Object evaluateOld(JRExpression expression) throws JRExpressionEvalException
+	{
+		Object value = null;
+		
+		try
+		{
+			value = evaluateOld(expression.getId());
+		}
+		catch (NullPointerException e)
+		{
+		}
+		catch (OutOfMemoryError e)
+		{
+			throw e;
+		}
+		catch (Throwable e)
+		{
+			throw new JRExpressionEvalException(expression, e); 
+		}
+		
+		return value;
+	}
+
+
+	/**
+	 *
+	 */
+	public Object evaluateEstimated(JRExpression expression) throws JRExpressionEvalException
+	{
+		Object value = null;
+		
+		try
+		{
+			value = evaluateEstimated(expression.getId());
+		}
+		catch (NullPointerException e)
+		{
+		}
+		catch (OutOfMemoryError e)
+		{
+			throw e;
+		}
+		catch (Throwable e)
+		{
+			throw new JRExpressionEvalException(expression, e); 
+		}
+		
+		return value;
 	}
 
 	

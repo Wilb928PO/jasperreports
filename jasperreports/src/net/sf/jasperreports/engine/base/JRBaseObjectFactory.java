@@ -107,6 +107,7 @@ import net.sf.jasperreports.engine.base.crosstab.JRBaseCrosstabCell;
 import net.sf.jasperreports.engine.base.crosstab.JRBaseCrosstabColumnGroup;
 import net.sf.jasperreports.engine.base.crosstab.JRBaseCrosstabDataset;
 import net.sf.jasperreports.engine.base.crosstab.JRBaseCrosstabMeasure;
+import net.sf.jasperreports.engine.base.crosstab.JRBaseCrosstabParameter;
 import net.sf.jasperreports.engine.base.crosstab.JRBaseCrosstabRowGroup;
 import net.sf.jasperreports.engine.crosstab.JRCrosstab;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabBucket;
@@ -114,6 +115,7 @@ import net.sf.jasperreports.engine.crosstab.JRCrosstabCell;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabColumnGroup;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabDataset;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabMeasure;
+import net.sf.jasperreports.engine.crosstab.JRCrosstabParameter;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabRowGroup;
 
 
@@ -292,7 +294,7 @@ public class JRBaseObjectFactory extends JRAbstractObjectFactory
 	/**
 	 *
 	 */
-	protected JRBaseVariable getVariable(JRVariable variable)
+	public JRBaseVariable getVariable(JRVariable variable)
 	{
 		JRBaseVariable baseVariable = null;
 		
@@ -1209,5 +1211,22 @@ public class JRBaseObjectFactory extends JRAbstractObjectFactory
 		}
 		
 		return baseCell;
+	}
+
+
+	public JRBaseCrosstabParameter getCrosstabParameter(JRCrosstabParameter parameter)
+	{
+		JRBaseCrosstabParameter baseParameter = null;
+
+		if (parameter != null)
+		{
+			baseParameter = (JRBaseCrosstabParameter) get(parameter);
+			if (baseParameter == null)
+			{
+				baseParameter = new JRBaseCrosstabParameter(parameter, this);
+			}
+		}
+
+		return baseParameter;
 	}
 }

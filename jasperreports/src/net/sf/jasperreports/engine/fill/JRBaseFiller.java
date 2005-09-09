@@ -61,6 +61,7 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.base.JRBasePrintPage;
 import net.sf.jasperreports.engine.base.JRVirtualPrintPage;
+import net.sf.jasperreports.engine.crosstab.JRCrosstab;
 import net.sf.jasperreports.engine.util.JRGraphEnvInitializer;
 import net.sf.jasperreports.engine.util.JRStyledTextParser;
 
@@ -385,6 +386,8 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 	 * Map of datasets ({@link JRFillDataset JRFillDataset} objects} indexed by name.
 	 */
 	protected Map datasetMap;
+	
+	protected JasperReport jasperReport;
 
 	/**
 	 * 
@@ -392,6 +395,8 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 	protected JRBaseFiller(JasperReport jasperReport, JRBaseFiller parentFiller) throws JRException
 	{
 		JRGraphEnvInitializer.initializeGraphEnv();
+		
+		this.jasperReport = jasperReport;
 		
 		/*   */
 		this.parentFiller = parentFiller;
@@ -425,6 +430,8 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 		whenResourceMissingType = jasperReport.getWhenResourceMissingType();
 
 		jasperPrint = new JasperPrint();
+		
+		calculator = JRFillDataset.createCalculator(jasperReport, jasperReport.getMainDataset());
 
 		/*   */
 		JRFillObjectFactory factory = new JRFillObjectFactory(this);
@@ -443,7 +450,7 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 			}
 		}
 		
-		createDatasets(jasperReport, factory);
+		createDatasets(factory);
 		mainDataset = factory.getDataset(jasperReport.getMainDataset());
 		groups = mainDataset.groups;
 		
@@ -458,6 +465,8 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 		pageFooter = factory.getBand(jasperReport.getPageFooter());
 		lastPageFooter = factory.getBand(jasperReport.getLastPageFooter());
 		summary = factory.getBand(jasperReport.getSummary());
+		
+		createCrosstabEvaluators(factory);
 
 		mainDataset.initChartDatasets(factory);		
 		initDatasets(factory);
@@ -476,10 +485,24 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 		scriptlet = mainDataset.initScriptlet();
 
 		/*   */
-		calculator = mainDataset.createCalculator(jasperReport);
+		mainDataset.setCalculator(calculator);
 		mainDataset.initCalculator();
 
 		initBands();
+	}
+
+
+	private void createCrosstabEvaluators(JRFillObjectFactory factory)
+	{
+		List crosstabs = jasperReport.getCrosstabs();
+		if (crosstabs != null)
+		{
+			for (Iterator iter = crosstabs.iterator(); iter.hasNext();)
+			{
+				JRCrosstab crosstab = (JRCrosstab) iter.next();
+				factory.getCrosstab(crosstab);
+			}
+		}
 	}
 
 
@@ -488,7 +511,7 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 	 * 
 	 * @return the report parameters map
 	 */
-	protected Map getParametersMap()
+	public Map getParametersMap()
 	{
 		return mainDataset.parametersMap;
 	}
@@ -499,7 +522,7 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 	 * 
 	 * @return the report fields map
 	 */
-	protected Map getFieldsMap()
+	public Map getFieldsMap()
 	{
 		return mainDataset.fieldsMap;
 	}
@@ -510,7 +533,7 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 	 * 
 	 * @return the report variables map
 	 */
-	protected Map getVariablesMap()
+	public Map getVariablesMap()
 	{
 		return mainDataset.variablesMap;
 	}
@@ -1222,18 +1245,7 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 	 */
 	public void cancelFill() throws JRException
 	{
-		boolean cancelled = mainDataset.cancellDBStatement();
-		
-		if (!cancelled && !datasetMap.isEmpty())
-		{
-			for (Iterator it = datasetMap.values().iterator(); !cancelled && it.hasNext();)
-			{
-				JRFillDataset dataset = (JRFillDataset) it.next();
-				cancelled = dataset.cancellDBStatement();
-			}
-		}
-		
-		if (!cancelled)
+		if (!fillContext.cancelRunningStatement())
 		{
 			Thread t = fillingThread;
 			if (t != null)
@@ -1365,13 +1377,13 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 	 * @return the evaluation result
 	 * @throws JRException
 	 */
-	public Object evaluateExpression(JRExpression expression, byte evaluation) throws JRException
+	protected Object evaluateExpression(JRExpression expression, byte evaluation) throws JRException
 	{
 		return mainDataset.calculator.evaluate(expression, evaluation);
 	}
 
 	
-	private void createDatasets(JasperReport jasperReport, JRFillObjectFactory factory) throws JRException
+	private void createDatasets(JRFillObjectFactory factory) throws JRException
 	{
 		datasetMap = new HashMap();
 		
@@ -1397,5 +1409,17 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 			dataset.inheritFromMain();
 			dataset.initChartDatasets(factory);
 		}
+	}
+	
+	
+	public byte getWhenResourceMissingType()
+	{
+		return mainDataset.whenResourceMissingType;
+	}
+	
+	
+	public JasperReport getJasperReport()
+	{
+		return jasperReport;
 	}
 }

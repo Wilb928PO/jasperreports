@@ -61,6 +61,7 @@ import net.sf.jasperreports.engine.crosstab.JRCrosstabCell;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabColumnGroup;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabDataset;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabMeasure;
+import net.sf.jasperreports.engine.crosstab.JRCrosstabParameter;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabRowGroup;
 
 
@@ -733,6 +734,17 @@ public class JRExpressionCollector
 		JRExpressionCollector datasetCollector = getCollector(dataset);
 		JRExpressionCollector crosstabCollector = getCollector(crosstab);
 		
+		addExpression(crosstab.getParametersMapExpression());
+		
+		JRCrosstabParameter[] parameters = crosstab.getParameters();
+		if (parameters != null)
+		{
+			for (int i = 0; i < parameters.length; i++)
+			{
+				addExpression(parameters[i].getExpression());
+			}
+		}
+		
 		JRCrosstabRowGroup[] rowGroups = crosstab.getRowGroups();
 		if (rowGroups != null)
 		{
@@ -784,7 +796,7 @@ public class JRExpressionCollector
 	 * Collects expressions from a dataset.
 	 * 
 	 * @param dataset the dataset
-	 * @return
+	 * @return collected expressions
 	 */
 	public Collection collect(JRDataset dataset)
 	{

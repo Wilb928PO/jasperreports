@@ -44,7 +44,6 @@ import net.sf.jasperreports.engine.JRReport;
 import net.sf.jasperreports.engine.JRTextElement;
 import net.sf.jasperreports.engine.JRVariable;
 import net.sf.jasperreports.engine.crosstab.JRCrosstab;
-import net.sf.jasperreports.engine.crosstab.JRCrosstabGroup;
 import net.sf.jasperreports.engine.crosstab.calculation.Bucket;
 import net.sf.jasperreports.engine.crosstab.calculation.Measure;
 
@@ -926,12 +925,12 @@ public class JRXmlConstants
 		if (crosstabTotalPositionMap == null)
 		{
 			crosstabTotalPositionMap = new HashMap();
-			crosstabTotalPositionMap.put(CROSSTAB_TOTAL_POSITION_NONE, new Byte(JRCrosstabGroup.TOTAL_POSITION_NONE));
-			crosstabTotalPositionMap.put(CROSSTAB_TOTAL_POSITION_START, new Byte(JRCrosstabGroup.TOTAL_POSITION_START));
-			crosstabTotalPositionMap.put(CROSSTAB_TOTAL_POSITION_END, new Byte(JRCrosstabGroup.TOTAL_POSITION_END));
-			crosstabTotalPositionMap.put(new Byte(JRCrosstabGroup.TOTAL_POSITION_NONE), CROSSTAB_TOTAL_POSITION_NONE);
-			crosstabTotalPositionMap.put(new Byte(JRCrosstabGroup.TOTAL_POSITION_START), CROSSTAB_TOTAL_POSITION_START);
-			crosstabTotalPositionMap.put(new Byte(JRCrosstabGroup.TOTAL_POSITION_END), CROSSTAB_TOTAL_POSITION_END);
+			crosstabTotalPositionMap.put(CROSSTAB_TOTAL_POSITION_NONE, new Byte(Bucket.TOTAL_POSITION_NONE));
+			crosstabTotalPositionMap.put(CROSSTAB_TOTAL_POSITION_START, new Byte(Bucket.TOTAL_POSITION_START));
+			crosstabTotalPositionMap.put(CROSSTAB_TOTAL_POSITION_END, new Byte(Bucket.TOTAL_POSITION_END));
+			crosstabTotalPositionMap.put(new Byte(Bucket.TOTAL_POSITION_NONE), CROSSTAB_TOTAL_POSITION_NONE);
+			crosstabTotalPositionMap.put(new Byte(Bucket.TOTAL_POSITION_START), CROSSTAB_TOTAL_POSITION_START);
+			crosstabTotalPositionMap.put(new Byte(Bucket.TOTAL_POSITION_END), CROSSTAB_TOTAL_POSITION_END);
 		}
 		
 		return crosstabTotalPositionMap;

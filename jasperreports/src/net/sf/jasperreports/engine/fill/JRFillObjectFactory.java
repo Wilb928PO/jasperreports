@@ -80,6 +80,7 @@ import net.sf.jasperreports.charts.fill.JRFillXyzDataset;
 import net.sf.jasperreports.charts.fill.JRFillXyzSeries;
 import net.sf.jasperreports.engine.JRAbstractObjectFactory;
 import net.sf.jasperreports.engine.JRBand;
+import net.sf.jasperreports.engine.JRCell;
 import net.sf.jasperreports.engine.JRChart;
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRDatasetRun;
@@ -101,8 +102,16 @@ import net.sf.jasperreports.engine.JRVariable;
 import net.sf.jasperreports.engine.base.JRBaseFont;
 import net.sf.jasperreports.engine.base.JRBaseReportFont;
 import net.sf.jasperreports.engine.crosstab.JRCrosstab;
+import net.sf.jasperreports.engine.crosstab.JRCrosstabCell;
+import net.sf.jasperreports.engine.crosstab.JRCrosstabColumnGroup;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabDataset;
+import net.sf.jasperreports.engine.crosstab.JRCrosstabParameter;
+import net.sf.jasperreports.engine.crosstab.JRCrosstabRowGroup;
 import net.sf.jasperreports.engine.fill.crosstab.JRFillCrosstab;
+import net.sf.jasperreports.engine.fill.crosstab.JRFillCrosstabCell;
+import net.sf.jasperreports.engine.fill.crosstab.JRFillCrosstabColumnGroup;
+import net.sf.jasperreports.engine.fill.crosstab.JRFillCrosstabParameter;
+import net.sf.jasperreports.engine.fill.crosstab.JRFillCrosstabRowGroup;
 
 
 /**
@@ -117,6 +126,7 @@ public class JRFillObjectFactory extends JRAbstractObjectFactory
 	 *
 	 */
 	private JRBaseFiller filler = null;
+	private JRFillExpressionEvaluator evaluator;
 
 	private JRFont defaultFont = null;
 
@@ -130,8 +140,24 @@ public class JRFillObjectFactory extends JRAbstractObjectFactory
 	protected JRFillObjectFactory(JRBaseFiller filler)
 	{
 		this.filler = filler;
+		this.evaluator = filler.calculator;
 	}
 
+
+	/**
+	 *
+	 */
+	public JRFillObjectFactory(JRBaseFiller filler, JRFillExpressionEvaluator expressionEvaluator)
+	{
+		this.filler = filler;
+		this.evaluator = expressionEvaluator;
+	}
+
+	
+	protected JRFillExpressionEvaluator getExpressionEvaluator()
+	{
+		return evaluator;
+	}
 
 	/**
 	 *
@@ -269,7 +295,7 @@ public class JRFillObjectFactory extends JRAbstractObjectFactory
 	/**
 	 *
 	 */
-	protected JRFillVariable getVariable(JRVariable variable)
+	public JRFillVariable getVariable(JRVariable variable)
 	{
 		JRFillVariable fillVariable = null;
 
@@ -1021,5 +1047,90 @@ public class JRFillObjectFactory extends JRAbstractObjectFactory
 		}
 		
 		return fillDatasetRun;
+	}
+
+
+	public JRFillCrosstabParameter getCrosstabParameter(JRCrosstabParameter parameter)
+	{
+		JRFillCrosstabParameter fillParameter = null;
+
+		if (parameter != null)
+		{
+			fillParameter = (JRFillCrosstabParameter) get(parameter);
+			if (fillParameter == null)
+			{
+				fillParameter = new JRFillCrosstabParameter(parameter, this);
+			}
+		}
+
+		return fillParameter;
+	}
+	
+	
+	public JRFillCell getCell(JRCell cell)
+	{
+		JRFillCell fillCell = null;
+
+		if (cell != null)
+		{
+			fillCell = (JRFillCell) get(cell);
+			if (fillCell == null)
+			{
+				fillCell = new JRFillCell(cell, this);
+			}
+		}
+
+		return fillCell;
+	}
+	
+	
+	public JRFillCrosstabRowGroup getCrosstabRowGroup(JRCrosstabRowGroup group)
+	{
+		JRFillCrosstabRowGroup fillGroup = null;
+
+		if (group != null)
+		{
+			fillGroup = (JRFillCrosstabRowGroup) get(group);
+			if (fillGroup == null)
+			{
+				fillGroup = new JRFillCrosstabRowGroup(group, this);
+			}
+		}
+
+		return fillGroup;
+	}
+	
+	
+	public JRFillCrosstabColumnGroup getCrosstabColumnGroup(JRCrosstabColumnGroup group)
+	{
+		JRFillCrosstabColumnGroup fillGroup = null;
+
+		if (group != null)
+		{
+			fillGroup = (JRFillCrosstabColumnGroup) get(group);
+			if (fillGroup == null)
+			{
+				fillGroup = new JRFillCrosstabColumnGroup(group, this);
+			}
+		}
+
+		return fillGroup;
+	}
+	
+	
+	public JRFillCrosstabCell getCrosstabCell(JRCrosstabCell cell)
+	{
+		JRFillCrosstabCell fillCell = null;
+
+		if (cell != null)
+		{
+			fillCell = (JRFillCrosstabCell) get(cell);
+			if (fillCell == null)
+			{
+				fillCell = new JRFillCrosstabCell(cell, this);
+			}
+		}
+
+		return fillCell;
 	}
 }

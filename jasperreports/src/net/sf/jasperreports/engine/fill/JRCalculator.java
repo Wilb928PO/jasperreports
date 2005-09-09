@@ -44,7 +44,7 @@ import net.sf.jasperreports.engine.JRVariable;
  * @author Teodor Danciu (teodord@users.sourceforge.net)
  * @version $Id$
  */
-public class JRCalculator
+public class JRCalculator implements JRFillExpressionEvaluator
 {
 
 
@@ -495,7 +495,7 @@ public class JRCalculator
 	/**
 	 *
 	 */
-	protected Object evaluate(
+	public Object evaluate(
 		JRExpression expression,
 		byte evaluationType
 		) throws JRException
@@ -531,25 +531,7 @@ public class JRCalculator
 	 */
 	public Object evaluateOld(JRExpression expression) throws JRExpressionEvalException
 	{
-		Object value = null;
-		
-		try
-		{
-			value = evaluator.evaluateOld(expression.getId());
-		}
-		catch (NullPointerException e)
-		{
-		}
-		catch (OutOfMemoryError e)
-		{
-			throw e;
-		}
-		catch (Throwable e)
-		{
-			throw new JRExpressionEvalException(expression, e); 
-		}
-		
-		return value;
+		return evaluator.evaluateOld(expression);
 	}
 
 
@@ -558,25 +540,7 @@ public class JRCalculator
 	 */
 	public Object evaluateEstimated(JRExpression expression) throws JRExpressionEvalException
 	{
-		Object value = null;
-		
-		try
-		{
-			value = evaluator.evaluateEstimated(expression.getId());
-		}
-		catch (NullPointerException e)
-		{
-		}
-		catch (OutOfMemoryError e)
-		{
-			throw e;
-		}
-		catch (Throwable e)
-		{
-			throw new JRExpressionEvalException(expression, e); 
-		}
-		
-		return value;
+		return evaluator.evaluateEstimated(expression);
 	}
 
 
@@ -585,24 +549,6 @@ public class JRCalculator
 	 */
 	public Object evaluate(JRExpression expression) throws JRExpressionEvalException
 	{
-		Object value = null;
-		
-		try
-		{
-			value = evaluator.evaluate(expression.getId());
-		}
-		catch (NullPointerException e)
-		{
-		}
-		catch (OutOfMemoryError e)
-		{
-			throw e;
-		}
-		catch (Throwable e)
-		{
-			throw new JRExpressionEvalException(expression, e); 
-		}
-		
-		return value;
+		return evaluator.evaluate(expression);
 	}
 }

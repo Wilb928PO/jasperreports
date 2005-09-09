@@ -292,7 +292,7 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport, Runna
 			)
 		{
 			JRExpression expression = getExpression();
-			Object source = filler.calculator.evaluate(expression, evaluation);
+			Object source = evaluateExpression(expression, evaluation);
 			if (source != null) // FIXME put some default broken image like in browsers
 			{
 				Class expressionClass = expression.getValueClass();
@@ -345,11 +345,11 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport, Runna
 				{
 					/*   */
 					expression = getConnectionExpression();
-					connection = (Connection)filler.calculator.evaluate(expression, evaluation);
+					connection = (Connection) evaluateExpression(expression, evaluation);
 			
 					/*   */
 					expression = getDataSourceExpression();
-					dataSource = (JRDataSource)filler.calculator.evaluate(expression, evaluation);
+					dataSource = (JRDataSource) evaluateExpression(expression, evaluation);
 					
 					parameterValues = getParameterValues(filler, getParametersMapExpression(), getParameters(), evaluation);
 
@@ -385,7 +385,7 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport, Runna
 		Map parameterValues = null;
 		if (parametersMapExpression != null)
 		{
-			parameterValues = (Map) filler.calculator.evaluate(parametersMapExpression, evaluation);
+			parameterValues = (Map) filler.evaluateExpression(parametersMapExpression, evaluation);
 		}		
 		
 		if (parameterValues != null)
@@ -413,7 +413,7 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport, Runna
 			for(int i = 0; i < subreportParameters.length; i++)
 			{
 				JRExpression expression = subreportParameters[i].getExpression();
-				parameterValue = filler.calculator.evaluate(expression, evaluation);
+				parameterValue = filler.evaluateExpression(expression, evaluation);
 				if (parameterValue == null)
 				{
 					parameterValues.remove(subreportParameters[i].getName());

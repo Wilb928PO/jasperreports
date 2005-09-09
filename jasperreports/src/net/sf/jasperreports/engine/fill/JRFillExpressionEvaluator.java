@@ -25,57 +25,16 @@
  * San Francisco CA 94107
  * http://www.jaspersoft.com
  */
-package net.sf.jasperreports.engine.xml;
+package net.sf.jasperreports.engine.fill;
 
-import net.sf.jasperreports.engine.design.JRDesignParameter;
-
-import org.xml.sax.Attributes;
-
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRExpression;
 
 /**
- * @author Teodor Danciu (teodord@users.sourceforge.net)
+ * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
-public class JRParameterFactory extends JRBaseFactory
+public interface JRFillExpressionEvaluator
 {
-
-
-	/**
-	 *
-	 */
-	private static final String ATTRIBUTE_name = "name";
-	private static final String ATTRIBUTE_class = "class";
-	private static final String ATTRIBUTE_isForPrompting = "isForPrompting";
-
-
-	/**
-	 *
-	 */
-	public Object createObject(Attributes atts)
-	{
-		JRDesignParameter parameter = new JRDesignParameter();
-		
-		setParameterAttributes(parameter, atts);
-
-		return parameter;
-	}
-
-
-	protected void setParameterAttributes(JRDesignParameter parameter, Attributes atts)
-	{
-		parameter.setName(atts.getValue(ATTRIBUTE_name));
-		
-		if (atts.getValue(ATTRIBUTE_class) != null)
-		{
-			parameter.setValueClassName(atts.getValue(ATTRIBUTE_class));
-		}
-
-		String isForPrompting = atts.getValue(ATTRIBUTE_isForPrompting);
-		if (isForPrompting != null && isForPrompting.length() > 0)
-		{
-			parameter.setForPrompting(Boolean.valueOf(isForPrompting).booleanValue());
-		}
-	}
-	
-
+	public Object evaluate(JRExpression expression, byte evaluationType) throws JRException;
 }

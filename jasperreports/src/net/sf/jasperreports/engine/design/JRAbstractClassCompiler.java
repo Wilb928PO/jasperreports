@@ -32,6 +32,7 @@ import java.io.File;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExpressionCollector;
 import net.sf.jasperreports.engine.JRReport;
+import net.sf.jasperreports.engine.design.crosstab.JRDesignCrosstab;
 import net.sf.jasperreports.engine.util.JRLoader;
 
 
@@ -102,6 +103,12 @@ public abstract class JRAbstractClassCompiler extends JRAbstractJavaCompiler imp
 	protected String generateSourceCode(JasperDesign jasperDesign, JRDesignDataset dataset, JRExpressionCollector expressionCollector) throws JRException
 	{
 		return JRClassGenerator.generateClass(jasperDesign, dataset, expressionCollector);
+	}
+
+	
+	protected String generateSourceCode(JasperDesign jasperDesign, JRDesignCrosstab crosstab, JRExpressionCollector expressionCollector) throws JRException
+	{
+		return JRClassGenerator.generateClass(jasperDesign, crosstab, expressionCollector);
 	}
 
 

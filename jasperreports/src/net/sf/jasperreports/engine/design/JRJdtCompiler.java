@@ -41,6 +41,7 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExpressionCollector;
 import net.sf.jasperreports.engine.JRReport;
 import net.sf.jasperreports.engine.JRRuntimeException;
+import net.sf.jasperreports.engine.design.crosstab.JRDesignCrosstab;
 import net.sf.jasperreports.engine.util.JRClassLoader;
 
 import org.apache.commons.logging.Log;
@@ -505,9 +506,16 @@ public class JRJdtCompiler extends JRAbstractJavaCompiler
 		}
 	}
 
+	
 	protected String generateSourceCode(JasperDesign jasperDesign, JRDesignDataset dataset, JRExpressionCollector expressionCollector) throws JRException
 	{
 		return JRClassGenerator.generateClass(jasperDesign, dataset, expressionCollector);
+	}
+
+	
+	protected String generateSourceCode(JasperDesign jasperDesign, JRDesignCrosstab crosstab, JRExpressionCollector expressionCollector) throws JRException
+	{
+		return JRClassGenerator.generateClass(jasperDesign, crosstab, expressionCollector);
 	}
 
 

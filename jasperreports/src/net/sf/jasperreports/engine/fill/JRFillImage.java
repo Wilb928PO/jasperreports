@@ -350,7 +350,7 @@ public class JRFillImage extends JRFillGraphicElement implements JRImage
 
 		JRRenderable newRenderer = null;
 		
-		Object source = this.filler.calculator.evaluate(expression, evaluation);
+		Object source = evaluateExpression(expression, evaluation);
 		if (source != null)
 		{
 			Class expressionClass = expression.getValueClass();
@@ -407,10 +407,10 @@ public class JRFillImage extends JRFillGraphicElement implements JRImage
 	
 		this.renderer = newRenderer;
 		
-		this.anchorName = (String)this.filler.calculator.evaluate(this.getAnchorNameExpression(), evaluation);
-		this.hyperlinkReference = (String)this.filler.calculator.evaluate(this.getHyperlinkReferenceExpression(), evaluation);
-		this.hyperlinkAnchor = (String)this.filler.calculator.evaluate(this.getHyperlinkAnchorExpression(), evaluation);
-		this.hyperlinkPage = (Integer)this.filler.calculator.evaluate(this.getHyperlinkPageExpression(), evaluation);
+		this.anchorName = (String) evaluateExpression(this.getAnchorNameExpression(), evaluation);
+		this.hyperlinkReference = (String) evaluateExpression(this.getHyperlinkReferenceExpression(), evaluation);
+		this.hyperlinkAnchor = (String) evaluateExpression(this.getHyperlinkAnchorExpression(), evaluation);
+		this.hyperlinkPage = (Integer) evaluateExpression(this.getHyperlinkPageExpression(), evaluation);
 	}
 	
 

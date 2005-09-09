@@ -100,37 +100,38 @@ public class JRFillDatasetRun implements JRDatasetRun
 		dataset.setParameters(parameterValues);
 		dataset.setParameterValues(parameterValues);
 
-		if (dataSourceExpression != null)
+		try
 		{
-			JRDataSource dataSource = (JRDataSource) filler.evaluateExpression(dataSourceExpression, evaluation);
-
-			dataset.setDatasource(parameterValues, dataSource);
-		}
-		else if (dataset.getQuery() != null)
-		{
-			Connection connection = null;
-
-			if (connectionExpression != null)
+			if (dataSourceExpression != null)
 			{
-				connection = (Connection) filler.evaluateExpression(connectionExpression, evaluation);
+				JRDataSource dataSource = (JRDataSource) filler.evaluateExpression(dataSourceExpression, evaluation);
+
+				dataset.setDatasource(parameterValues, dataSource);
+			}
+			else if (dataset.getQuery() != null)
+			{
+				Connection connection = null;
+
+				if (connectionExpression != null)
+				{
+					connection = (Connection) filler.evaluateExpression(connectionExpression, evaluation);
+				}
+				else
+				{
+					JRFillParameter connParam = (JRFillParameter) filler.getParametersMap().get(JRParameter.REPORT_CONNECTION);
+					connection = (Connection) connParam.getValue();
+				}
+
+				JRDataSource dataSource = dataset.createDataSource(parameterValues, connection);
+				dataset.setDatasource(parameterValues, dataSource);
 			}
 			else
 			{
-				JRFillParameter connParam = (JRFillParameter) filler.getParametersMap().get(JRParameter.REPORT_CONNECTION);
-				connection = (Connection) connParam.getValue();
+				throw new JRException("Cannot instantiate data set.");
 			}
-
-			JRDataSource dataSource = dataset.createDataSource(parameterValues, connection);
-			dataset.setDatasource(parameterValues, dataSource);
-		}
-		else
-		{
-			throw new JRException("Cannot instantiate data set.");
-		}
-		
-		dataset.filterChartDatasets(chartDataset);
-		try
-		{
+			
+			dataset.filterChartDatasets(chartDataset);
+			
 			dataset.initScriptlet();
 			dataset.initCalculator();
 
@@ -138,6 +139,7 @@ public class JRFillDatasetRun implements JRDatasetRun
 		}
 		finally
 		{
+			dataset.closeStatement();
 			dataset.restoreChartDatasets();
 		}
 	}

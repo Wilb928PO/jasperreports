@@ -58,6 +58,7 @@ public abstract class JRFillElement implements JRElement
 	 *
 	 */
 	protected JRBaseFiller filler = null;
+	protected JRFillExpressionEvaluator expressionEvaluator = null;
 
 	/**
 	 *
@@ -103,6 +104,7 @@ public abstract class JRFillElement implements JRElement
 
 		this.parent = element;
 		this.filler = filler;
+		this.expressionEvaluator = factory.getExpressionEvaluator();
 
 		/*   */
 		printWhenGroupChanges = factory.getGroup(element.getPrintWhenGroupChanges());
@@ -559,7 +561,7 @@ public abstract class JRFillElement implements JRElement
 		if (expression != null)
 		{
 			isExprNull = false;
-			Boolean printWhenExpressionValue = (Boolean)filler.calculator.evaluate(expression, evaluation);
+			Boolean printWhenExpressionValue = (Boolean) evaluateExpression(expression, evaluation);
 			if (printWhenExpressionValue == null)
 			{
 				isExprTrue = false;
@@ -807,5 +809,14 @@ public abstract class JRFillElement implements JRElement
 	 * @param evaluation the evaluation type
 	 */
 	protected abstract void resolveElement (JRPrintElement element, byte evaluation) throws JRException;
+
+
+	/**
+	 *
+	 */
+	protected final Object evaluateExpression(JRExpression expression, byte evaluation) throws JRException
+	{
+		return expressionEvaluator.evaluate(expression, evaluation);
+	}
 
 }

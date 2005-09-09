@@ -39,6 +39,8 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExpressionCollector;
 import net.sf.jasperreports.engine.JRReport;
 import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.crosstab.JRCrosstab;
+import net.sf.jasperreports.engine.design.crosstab.JRDesignCrosstab;
 import net.sf.jasperreports.engine.fill.JREvaluator;
 import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.engine.util.JRSaver;
@@ -81,6 +83,20 @@ public abstract class JRAbstractCompiler implements JRCompiler
 		
 		return className;
 	}
+
+	
+	/**
+	 * Returns the name of the expression evaluator unit for a crosstab of a report.
+	 * 
+	 * @param report the report
+	 * @param crosstab the crosstab
+	 * @return the generated expression evaluator unit name
+	 */
+	public static String getUnitName(JRReport report, JRCrosstab crosstab)
+	{
+		return report.getName() + "_CROSSTAB_" + crosstab.getName();
+	}
+
 	
 	public final JasperReport compileReport(JasperDesign jasperDesign) throws JRException
 	{
@@ -109,8 +125,9 @@ public abstract class JRAbstractCompiler implements JRCompiler
 		}
 
 		List datasets = jasperDesign.getDatasetsList();
+		List crosstabs = jasperDesign.getCrosstabs();
 		
-		JRCompilationUnit[] units = new JRCompilationUnit[datasets.size() + 1];
+		JRCompilationUnit[] units = new JRCompilationUnit[datasets.size() + crosstabs.size() + 1];
 		
 		// generating source code for the main report dataset
 		units[0] = createCompileUnit(jasperDesign, jasperDesign.getMainDesignDataset(), expressionCollector, tempDirFile);
@@ -121,6 +138,13 @@ public abstract class JRAbstractCompiler implements JRCompiler
 			JRDesignDataset dataset = (JRDesignDataset) it.next();
 			// generating source code for a sub dataset
 			units[sourcesCount] = createCompileUnit(jasperDesign, dataset, expressionCollector, tempDirFile);
+		}
+		
+		for (Iterator it = crosstabs.iterator(); it.hasNext(); ++sourcesCount)
+		{
+			JRDesignCrosstab crosstab = (JRDesignCrosstab) it.next();
+			// generating source code for a sub dataset
+			units[sourcesCount] = createCompileUnit(jasperDesign, crosstab, expressionCollector, tempDirFile);
 		}
 		
 		String classpath = JRProperties.getProperty(JRProperties.COMPILER_CLASSPATH);
@@ -142,6 +166,12 @@ public abstract class JRAbstractCompiler implements JRCompiler
 			{
 				JRDesignDataset dataset = (JRDesignDataset) it.next();
 				reportCompileData.setDatasetCompileData(dataset, units[it.nextIndex()].getCompileData());
+			}
+			
+			for (ListIterator it = crosstabs.listIterator(); it.hasNext();)
+			{
+				JRDesignCrosstab crosstab = (JRDesignCrosstab) it.next();
+				reportCompileData.setCrosstabCompileData(crosstab, units[datasets.size() + it.nextIndex()].getCompileData());
 			}
 
 			// creating the report
@@ -195,6 +225,25 @@ public abstract class JRAbstractCompiler implements JRCompiler
 		
 		String sourceCode = generateSourceCode(jasperDesign, dataset, expressionCollector);
 		
+		File sourceFile = getSourceFile(saveSourceDir, unitName, sourceCode);
+
+		return new JRCompilationUnit(unitName, sourceCode, sourceFile, expressionCollector.getExpressions(dataset));
+	}
+	
+	private JRCompilationUnit createCompileUnit(JasperDesign jasperDesign, JRDesignCrosstab crosstab, JRExpressionCollector expressionCollector, File saveSourceDir) throws JRException
+	{		
+		String unitName = JRAbstractCompiler.getUnitName(jasperDesign, crosstab);
+		
+		String sourceCode = generateSourceCode(jasperDesign, crosstab, expressionCollector);
+		
+		File sourceFile = getSourceFile(saveSourceDir, unitName, sourceCode);
+
+		return new JRCompilationUnit(unitName, sourceCode, sourceFile, expressionCollector.getExpressions(crosstab));
+	}
+
+
+	private File getSourceFile(File saveSourceDir, String unitName, String sourceCode) throws JRException
+	{
 		File sourceFile = null;
 		if (saveSourceDir != null)
 		{
@@ -203,8 +252,7 @@ public abstract class JRAbstractCompiler implements JRCompiler
 
 			JRSaver.saveClassSource(sourceCode, sourceFile);
 		}
-
-		return new JRCompilationUnit(unitName, sourceCode, sourceFile, expressionCollector.getExpressions(dataset));
+		return sourceFile;
 	}
 
 	private void deleteSourceFiles(JRCompilationUnit[] units)
@@ -225,6 +273,14 @@ public abstract class JRAbstractCompiler implements JRCompiler
 		String unitName = JRAbstractCompiler.getUnitName(jasperReport, dataset);
 		JRReportCompileData reportCompileData = (JRReportCompileData) jasperReport.getCompileData();
 		Serializable compileData = reportCompileData.getDatasetCompileData(dataset);
+		return loadEvaluator(compileData, unitName);
+	}
+
+	public JREvaluator loadEvaluator(JasperReport jasperReport, JRCrosstab crosstab) throws JRException
+	{
+		String unitName = JRAbstractCompiler.getUnitName(jasperReport, crosstab);
+		JRReportCompileData reportCompileData = (JRReportCompileData) jasperReport.getCompileData();
+		Serializable compileData = reportCompileData.getCrosstabCompileData(crosstab);
 		return loadEvaluator(compileData, unitName);
 	}
 
@@ -259,6 +315,18 @@ public abstract class JRAbstractCompiler implements JRCompiler
 	 * @throws JRException
 	 */
 	protected abstract String generateSourceCode(JasperDesign jasperDesign, JRDesignDataset dataset, JRExpressionCollector expressionCollector) throws JRException;
+
+	
+	/**
+	 * Generates expression evaluator code for a crosstab of a report.
+	 * 
+	 * @param jasperDesign the report
+	 * @param crosstab the crosstab
+	 * @param expressionCollector the collector used to collect report expressions
+	 * @return generated expression evaluator code
+	 * @throws JRException
+	 */
+	protected abstract String generateSourceCode(JasperDesign jasperDesign, JRDesignCrosstab crosstab, JRExpressionCollector expressionCollector) throws JRException;
 
 	
 	/**
