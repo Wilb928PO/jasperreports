@@ -117,8 +117,6 @@ public class JRBaseStyle implements JRStyle, Serializable
 		this.parentStyle = factory.getStyle(style.getParentStyle());
 		isDefault = style.isDefault();
 
-		this.positionType = style.getOwnPositionType();
-		this.stretchType = style.getOwnStretchType();
 		this.mode = style.getOwnMode();
 		this.forecolor = style.getOwnForecolor();
 		this.backcolor = style.getOwnBackcolor();
@@ -663,30 +661,6 @@ public class JRBaseStyle implements JRStyle, Serializable
 	public String getOwnPattern()
 	{
 		return pattern;
-	}
-
-	public Byte getPositionType()
-	{
-		if (positionType == null && parentStyle != null)
-			return parentStyle.getPositionType();
-		return positionType;
-	}
-
-	public Byte getOwnPositionType()
-	{
-		return positionType;
-	}
-
-	public Byte getStretchType()
-	{
-		if (stretchType == null && parentStyle != null)
-			return parentStyle.getStretchType();
-		return stretchType;
-	}
-
-	public Byte getOwnStretchType()
-	{
-		return stretchType;
 	}
 
 	public Byte getMode()

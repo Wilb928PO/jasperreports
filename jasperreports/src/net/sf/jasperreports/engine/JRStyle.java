@@ -28,13 +28,12 @@
 package net.sf.jasperreports.engine;
 
 import java.awt.Color;
-import java.io.Serializable;
 
 /**
  * @author Ionut Nedelcu (ionutned@users.sourceforge.net)
  * @version $Id
  */
-public interface JRStyle extends Serializable
+public interface JRStyle
 {
 	/**
 	 * Gets the style unique name.
@@ -48,21 +47,6 @@ public interface JRStyle extends Serializable
 	 */
 	public boolean isDefault();
 
-	/**
-	 * Returns the position type for the element
-	 * @return a byte value representing one of the position type constants in this class
-	 */
-	public Byte getPositionType();
-
-	public Byte getOwnPositionType();
-
-	/**
-	 * Returns the stretch type for the element
-	 * @return a byte value representing one of the strech type constants in this class
-	 */
-	public Byte getStretchType();
-
-	public Byte getOwnStretchType();
 	/**
 	 * Returns the element transparency mode.
 	 * The default value depends on the type of the report element. Graphic elements like rectangles and lines are

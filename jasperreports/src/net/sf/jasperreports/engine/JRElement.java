@@ -101,8 +101,6 @@ public interface JRElement extends JRChild
 	 */
 	public byte getPositionType();
 
-	public Byte getOwnPositionType();
-
 	/**
 	 * Sets the position type for the element.
 	 * @param positionType a byte value that must be one of the position type constants in this class
@@ -114,8 +112,6 @@ public interface JRElement extends JRChild
 	 * @return a byte value representing one of the strech type constants in this class
 	 */
 	public byte getStretchType();
-		
-	public Byte getOwnStretchType();
 
 	/**
 	 * Sets the stretch type for the element.

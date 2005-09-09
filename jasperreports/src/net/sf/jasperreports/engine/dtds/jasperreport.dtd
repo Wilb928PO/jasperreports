@@ -53,8 +53,6 @@
 <!ATTLIST style
 	name NMTOKEN #REQUIRED
 	style NMTOKEN #IMPLIED
-	positionType (Float | FixRelativeToTop | FixRelativeToBottom) "FixRelativeToTop"
-	stretchType (NoStretch | RelativeToTallestObject | RelativeToBandHeight) "NoStretch"
 	mode (Opaque | Transparent) #IMPLIED
 	forecolor CDATA #IMPLIED
 	backcolor CDATA #IMPLIED

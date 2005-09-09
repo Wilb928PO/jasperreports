@@ -58,8 +58,8 @@ public abstract class JRBaseElement implements JRElement, Serializable
 	 *
 	 */
 	protected String key = null;
-	protected Byte positionType;
-	protected Byte stretchType;
+	protected byte positionType;
+	protected byte stretchType;
 	protected boolean isPrintRepeatedValues = true;
 	protected Byte mode;
 	protected int x = 0;
@@ -104,8 +104,8 @@ public abstract class JRBaseElement implements JRElement, Serializable
 		factory.put(element, this);
 
 		key = element.getKey();
-		positionType = element.getOwnPositionType();
-		stretchType = element.getOwnStretchType();
+		positionType = element.getPositionType();
+		stretchType = element.getStretchType();
 		isPrintRepeatedValues = element.isPrintRepeatedValues();
 		mode = element.getOwnMode();
 		x = element.getX();
@@ -151,18 +151,7 @@ public abstract class JRBaseElement implements JRElement, Serializable
 	 */
 	public byte getPositionType()
 	{
-		if (positionType == null) {
-			JRStyle style = getBaseStyle();
-			if (style != null && style.getPositionType() != null)
-				return style.getPositionType().byteValue();
-			return POSITION_TYPE_FIX_RELATIVE_TO_TOP;
-		}
-		return positionType.byteValue();
-	}
-
-	public Byte getOwnPositionType()
-	{
-		return this.positionType;
+		return positionType;
 	}
 
 	/**
@@ -170,24 +159,13 @@ public abstract class JRBaseElement implements JRElement, Serializable
 	 */
 	public void setPositionType(byte positionType)
 	{
-		this.positionType = new Byte(positionType);
+		this.positionType = positionType;
 	}
 
 	/**
 	 *
 	 */
 	public byte getStretchType()
-	{
-		if (stretchType == null) {
-			JRStyle style = getBaseStyle();
-			if (style != null && style.getStretchType() != null)
-				return style.getStretchType().byteValue();
-			return STRETCH_TYPE_NO_STRETCH;
-		}
-		return stretchType.byteValue();
-	}
-
-	public Byte getOwnStretchType()
 	{
 		return stretchType;
 	}
@@ -197,7 +175,7 @@ public abstract class JRBaseElement implements JRElement, Serializable
 	 */
 	public void setStretchType(byte stretchType)
 	{
-		this.stretchType = new Byte(stretchType);
+		this.stretchType = stretchType;
 	}
 
 	/**
