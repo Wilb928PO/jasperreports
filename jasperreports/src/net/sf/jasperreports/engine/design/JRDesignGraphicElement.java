@@ -108,6 +108,14 @@ public abstract class JRDesignGraphicElement extends JRDesignElement implements 
 	/**
 	 *
 	 */
+	public void setPen(Byte pen)
+	{
+		this.pen = pen;
+	}
+
+	/**
+	 *
+	 */
 	public byte getFill()
 	{
 		if (fill == null) {
@@ -131,4 +139,13 @@ public abstract class JRDesignGraphicElement extends JRDesignElement implements 
 	{
 		this.fill = new Byte(fill);
 	}
+
+	/**
+	 *
+	 */
+	public void setFill(Byte fill)
+	{
+		this.fill = fill;
+	}
+
 }

@@ -32,6 +32,7 @@ import java.io.Serializable;
 
 import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRPrintElement;
+import net.sf.jasperreports.engine.JRStyle;
 
 
 /**
@@ -58,7 +59,9 @@ public class JRBasePrintElement implements JRPrintElement, Serializable
 	protected Color forecolor = Color.black;
 	protected Color backcolor = Color.white;
 
+	protected JRStyle style;
 
+	
 	/**
 	 *
 	 */

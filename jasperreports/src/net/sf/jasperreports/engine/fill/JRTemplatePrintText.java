@@ -28,7 +28,6 @@
 package net.sf.jasperreports.engine.fill;
 
 import java.awt.Color;
-import java.awt.font.TextAttribute;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,7 +38,7 @@ import net.sf.jasperreports.engine.JRGraphicElement;
 import net.sf.jasperreports.engine.JRPrintText;
 import net.sf.jasperreports.engine.JRReportFont;
 import net.sf.jasperreports.engine.JRStyle;
-import net.sf.jasperreports.engine.util.JRTextAttribute;
+import net.sf.jasperreports.engine.util.JRFontUtil;
 
 
 /**
@@ -98,7 +97,6 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	protected String pdfEncoding = null;
 	protected Boolean isPdfEmbedded = null;
 	
-	protected boolean isCachingAttributes = false;
 	protected transient Map attributes = null;
 
 	/**
@@ -191,7 +189,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 		
 	public Byte getOwnHorizontalAlignment()
 	{
-		return null;
+		return ((JRTemplateText)template).getOwnHorizontalAlignment();
 	}
 
 	/**
@@ -204,20 +202,37 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	/**
 	 *
 	 */
+	public void setHorizontalAlignment(Byte horizontalAlignment)
+	{
+	}
+		
+	/**
+	 *
+	 */
 	public byte getVerticalAlignment()
 	{
 		return ((JRTemplateText)template).getVerticalAlignment();
 	}
 		
+	/**
+	 *
+	 */
 	public Byte getOwnVerticalAlignment()
 	{
-		return null;
+		return ((JRTemplateText)template).getOwnVerticalAlignment();
 	}
 
 	/**
 	 *
 	 */
 	public void setVerticalAlignment(byte verticalAlignment)
+	{
+	}
+		
+	/**
+	 *
+	 */
+	public void setVerticalAlignment(Byte verticalAlignment)
 	{
 	}
 		
@@ -231,13 +246,20 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 		
 	public Byte getOwnRotation()
 	{
-		return null;
+		return ((JRTemplateText)template).getOwnRotation();
 	}
 
 	/**
 	 *
 	 */
 	public void setRotation(byte rotation)
+	{
+	}
+		
+	/**
+	 *
+	 */
+	public void setRotation(Byte rotation)
 	{
 	}
 		
@@ -283,13 +305,20 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 		
 	public Byte getOwnLineSpacing()
 	{
-		return null;
+		return ((JRTemplateText)template).getOwnLineSpacing();
 	}
 
 	/**
 	 *
 	 */
 	public void setLineSpacing(byte lineSpacing)
+	{
+	}
+		
+	/**
+	 *
+	 */
+	public void setLineSpacing(Byte lineSpacing)
 	{
 	}
 		
@@ -303,13 +332,20 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 		
 	public Boolean isOwnStyledText()
 	{
-		return null;
+		return ((JRTemplateText)template).isOwnStyledText();
 	}
 
 	/**
 	 *
 	 */
 	public void setStyledText(boolean isStyledText)
+	{
+	}
+		
+	/**
+	 *
+	 */
+	public void setStyledText(Boolean isStyledText)
 	{
 	}
 		
@@ -1272,31 +1308,81 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	/**
 	 *
 	 */
-	public Map getNonPdfAttributes()
+	public void setBorder(Byte border)
 	{
-		Map nonPdfAttributes = new HashMap();
+		this.border = border;
+	}
 
-		nonPdfAttributes.put(TextAttribute.FAMILY, getFontName());
-		nonPdfAttributes.put(TextAttribute.SIZE, new Float(getSize()));
+	/**
+	 *
+	 */
+	public void setPadding(Integer padding)
+	{
+		this.padding = padding;
+	}
 
-		if (isBold())
-		{
-			nonPdfAttributes.put(TextAttribute.WEIGHT, TextAttribute.WEIGHT_BOLD);
-		}
-		if (isItalic())
-		{
-			nonPdfAttributes.put(TextAttribute.POSTURE, TextAttribute.POSTURE_OBLIQUE);
-		}
-		if (isUnderline())
-		{
-			nonPdfAttributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
-		}
-		if (isStrikeThrough())
-		{
-			nonPdfAttributes.put(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON);
-		}
+	/**
+	 *
+	 */
+	public void setTopBorder(Byte topBorder)
+	{
+		this.topBorder = topBorder;
+	}
 
-		return nonPdfAttributes;
+	/**
+	 *
+	 */
+	public void setTopPadding(Integer topPadding)
+	{
+		this.topPadding = topPadding;
+	}
+
+	/**
+	 *
+	 */
+	public void setLeftBorder(Byte leftBorder)
+	{
+		this.leftBorder = leftBorder;
+	}
+
+	/**
+	 *
+	 */
+	public void setLeftPadding(Integer leftPadding)
+	{
+		this.leftPadding = leftPadding;
+	}
+
+	/**
+	 *
+	 */
+	public void setBottomBorder(Byte bottomBorder)
+	{
+		this.bottomBorder = bottomBorder;
+	}
+
+	/**
+	 *
+	 */
+	public void setBottomPadding(Integer bottomPadding)
+	{
+		this.bottomPadding = bottomPadding;
+	}
+
+	/**
+	 *
+	 */
+	public void setRightBorder(Byte rightBorder)
+	{
+		this.rightBorder = rightBorder;
+	}
+
+	/**
+	 *
+	 */
+	public void setRightPadding(Integer rightPadding)
+	{
+		this.rightPadding = rightPadding;
 	}
 
 
@@ -1305,28 +1391,14 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public Map getAttributes()
 	{
-		if (attributes == null || !isCachingAttributes)
+		if (attributes == null)
 		{
-			attributes = getNonPdfAttributes();
-
-			attributes.put(JRTextAttribute.PDF_FONT_NAME, getPdfFontName());
-			attributes.put(JRTextAttribute.PDF_ENCODING, getPdfEncoding());
-
-			if (isPdfEmbedded())
-			{
-				attributes.put(JRTextAttribute.IS_PDF_EMBEDDED, Boolean.TRUE);
-			}
+			attributes = new HashMap();
+			
+			JRFontUtil.setAttributes(attributes, this);
 		}
 
 		return attributes;
-	}
-
-	/**
-	 *
-	 */
-	public boolean isCachingAttributes()
-	{
-		return isCachingAttributes;
 	}
 	
 }

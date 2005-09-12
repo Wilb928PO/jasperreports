@@ -77,6 +77,13 @@ public abstract class JRFillGraphicElement extends JRFillElement implements JRGr
 	/**
 	 *
 	 */
+	public void setPen(Byte pen)
+	{
+	}
+	
+	/**
+	 *
+	 */
 	public byte getFill()
 	{
 		return ((JRGraphicElement)this.parent).getFill();
@@ -94,6 +101,13 @@ public abstract class JRFillGraphicElement extends JRFillElement implements JRGr
 	 *
 	 */
 	public void setFill(byte fill)
+	{
+	}
+	
+	/**
+	 *
+	 */
+	public void setFill(Byte fill)
 	{
 	}
 	

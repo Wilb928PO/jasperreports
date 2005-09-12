@@ -94,7 +94,6 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 	protected String pdfEncoding = null;
 	protected Boolean isPdfEmbedded = null;
 
-//	protected boolean isCachingAttributes = false;
 	protected transient Map attributes = null;
 
 	/**
@@ -213,6 +212,14 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 	/**
 	 *
 	 */
+	public void setHorizontalAlignment(Byte horizontalAlignment)
+	{
+		this.horizontalAlignment = horizontalAlignment;
+	}
+
+	/**
+	 *
+	 */
 	public byte getVerticalAlignment()
 	{
 		if (verticalAlignment == null) {
@@ -235,6 +242,14 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 	public void setVerticalAlignment(byte verticalAlignment)
 	{
 		this.verticalAlignment = new Byte(verticalAlignment);
+	}
+
+	/**
+	 *
+	 */
+	public void setVerticalAlignment(Byte verticalAlignment)
+	{
+		this.verticalAlignment = verticalAlignment;
 	}
 
 	/**
@@ -267,6 +282,14 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 	/**
 	 *
 	 */
+	public void setRotation(Byte rotation)
+	{
+		this.rotation = rotation;
+	}
+
+	/**
+	 *
+	 */
 	public byte getLineSpacing()
 	{
 		if (lineSpacing == null) {
@@ -294,6 +317,14 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 	/**
 	 *
 	 */
+	public void setLineSpacing(Byte lineSpacing)
+	{
+		this.lineSpacing = lineSpacing;
+	}
+
+	/**
+	 *
+	 */
 	public boolean isStyledText()
 	{
 		if (isStyledText == null) {
@@ -315,7 +346,15 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 	 */
 	public void setStyledText(boolean isStyledText)
 	{
-		this.isStyledText = isStyledText ? Boolean.TRUE : Boolean.FALSE;
+		setStyledText(isStyledText ? Boolean.TRUE : Boolean.FALSE);
+	}
+
+	/**
+	 *
+	 */
+	public void setStyledText(Boolean isStyledText)
+	{
+		this.isStyledText = isStyledText;
 	}
 
 	/**
@@ -375,6 +414,14 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 	/**
 	 *
 	 */
+	public void setBorder(Byte border)
+	{
+		this.border = border;
+	}
+
+	/**
+	 *
+	 */
 	public Color getBorderColor()
 	{
 		if (borderColor == null) {
@@ -429,6 +476,14 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 	/**
 	 *
 	 */
+	public void setPadding(Integer padding)
+	{
+		this.padding = padding;
+	}
+
+	/**
+	 *
+	 */
 	public byte getTopBorder()
 	{
 		if (topBorder == null)
@@ -457,6 +512,14 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 	public void setTopBorder(byte topBorder)
 	{
 		this.topBorder = new Byte(topBorder);
+	}
+
+	/**
+	 *
+	 */
+	public void setTopBorder(Byte topBorder)
+	{
+		this.topBorder = topBorder;
 	}
 
 	/**
@@ -527,6 +590,14 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 	/**
 	 *
 	 */
+	public void setTopPadding(Integer topPadding)
+	{
+		this.topPadding = topPadding;
+	}
+
+	/**
+	 *
+	 */
 	public byte getLeftBorder()
 	{
 		if (leftBorder == null)
@@ -555,6 +626,14 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 	public void setLeftBorder(byte leftBorder)
 	{
 		this.leftBorder = new Byte(leftBorder);
+	}
+
+	/**
+	 *
+	 */
+	public void setLeftBorder(Byte leftBorder)
+	{
+		this.leftBorder = leftBorder;
 	}
 
 	/**
@@ -625,6 +704,14 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 	/**
 	 *
 	 */
+	public void setLeftPadding(Integer leftPadding)
+	{
+		this.leftPadding = leftPadding;
+	}
+
+	/**
+	 *
+	 */
 	public byte getBottomBorder()
 	{
 		if (bottomBorder == null)
@@ -653,6 +740,14 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 	public void setBottomBorder(byte bottomBorder)
 	{
 		this.bottomBorder = new Byte(bottomBorder);
+	}
+
+	/**
+	 *
+	 */
+	public void setBottomBorder(Byte bottomBorder)
+	{
+		this.bottomBorder = bottomBorder;
 	}
 
 	/**
@@ -723,6 +818,14 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 	/**
 	 *
 	 */
+	public void setBottomPadding(Integer bottomPadding)
+	{
+		this.bottomPadding = bottomPadding;
+	}
+
+	/**
+	 *
+	 */
 	public byte getRightBorder()
 	{
 		if (rightBorder == null)
@@ -751,6 +854,14 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 	public void setRightBorder(byte rightBorder)
 	{
 		this.rightBorder = new Byte(rightBorder);
+	}
+
+	/**
+	 *
+	 */
+	public void setRightBorder(Byte rightBorder)
+	{
+		this.rightBorder = rightBorder;
 	}
 
 	/**
@@ -818,6 +929,13 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 		this.rightPadding = new Integer(rightPadding);
 	}
 
+	/**
+	 *
+	 */
+	public void setRightPadding(Integer rightPadding)
+	{
+		this.rightPadding = rightPadding;
+	}
 
 	/**
 	 *
@@ -1188,23 +1306,6 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 	public void setPdfEmbedded(Boolean isPdfEmbedded)
 	{
 		this.isPdfEmbedded = isPdfEmbedded;
-	}
-
-	/**
-	 *
-	 *
-	public boolean isCachingAttributes()
-	{
-		return isCachingAttributes;
-	}
-
-	/**
-	 *
-	 *
-	public void setCachingAttributes(boolean isCachingAttributes)
-	{
-		this.isCachingAttributes = isCachingAttributes;
-		attributes = null;
 	}
 
 

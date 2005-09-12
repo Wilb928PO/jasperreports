@@ -97,6 +97,11 @@ public interface JRFont
 	/**
 	 *
 	 */
+	public void setBold(Boolean isBold);
+	
+	/**
+	 *
+	 */
 	public boolean isItalic();
 	
 	/**
@@ -108,6 +113,11 @@ public interface JRFont
 	 *
 	 */
 	public void setItalic(boolean isItalic);
+	
+	/**
+	 *
+	 */
+	public void setItalic(Boolean isItalic);
 	
 	/**
 	 *
@@ -127,6 +137,11 @@ public interface JRFont
 	/**
 	 *
 	 */
+	public void setUnderline(Boolean isUnderline);
+	
+	/**
+	 *
+	 */
 	public boolean isStrikeThrough();
 	
 	/**
@@ -142,6 +157,11 @@ public interface JRFont
 	/**
 	 *
 	 */
+	public void setStrikeThrough(Boolean isStrikeThrough);
+
+	/**
+	 *
+	 */
 	public int getSize();
 	
 	/**
@@ -153,6 +173,11 @@ public interface JRFont
 	 *
 	 */
 	public void setSize(int size);
+
+	/**
+	 *
+	 */
+	public void setSize(Integer size);
 
 	/**
 	 *
@@ -201,15 +226,9 @@ public interface JRFont
 	
 	/**
 	 *
-	 *
-	public boolean isCachingAttributes();
-
-	/**
-	 *
-	 *
-	public Map getNonPdfAttributes();
-
-
+	 */
+	public void setPdfEmbedded(Boolean isPdfEmbedded);
+	
 	/**
 	 *
 	 */

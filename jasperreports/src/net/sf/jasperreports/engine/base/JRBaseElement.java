@@ -224,6 +224,14 @@ public abstract class JRBaseElement implements JRElement, Serializable
 	/**
 	 *
 	 */
+	public void setMode(Byte mode)
+	{
+		this.mode = mode;
+	}
+
+	/**
+	 *
+	 */
 	public int getX()
 	{
 		return this.x;

@@ -90,6 +90,8 @@ public interface JRGraphicElement extends JRElement
 	 */
 	public void setPen(byte pen);
 
+	public void setPen(Byte pen);
+
 	/**
 	 * Indicates the fill type used for this element.
 	 * @return one of the pen constants in this class
@@ -103,6 +105,8 @@ public interface JRGraphicElement extends JRElement
 	 * @param fill one of the pen constants in this class
 	 */
 	public void setFill(byte fill);
+	
+	public void setFill(Byte fill);
 	
 
 }

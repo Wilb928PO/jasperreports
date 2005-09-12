@@ -86,22 +86,17 @@ public interface JRPrintText extends JRPrintElement, JRAlignment, JRPrintAnchor,
 	/**
 	 *
 	 */
-	public byte getVerticalAlignment();
-		
-	/**
-	 *
-	 */
-	public void setVerticalAlignment(byte verticalAlignment);
-		
-	/**
-	 *
-	 */
 	public byte getRotation();
 		
 	/**
 	 *
 	 */
 	public void setRotation(byte rotation);
+		
+	/**
+	 *
+	 */
+	public void setRotation(Byte rotation);
 		
 	/**
 	 *
@@ -136,12 +131,22 @@ public interface JRPrintText extends JRPrintElement, JRAlignment, JRPrintAnchor,
 	/**
 	 *
 	 */
+	public void setLineSpacing(Byte lineSpacing);
+		
+	/**
+	 *
+	 */
 	public boolean isStyledText();
 		
 	/**
 	 *
 	 */
 	public void setStyledText(boolean isStyledText);
+		
+	/**
+	 *
+	 */
+	public void setStyledText(Boolean isStyledText);
 		
 	/**
 	 * @deprecated

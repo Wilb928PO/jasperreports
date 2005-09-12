@@ -28,7 +28,6 @@
 package net.sf.jasperreports.engine.design;
 
 import java.awt.Color;
-import java.awt.font.TextAttribute;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,7 +38,7 @@ import net.sf.jasperreports.engine.JRGraphicElement;
 import net.sf.jasperreports.engine.JRReportFont;
 import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.JRTextElement;
-import net.sf.jasperreports.engine.util.JRTextAttribute;
+import net.sf.jasperreports.engine.util.JRFontUtil;
 
 
 /**
@@ -97,7 +96,6 @@ public abstract class JRDesignTextElement extends JRDesignElement implements JRT
 	protected String pdfEncoding = null;
 	protected Boolean isPdfEmbedded = null;
 
-	protected boolean isCachingAttributes = false;
 	protected transient Map attributes = null;
 
 	/**
@@ -183,6 +181,14 @@ public abstract class JRDesignTextElement extends JRDesignElement implements JRT
 	/**
 	 *
 	 */
+	public void setHorizontalAlignment(Byte horizontalAlignment)
+	{
+		this.horizontalAlignment = horizontalAlignment;
+	}
+
+	/**
+	 *
+	 */
 	public byte getVerticalAlignment()
 	{
 		if (verticalAlignment == null) {
@@ -205,6 +211,14 @@ public abstract class JRDesignTextElement extends JRDesignElement implements JRT
 	public void setVerticalAlignment(byte verticalAlignment)
 	{
 		this.verticalAlignment = new Byte(verticalAlignment);
+	}
+
+	/**
+	 *
+	 */
+	public void setVerticalAlignment(Byte verticalAlignment)
+	{
+		this.verticalAlignment = verticalAlignment;
 	}
 
 	/**
@@ -237,6 +251,14 @@ public abstract class JRDesignTextElement extends JRDesignElement implements JRT
 	/**
 	 *
 	 */
+	public void setRotation(Byte rotation)
+	{
+		this.rotation = rotation;
+	}
+
+	/**
+	 *
+	 */
 	public byte getLineSpacing()
 	{
 		if (lineSpacing == null) {
@@ -264,6 +286,14 @@ public abstract class JRDesignTextElement extends JRDesignElement implements JRT
 	/**
 	 *
 	 */
+	public void setLineSpacing(Byte lineSpacing)
+	{
+		this.lineSpacing = lineSpacing;
+	}
+
+	/**
+	 *
+	 */
 	public boolean isStyledText()
 	{
 		if (isStyledText == null) {
@@ -285,7 +315,15 @@ public abstract class JRDesignTextElement extends JRDesignElement implements JRT
 	 */
 	public void setStyledText(boolean isStyledText)
 	{
-		this.isStyledText = isStyledText ? Boolean.TRUE : Boolean.FALSE;
+		setStyledText(isStyledText ? Boolean.TRUE : Boolean.FALSE);
+	}
+
+	/**
+	 *
+	 */
+	public void setStyledText(Boolean isStyledText)
+	{
+		this.isStyledText = isStyledText;
 	}
 
 	/**
@@ -1191,49 +1229,81 @@ public abstract class JRDesignTextElement extends JRDesignElement implements JRT
 	/**
 	 *
 	 */
-	public boolean isCachingAttributes()
+	public void setBorder(Byte border)
 	{
-		return isCachingAttributes;
+		this.border = border;
 	}
 
 	/**
 	 *
 	 */
-	public void setCachingAttributes(boolean isCachingAttributes)
+	public void setPadding(Integer padding)
 	{
-		this.isCachingAttributes = isCachingAttributes;
-		attributes = null;
+		this.padding = padding;
 	}
-
 
 	/**
 	 *
 	 */
-	public Map getNonPdfAttributes()
+	public void setTopBorder(Byte topBorder)
 	{
-		Map nonPdfAttributes = new HashMap();
+		this.topBorder = topBorder;
+	}
 
-		nonPdfAttributes.put(TextAttribute.FAMILY, getFontName());
-		nonPdfAttributes.put(TextAttribute.SIZE, new Float(getSize()));
+	/**
+	 *
+	 */
+	public void setTopPadding(Integer topPadding)
+	{
+		this.topPadding = topPadding;
+	}
 
-		if (isBold())
-		{
-			nonPdfAttributes.put(TextAttribute.WEIGHT, TextAttribute.WEIGHT_BOLD);
-		}
-		if (isItalic())
-		{
-			nonPdfAttributes.put(TextAttribute.POSTURE, TextAttribute.POSTURE_OBLIQUE);
-		}
-		if (isUnderline())
-		{
-			nonPdfAttributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
-		}
-		if (isStrikeThrough())
-		{
-			nonPdfAttributes.put(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON);
-		}
+	/**
+	 *
+	 */
+	public void setLeftBorder(Byte leftBorder)
+	{
+		this.leftBorder = leftBorder;
+	}
 
-		return nonPdfAttributes;
+	/**
+	 *
+	 */
+	public void setLeftPadding(Integer leftPadding)
+	{
+		this.leftPadding = leftPadding;
+	}
+
+	/**
+	 *
+	 */
+	public void setBottomBorder(Byte bottomBorder)
+	{
+		this.bottomBorder = bottomBorder;
+	}
+
+	/**
+	 *
+	 */
+	public void setBottomPadding(Integer bottomPadding)
+	{
+		this.bottomPadding = bottomPadding;
+	}
+
+	/**
+	 *
+	 */
+	public void setRightBorder(Byte rightBorder)
+	{
+		this.rightBorder = rightBorder;
+	}
+
+	/**
+	 *
+	 */
+	public void setRightPadding(Integer rightPadding)
+	{
+		this.rightPadding = rightPadding;
 	}
 
 
@@ -1242,17 +1312,11 @@ public abstract class JRDesignTextElement extends JRDesignElement implements JRT
 	 */
 	public Map getAttributes()
 	{
-		if (attributes == null || !isCachingAttributes)
+		if (attributes == null)
 		{
-			attributes = getNonPdfAttributes();
+			attributes = new HashMap();
 
-			attributes.put(JRTextAttribute.PDF_FONT_NAME, getPdfFontName());
-			attributes.put(JRTextAttribute.PDF_ENCODING, getPdfEncoding());
-
-			if (isPdfEmbedded())
-			{
-				attributes.put(JRTextAttribute.IS_PDF_EMBEDDED, Boolean.TRUE);
-			}
+			JRFontUtil.setAttributes(attributes, this);
 		}
 
 		return attributes;

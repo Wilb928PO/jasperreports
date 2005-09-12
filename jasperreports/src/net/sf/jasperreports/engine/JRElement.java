@@ -151,6 +151,8 @@ public interface JRElement extends JRChild
 	 */
 	public void setMode(byte mode);
 	
+	public void setMode(Byte mode);
+	
 	/**
 	 * Gets the the section relative horizontal offset of the element top left corner.
 	 */

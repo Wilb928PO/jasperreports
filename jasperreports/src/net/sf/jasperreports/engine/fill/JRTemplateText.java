@@ -42,14 +42,14 @@ import net.sf.jasperreports.engine.JRStaticText;
 import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.JRTextElement;
 import net.sf.jasperreports.engine.JRTextField;
-import net.sf.jasperreports.engine.util.JRTextAttribute;
+import net.sf.jasperreports.engine.util.JRFontUtil;
 
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
  * @version $Id$
  */
-public class JRTemplateText extends JRTemplateElement implements JRBox, JRFont
+public class JRTemplateText extends JRTemplateElement implements JRAlignment, JRBox, JRFont
 {
 
 
@@ -61,15 +61,15 @@ public class JRTemplateText extends JRTemplateElement implements JRBox, JRFont
 	/**
 	 *
 	 */
-	private byte horizontalAlignment = JRAlignment.HORIZONTAL_ALIGN_LEFT;
-	private byte verticalAlignment = JRAlignment.VERTICAL_ALIGN_TOP;
-	private byte rotation = JRTextElement.ROTATION_NONE;
-	private byte lineSpacing = JRTextElement.LINE_SPACING_SINGLE;
-	private boolean isStyledText = false;
+	private Byte horizontalAlignment = null;
+	private Byte verticalAlignment = null;
+	private Byte rotation = null;
+	private Byte lineSpacing = null;
+	private Boolean isStyledText = null;
 	private byte hyperlinkType = JRHyperlink.HYPERLINK_TYPE_NONE;
 	private byte hyperlinkTarget = JRHyperlink.HYPERLINK_TARGET_SELF;
-	private JRBox box = null;
-	private JRFont font = null;
+	//private JRBox box = null;
+	//private JRFont font = null;
 
 	/**
 	 *
@@ -101,10 +101,9 @@ public class JRTemplateText extends JRTemplateElement implements JRBox, JRFont
 	protected String pdfEncoding = null;
 	protected Boolean isPdfEmbedded = null;
 	
-	protected boolean isCachingAttributes = false;
 	protected transient Map attributes = null;
 
-	protected JRStyle style = null;
+	protected JRStyle style = null;//FIXME STYLE why not in base class?
 	
 	
 	/**
@@ -180,11 +179,11 @@ public class JRTemplateText extends JRTemplateElement implements JRBox, JRFont
 		pdfEncoding = textElement.getOwnPdfEncoding();
 		isPdfEmbedded = textElement.isOwnPdfEmbedded();
 
-		horizontalAlignment = textElement.getHorizontalAlignment();
-		verticalAlignment = textElement.getVerticalAlignment();
-		rotation = textElement.getRotation();
-		lineSpacing = textElement.getLineSpacing();
-		isStyledText = textElement.isStyledText();
+		horizontalAlignment = textElement.getOwnHorizontalAlignment();
+		verticalAlignment = textElement.getOwnVerticalAlignment();
+		rotation = textElement.getOwnRotation();
+		lineSpacing = textElement.getOwnLineSpacing();
+		isStyledText = textElement.isOwnStyledText();
 	}
 
 	/**
@@ -192,7 +191,7 @@ public class JRTemplateText extends JRTemplateElement implements JRBox, JRFont
 	 */
 	public byte getTextAlignment()
 	{
-		return horizontalAlignment;
+		return getHorizontalAlignment();
 	}
 		
 	/**
@@ -200,13 +199,55 @@ public class JRTemplateText extends JRTemplateElement implements JRBox, JRFont
 	 */
 	public byte getHorizontalAlignment()
 	{
+		if (horizontalAlignment == null) {
+			if (style != null && style.getHorizontalAlignment() != null)
+				return style.getHorizontalAlignment().byteValue();
+			return JRAlignment.HORIZONTAL_ALIGN_LEFT;
+		}
+		return horizontalAlignment.byteValue();
+	}
+		
+	/**
+	 *
+	 */
+	public Byte getOwnHorizontalAlignment()
+	{
 		return horizontalAlignment;
 	}
 		
 	/**
 	 *
 	 */
+	public void setHorizontalAlignment(byte horizontalAlignment)
+	{
+		this.horizontalAlignment = new Byte(horizontalAlignment);
+	}
+
+	/**
+	 *
+	 */
+	public void setHorizontalAlignment(Byte horizontalAlignment)
+	{
+		this.horizontalAlignment = horizontalAlignment;
+	}
+
+	/**
+	 *
+	 */
 	public byte getVerticalAlignment()
+	{
+		if (verticalAlignment == null) {
+			if (style != null && style.getVerticalAlignment() != null)
+				return style.getVerticalAlignment().byteValue();
+			return JRAlignment.VERTICAL_ALIGN_TOP;
+		}
+		return verticalAlignment.byteValue();
+	}
+		
+	/**
+	 *
+	 */
+	public Byte getOwnVerticalAlignment()
 	{
 		return verticalAlignment;
 	}
@@ -214,7 +255,36 @@ public class JRTemplateText extends JRTemplateElement implements JRBox, JRFont
 	/**
 	 *
 	 */
+	public void setVerticalAlignment(byte verticalAlignment)
+	{
+		this.verticalAlignment = new Byte(verticalAlignment);
+	}
+
+	/**
+	 *
+	 */
+	public void setVerticalAlignment(Byte verticalAlignment)
+	{
+		this.verticalAlignment = verticalAlignment;
+	}
+
+	/**
+	 *
+	 */
 	public byte getRotation()
+	{
+		if (rotation == null) {
+			if (style != null && style.getRotation() != null)
+				return style.getRotation().byteValue();
+			return JRTextElement.ROTATION_NONE;
+		}
+		return rotation.byteValue();
+	}
+		
+	/**
+	 *
+	 */
+	public Byte getOwnRotation()
 	{
 		return rotation;
 	}
@@ -224,6 +294,19 @@ public class JRTemplateText extends JRTemplateElement implements JRBox, JRFont
 	 */
 	public byte getLineSpacing()
 	{
+		if (lineSpacing == null) {
+			if (style != null && style.getLineSpacing() != null)
+				return style.getLineSpacing().byteValue();
+			return JRTextElement.LINE_SPACING_SINGLE;
+		}
+		return lineSpacing.byteValue();
+	}
+		
+	/**
+	 *
+	 */
+	public Byte getOwnLineSpacing()
+	{
 		return lineSpacing;
 	}
 		
@@ -231,6 +314,19 @@ public class JRTemplateText extends JRTemplateElement implements JRBox, JRFont
 	 *
 	 */
 	public boolean isStyledText()
+	{
+		if (isStyledText == null) {
+			if (style != null && style.isStyledText() != null)
+				return style.isStyledText().booleanValue();
+			return false;
+		}
+		return isStyledText.booleanValue();
+	}
+		
+	/**
+	 *
+	 */
+	public Boolean isOwnStyledText()
 	{
 		return isStyledText;
 	}
@@ -240,7 +336,7 @@ public class JRTemplateText extends JRTemplateElement implements JRBox, JRFont
 	 */
 	public JRBox getBox()
 	{
-		return box;
+		return this;
 	}
 		
 	/**
@@ -248,7 +344,7 @@ public class JRTemplateText extends JRTemplateElement implements JRBox, JRFont
 	 */
 	public JRFont getFont()
 	{
-		return font;
+		return this;
 	}
 		
 	/**
@@ -1091,6 +1187,87 @@ public class JRTemplateText extends JRTemplateElement implements JRBox, JRFont
 	/**
 	 *
 	 */
+	public void setBorder(Byte border)
+	{
+		this.border = border;
+	}
+
+	/**
+	 *
+	 */
+	public void setPadding(Integer padding)
+	{
+		this.padding = padding;
+	}
+
+	/**
+	 *
+	 */
+	public void setTopBorder(Byte topBorder)
+	{
+		this.topBorder = topBorder;
+	}
+
+	/**
+	 *
+	 */
+	public void setTopPadding(Integer topPadding)
+	{
+		this.topPadding = topPadding;
+	}
+
+	/**
+	 *
+	 */
+	public void setLeftBorder(Byte leftBorder)
+	{
+		this.leftBorder = leftBorder;
+	}
+
+	/**
+	 *
+	 */
+	public void setLeftPadding(Integer leftPadding)
+	{
+		this.leftPadding = leftPadding;
+	}
+
+	/**
+	 *
+	 */
+	public void setBottomBorder(Byte bottomBorder)
+	{
+		this.bottomBorder = bottomBorder;
+	}
+
+	/**
+	 *
+	 */
+	public void setBottomPadding(Integer bottomPadding)
+	{
+		this.bottomPadding = bottomPadding;
+	}
+
+	/**
+	 *
+	 */
+	public void setRightBorder(Byte rightBorder)
+	{
+		this.rightBorder = rightBorder;
+	}
+
+	/**
+	 *
+	 */
+	public void setRightPadding(Integer rightPadding)
+	{
+		this.rightPadding = rightPadding;
+	}
+
+
+	/**
+	 *
+	 */
 	public Map getNonPdfAttributes()
 	{
 		Map nonPdfAttributes = new HashMap();
@@ -1124,28 +1301,14 @@ public class JRTemplateText extends JRTemplateElement implements JRBox, JRFont
 	 */
 	public Map getAttributes()
 	{
-		if (attributes == null || !isCachingAttributes)
+		if (attributes == null)
 		{
-			attributes = getNonPdfAttributes();
-
-			attributes.put(JRTextAttribute.PDF_FONT_NAME, getPdfFontName());
-			attributes.put(JRTextAttribute.PDF_ENCODING, getPdfEncoding());
-
-			if (isPdfEmbedded())
-			{
-				attributes.put(JRTextAttribute.IS_PDF_EMBEDDED, Boolean.TRUE);
-			}
+			attributes = new HashMap();
+			
+			JRFontUtil.setAttributes(attributes, this);
 		}
 
 		return attributes;
-	}
-
-	/**
-	 *
-	 */
-	public boolean isCachingAttributes()
-	{
-		return isCachingAttributes;
 	}
 
 	public JRStyle getStyle()

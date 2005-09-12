@@ -69,6 +69,8 @@ public interface JRAlignment
 	 */
 	public void setHorizontalAlignment(byte horizontalAlignment);
 
+	public void setHorizontalAlignment(Byte horizontalAlignment);
+
 	/**
 	 * Gets the text vertical alignment.
 	 * @return a value representing one of the vertical alignment constants in {@link JRAlignment}
@@ -83,4 +85,6 @@ public interface JRAlignment
 	 */
 	public void setVerticalAlignment(byte verticalAlignment);
 		
+	public void setVerticalAlignment(Byte verticalAlignment);
+	
 }

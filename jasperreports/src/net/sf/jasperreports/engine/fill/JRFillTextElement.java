@@ -138,6 +138,13 @@ public abstract class JRFillTextElement extends JRFillElement implements JRTextE
 	/**
 	 *
 	 */
+	public void setHorizontalAlignment(Byte horizontalAlignment)
+	{
+	}
+		
+	/**
+	 *
+	 */
 	public byte getVerticalAlignment()
 	{
 		return ((JRTextElement)parent).getVerticalAlignment();
@@ -152,6 +159,13 @@ public abstract class JRFillTextElement extends JRFillElement implements JRTextE
 	 *
 	 */
 	public void setVerticalAlignment(byte verticalAlignment)
+	{
+	}
+		
+	/**
+	 *
+	 */
+	public void setVerticalAlignment(Byte verticalAlignment)
 	{
 	}
 		
@@ -178,6 +192,13 @@ public abstract class JRFillTextElement extends JRFillElement implements JRTextE
 	/**
 	 *
 	 */
+	public void setRotation(Byte rotation)
+	{
+	}
+		
+	/**
+	 *
+	 */
 	public byte getLineSpacing()
 	{
 		return ((JRTextElement)parent).getLineSpacing();
@@ -198,6 +219,13 @@ public abstract class JRFillTextElement extends JRFillElement implements JRTextE
 	/**
 	 *
 	 */
+	public void setLineSpacing(Byte lineSpacing)
+	{
+	}
+		
+	/**
+	 *
+	 */
 	public boolean isStyledText()
 	{
 		return ((JRTextElement)parent).isStyledText();
@@ -212,6 +240,13 @@ public abstract class JRFillTextElement extends JRFillElement implements JRTextE
 	 *
 	 */
 	public void setStyledText(boolean isStyledText)
+	{
+	}
+		
+	/**
+	 *
+	 */
+	public void setStyledText(Boolean isStyledText)
 	{
 	}
 		
@@ -1144,28 +1179,73 @@ public abstract class JRFillTextElement extends JRFillElement implements JRTextE
 
 	/**
 	 *
-	 *
-	public boolean isCachingAttributes()
+	 */
+	public void setBorder(Byte border)
 	{
-		return ((JRTextElement)parent).isCachingAttributes();
 	}
 
 	/**
 	 *
-	 *
-	public void setCachingAttributes(boolean isCachingAttributes)
+	 */
+	public void setPadding(Integer padding)
 	{
 	}
-
 
 	/**
 	 *
-	 *
-	public Map getNonPdfAttributes()
+	 */
+	public void setTopBorder(Byte topBorder)
 	{
-		return ((JRTextElement)parent).getNonPdfAttributes();
 	}
 
+	/**
+	 *
+	 */
+	public void setTopPadding(Integer topPadding)
+	{
+	}
+
+	/**
+	 *
+	 */
+	public void setLeftBorder(Byte leftBorder)
+	{
+	}
+
+	/**
+	 *
+	 */
+	public void setLeftPadding(Integer leftPadding)
+	{
+	}
+
+	/**
+	 *
+	 */
+	public void setBottomBorder(Byte bottomBorder)
+	{
+	}
+
+	/**
+	 *
+	 */
+	public void setBottomPadding(Integer bottomPadding)
+	{
+	}
+
+	/**
+	 *
+	 */
+	public void setRightBorder(Byte rightBorder)
+	{
+	}
+
+	/**
+	 *
+	 */
+	public void setRightPadding(Integer rightPadding)
+	{
+	}
 
 	/**
 	 *

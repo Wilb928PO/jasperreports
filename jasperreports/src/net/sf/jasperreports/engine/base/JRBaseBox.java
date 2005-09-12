@@ -107,6 +107,14 @@ public class JRBaseBox implements JRBox, Serializable
 	/**
 	 *
 	 */
+	public void setBorder(Byte border)
+	{
+		this.border = border;
+	}
+
+	/**
+	 *
+	 */
 	public Color getBorderColor()
 	{
 		if (borderColor == null)
@@ -153,6 +161,14 @@ public class JRBaseBox implements JRBox, Serializable
 	/**
 	 *
 	 */
+	public void setPadding(Integer padding)
+	{
+		this.padding = padding;
+	}
+
+	/**
+	 *
+	 */
 	public byte getTopBorder()
 	{
 		if (topBorder == null)
@@ -176,6 +192,14 @@ public class JRBaseBox implements JRBox, Serializable
 	public void setTopBorder(byte topBorder)
 	{
 		this.topBorder = new Byte(topBorder);
+	}
+
+	/**
+	 *
+	 */
+	public void setTopBorder(Byte topBorder)
+	{
+		this.topBorder = topBorder;
 	}
 
 	/**
@@ -237,6 +261,14 @@ public class JRBaseBox implements JRBox, Serializable
 	/**
 	 *
 	 */
+	public void setTopPadding(Integer topPadding)
+	{
+		this.topPadding = topPadding;
+	}
+
+	/**
+	 *
+	 */
 	public byte getLeftBorder()
 	{
 		if (leftBorder == null)
@@ -260,6 +292,14 @@ public class JRBaseBox implements JRBox, Serializable
 	public void setLeftBorder(byte leftBorder)
 	{
 		this.leftBorder = new Byte(leftBorder);
+	}
+
+	/**
+	 *
+	 */
+	public void setLeftBorder(Byte leftBorder)
+	{
+		this.leftBorder = leftBorder;
 	}
 
 	/**
@@ -321,6 +361,14 @@ public class JRBaseBox implements JRBox, Serializable
 	/**
 	 *
 	 */
+	public void setLeftPadding(Integer leftPadding)
+	{
+		this.leftPadding = leftPadding;
+	}
+
+	/**
+	 *
+	 */
 	public byte getBottomBorder()
 	{
 		if (bottomBorder == null)
@@ -344,6 +392,14 @@ public class JRBaseBox implements JRBox, Serializable
 	public void setBottomBorder(byte bottomBorder)
 	{
 		this.bottomBorder = new Byte(bottomBorder);
+	}
+
+	/**
+	 *
+	 */
+	public void setBottomBorder(Byte bottomBorder)
+	{
+		this.bottomBorder = bottomBorder;
 	}
 
 	/**
@@ -405,6 +461,14 @@ public class JRBaseBox implements JRBox, Serializable
 	/**
 	 *
 	 */
+	public void setBottomPadding(Integer bottomPadding)
+	{
+		this.bottomPadding = bottomPadding;
+	}
+
+	/**
+	 *
+	 */
 	public byte getRightBorder()
 	{
 		if (rightBorder == null)
@@ -428,6 +492,14 @@ public class JRBaseBox implements JRBox, Serializable
 	public void setRightBorder(byte rightBorder)
 	{
 		this.rightBorder = new Byte(rightBorder);
+	}
+
+	/**
+	 *
+	 */
+	public void setRightBorder(Byte rightBorder)
+	{
+		this.rightBorder = rightBorder;
 	}
 
 	/**
@@ -484,6 +556,14 @@ public class JRBaseBox implements JRBox, Serializable
 	public void setRightPadding(int rightPadding)
 	{
 		this.rightPadding = new Integer(rightPadding);
+	}
+
+	/**
+	 *
+	 */
+	public void setRightPadding(Integer rightPadding)
+	{
+		this.rightPadding = rightPadding;
 	}
 
 

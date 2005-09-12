@@ -28,7 +28,6 @@
 package net.sf.jasperreports.engine.base;
 
 import java.awt.Color;
-import java.awt.font.TextAttribute;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,9 +40,8 @@ import net.sf.jasperreports.engine.JRGraphicElement;
 import net.sf.jasperreports.engine.JRHyperlink;
 import net.sf.jasperreports.engine.JRPrintText;
 import net.sf.jasperreports.engine.JRReportFont;
-import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.JRTextElement;
-import net.sf.jasperreports.engine.util.JRTextAttribute;
+import net.sf.jasperreports.engine.util.JRFontUtil;
 
 
 /**
@@ -65,13 +63,13 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
 	protected String text = "";
 	protected float lineSpacingFactor = 0;
 	protected float leadingOffset = 0;
-	protected byte horizontalAlignment = JRAlignment.HORIZONTAL_ALIGN_LEFT;
-	protected byte verticalAlignment = JRAlignment.VERTICAL_ALIGN_TOP;
-	protected byte rotation = JRTextElement.ROTATION_NONE;
+	protected Byte horizontalAlignment = null;
+	protected Byte verticalAlignment = null;
+	protected Byte rotation = null;
 	protected byte runDirection = RUN_DIRECTION_LTR;
 	protected float textHeight = 0;
-	protected byte lineSpacing = JRTextElement.LINE_SPACING_SINGLE;
-	protected boolean isStyledText = false;
+	protected Byte lineSpacing = null;
+	protected Boolean isStyledText = null;
 	protected JRBox box = null;
 	protected JRFont font = null;
 	protected String anchorName = null;
@@ -111,10 +109,7 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
 	protected String pdfEncoding = null;
 	protected Boolean isPdfEmbedded = null;
 	
-	protected boolean isCachingAttributes = false;
-	protected transient Map attributes = null;
-
-	protected JRStyle style;//FIXME STYLE why not in base class?
+	protected transient Map attributes = null;//FIXME STYLE optimize cache for print elements
 	
 	/**
 	 * The bookmark level for the anchor associated with this field.
@@ -187,7 +182,7 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
 	 */
 	public byte getTextAlignment()
 	{
-		return horizontalAlignment;
+		return getHorizontalAlignment();
 	}
 		
 	/**
@@ -195,7 +190,7 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
 	 */
 	public void setTextAlignment(byte horizontalAlignment)
 	{
-		this.horizontalAlignment = horizontalAlignment;
+		setHorizontalAlignment(horizontalAlignment);
 	}
 
 	/**
@@ -203,18 +198,31 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
 	 */
 	public byte getHorizontalAlignment()
 	{
-		return horizontalAlignment;
+		if (horizontalAlignment == null) {
+			if (style != null && style.getHorizontalAlignment() != null)
+				return style.getHorizontalAlignment().byteValue();
+			return JRAlignment.HORIZONTAL_ALIGN_LEFT;
+		}
+		return horizontalAlignment.byteValue();
 	}
 		
 	public Byte getOwnHorizontalAlignment()
 	{
-		return null;
+		return horizontalAlignment;
 	}
 
 	/**
 	 *
 	 */
 	public void setHorizontalAlignment(byte horizontalAlignment)
+	{
+		this.horizontalAlignment = new Byte(horizontalAlignment);
+	}
+
+	/**
+	 *
+	 */
+	public void setHorizontalAlignment(Byte horizontalAlignment)
 	{
 		this.horizontalAlignment = horizontalAlignment;
 	}
@@ -224,18 +232,31 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
 	 */
 	public byte getVerticalAlignment()
 	{
-		return verticalAlignment;
+		if (verticalAlignment == null) {
+			if (style != null && style.getVerticalAlignment() != null)
+				return style.getVerticalAlignment().byteValue();
+			return JRAlignment.VERTICAL_ALIGN_TOP;
+		}
+		return verticalAlignment.byteValue();
 	}
 		
 	public Byte getOwnVerticalAlignment()
 	{
-		return null;
+		return verticalAlignment;
 	}
 
 	/**
 	 *
 	 */
 	public void setVerticalAlignment(byte verticalAlignment)
+	{
+		this.verticalAlignment = new Byte(verticalAlignment);
+	}
+
+	/**
+	 *
+	 */
+	public void setVerticalAlignment(Byte verticalAlignment)
 	{
 		this.verticalAlignment = verticalAlignment;
 	}
@@ -245,18 +266,31 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
 	 */
 	public byte getRotation()
 	{
-		return rotation;
+		if (rotation == null) {
+			if (style != null && style.getRotation() != null)
+				return style.getRotation().byteValue();
+			return JRTextElement.ROTATION_NONE;
+		}
+		return rotation.byteValue();
 	}
 		
 	public Byte getOwnRotation()
 	{
-		return null;
+		return rotation;
 	}
 
 	/**
 	 *
 	 */
 	public void setRotation(byte rotation)
+	{
+		this.rotation = new Byte(rotation);
+	}
+
+	/**
+	 *
+	 */
+	public void setRotation(Byte rotation)
 	{
 		this.rotation = rotation;
 	}
@@ -298,18 +332,31 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
 	 */
 	public byte getLineSpacing()
 	{
-		return lineSpacing;
+		if (lineSpacing == null) {
+			if (style != null && style.getLineSpacing() != null)
+				return style.getLineSpacing().byteValue();
+			return JRTextElement.ROTATION_NONE;
+		}
+		return lineSpacing.byteValue();
 	}
 		
 	public Byte getOwnLineSpacing()
 	{
-		return null;
+		return lineSpacing;
 	}
 
 	/**
 	 *
 	 */
 	public void setLineSpacing(byte lineSpacing)
+	{
+		this.lineSpacing = new Byte(lineSpacing);
+	}
+
+	/**
+	 *
+	 */
+	public void setLineSpacing(Byte lineSpacing)
 	{
 		this.lineSpacing = lineSpacing;
 	}
@@ -319,18 +366,32 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
 	 */
 	public boolean isStyledText()
 	{
-		return isStyledText;
+		if (isStyledText == null)
+		{
+			if (style != null && style.isStyledText() != null)
+				return style.isStyledText().booleanValue();
+			return false;
+		}
+		return isStyledText.booleanValue();
 	}
 		
 	public Boolean isOwnStyledText()
 	{
-		return null;
+		return isStyledText;
 	}
 
 	/**
 	 *
 	 */
 	public void setStyledText(boolean isStyledText)
+	{
+		setStyledText(isStyledText ? Boolean.TRUE : Boolean.FALSE);
+	}
+
+	/**
+	 *
+	 */
+	public void setStyledText(Boolean isStyledText)
 	{
 		this.isStyledText = isStyledText;
 	}
@@ -1328,61 +1389,95 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
 	/**
 	 *
 	 */
-	public Map getNonPdfAttributes()
+	public void setBorder(Byte border)
 	{
-		Map nonPdfAttributes = new HashMap();
-
-		nonPdfAttributes.put(TextAttribute.FAMILY, getFontName());
-		nonPdfAttributes.put(TextAttribute.SIZE, new Float(getSize()));
-
-		if (isBold())
-		{
-			nonPdfAttributes.put(TextAttribute.WEIGHT, TextAttribute.WEIGHT_BOLD);
-		}
-		if (isItalic())
-		{
-			nonPdfAttributes.put(TextAttribute.POSTURE, TextAttribute.POSTURE_OBLIQUE);
-		}
-		if (isUnderline())
-		{
-			nonPdfAttributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
-		}
-		if (isStrikeThrough())
-		{
-			nonPdfAttributes.put(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON);
-		}
-
-		return nonPdfAttributes;
+		this.border = border;
 	}
 
+	/**
+	 *
+	 */
+	public void setPadding(Integer padding)
+	{
+		this.padding = padding;
+	}
+
+	/**
+	 *
+	 */
+	public void setTopBorder(Byte topBorder)
+	{
+		this.topBorder = topBorder;
+	}
+
+	/**
+	 *
+	 */
+	public void setTopPadding(Integer topPadding)
+	{
+		this.topPadding = topPadding;
+	}
+
+	/**
+	 *
+	 */
+	public void setLeftBorder(Byte leftBorder)
+	{
+		this.leftBorder = leftBorder;
+	}
+
+	/**
+	 *
+	 */
+	public void setLeftPadding(Integer leftPadding)
+	{
+		this.leftPadding = leftPadding;
+	}
+
+	/**
+	 *
+	 */
+	public void setBottomBorder(Byte bottomBorder)
+	{
+		this.bottomBorder = bottomBorder;
+	}
+
+	/**
+	 *
+	 */
+	public void setBottomPadding(Integer bottomPadding)
+	{
+		this.bottomPadding = bottomPadding;
+	}
+
+	/**
+	 *
+	 */
+	public void setRightBorder(Byte rightBorder)
+	{
+		this.rightBorder = rightBorder;
+	}
+
+	/**
+	 *
+	 */
+	public void setRightPadding(Integer rightPadding)
+	{
+		this.rightPadding = rightPadding;
+	}
 
 	/**
 	 *
 	 */
 	public Map getAttributes()
 	{
-		if (attributes == null || !isCachingAttributes)
+		if (attributes == null)
 		{
-			attributes = getNonPdfAttributes();
-
-			attributes.put(JRTextAttribute.PDF_FONT_NAME, getPdfFontName());
-			attributes.put(JRTextAttribute.PDF_ENCODING, getPdfEncoding());
-
-			if (isPdfEmbedded())
-			{
-				attributes.put(JRTextAttribute.IS_PDF_EMBEDDED, Boolean.TRUE);
-			}
+			attributes = new HashMap();
+			JRFontUtil.setAttributes(attributes, this);
 		}
 
 		return attributes;
-	}
-
-	/**
-	 *
-	 */
-	public boolean isCachingAttributes()
-	{
-		return isCachingAttributes;
 	}
 	
 }

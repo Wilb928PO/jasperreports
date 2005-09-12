@@ -1121,4 +1121,85 @@ public class JRDesignChart extends JRDesignElement implements JRChart
 		this.rightPadding = new Integer(rightPadding);
 	}
 	
+
+	/**
+	 *
+	 */
+	public void setBorder(Byte border)
+	{
+		this.border = border;
+	}
+
+	/**
+	 *
+	 */
+	public void setPadding(Integer padding)
+	{
+		this.padding = padding;
+	}
+
+	/**
+	 *
+	 */
+	public void setTopBorder(Byte topBorder)
+	{
+		this.topBorder = topBorder;
+	}
+
+	/**
+	 *
+	 */
+	public void setTopPadding(Integer topPadding)
+	{
+		this.topPadding = topPadding;
+	}
+
+	/**
+	 *
+	 */
+	public void setLeftBorder(Byte leftBorder)
+	{
+		this.leftBorder = leftBorder;
+	}
+
+	/**
+	 *
+	 */
+	public void setLeftPadding(Integer leftPadding)
+	{
+		this.leftPadding = leftPadding;
+	}
+
+	/**
+	 *
+	 */
+	public void setBottomBorder(Byte bottomBorder)
+	{
+		this.bottomBorder = bottomBorder;
+	}
+
+	/**
+	 *
+	 */
+	public void setBottomPadding(Integer bottomPadding)
+	{
+		this.bottomPadding = bottomPadding;
+	}
+
+	/**
+	 *
+	 */
+	public void setRightBorder(Byte rightBorder)
+	{
+		this.rightBorder = rightBorder;
+	}
+
+	/**
+	 *
+	 */
+	public void setRightPadding(Integer rightPadding)
+	{
+		this.rightPadding = rightPadding;
+	}
+
 }

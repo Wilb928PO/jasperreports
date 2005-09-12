@@ -28,6 +28,7 @@
 package net.sf.jasperreports.engine.export;
 
 import net.sf.jasperreports.engine.JRExporterParameter;
+import net.sf.jasperreports.engine.JasperPrint;
 
 /**
  * Contains parameters useful for export in XML format. The generated XML has a custom structure whose DTD defintion can be

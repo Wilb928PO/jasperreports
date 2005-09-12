@@ -57,10 +57,10 @@ import net.sf.jasperreports.engine.JRChild;
 import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRExpressionCollector;
 import net.sf.jasperreports.engine.JRFont;
+import net.sf.jasperreports.engine.JRGraphicElement;
 import net.sf.jasperreports.engine.JRGroup;
 import net.sf.jasperreports.engine.JRHyperlink;
 import net.sf.jasperreports.engine.JRRuntimeException;
-import net.sf.jasperreports.engine.JRGraphicElement;
 import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.xml.JRXmlWriter;
 
@@ -526,6 +526,14 @@ public class JRBaseChart extends JRBaseElement implements JRChart
 	/**
 	 *
 	 */
+	public void setBorder(Byte border)
+	{
+		this.border = border;
+	}
+
+	/**
+	 *
+	 */
 	public Color getBorderColor()
 	{
 		if (borderColor == null) {
@@ -580,6 +588,14 @@ public class JRBaseChart extends JRBaseElement implements JRChart
 	/**
 	 *
 	 */
+	public void setPadding(Integer padding)
+	{
+		this.padding = padding;
+	}
+
+	/**
+	 *
+	 */
 	public byte getTopBorder()
 	{
 		if (topBorder == null)
@@ -608,6 +624,14 @@ public class JRBaseChart extends JRBaseElement implements JRChart
 	public void setTopBorder(byte topBorder)
 	{
 		this.topBorder = new Byte(topBorder);
+	}
+
+	/**
+	 *
+	 */
+	public void setTopBorder(Byte topBorder)
+	{
+		this.topBorder = topBorder;
 	}
 
 	/**
@@ -678,6 +702,14 @@ public class JRBaseChart extends JRBaseElement implements JRChart
 	/**
 	 *
 	 */
+	public void setTopPadding(Integer topPadding)
+	{
+		this.topPadding = topPadding;
+	}
+
+	/**
+	 *
+	 */
 	public byte getLeftBorder()
 	{
 		if (leftBorder == null)
@@ -706,6 +738,14 @@ public class JRBaseChart extends JRBaseElement implements JRChart
 	public void setLeftBorder(byte leftBorder)
 	{
 		this.leftBorder = new Byte(leftBorder);
+	}
+
+	/**
+	 *
+	 */
+	public void setLeftBorder(Byte leftBorder)
+	{
+		this.leftBorder = leftBorder;
 	}
 
 	/**
@@ -776,6 +816,14 @@ public class JRBaseChart extends JRBaseElement implements JRChart
 	/**
 	 *
 	 */
+	public void setLeftPadding(Integer leftPadding)
+	{
+		this.leftPadding = leftPadding;
+	}
+
+	/**
+	 *
+	 */
 	public byte getBottomBorder()
 	{
 		if (bottomBorder == null)
@@ -804,6 +852,14 @@ public class JRBaseChart extends JRBaseElement implements JRChart
 	public void setBottomBorder(byte bottomBorder)
 	{
 		this.bottomBorder = new Byte(bottomBorder);
+	}
+
+	/**
+	 *
+	 */
+	public void setBottomBorder(Byte bottomBorder)
+	{
+		this.bottomBorder = bottomBorder;
 	}
 
 	/**
@@ -874,6 +930,14 @@ public class JRBaseChart extends JRBaseElement implements JRChart
 	/**
 	 *
 	 */
+	public void setBottomPadding(Integer bottomPadding)
+	{
+		this.bottomPadding = bottomPadding;
+	}
+
+	/**
+	 *
+	 */
 	public byte getRightBorder()
 	{
 		if (rightBorder == null)
@@ -902,6 +966,14 @@ public class JRBaseChart extends JRBaseElement implements JRChart
 	public void setRightBorder(byte rightBorder)
 	{
 		this.rightBorder = new Byte(rightBorder);
+	}
+
+	/**
+	 *
+	 */
+	public void setRightBorder(Byte rightBorder)
+	{
+		this.rightBorder = rightBorder;
 	}
 
 	/**
@@ -968,4 +1040,13 @@ public class JRBaseChart extends JRBaseElement implements JRChart
 	{
 		this.rightPadding = new Integer(rightPadding);
 	}
+
+	/**
+	 *
+	 */
+	public void setRightPadding(Integer rightPadding)
+	{
+		this.rightPadding = rightPadding;
+	}
+
 }

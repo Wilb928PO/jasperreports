@@ -190,6 +190,13 @@ public abstract class JRFillElement implements JRElement
 	/**
 	 *
 	 */
+	public void setMode(Byte mode)
+	{
+	}
+
+	/**
+	 *
+	 */
 	public int getX()
 	{
 		return this.parent.getX();

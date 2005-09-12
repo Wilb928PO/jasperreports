@@ -115,6 +115,8 @@ public interface JRTextElement extends JRElement, JRAlignment, JRBox, JRFont
 	 */
 	public void setRotation(byte rotation);
 		
+	public void setRotation(Byte rotation);
+	
 	/**
 	 * Gets the line spacing.
 	 * @return a value representing one of the line spacing constants in this class
@@ -128,6 +130,8 @@ public interface JRTextElement extends JRElement, JRAlignment, JRBox, JRFont
 	 */
 	public void setLineSpacing(byte lineSpacing);
 		
+	public void setLineSpacing(Byte lineSpacing);
+	
 	/**
 	 * Returns true if the text can contain style tags.
 	 */
@@ -139,6 +143,8 @@ public interface JRTextElement extends JRElement, JRAlignment, JRBox, JRFont
 	 */
 	public void setStyledText(boolean isStyledText);
 		
+	public void setStyledText(Boolean isStyledText);
+	
 	/**
 	 * Returns an object containing all border and padding properties for this text element
 	 * @deprecated

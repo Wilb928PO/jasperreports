@@ -1370,6 +1370,13 @@ public class JRFillChart extends JRFillElement implements JRChart
 	/**
 	 *
 	 */
+	public void setBorder(Byte border)
+	{
+	}
+
+	/**
+	 *
+	 */
 	public Color getBorderColor()
 	{
 		return ((JRBox)parent).getBorderColor();
@@ -1410,6 +1417,13 @@ public class JRFillChart extends JRFillElement implements JRChart
 	/**
 	 *
 	 */
+	public void setPadding(Integer padding)
+	{
+	}
+
+	/**
+	 *
+	 */
 	public byte getTopBorder()
 	{
 		return ((JRBox)parent).getTopBorder();
@@ -1427,6 +1441,13 @@ public class JRFillChart extends JRFillElement implements JRChart
 	 *
 	 */
 	public void setTopBorder(byte topBorder)
+	{
+	}
+
+	/**
+	 *
+	 */
+	public void setTopBorder(Byte topBorder)
 	{
 	}
 
@@ -1479,6 +1500,13 @@ public class JRFillChart extends JRFillElement implements JRChart
 	/**
 	 *
 	 */
+	public void setTopPadding(Integer topPadding)
+	{
+	}
+
+	/**
+	 *
+	 */
 	public byte getLeftBorder()
 	{
 		return ((JRBox)parent).getLeftBorder();
@@ -1496,6 +1524,13 @@ public class JRFillChart extends JRFillElement implements JRChart
 	 *
 	 */
 	public void setLeftBorder(byte leftBorder)
+	{
+	}
+
+	/**
+	 *
+	 */
+	public void setLeftBorder(Byte leftBorder)
 	{
 	}
 
@@ -1548,6 +1583,13 @@ public class JRFillChart extends JRFillElement implements JRChart
 	/**
 	 *
 	 */
+	public void setLeftPadding(Integer leftPadding)
+	{
+	}
+
+	/**
+	 *
+	 */
 	public byte getBottomBorder()
 	{
 		return ((JRBox)parent).getBottomBorder();
@@ -1565,6 +1607,13 @@ public class JRFillChart extends JRFillElement implements JRChart
 	 *
 	 */
 	public void setBottomBorder(byte bottomBorder)
+	{
+	}
+
+	/**
+	 *
+	 */
+	public void setBottomBorder(Byte bottomBorder)
 	{
 	}
 
@@ -1617,6 +1666,13 @@ public class JRFillChart extends JRFillElement implements JRChart
 	/**
 	 *
 	 */
+	public void setBottomPadding(Integer bottomPadding)
+	{
+	}
+
+	/**
+	 *
+	 */
 	public byte getRightBorder()
 	{
 		return ((JRBox)parent).getRightBorder();
@@ -1634,6 +1690,13 @@ public class JRFillChart extends JRFillElement implements JRChart
 	 *
 	 */
 	public void setRightBorder(byte rightBorder)
+	{
+	}
+
+	/**
+	 *
+	 */
+	public void setRightBorder(Byte rightBorder)
 	{
 	}
 
@@ -1680,6 +1743,13 @@ public class JRFillChart extends JRFillElement implements JRChart
 	 *
 	 */
 	public void setRightPadding(int rightPadding)
+	{
+	}
+
+	/**
+	 *
+	 */
+	public void setRightPadding(Integer rightPadding)
 	{
 	}
 

@@ -132,6 +132,13 @@ public class JRFillImage extends JRFillGraphicElement implements JRImage
 	/**
 	 *
 	 */
+	public void setHorizontalAlignment(Byte horizontalAlignment)
+	{
+	}
+		
+	/**
+	 *
+	 */
 	public byte getVerticalAlignment()
 	{
 		return ((JRImage)this.parent).getVerticalAlignment();
@@ -146,6 +153,13 @@ public class JRFillImage extends JRFillGraphicElement implements JRImage
 	 *
 	 */
 	public void setVerticalAlignment(byte verticalAlignment)
+	{
+	}
+		
+	/**
+	 *
+	 */
+	public void setVerticalAlignment(Byte verticalAlignment)
 	{
 	}
 		
@@ -1001,4 +1015,74 @@ public class JRFillImage extends JRFillGraphicElement implements JRImage
 	{
 	}
 	
+	/**
+	 *
+	 */
+	public void setBorder(Byte border)
+	{
+	}
+
+	/**
+	 *
+	 */
+	public void setPadding(Integer padding)
+	{
+	}
+
+	/**
+	 *
+	 */
+	public void setTopBorder(Byte topBorder)
+	{
+	}
+
+	/**
+	 *
+	 */
+	public void setTopPadding(Integer topPadding)
+	{
+	}
+
+	/**
+	 *
+	 */
+	public void setLeftBorder(Byte leftBorder)
+	{
+	}
+
+	/**
+	 *
+	 */
+	public void setLeftPadding(Integer leftPadding)
+	{
+	}
+
+	/**
+	 *
+	 */
+	public void setBottomBorder(Byte bottomBorder)
+	{
+	}
+
+	/**
+	 *
+	 */
+	public void setBottomPadding(Integer bottomPadding)
+	{
+	}
+
+	/**
+	 *
+	 */
+	public void setRightBorder(Byte rightBorder)
+	{
+	}
+
+	/**
+	 *
+	 */
+	public void setRightPadding(Integer rightPadding)
+	{
+	}
+
 }

@@ -208,6 +208,14 @@ public class JRDesignImage extends JRDesignGraphicElement implements JRImage
 	/**
 	 *
 	 */
+	public void setHorizontalAlignment(Byte horizontalAlignment)
+	{
+		this.horizontalAlignment = horizontalAlignment;
+	}
+
+	/**
+	 *
+	 */
 	public byte getVerticalAlignment()
 	{
 		if (verticalAlignment == null) {
@@ -230,6 +238,14 @@ public class JRDesignImage extends JRDesignGraphicElement implements JRImage
 	public void setVerticalAlignment(byte verticalAlignment)
 	{
 		this.verticalAlignment = new Byte(verticalAlignment);
+	}
+
+	/**
+	 *
+	 */
+	public void setVerticalAlignment(Byte verticalAlignment)
+	{
+		this.verticalAlignment = verticalAlignment;
 	}
 
 	/**
@@ -995,4 +1011,85 @@ public class JRDesignImage extends JRDesignGraphicElement implements JRImage
 		this.rightPadding = new Integer(rightPadding);
 	}
 	
+
+	/**
+	 *
+	 */
+	public void setBorder(Byte border)
+	{
+		this.border = border;
+	}
+
+	/**
+	 *
+	 */
+	public void setPadding(Integer padding)
+	{
+		this.padding = padding;
+	}
+
+	/**
+	 *
+	 */
+	public void setTopBorder(Byte topBorder)
+	{
+		this.topBorder = topBorder;
+	}
+
+	/**
+	 *
+	 */
+	public void setTopPadding(Integer topPadding)
+	{
+		this.topPadding = topPadding;
+	}
+
+	/**
+	 *
+	 */
+	public void setLeftBorder(Byte leftBorder)
+	{
+		this.leftBorder = leftBorder;
+	}
+
+	/**
+	 *
+	 */
+	public void setLeftPadding(Integer leftPadding)
+	{
+		this.leftPadding = leftPadding;
+	}
+
+	/**
+	 *
+	 */
+	public void setBottomBorder(Byte bottomBorder)
+	{
+		this.bottomBorder = bottomBorder;
+	}
+
+	/**
+	 *
+	 */
+	public void setBottomPadding(Integer bottomPadding)
+	{
+		this.bottomPadding = bottomPadding;
+	}
+
+	/**
+	 *
+	 */
+	public void setRightBorder(Byte rightBorder)
+	{
+		this.rightBorder = rightBorder;
+	}
+
+	/**
+	 *
+	 */
+	public void setRightPadding(Integer rightPadding)
+	{
+		this.rightPadding = rightPadding;
+	}
+
 }
