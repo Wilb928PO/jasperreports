@@ -117,6 +117,19 @@ public abstract class JRDesignTextElement extends JRDesignElement implements JRT
 	/**
 	 *
 	 */
+	protected JRFont getBaseFont()
+	{
+		if (reportFont != null)
+			return reportFont;
+		if (defaultStyleProvider != null)
+			return defaultStyleProvider.getDefaultFont();
+		return null;
+	}
+
+
+	/**
+	 *
+	 */
 	public byte getMode()
 	{
 		if (mode == null) {
@@ -878,8 +891,9 @@ public abstract class JRDesignTextElement extends JRDesignElement implements JRT
 	{
 		if (fontName == null)
 		{
-			if (reportFont != null)
-				return reportFont.getFontName();
+			JRFont font = getBaseFont();
+			if (font != null && font.getFontName() != null)
+				return font.getFontName();
 			JRStyle style = getBaseStyle();
 			if (style != null && style.getFontName() != null)
 				return style.getFontName();
@@ -912,8 +926,9 @@ public abstract class JRDesignTextElement extends JRDesignElement implements JRT
 	{
 		if (isBold == null)
 		{
-			if (reportFont != null)
-				return reportFont.isBold();
+			JRFont font = getBaseFont();
+			if (font != null)
+				return font.isBold();
 			JRStyle style = getBaseStyle();
 			if (style != null && style.isBold() != null)
 				return style.isBold().booleanValue();
@@ -955,8 +970,9 @@ public abstract class JRDesignTextElement extends JRDesignElement implements JRT
 	{
 		if (isItalic == null)
 		{
-			if (reportFont != null)
-				return reportFont.isItalic();
+			JRFont font = getBaseFont();
+			if (font != null)
+				return font.isItalic();
 			JRStyle style = getBaseStyle();
 			if (style != null && style.isItalic() != null)
 				return style.isItalic().booleanValue();
@@ -997,8 +1013,9 @@ public abstract class JRDesignTextElement extends JRDesignElement implements JRT
 	{
 		if (isUnderline == null)
 		{
-			if (reportFont != null)
-				return reportFont.isUnderline();
+			JRFont font = getBaseFont();
+			if (font != null)
+				return font.isUnderline();
 			JRStyle style = getBaseStyle();
 			if (style != null && style.isUnderline() != null)
 				return style.isUnderline().booleanValue();
@@ -1039,8 +1056,9 @@ public abstract class JRDesignTextElement extends JRDesignElement implements JRT
 	{
 		if (isStrikeThrough == null)
 		{
-			if (reportFont != null)
-				return reportFont.isStrikeThrough();
+			JRFont font = getBaseFont();
+			if (font != null)
+				return font.isStrikeThrough();
 			JRStyle style = getBaseStyle();
 			if (style != null && style.isStrikeThrough() != null)
 				return style.isStrikeThrough().booleanValue();
@@ -1081,8 +1099,9 @@ public abstract class JRDesignTextElement extends JRDesignElement implements JRT
 	{
 		if (size == null)
 		{
-			if (reportFont != null)
-				return reportFont.getSize();
+			JRFont font = getBaseFont();
+			if (font != null)
+				return font.getSize();
 			JRStyle style = getBaseStyle();
 			if (style != null && style.getSize() != null)
 				return style.getSize().intValue();
@@ -1123,8 +1142,9 @@ public abstract class JRDesignTextElement extends JRDesignElement implements JRT
 	{
 		if (pdfFontName == null)
 		{
-			if (reportFont != null)
-				return reportFont.getPdfFontName();
+			JRFont font = getBaseFont();
+			if (font != null && font.getPdfFontName() != null)
+				return font.getPdfFontName();
 			JRStyle style = getBaseStyle();
 			if (style != null && style.getPdfFontName() != null)
 				return style.getPdfFontName();
@@ -1157,8 +1177,9 @@ public abstract class JRDesignTextElement extends JRDesignElement implements JRT
 	{
 		if (pdfEncoding == null)
 		{
-			if (reportFont != null)
-				return reportFont.getPdfEncoding();
+			JRFont font = getBaseFont();
+			if (font != null && font.getPdfEncoding() != null)
+				return font.getPdfEncoding();
 			JRStyle style = getBaseStyle();
 			if (style != null && style.getPdfEncoding() != null)
 				return style.getPdfEncoding();
@@ -1191,8 +1212,9 @@ public abstract class JRDesignTextElement extends JRDesignElement implements JRT
 	{
 		if (isPdfEmbedded == null)
 		{
-			if (reportFont != null)
-				return reportFont.isPdfEmbedded();
+			JRFont font = getBaseFont();
+			if (font != null)
+				return font.isPdfEmbedded();
 			JRStyle style = getBaseStyle();
 			if (style != null && style.isPdfEmbedded() != null)
 				return style.isPdfEmbedded().booleanValue();

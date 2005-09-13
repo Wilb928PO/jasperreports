@@ -103,6 +103,10 @@ public abstract class JRBaseElement implements JRElement, Serializable
 	{
 		factory.put(element, this);
 
+		defaultStyleProvider = factory.getDefaultStyleProvider();
+
+		parentStyle = factory.getStyle(element.getStyle());
+
 		key = element.getKey();
 		positionType = element.getPositionType();
 		stretchType = element.getStretchType();
@@ -121,8 +125,6 @@ public abstract class JRBaseElement implements JRElement, Serializable
 		printWhenExpression = factory.getExpression(element.getPrintWhenExpression());
 		printWhenGroupChanges = factory.getGroup(element.getPrintWhenGroupChanges());
 		elementGroup = factory.getElementGroup(element.getElementGroup());
-
-		parentStyle = element.getStyle();
 	}
 
 

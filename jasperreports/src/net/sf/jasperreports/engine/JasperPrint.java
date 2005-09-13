@@ -61,7 +61,7 @@ public class JasperPrint implements Serializable
 	/**
 	 * A small class for implementing just the style provider functionality.
 	 */
-	private static class DefaultStyleProvider implements JRDefaultFontProvider,  JRDefaultStyleProvider, Serializable
+	private static class DefaultStyleProvider implements JRDefaultStyleProvider, Serializable
 	{
 		private static final long serialVersionUID = 10001;
 		
