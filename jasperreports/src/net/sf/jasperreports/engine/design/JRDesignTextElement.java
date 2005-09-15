@@ -39,6 +39,7 @@ import net.sf.jasperreports.engine.JRReportFont;
 import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.JRTextElement;
 import net.sf.jasperreports.engine.util.JRFontUtil;
+import net.sf.jasperreports.engine.util.JRStyleResolver;
 
 
 /**
@@ -384,6 +385,8 @@ public abstract class JRDesignTextElement extends JRDesignElement implements JRT
 	 */
 	public void setFont(JRFont font)
 	{
+		reportFont = font.getReportFont();
+		
 		fontName = font.getOwnFontName();
 		isBold = font.isOwnBold();
 		isItalic = font.isOwnItalic();
@@ -889,17 +892,7 @@ public abstract class JRDesignTextElement extends JRDesignElement implements JRT
 	 */
 	public String getFontName()
 	{
-		if (fontName == null)
-		{
-			JRFont font = getBaseFont();
-			if (font != null && font.getFontName() != null)
-				return font.getFontName();
-			JRStyle style = getBaseStyle();
-			if (style != null && style.getFontName() != null)
-				return style.getFontName();
-			return DEFAULT_FONT_NAME;
-		}
-		return fontName;
+		return JRStyleResolver.getFontName(this);
 	}
 
 	/**

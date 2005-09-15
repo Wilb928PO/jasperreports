@@ -28,17 +28,13 @@
 package net.sf.jasperreports.engine.fill;
 
 import java.awt.Color;
-import java.util.HashMap;
 import java.util.Map;
 
 import net.sf.jasperreports.engine.JRAnchor;
 import net.sf.jasperreports.engine.JRBox;
 import net.sf.jasperreports.engine.JRFont;
-import net.sf.jasperreports.engine.JRGraphicElement;
 import net.sf.jasperreports.engine.JRPrintText;
 import net.sf.jasperreports.engine.JRReportFont;
-import net.sf.jasperreports.engine.JRStyle;
-import net.sf.jasperreports.engine.util.JRFontUtil;
 
 
 /**
@@ -68,44 +64,10 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	private Integer hyperlinkPage = null;
 
 	/**
-	 *
-	 */
-	protected Byte border;
-	protected Byte topBorder = null;
-	protected Byte leftBorder = null;
-	protected Byte bottomBorder = null;
-	protected Byte rightBorder = null;
-	protected Color borderColor = null;
-	protected Color topBorderColor = null;
-	protected Color leftBorderColor = null;
-	protected Color bottomBorderColor = null;
-	protected Color rightBorderColor = null;
-	protected Integer padding;
-	protected Integer topPadding = null;
-	protected Integer leftPadding = null;
-	protected Integer bottomPadding = null;
-	protected Integer rightPadding = null;
-
-	protected JRReportFont reportFont = null;
-	protected String fontName = null;
-	protected Boolean isBold = null;
-	protected Boolean isItalic = null;
-	protected Boolean isUnderline = null;
-	protected Boolean isStrikeThrough = null;
-	protected Integer size = null;
-	protected String pdfFontName = null;
-	protected String pdfEncoding = null;
-	protected Boolean isPdfEmbedded = null;
-	
-	protected transient Map attributes = null;
-
-	/**
 	 * The bookmark level for the anchor associated with this field.
 	 * @see JRAnchor#getBookmarkLevel()
 	 */
 	protected int bookmarkLevel = JRAnchor.NO_BOOKMARK;
-
-	protected JRStyle style;//FIXME STYLE why not in base class?
 	
 	/**
 	 *
@@ -113,7 +75,6 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	public JRTemplatePrintText(JRTemplateText text)
 	{
 		super(text);
-		this.style = text.getStyle();
 	}
 
 	/**
@@ -169,7 +130,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public byte getTextAlignment()
 	{
-		return ((JRTemplateText)template).getHorizontalAlignment();
+		return getHorizontalAlignment();
 	}
 		
 	/**
@@ -189,7 +150,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 		
 	public Byte getOwnHorizontalAlignment()
 	{
-		return ((JRTemplateText)template).getOwnHorizontalAlignment();
+		return null;
 	}
 
 	/**
@@ -219,7 +180,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public Byte getOwnVerticalAlignment()
 	{
-		return ((JRTemplateText)template).getOwnVerticalAlignment();
+		return null;
 	}
 
 	/**
@@ -246,7 +207,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 		
 	public Byte getOwnRotation()
 	{
-		return ((JRTemplateText)template).getOwnRotation();
+		return null;
 	}
 
 	/**
@@ -305,7 +266,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 		
 	public Byte getOwnLineSpacing()
 	{
-		return ((JRTemplateText)template).getOwnLineSpacing();
+		return null;
 	}
 
 	/**
@@ -332,7 +293,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 		
 	public Boolean isOwnStyledText()
 	{
-		return ((JRTemplateText)template).isOwnStyledText();
+		return null;
 	}
 
 	/**
@@ -490,17 +451,12 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public byte getBorder()
 	{
-		if (border == null) {
-			if (style != null && style.getBorder() != null)
-				return style.getBorder().byteValue();
-			return JRGraphicElement.PEN_NONE;
-		}
-		return border.byteValue();
+		return ((JRTemplateText)template).getBorder();
 	}
 
 	public Byte getOwnBorder()
 	{
-		return border;
+		return null;
 	}
 
 	/**
@@ -508,7 +464,6 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public void setBorder(byte border)
 	{
-		this.border = new Byte(border);
 	}
 
 	/**
@@ -516,17 +471,12 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public Color getBorderColor()
 	{
-		if (borderColor == null) {
-			if (style != null && style.getBorderColor() != null)
-				return style.getBorderColor();
-			return Color.black;
-		}
-		return borderColor;
+		return ((JRTemplateText)template).getBorderColor();
 	}
 
 	public Color getOwnBorderColor()
 	{
-		return borderColor;
+		return null;
 	}
 
 	/**
@@ -534,7 +484,6 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public void setBorderColor(Color borderColor)
 	{
-		this.borderColor = borderColor;
 	}
 
 	/**
@@ -542,17 +491,12 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public int getPadding()
 	{
-		if (padding == null) {
-			if (style != null && style.getPadding() != null)
-				return style.getPadding().intValue();
-			return 0;
-		}
-		return padding.intValue();
+		return ((JRTemplateText)template).getPadding();
 	}
 
 	public Integer getOwnPadding()
 	{
-		return padding;
+		return null;
 	}
 
 	/**
@@ -560,7 +504,6 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public void setPadding(int padding)
 	{
-		this.padding = new Integer(padding);
 	}
 
 	/**
@@ -568,15 +511,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public byte getTopBorder()
 	{
-		if (topBorder == null)
-		{
-			if (border != null)
-				return border.byteValue();
-			if (style != null && style.getTopBorder() != null)
-				return style.getTopBorder().byteValue();
-			return JRGraphicElement.PEN_NONE;
-		}
-		return topBorder.byteValue();
+		return ((JRTemplateText)template).getTopBorder();
 	}
 
 	/**
@@ -584,7 +519,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public Byte getOwnTopBorder()
 	{
-		return topBorder;
+		return null;
 	}
 
 	/**
@@ -592,7 +527,6 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public void setTopBorder(byte topBorder)
 	{
-		this.topBorder = new Byte(topBorder);
 	}
 
 	/**
@@ -600,14 +534,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public Color getTopBorderColor()
 	{
-		if (topBorderColor == null)
-		{
-			if (borderColor != null)
-				return borderColor;
-			if (style != null && style.getTopBorderColor() != null)
-				return style.getTopBorderColor();
-		}
-		return topBorderColor;
+		return ((JRTemplateText)template).getTopBorderColor();
 	}
 
 	/**
@@ -615,7 +542,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public Color getOwnTopBorderColor()
 	{
-		return topBorderColor;
+		return null;
 	}
 
 	/**
@@ -623,7 +550,6 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public void setTopBorderColor(Color topBorderColor)
 	{
-		this.topBorderColor = topBorderColor;
 	}
 
 	/**
@@ -631,15 +557,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public int getTopPadding()
 	{
-		if (topPadding == null)
-		{
-			if (padding != null)
-				return padding.intValue();
-			if (style != null && style.getTopPadding() != null)
-				return style.getTopPadding().intValue();
-			return 0;
-		}
-		return topPadding.intValue();
+		return ((JRTemplateText)template).getTopPadding();
 	}
 
 	/**
@@ -647,7 +565,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public Integer getOwnTopPadding()
 	{
-		return topPadding;
+		return null;
 	}
 
 	/**
@@ -655,7 +573,6 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public void setTopPadding(int topPadding)
 	{
-		this.topPadding = new Integer(topPadding);
 	}
 
 	/**
@@ -663,15 +580,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public byte getLeftBorder()
 	{
-		if (leftBorder == null)
-		{
-			if (border != null)
-				return border.byteValue();
-			if (style != null && style.getLeftBorder() != null)
-				return style.getLeftBorder().byteValue();
-			return JRGraphicElement.PEN_NONE;
-		}
-		return leftBorder.byteValue();
+		return ((JRTemplateText)template).getLeftBorder();
 	}
 
 	/**
@@ -679,7 +588,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public Byte getOwnLeftBorder()
 	{
-		return leftBorder;
+		return null;
 	}
 
 	/**
@@ -687,7 +596,6 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public void setLeftBorder(byte leftBorder)
 	{
-		this.leftBorder = new Byte(leftBorder);
 	}
 
 	/**
@@ -695,14 +603,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public Color getLeftBorderColor()
 	{
-		if (leftBorderColor == null)
-		{
-			if (borderColor != null)
-				return borderColor;
-			if (style != null && style.getLeftBorderColor() != null)
-				return style.getLeftBorderColor();
-		}
-		return leftBorderColor;
+		return ((JRTemplateText)template).getLeftBorderColor();
 	}
 
 	/**
@@ -710,7 +611,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public Color getOwnLeftBorderColor()
 	{
-		return leftBorderColor;
+		return null;
 	}
 
 	/**
@@ -718,7 +619,6 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public void setLeftBorderColor(Color leftBorderColor)
 	{
-		this.leftBorderColor = leftBorderColor;
 	}
 
 	/**
@@ -726,15 +626,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public int getLeftPadding()
 	{
-		if (leftPadding == null)
-		{
-			if (padding != null)
-				return padding.intValue();
-			if (style != null && style.getLeftPadding() != null)
-				return style.getLeftPadding().intValue();
-			return 0;
-		}
-		return leftPadding.intValue();
+		return ((JRTemplateText)template).getLeftPadding();
 	}
 
 	/**
@@ -742,7 +634,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public Integer getOwnLeftPadding()
 	{
-		return leftPadding;
+		return null;
 	}
 
 	/**
@@ -750,7 +642,6 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public void setLeftPadding(int leftPadding)
 	{
-		this.leftPadding = new Integer(leftPadding);
 	}
 
 	/**
@@ -758,15 +649,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public byte getBottomBorder()
 	{
-		if (bottomBorder == null)
-		{
-			if (border != null)
-				return border.byteValue();
-			if (style != null && style.getBottomBorder() != null)
-				return style.getBottomBorder().byteValue();
-			return JRGraphicElement.PEN_NONE;
-		}
-		return bottomBorder.byteValue();
+		return ((JRTemplateText)template).getBottomBorder();
 	}
 
 	/**
@@ -774,7 +657,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public Byte getOwnBottomBorder()
 	{
-		return bottomBorder;
+		return null;
 	}
 
 	/**
@@ -782,7 +665,6 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public void setBottomBorder(byte bottomBorder)
 	{
-		this.bottomBorder = new Byte(bottomBorder);
 	}
 
 	/**
@@ -790,14 +672,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public Color getBottomBorderColor()
 	{
-		if (bottomBorderColor == null)
-		{
-			if (borderColor != null)
-				return borderColor;
-			if (style != null && style.getBottomBorderColor() != null)
-				return style.getBottomBorderColor();
-		}
-		return bottomBorderColor;
+		return ((JRTemplateText)template).getBottomBorderColor();
 	}
 
 	/**
@@ -805,7 +680,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public Color getOwnBottomBorderColor()
 	{
-		return bottomBorderColor;
+		return null;
 	}
 
 	/**
@@ -813,7 +688,6 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public void setBottomBorderColor(Color bottomBorderColor)
 	{
-		this.bottomBorderColor = bottomBorderColor;
 	}
 
 	/**
@@ -821,15 +695,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public int getBottomPadding()
 	{
-		if (bottomPadding == null)
-		{
-			if (padding != null)
-				return padding.intValue();
-			if (style != null && style.getBottomPadding() != null)
-				return style.getBottomPadding().intValue();
-			return 0;
-		}
-		return bottomPadding.intValue();
+		return ((JRTemplateText)template).getBottomPadding();
 	}
 
 	/**
@@ -837,7 +703,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public Integer getOwnBottomPadding()
 	{
-		return bottomPadding;
+		return null;
 	}
 
 	/**
@@ -845,7 +711,6 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public void setBottomPadding(int bottomPadding)
 	{
-		this.bottomPadding = new Integer(bottomPadding);
 	}
 
 	/**
@@ -853,15 +718,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public byte getRightBorder()
 	{
-		if (rightBorder == null)
-		{
-			if (border != null)
-				return border.byteValue();
-			if (style != null && style.getRightBorder() != null)
-				return style.getRightBorder().byteValue();
-			return JRGraphicElement.PEN_NONE;
-		}
-		return rightBorder.byteValue();
+		return ((JRTemplateText)template).getRightBorder();
 	}
 
 	/**
@@ -869,7 +726,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public Byte getOwnRightBorder()
 	{
-		return rightBorder;
+		return null;
 	}
 
 	/**
@@ -877,7 +734,6 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public void setRightBorder(byte rightBorder)
 	{
-		this.rightBorder = new Byte(rightBorder);
 	}
 
 	/**
@@ -885,14 +741,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public Color getRightBorderColor()
 	{
-		if (rightBorderColor == null)
-		{
-			if (borderColor != null)
-				return borderColor;
-			if (style != null && style.getRightBorderColor() != null)
-				return style.getRightBorderColor();
-		}
-		return rightBorderColor;
+		return ((JRTemplateText)template).getRightBorderColor();
 	}
 
 	/**
@@ -900,7 +749,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public Color getOwnRightBorderColor()
 	{
-		return rightBorderColor;
+		return null;
 	}
 
 	/**
@@ -908,7 +757,6 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public void setRightBorderColor(Color rightBorderColor)
 	{
-		this.rightBorderColor = rightBorderColor;
 	}
 
 	/**
@@ -916,15 +764,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public int getRightPadding()
 	{
-		if (rightPadding == null)
-		{
-			if (padding != null)
-				return padding.intValue();
-			if (style != null && style.getRightPadding() != null)
-				return style.getRightPadding().intValue();
-			return 0;
-		}
-		return rightPadding.intValue();
+		return ((JRTemplateText)template).getRightPadding();
 	}
 
 	/**
@@ -932,7 +772,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public Integer getOwnRightPadding()
 	{
-		return rightPadding;
+		return null;
 	}
 
 	/**
@@ -940,7 +780,6 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public void setRightPadding(int rightPadding)
 	{
-		this.rightPadding = new Integer(rightPadding);
 	}
 
 	/**
@@ -948,7 +787,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public JRReportFont getReportFont()
 	{
-		return reportFont;
+		return ((JRTemplateText)template).getReportFont();
 	}
 
 	/**
@@ -956,7 +795,6 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public void setReportFont(JRReportFont reportFont)
 	{
-		this.reportFont = reportFont;
 	}
 
 	/**
@@ -964,15 +802,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public String getFontName()
 	{
-		if (fontName == null)
-		{
-			if (reportFont != null)
-				return reportFont.getFontName();
-			if (style != null && style.getFontName() != null)
-				return style.getFontName();
-			return DEFAULT_FONT_NAME;
-		}
-		return fontName;
+		return ((JRTemplateText)template).getFontName();
 	}
 
 	/**
@@ -980,7 +810,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public String getOwnFontName()
 	{
-		return fontName;
+		return null;
 	}
 
 	/**
@@ -988,7 +818,6 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public void setFontName(String fontName)
 	{
-		this.fontName = fontName;
 	}
 
 
@@ -997,15 +826,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public boolean isBold()
 	{
-		if (isBold == null)
-		{
-			if (reportFont != null)
-				return reportFont.isBold();
-			if (style != null && style.isBold() != null)
-				return style.isBold().booleanValue();
-			return DEFAULT_FONT_BOLD;
-		}
-		return isBold.booleanValue();
+		return ((JRTemplateText)template).isBold();
 	}
 
 	/**
@@ -1013,7 +834,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public Boolean isOwnBold()
 	{
-		return isBold;
+		return null;
 	}
 
 	/**
@@ -1021,7 +842,6 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public void setBold(boolean isBold)
 	{
-		setBold(isBold ? Boolean.TRUE : Boolean.FALSE);
 	}
 
 	/**
@@ -1030,7 +850,6 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public void setBold(Boolean isBold)
 	{
-		this.isBold = isBold;
 	}
 
 
@@ -1039,15 +858,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public boolean isItalic()
 	{
-		if (isItalic == null)
-		{
-			if (reportFont != null)
-				return reportFont.isItalic();
-			if (style != null && style.isItalic() != null)
-				return style.isItalic().booleanValue();
-			return DEFAULT_FONT_ITALIC;
-		}
-		return isItalic.booleanValue();
+		return ((JRTemplateText)template).isItalic();
 	}
 
 	/**
@@ -1055,7 +866,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public Boolean isOwnItalic()
 	{
-		return isItalic;
+		return null;
 	}
 
 	/**
@@ -1063,7 +874,6 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public void setItalic(boolean isItalic)
 	{
-		setItalic(isItalic ? Boolean.TRUE : Boolean.FALSE);
 	}
 
 	/**
@@ -1072,7 +882,6 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public void setItalic(Boolean isItalic)
 	{
-		this.isItalic = isItalic;
 	}
 
 	/**
@@ -1080,15 +889,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public boolean isUnderline()
 	{
-		if (isUnderline == null)
-		{
-			if (reportFont != null)
-				return reportFont.isUnderline();
-			if (style != null && style.isUnderline() != null)
-				return style.isUnderline().booleanValue();
-			return DEFAULT_FONT_UNDERLINE;
-		}
-		return isUnderline.booleanValue();
+		return ((JRTemplateText)template).isUnderline();
 	}
 
 	/**
@@ -1096,7 +897,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public Boolean isOwnUnderline()
 	{
-		return isUnderline;
+		return null;
 	}
 
 	/**
@@ -1104,7 +905,6 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public void setUnderline(boolean isUnderline)
 	{
-		setUnderline(isUnderline ? Boolean.TRUE : Boolean.FALSE);
 	}
 
 	/**
@@ -1113,7 +913,6 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public void setUnderline(Boolean isUnderline)
 	{
-		this.isUnderline = isUnderline;
 	}
 
 	/**
@@ -1121,15 +920,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public boolean isStrikeThrough()
 	{
-		if (isStrikeThrough == null)
-		{
-			if (reportFont != null)
-				return reportFont.isStrikeThrough();
-			if (style != null && style.isStrikeThrough() != null)
-				return style.isStrikeThrough().booleanValue();
-			return DEFAULT_FONT_STRIKETHROUGH;
-		}
-		return isStrikeThrough.booleanValue();
+		return ((JRTemplateText)template).isStrikeThrough();
 	}
 
 	/**
@@ -1137,7 +928,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public Boolean isOwnStrikeThrough()
 	{
-		return isStrikeThrough;
+		return null;
 	}
 
 	/**
@@ -1154,7 +945,6 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public void setStrikeThrough(Boolean isStrikeThrough)
 	{
-		this.isStrikeThrough = isStrikeThrough;
 	}
 
 	/**
@@ -1162,15 +952,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public int getSize()
 	{
-		if (size == null)
-		{
-			if (reportFont != null)
-				return reportFont.getSize();
-			if (style != null && style.getSize() != null)
-				return style.getSize().intValue();
-			return DEFAULT_FONT_SIZE;
-		}
-		return size.intValue();
+		return ((JRTemplateText)template).getSize();
 	}
 
 	/**
@@ -1178,7 +960,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public Integer getOwnSize()
 	{
-		return size;
+		return null;
 	}
 
 	/**
@@ -1186,7 +968,6 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public void setSize(int size)
 	{
-		setSize(new Integer(size));
 	}
 
 	/**
@@ -1195,7 +976,6 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public void setSize(Integer size)
 	{
-		this.size = size;
 	}
 
 	/**
@@ -1203,15 +983,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public String getPdfFontName()
 	{
-		if (pdfFontName == null)
-		{
-			if (reportFont != null)
-				return reportFont.getPdfFontName();
-			if (style != null && style.getPdfFontName() != null)
-				return style.getPdfFontName();
-			return DEFAULT_PDF_FONT_NAME;
-		}
-		return pdfFontName;
+		return ((JRTemplateText)template).getPdfFontName();
 	}
 
 	/**
@@ -1219,7 +991,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public String getOwnPdfFontName()
 	{
-		return pdfFontName;
+		return null;
 	}
 
 	/**
@@ -1227,7 +999,6 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public void setPdfFontName(String pdfFontName)
 	{
-		this.pdfFontName = pdfFontName;
 	}
 
 
@@ -1236,15 +1007,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public String getPdfEncoding()
 	{
-		if (pdfEncoding == null)
-		{
-			if (reportFont != null)
-				return reportFont.getPdfEncoding();
-			if (style != null && style.getPdfEncoding() != null)
-				return style.getPdfEncoding();
-			return DEFAULT_PDF_ENCODING;
-		}
-		return pdfEncoding;
+		return ((JRTemplateText)template).getPdfEncoding();
 	}
 
 	/**
@@ -1252,7 +1015,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public String getOwnPdfEncoding()
 	{
-		return pdfEncoding;
+		return null;
 	}
 
 	/**
@@ -1260,7 +1023,6 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public void setPdfEncoding(String pdfEncoding)
 	{
-		this.pdfEncoding = pdfEncoding;
 	}
 
 
@@ -1269,15 +1031,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public boolean isPdfEmbedded()
 	{
-		if (isPdfEmbedded == null)
-		{
-			if (reportFont != null)
-				return reportFont.isPdfEmbedded();
-			if (style != null && style.isPdfEmbedded() != null)
-				return style.isPdfEmbedded().booleanValue();
-			return DEFAULT_PDF_EMBEDDED;
-		}
-		return isPdfEmbedded.booleanValue();
+		return ((JRTemplateText)template).isPdfEmbedded();
 	}
 
 	/**
@@ -1285,7 +1039,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public Boolean isOwnPdfEmbedded()
 	{
-		return isPdfEmbedded;
+		return null;
 	}
 
 	/**
@@ -1293,7 +1047,6 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public void setPdfEmbedded(boolean isPdfEmbedded)
 	{
-		setPdfEmbedded(isPdfEmbedded ? Boolean.TRUE : Boolean.FALSE);
 	}
 
 	/**
@@ -1302,7 +1055,6 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public void setPdfEmbedded(Boolean isPdfEmbedded)
 	{
-		this.isPdfEmbedded = isPdfEmbedded;
 	}
 
 	/**
@@ -1310,7 +1062,6 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public void setBorder(Byte border)
 	{
-		this.border = border;
 	}
 
 	/**
@@ -1318,7 +1069,6 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public void setPadding(Integer padding)
 	{
-		this.padding = padding;
 	}
 
 	/**
@@ -1326,7 +1076,6 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public void setTopBorder(Byte topBorder)
 	{
-		this.topBorder = topBorder;
 	}
 
 	/**
@@ -1334,7 +1083,6 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public void setTopPadding(Integer topPadding)
 	{
-		this.topPadding = topPadding;
 	}
 
 	/**
@@ -1342,7 +1090,6 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public void setLeftBorder(Byte leftBorder)
 	{
-		this.leftBorder = leftBorder;
 	}
 
 	/**
@@ -1350,7 +1097,6 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public void setLeftPadding(Integer leftPadding)
 	{
-		this.leftPadding = leftPadding;
 	}
 
 	/**
@@ -1358,7 +1104,6 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public void setBottomBorder(Byte bottomBorder)
 	{
-		this.bottomBorder = bottomBorder;
 	}
 
 	/**
@@ -1366,7 +1111,6 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public void setBottomPadding(Integer bottomPadding)
 	{
-		this.bottomPadding = bottomPadding;
 	}
 
 	/**
@@ -1374,7 +1118,6 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public void setRightBorder(Byte rightBorder)
 	{
-		this.rightBorder = rightBorder;
 	}
 
 	/**
@@ -1382,7 +1125,6 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public void setRightPadding(Integer rightPadding)
 	{
-		this.rightPadding = rightPadding;
 	}
 
 
@@ -1391,14 +1133,7 @@ public class JRTemplatePrintText extends JRTemplatePrintElement implements JRPri
 	 */
 	public Map getAttributes()
 	{
-		if (attributes == null)
-		{
-			attributes = new HashMap();
-			
-			JRFontUtil.setAttributes(attributes, this);
-		}
-
-		return attributes;
+		return ((JRTemplateText)template).getAttributes();
 	}
 	
 }

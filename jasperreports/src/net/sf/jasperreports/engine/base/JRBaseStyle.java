@@ -31,7 +31,9 @@ import java.awt.Color;
 import java.io.Serializable;
 
 import net.sf.jasperreports.engine.JRAbstractObjectFactory;
+import net.sf.jasperreports.engine.JRDefaultStyleProvider;
 import net.sf.jasperreports.engine.JRStyle;
+import net.sf.jasperreports.engine.util.JRStyleResolver;
 
 /**
  * @author Ionut Nedelcu (ionutned@users.sourceforge.net)
@@ -49,8 +51,13 @@ public class JRBaseStyle implements JRStyle, Serializable
 	/**
 	 *
 	 */
-	protected String name;
+	protected JRDefaultStyleProvider defaultStyleProvider;
 	protected JRStyle parentStyle;
+
+	/**
+	 *
+	 */
+	protected String name;
 	protected boolean isDefault = false;
 
 	protected Byte positionType;
@@ -113,55 +120,76 @@ public class JRBaseStyle implements JRStyle, Serializable
 	 */
 	public JRBaseStyle(JRStyle style, JRAbstractObjectFactory factory)
 	{
-		this.name= style.getName();
-		this.parentStyle = factory.getStyle(style.getParentStyle());
+		name= style.getName();
+		parentStyle = factory.getStyle(style.getStyle());
 		isDefault = style.isDefault();
 
-		this.mode = style.getOwnMode();
-		this.forecolor = style.getOwnForecolor();
-		this.backcolor = style.getOwnBackcolor();
+		mode = style.getOwnMode();
+		forecolor = style.getOwnForecolor();
+		backcolor = style.getOwnBackcolor();
 
-		this.pen = style.getOwnPen();
-		this.fill = style.getOwnFill();
+		pen = style.getOwnPen();
+		fill = style.getOwnFill();
 
-		this.radius = style.getOwnRadius();
+		radius = style.getOwnRadius();
 
-		this.scaleImage = style.getOwnScaleImage();
-		this.horizontalAlignment = style.getOwnHorizontalAlignment();
-		this.verticalAlignment = style.getOwnVerticalAlignment();
+		scaleImage = style.getOwnScaleImage();
+		horizontalAlignment = style.getOwnHorizontalAlignment();
+		verticalAlignment = style.getOwnVerticalAlignment();
 
-		this.border = style.getOwnBorder();
-		this.topBorder = style.getOwnTopBorder();
-		this.leftBorder = style.getOwnLeftBorder();
-		this.bottomBorder = style.getOwnBottomBorder();
-		this.rightBorder = style.getOwnRightBorder();
-		this.borderColor = style.getOwnBorderColor();
-		this.topBorderColor = style.getOwnTopBorderColor();
-		this.leftBorderColor = style.getOwnLeftBorderColor();
-		this.bottomBorderColor = style.getOwnBottomBorderColor();
-		this.rightBorderColor = style.getOwnRightBorderColor();
-		this.padding = style.getOwnPadding();
-		this.topPadding = style.getOwnTopPadding();
-		this.leftPadding = style.getOwnLeftPadding();
-		this.bottomPadding = style.getOwnBottomPadding();
-		this.rightPadding = style.getOwnRightPadding();
+		border = style.getOwnBorder();
+		topBorder = style.getOwnTopBorder();
+		leftBorder = style.getOwnLeftBorder();
+		bottomBorder = style.getOwnBottomBorder();
+		rightBorder = style.getOwnRightBorder();
+		borderColor = style.getOwnBorderColor();
+		topBorderColor = style.getOwnTopBorderColor();
+		leftBorderColor = style.getOwnLeftBorderColor();
+		bottomBorderColor = style.getOwnBottomBorderColor();
+		rightBorderColor = style.getOwnRightBorderColor();
+		padding = style.getOwnPadding();
+		topPadding = style.getOwnTopPadding();
+		leftPadding = style.getOwnLeftPadding();
+		bottomPadding = style.getOwnBottomPadding();
+		rightPadding = style.getOwnRightPadding();
 
-		this.rotation = style.getOwnRotation();
-		this.lineSpacing = style.getOwnLineSpacing();
-		this.isStyledText = style.isOwnStyledText();
+		rotation = style.getOwnRotation();
+		lineSpacing = style.getOwnLineSpacing();
+		isStyledText = style.isOwnStyledText();
 
-		this.pattern = style.getOwnPattern();
+		pattern = style.getOwnPattern();
+
+		fontName = style.getOwnFontName();
+		isBold = style.isOwnBold();
+		isItalic = style.isOwnItalic();
+		isUnderline = style.isOwnUnderline();
+		isStrikeThrough = style.isOwnStrikeThrough();
+		size = style.getOwnSize();
+		pdfFontName = style.getOwnPdfFontName();
+		pdfEncoding = style.getOwnPdfEncoding();
+		isPdfEmbedded = style.isOwnPdfEmbedded();
 	}
 
 
 	/**
 	 *
 	 */
-	public JRStyle getParentStyle()
+	public JRDefaultStyleProvider getDefaultStyleProvider()
+	{
+		return defaultStyleProvider;
+	}
+
+	/**
+	 *
+	 */
+	public JRStyle getStyle()
 	{
 		return parentStyle;
 	}
 
+	/**
+	 *
+	 */
 	public String getName()
 	{
 		return name;
@@ -545,9 +573,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 
 	public String getFontName()
 	{
-		if (fontName == null && parentStyle != null)
-			return parentStyle.getFontName();
-		return fontName;
+		return JRStyleResolver.getFontName(this);
 	}
 
 	public String getOwnFontName()

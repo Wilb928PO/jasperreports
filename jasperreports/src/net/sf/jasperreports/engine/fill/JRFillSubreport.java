@@ -232,7 +232,7 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport, Runna
 			rectangle.setBackcolor(getBackcolor());
 			rectangle.setPen(JRGraphicElement.PEN_NONE);
 
-			template = new JRTemplateRectangle(rectangle);
+			template = new JRTemplateRectangle(filler.getJasperPrint().getDefaultStyleProvider(), rectangle);
 		}
 		
 		return (JRTemplateRectangle)template;

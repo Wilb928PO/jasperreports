@@ -476,7 +476,7 @@ public class JRBaseReport implements JRReport, Serializable
 	}
 
 	/**
-	 *
+	 * @deprecated
 	 */
 	public JRReportFont getDefaultFont()
 	{
@@ -484,7 +484,7 @@ public class JRBaseReport implements JRReport, Serializable
 	}
 
 	/**
-	 *
+	 * @deprecated
 	 */
 	public JRReportFont[] getFonts()
 	{

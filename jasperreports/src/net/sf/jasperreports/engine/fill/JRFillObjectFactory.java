@@ -194,7 +194,7 @@ public class JRFillObjectFactory extends JRAbstractObjectFactory
 			{
 				fillFont =
 					new JRBaseFont(
-						filler.getJasperPrint().getDefaultFontProvider(),
+						filler.getJasperPrint().getDefaultStyleProvider(),
 						getReportFont(font.getReportFont()),
 						font
 						);

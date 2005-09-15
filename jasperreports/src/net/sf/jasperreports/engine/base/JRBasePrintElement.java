@@ -30,6 +30,7 @@ package net.sf.jasperreports.engine.base;
 import java.awt.Color;
 import java.io.Serializable;
 
+import net.sf.jasperreports.engine.JRDefaultStyleProvider;
 import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRPrintElement;
 import net.sf.jasperreports.engine.JRStyle;
@@ -59,9 +60,43 @@ public class JRBasePrintElement implements JRPrintElement, Serializable
 	protected Color forecolor = Color.black;
 	protected Color backcolor = Color.white;
 
-	protected JRStyle style;
+	protected JRDefaultStyleProvider defaultStyleProvider;
+	protected JRStyle style = null;
 
 	
+	/**
+	 *
+	 */
+	public JRBasePrintElement(JRDefaultStyleProvider defaultStyleProvider)
+	{
+		this.defaultStyleProvider = defaultStyleProvider;
+	}
+	
+
+	/**
+	 *
+	 */
+	public JRDefaultStyleProvider getDefaultStyleProvider()
+	{
+		return defaultStyleProvider;
+	}
+	
+	/**
+	 *
+	 */
+	public JRStyle getStyle()
+	{
+		return style;
+	}
+	
+	/**
+	 *
+	 */
+	public void setStyle(JRStyle style)
+	{
+		this.style = style;
+	}
+
 	/**
 	 *
 	 */

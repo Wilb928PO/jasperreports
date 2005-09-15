@@ -58,6 +58,15 @@ public class JRDesignRectangle extends JRDesignGraphicElement implements JRRecta
 	/**
 	 *
 	 */
+	public JRDesignRectangle()
+	{
+		super(null);
+	}
+		
+
+	/**
+	 *
+	 */
 	public JRDesignRectangle(JRDefaultStyleProvider defaultStyleProvider)
 	{
 		super(defaultStyleProvider);

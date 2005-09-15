@@ -60,6 +60,14 @@ public class JRDesignStaticText extends JRDesignTextElement implements JRStaticT
 	/**
 	 *
 	 */
+	public JRDesignStaticText()
+	{
+		super(null);
+	}
+		
+	/**
+	 *
+	 */
 	public JRDesignStaticText(JRDefaultStyleProvider defaultStyleProvider)
 	{
 		super(defaultStyleProvider);

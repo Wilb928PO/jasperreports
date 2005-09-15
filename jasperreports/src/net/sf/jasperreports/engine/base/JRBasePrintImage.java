@@ -30,6 +30,7 @@ package net.sf.jasperreports.engine.base;
 import net.sf.jasperreports.engine.JRAlignment;
 import net.sf.jasperreports.engine.JRAnchor;
 import net.sf.jasperreports.engine.JRBox;
+import net.sf.jasperreports.engine.JRDefaultStyleProvider;
 import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRGraphicElement;
 import net.sf.jasperreports.engine.JRHyperlink;
@@ -78,9 +79,9 @@ public class JRBasePrintImage extends JRBasePrintGraphicElement implements JRPri
 	/**
 	 *
 	 */
-	public JRBasePrintImage()
+	public JRBasePrintImage(JRDefaultStyleProvider defaultStyleProvider)
 	{
-		super();
+		super(defaultStyleProvider);
 		
 		this.mode = JRElement.MODE_TRANSPARENT;
 		this.pen = JRGraphicElement.PEN_NONE;

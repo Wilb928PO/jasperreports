@@ -699,7 +699,7 @@ public class JasperDesign extends JRBaseReport
 
 
 	/**
-	 *
+	 * @deprecated
 	 */
 	public void setDefaultFont(JRReportFont font)
 	{
@@ -711,6 +711,7 @@ public class JasperDesign extends JRBaseReport
 
 	/**
 	 * Gets an array of report level fonts. These fonts can be referenced by text elements.
+	 * @deprecated
 	 */
 	public JRReportFont[] getFonts()
 	{
@@ -724,6 +725,7 @@ public class JasperDesign extends JRBaseReport
 
 	/**
 	 * Gets a list of report level fonts. These fonts can be referenced by text elements.
+	 * @deprecated
 	 */
 	public List getFontsList()
 	{
@@ -732,7 +734,7 @@ public class JasperDesign extends JRBaseReport
 	
 
 	/**
-	 *
+	 * @deprecated
 	 */
 	public Map getFontsMap()
 	{
@@ -742,6 +744,7 @@ public class JasperDesign extends JRBaseReport
 
 	/**
 	 * Adds a report font, that can be referenced by text elements.
+	 * @deprecated
 	 */
 	public void addFont(JRReportFont reportFont) throws JRException
 	{
@@ -762,6 +765,7 @@ public class JasperDesign extends JRBaseReport
 
 	/**
 	 * Removes a report font from the list, based on the font name.
+	 * @deprecated
 	 */
 	public JRReportFont removeFont(String propName)
 	{
@@ -773,6 +777,7 @@ public class JasperDesign extends JRBaseReport
 
 	/**
 	 * Removes a report font from the list.
+	 * @deprecated
 	 */
 	public JRReportFont removeFont(JRReportFont reportFont)
 	{

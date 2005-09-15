@@ -27,6 +27,7 @@
  */
 package net.sf.jasperreports.engine.base;
 
+import net.sf.jasperreports.engine.JRDefaultStyleProvider;
 import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRGraphicElement;
 import net.sf.jasperreports.engine.JRPrintGraphicElement;
@@ -55,9 +56,9 @@ public abstract class JRBasePrintGraphicElement extends JRBasePrintElement imple
 	/**
 	 *
 	 */
-	public JRBasePrintGraphicElement()
+	public JRBasePrintGraphicElement(JRDefaultStyleProvider defaultStyleProvider)
 	{
-		super();
+		super(defaultStyleProvider);
 		
 		this.mode = JRElement.MODE_OPAQUE;
 	}

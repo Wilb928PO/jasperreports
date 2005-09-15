@@ -352,7 +352,7 @@ public class JRFillImage extends JRFillGraphicElement implements JRImage
 	{
 		if (template == null)
 		{
-			template = new JRTemplateImage((JRImage)this.parent);
+			template = new JRTemplateImage(filler.getJasperPrint().getDefaultStyleProvider(), (JRImage)this.parent);
 		}
 		
 		return (JRTemplateImage)template;

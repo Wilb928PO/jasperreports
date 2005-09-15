@@ -30,14 +30,17 @@ package net.sf.jasperreports.engine.fill;
 import java.awt.Color;
 import java.io.Serializable;
 
+import net.sf.jasperreports.engine.JRDefaultStyleProvider;
 import net.sf.jasperreports.engine.JRElement;
+import net.sf.jasperreports.engine.JRStyle;
+import net.sf.jasperreports.engine.JRStyleContainer;
 
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
  * @version $Id$
  */
-public class JRTemplateElement implements Serializable
+public abstract class JRTemplateElement implements JRStyleContainer, Serializable
 {
 
 
@@ -49,17 +52,21 @@ public class JRTemplateElement implements Serializable
 	/**
 	 *
 	 */
-	private byte mode = JRElement.MODE_OPAQUE;
+	private Byte mode = null;
 	private int width = 0;
 	private Color forecolor = Color.black;
 	private Color backcolor = Color.white;
 
+	protected JRDefaultStyleProvider defaultStyleProvider;
+	protected JRStyle parentStyle = null;
 
+	
 	/**
 	 *
 	 */
-	protected JRTemplateElement()
+	protected JRTemplateElement(JRDefaultStyleProvider defaultStyleProvider)
 	{
+		this.defaultStyleProvider = defaultStyleProvider;
 	}
 
 	/**
@@ -76,10 +83,40 @@ public class JRTemplateElement implements Serializable
 	 */
 	protected void setElement(JRElement element)
 	{
-		setMode(element.getMode());
-		setWidth(element.getWidth());
-		setForecolor(element.getForecolor());
-		setBackcolor(element.getBackcolor());
+		parentStyle = element.getStyle();
+		
+		mode = element.getOwnMode();
+		width = element.getWidth();
+		forecolor = element.getOwnForecolor();
+		backcolor = element.getOwnBackcolor();
+	}
+
+	/**
+	 *
+	 */
+	public JRDefaultStyleProvider getDefaultStyleProvider()
+	{
+		return defaultStyleProvider;
+	}
+
+	/**
+	 *
+	 */
+	public JRStyle getStyle()
+	{
+		return parentStyle;
+	}
+
+	/**
+	 *
+	 */
+	protected JRStyle getBaseStyle()
+	{
+		if (parentStyle != null)
+			return parentStyle;
+		if (defaultStyleProvider != null)
+			return defaultStyleProvider.getDefaultStyle();
+		return null;
 	}
 
 	/**
@@ -87,13 +124,41 @@ public class JRTemplateElement implements Serializable
 	 */
 	public byte getMode()
 	{
-		return this.mode;
+		if (mode == null)
+		{
+			JRStyle style = getBaseStyle();
+			if (style != null && style.getMode() != null)
+				return style.getMode().byteValue();
+			return getDefaultMode();
+		}
+		return mode.byteValue();
+	}
+		
+	/**
+	 *
+	 */
+	protected abstract byte getDefaultMode();
+	
+	/**
+	 *
+	 */
+	public Byte getOwnMode()
+	{
+		return mode;
 	}
 	
 	/**
 	 *
 	 */
 	protected void setMode(byte mode)
+	{
+		this.mode = new Byte(mode);
+	}
+	
+	/**
+	 *
+	 */
+	protected void setMode(Byte mode)
 	{
 		this.mode = mode;
 	}
@@ -119,6 +184,21 @@ public class JRTemplateElement implements Serializable
 	 */
 	public Color getForecolor()
 	{
+		if (forecolor == null)
+		{
+			JRStyle style = getBaseStyle();
+			if (style != null && style.getForecolor() != null)
+				return style.getForecolor();
+			return Color.black;
+		}
+		return forecolor;
+	}
+	
+	/**
+	 *
+	 */
+	public Color getOwnForecolor()
+	{
 		return this.forecolor;
 	}
 	
@@ -134,6 +214,21 @@ public class JRTemplateElement implements Serializable
 	 *
 	 */
 	public Color getBackcolor()
+	{
+		if (backcolor == null)
+		{
+			JRStyle style = getBaseStyle();
+			if (style != null && style.getBackcolor() != null)
+				return style.getBackcolor();
+			return Color.white;
+		}
+		return backcolor;
+	}
+	
+	/**
+	 *
+	 */
+	public Color getOwnBackcolor()
 	{
 		return this.backcolor;
 	}

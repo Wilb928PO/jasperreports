@@ -58,6 +58,14 @@ public class JRDesignLine extends JRDesignGraphicElement implements JRLine
 	/**
 	 *
 	 */
+	public JRDesignLine()
+	{
+		super(null);
+	}
+		
+	/**
+	 *
+	 */
 	public JRDesignLine(JRDefaultStyleProvider defaultStyleProvider)
 	{
 		super(defaultStyleProvider);

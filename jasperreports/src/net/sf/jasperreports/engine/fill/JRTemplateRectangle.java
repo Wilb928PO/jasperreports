@@ -27,6 +27,7 @@
  */
 package net.sf.jasperreports.engine.fill;
 
+import net.sf.jasperreports.engine.JRDefaultStyleProvider;
 import net.sf.jasperreports.engine.JRRectangle;
 
 
@@ -52,8 +53,10 @@ public class JRTemplateRectangle extends JRTemplateGraphicElement
 	/**
 	 *
 	 */
-	protected JRTemplateRectangle(JRRectangle rectangle)
+	protected JRTemplateRectangle(JRDefaultStyleProvider defaultStyleProvider, JRRectangle rectangle)
 	{
+		super(defaultStyleProvider);
+		
 		setRectangle(rectangle);
 	}
 

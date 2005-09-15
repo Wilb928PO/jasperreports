@@ -30,7 +30,9 @@ package net.sf.jasperreports.engine.fill;
 import java.awt.Color;
 import java.io.Serializable;
 
+import net.sf.jasperreports.engine.JRDefaultStyleProvider;
 import net.sf.jasperreports.engine.JRPrintElement;
+import net.sf.jasperreports.engine.JRStyle;
 
 
 /**
@@ -55,7 +57,7 @@ public class JRTemplatePrintElement implements JRPrintElement, Serializable
 	private int y = 0;
 	private int height = 0;
 
-
+	
 	/**
 	 *
 	 */
@@ -64,6 +66,29 @@ public class JRTemplatePrintElement implements JRPrintElement, Serializable
 		template = element;
 	}
 
+	/**
+	 *
+	 */
+	public JRDefaultStyleProvider getDefaultStyleProvider()
+	{
+		return template.getDefaultStyleProvider();
+	}
+	
+	/**
+	 *
+	 */
+	public JRStyle getStyle()
+	{
+		return template.getStyle();
+	}
+	
+	/**
+	 *
+	 */
+	public void setStyle(JRStyle style)
+	{
+	}
+	
 	/**
 	 *
 	 */

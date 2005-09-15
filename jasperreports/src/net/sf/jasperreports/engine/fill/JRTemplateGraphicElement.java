@@ -27,6 +27,8 @@
  */
 package net.sf.jasperreports.engine.fill;
 
+import net.sf.jasperreports.engine.JRDefaultStyleProvider;
+import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRGraphicElement;
 
 
@@ -53,15 +55,18 @@ public class JRTemplateGraphicElement extends JRTemplateElement
 	/**
 	 *
 	 */
-	protected JRTemplateGraphicElement()
+	protected JRTemplateGraphicElement(JRDefaultStyleProvider defaultStyleProvider)
 	{
+		super(defaultStyleProvider);
 	}
 
 	/**
 	 *
 	 */
-	protected JRTemplateGraphicElement(JRGraphicElement graphicElement)
+	protected JRTemplateGraphicElement(JRDefaultStyleProvider defaultStyleProvider, JRGraphicElement graphicElement)
 	{
+		super(defaultStyleProvider);
+
 		setGraphicElement(graphicElement);
 	}
 
@@ -77,6 +82,14 @@ public class JRTemplateGraphicElement extends JRTemplateElement
 		setFill(graphicElement.getFill());
 	}
 
+	/**
+	 *
+	 */
+	protected byte getDefaultMode()
+	{
+		return JRElement.MODE_OPAQUE;//FIXME STYLE check for each element type
+	}
+		
 	/**
 	 *
 	 */

@@ -32,9 +32,12 @@ import java.io.Serializable;
 import java.util.Map;
 
 import net.sf.jasperreports.engine.JRDefaultFontProvider;
+import net.sf.jasperreports.engine.JRDefaultStyleProvider;
 import net.sf.jasperreports.engine.JRFont;
 import net.sf.jasperreports.engine.JRReportFont;
+import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.util.JRFontUtil;
+import net.sf.jasperreports.engine.util.JRStyleResolver;
 import net.sf.jasperreports.engine.util.JRTextAttribute;
 
 
@@ -192,7 +195,22 @@ public class JRBaseFont implements JRFont, Serializable
 	{
 		return defaultFontProvider;
 	}
-	
+
+	/**
+	 *
+	 */
+	public JRDefaultStyleProvider getDefaultStyleProvider()
+	{
+		return null;
+	}
+
+	/**
+	 *
+	 */
+	public JRStyle getStyle()
+	{
+		return null;
+	}
 
 	/**
 	 *
@@ -215,11 +233,7 @@ public class JRBaseFont implements JRFont, Serializable
 	 */
 	public String getFontName()
 	{
-		if (fontName == null)
-		{
-			return getBaseFont().getFontName();
-		}
-		return fontName;
+		return JRStyleResolver.getFontName(this);
 	}
 	
 	/**

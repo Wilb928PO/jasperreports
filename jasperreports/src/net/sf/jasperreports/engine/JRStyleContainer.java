@@ -25,44 +25,26 @@
  * San Francisco CA 94107
  * http://www.jaspersoft.com
  */
-package net.sf.jasperreports.engine.fill;
+package net.sf.jasperreports.engine;
 
-import net.sf.jasperreports.engine.JRDefaultStyleProvider;
-import net.sf.jasperreports.engine.JREllipse;
 
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
  * @version $Id$
  */
-public class JRTemplateEllipse extends JRTemplateGraphicElement
+public interface JRStyleContainer
 {
 
 
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = 10001;
-
-
-	/**
-	 *
-	 */
-	protected JRTemplateEllipse(JRDefaultStyleProvider defaultStyleProvider, JREllipse ellipse)
-	{
-		super(defaultStyleProvider);
-		
-		setEllipse(ellipse);
-	}
-
+	public JRDefaultStyleProvider getDefaultStyleProvider();
 
 	/**
 	 *
 	 */
-	protected void setEllipse(JREllipse ellipse)
-	{
-		super.setGraphicElement(ellipse);
-	}
-
-
+	public JRStyle getStyle();
+	
 }

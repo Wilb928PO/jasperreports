@@ -41,7 +41,7 @@ import java.util.Map;
  * @author Teodor Danciu (teodord@users.sourceforge.net)
  * @version $Id$
  */
-public interface JRFont
+public interface JRFont extends JRStyleContainer
 {
 
 	public static final String DEFAULT_FONT_NAME = "sansserif";

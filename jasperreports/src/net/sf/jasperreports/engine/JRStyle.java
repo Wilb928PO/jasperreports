@@ -33,14 +33,12 @@ import java.awt.Color;
  * @author Ionut Nedelcu (ionutned@users.sourceforge.net)
  * @version $Id
  */
-public interface JRStyle
+public interface JRStyle extends JRStyleContainer
 {
 	/**
 	 * Gets the style unique name.
 	 */
 	public String getName();
-
-	public JRStyle getParentStyle();
 
 	/**
 	 * Gets a flag that specifies if this is the default report style.

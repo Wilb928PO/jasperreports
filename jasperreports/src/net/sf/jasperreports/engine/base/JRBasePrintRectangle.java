@@ -27,6 +27,7 @@
  */
 package net.sf.jasperreports.engine.base;
 
+import net.sf.jasperreports.engine.JRDefaultStyleProvider;
 import net.sf.jasperreports.engine.JRPrintRectangle;
 
 
@@ -46,6 +47,15 @@ public class JRBasePrintRectangle extends JRBasePrintGraphicElement implements J
 	 *
 	 */
 	protected int radius = 0;
+
+
+	/**
+	 *
+	 */
+	public JRBasePrintRectangle(JRDefaultStyleProvider defaultStyleProvider)
+	{
+		super(defaultStyleProvider);
+	}
 
 
 	/**

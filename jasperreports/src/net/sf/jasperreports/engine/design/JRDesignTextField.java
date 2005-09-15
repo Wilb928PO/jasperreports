@@ -84,6 +84,14 @@ public class JRDesignTextField extends JRDesignTextElement implements JRTextFiel
 	/**
 	 *
 	 */
+	public JRDesignTextField()
+	{
+		super(null);
+	}
+		
+	/**
+	 *
+	 */
 	public JRDesignTextField(JRDefaultStyleProvider defaultStyleProvider)
 	{
 		super(defaultStyleProvider);

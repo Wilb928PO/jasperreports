@@ -30,6 +30,7 @@ package net.sf.jasperreports.engine.fill;
 import net.sf.jasperreports.engine.JRAlignment;
 import net.sf.jasperreports.engine.JRBox;
 import net.sf.jasperreports.engine.JRChart;
+import net.sf.jasperreports.engine.JRDefaultStyleProvider;
 import net.sf.jasperreports.engine.JRGraphicElement;
 import net.sf.jasperreports.engine.JRHyperlink;
 import net.sf.jasperreports.engine.JRImage;
@@ -64,8 +65,10 @@ public class JRTemplateImage extends JRTemplateGraphicElement
 	/**
 	 *
 	 */
-	protected JRTemplateImage(JRImage image)
+	protected JRTemplateImage(JRDefaultStyleProvider defaultStyleProvider, JRImage image)
 	{
+		super(defaultStyleProvider);
+		
 		setImage(image);
 	}
 
@@ -73,8 +76,10 @@ public class JRTemplateImage extends JRTemplateGraphicElement
 	/**
 	 *
 	 */
-	protected JRTemplateImage(JRChart chart)
+	protected JRTemplateImage(JRDefaultStyleProvider defaultStyleProvider, JRChart chart)
 	{
+		super(defaultStyleProvider);
+		
 		setChart(chart);
 	}
 

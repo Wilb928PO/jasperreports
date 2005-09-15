@@ -34,6 +34,8 @@ import java.util.Map;
 
 import net.sf.jasperreports.engine.JRAlignment;
 import net.sf.jasperreports.engine.JRBox;
+import net.sf.jasperreports.engine.JRDefaultStyleProvider;
+import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRFont;
 import net.sf.jasperreports.engine.JRGraphicElement;
 import net.sf.jasperreports.engine.JRHyperlink;
@@ -43,6 +45,7 @@ import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.JRTextElement;
 import net.sf.jasperreports.engine.JRTextField;
 import net.sf.jasperreports.engine.util.JRFontUtil;
+import net.sf.jasperreports.engine.util.JRStyleResolver;
 
 
 /**
@@ -102,28 +105,26 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 	protected Boolean isPdfEmbedded = null;
 	
 	protected transient Map attributes = null;
-
-	protected JRStyle style = null;//FIXME STYLE why not in base class?
 	
 	
 	/**
 	 *
 	 */
-	protected JRTemplateText(JRStaticText staticText)
+	protected JRTemplateText(JRDefaultStyleProvider defaultStyleProvider, JRStaticText staticText)
 	{
-		setStaticText(staticText);
+		super(defaultStyleProvider);
 		
-		this.style = staticText.getStyle();
+		setStaticText(staticText);
 	}
 
 	/**
 	 *
 	 */
-	protected JRTemplateText(JRTextField textField)
+	protected JRTemplateText(JRDefaultStyleProvider defaultStyleProvider, JRTextField textField)
 	{
-		setTextField(textField);
+		super(defaultStyleProvider);
 		
-		this.style = textField.getStyle();
+		setTextField(textField);
 	}
 
 
@@ -169,6 +170,8 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 		bottomPadding = textElement.getOwnBottomPadding();
 		rightPadding = textElement.getOwnRightPadding();
 
+		reportFont = textElement.getReportFont();
+
 		fontName = textElement.getOwnFontName();
 		isBold = textElement.isOwnBold();
 		isItalic = textElement.isOwnItalic();
@@ -186,6 +189,28 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 		isStyledText = textElement.isOwnStyledText();
 	}
 
+	
+	/**
+	 * 
+	 */
+	protected JRFont getBaseFont()
+	{
+		if (reportFont != null)
+			return reportFont;
+		if (defaultStyleProvider != null)
+			return defaultStyleProvider.getDefaultFont();
+		return null;
+	}
+	
+	/**
+	 *
+	 */
+	protected byte getDefaultMode()
+	{
+		return JRElement.MODE_TRANSPARENT;
+	}
+		
+		
 	/**
 	 * @deprecated Replaced by {@link #getHorizontalAlignment()}.
 	 */
@@ -200,8 +225,8 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 	public byte getHorizontalAlignment()
 	{
 		if (horizontalAlignment == null) {
-			if (style != null && style.getHorizontalAlignment() != null)
-				return style.getHorizontalAlignment().byteValue();
+			if (parentStyle != null && parentStyle.getHorizontalAlignment() != null)
+				return parentStyle.getHorizontalAlignment().byteValue();
 			return JRAlignment.HORIZONTAL_ALIGN_LEFT;
 		}
 		return horizontalAlignment.byteValue();
@@ -237,8 +262,8 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 	public byte getVerticalAlignment()
 	{
 		if (verticalAlignment == null) {
-			if (style != null && style.getVerticalAlignment() != null)
-				return style.getVerticalAlignment().byteValue();
+			if (parentStyle != null && parentStyle.getVerticalAlignment() != null)
+				return parentStyle.getVerticalAlignment().byteValue();
 			return JRAlignment.VERTICAL_ALIGN_TOP;
 		}
 		return verticalAlignment.byteValue();
@@ -274,8 +299,8 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 	public byte getRotation()
 	{
 		if (rotation == null) {
-			if (style != null && style.getRotation() != null)
-				return style.getRotation().byteValue();
+			if (parentStyle != null && parentStyle.getRotation() != null)
+				return parentStyle.getRotation().byteValue();
 			return JRTextElement.ROTATION_NONE;
 		}
 		return rotation.byteValue();
@@ -295,8 +320,8 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 	public byte getLineSpacing()
 	{
 		if (lineSpacing == null) {
-			if (style != null && style.getLineSpacing() != null)
-				return style.getLineSpacing().byteValue();
+			if (parentStyle != null && parentStyle.getLineSpacing() != null)
+				return parentStyle.getLineSpacing().byteValue();
 			return JRTextElement.LINE_SPACING_SINGLE;
 		}
 		return lineSpacing.byteValue();
@@ -316,8 +341,8 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 	public boolean isStyledText()
 	{
 		if (isStyledText == null) {
-			if (style != null && style.isStyledText() != null)
-				return style.isStyledText().booleanValue();
+			if (parentStyle != null && parentStyle.isStyledText() != null)
+				return parentStyle.isStyledText().booleanValue();
 			return false;
 		}
 		return isStyledText.booleanValue();
@@ -369,8 +394,8 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 	public byte getBorder()
 	{
 		if (border == null) {
-			if (style != null && style.getBorder() != null)
-				return style.getBorder().byteValue();
+			if (parentStyle != null && parentStyle.getBorder() != null)
+				return parentStyle.getBorder().byteValue();
 			return JRGraphicElement.PEN_NONE;
 		}
 		return border.byteValue();
@@ -395,8 +420,8 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 	public Color getBorderColor()
 	{
 		if (borderColor == null) {
-			if (style != null && style.getBorderColor() != null)
-				return style.getBorderColor();
+			if (parentStyle != null && parentStyle.getBorderColor() != null)
+				return parentStyle.getBorderColor();
 			return Color.black;
 		}
 		return borderColor;
@@ -421,8 +446,8 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 	public int getPadding()
 	{
 		if (padding == null) {
-			if (style != null && style.getPadding() != null)
-				return style.getPadding().intValue();
+			if (parentStyle != null && parentStyle.getPadding() != null)
+				return parentStyle.getPadding().intValue();
 			return 0;
 		}
 		return padding.intValue();
@@ -450,8 +475,8 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 		{
 			if (border != null)
 				return border.byteValue();
-			if (style != null && style.getTopBorder() != null)
-				return style.getTopBorder().byteValue();
+			if (parentStyle != null && parentStyle.getTopBorder() != null)
+				return parentStyle.getTopBorder().byteValue();
 			return JRGraphicElement.PEN_NONE;
 		}
 		return topBorder.byteValue();
@@ -482,8 +507,8 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 		{
 			if (borderColor != null)
 				return borderColor;
-			if (style != null && style.getTopBorderColor() != null)
-				return style.getTopBorderColor();
+			if (parentStyle != null && parentStyle.getTopBorderColor() != null)
+				return parentStyle.getTopBorderColor();
 		}
 		return topBorderColor;
 	}
@@ -513,8 +538,8 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 		{
 			if (padding != null)
 				return padding.intValue();
-			if (style != null && style.getTopPadding() != null)
-				return style.getTopPadding().intValue();
+			if (parentStyle != null && parentStyle.getTopPadding() != null)
+				return parentStyle.getTopPadding().intValue();
 			return 0;
 		}
 		return topPadding.intValue();
@@ -545,8 +570,8 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 		{
 			if (border != null)
 				return border.byteValue();
-			if (style != null && style.getLeftBorder() != null)
-				return style.getLeftBorder().byteValue();
+			if (parentStyle != null && parentStyle.getLeftBorder() != null)
+				return parentStyle.getLeftBorder().byteValue();
 			return JRGraphicElement.PEN_NONE;
 		}
 		return leftBorder.byteValue();
@@ -577,8 +602,8 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 		{
 			if (borderColor != null)
 				return borderColor;
-			if (style != null && style.getLeftBorderColor() != null)
-				return style.getLeftBorderColor();
+			if (parentStyle != null && parentStyle.getLeftBorderColor() != null)
+				return parentStyle.getLeftBorderColor();
 		}
 		return leftBorderColor;
 	}
@@ -608,8 +633,8 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 		{
 			if (padding != null)
 				return padding.intValue();
-			if (style != null && style.getLeftPadding() != null)
-				return style.getLeftPadding().intValue();
+			if (parentStyle != null && parentStyle.getLeftPadding() != null)
+				return parentStyle.getLeftPadding().intValue();
 			return 0;
 		}
 		return leftPadding.intValue();
@@ -640,8 +665,8 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 		{
 			if (border != null)
 				return border.byteValue();
-			if (style != null && style.getBottomBorder() != null)
-				return style.getBottomBorder().byteValue();
+			if (parentStyle != null && parentStyle.getBottomBorder() != null)
+				return parentStyle.getBottomBorder().byteValue();
 			return JRGraphicElement.PEN_NONE;
 		}
 		return bottomBorder.byteValue();
@@ -672,8 +697,8 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 		{
 			if (borderColor != null)
 				return borderColor;
-			if (style != null && style.getBottomBorderColor() != null)
-				return style.getBottomBorderColor();
+			if (parentStyle != null && parentStyle.getBottomBorderColor() != null)
+				return parentStyle.getBottomBorderColor();
 		}
 		return bottomBorderColor;
 	}
@@ -703,8 +728,8 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 		{
 			if (padding != null)
 				return padding.intValue();
-			if (style != null && style.getBottomPadding() != null)
-				return style.getBottomPadding().intValue();
+			if (parentStyle != null && parentStyle.getBottomPadding() != null)
+				return parentStyle.getBottomPadding().intValue();
 			return 0;
 		}
 		return bottomPadding.intValue();
@@ -735,8 +760,8 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 		{
 			if (border != null)
 				return border.byteValue();
-			if (style != null && style.getRightBorder() != null)
-				return style.getRightBorder().byteValue();
+			if (parentStyle != null && parentStyle.getRightBorder() != null)
+				return parentStyle.getRightBorder().byteValue();
 			return JRGraphicElement.PEN_NONE;
 		}
 		return rightBorder.byteValue();
@@ -767,8 +792,8 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 		{
 			if (borderColor != null)
 				return borderColor;
-			if (style != null && style.getRightBorderColor() != null)
-				return style.getRightBorderColor();
+			if (parentStyle != null && parentStyle.getRightBorderColor() != null)
+				return parentStyle.getRightBorderColor();
 		}
 		return rightBorderColor;
 	}
@@ -798,8 +823,8 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 		{
 			if (padding != null)
 				return padding.intValue();
-			if (style != null && style.getRightPadding() != null)
-				return style.getRightPadding().intValue();
+			if (parentStyle != null && parentStyle.getRightPadding() != null)
+				return parentStyle.getRightPadding().intValue();
 			return 0;
 		}
 		return rightPadding.intValue();
@@ -843,15 +868,7 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 	 */
 	public String getFontName()
 	{
-		if (fontName == null)
-		{
-			if (reportFont != null)
-				return reportFont.getFontName();
-			if (style != null && style.getFontName() != null)
-				return style.getFontName();
-			return JRFont.DEFAULT_FONT_NAME;
-		}
-		return fontName;
+		return JRStyleResolver.getFontName(this);
 	}
 
 	/**
@@ -880,8 +897,8 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 		{
 			if (reportFont != null)
 				return reportFont.isBold();
-			if (style != null && style.isBold() != null)
-				return style.isBold().booleanValue();
+			if (parentStyle != null && parentStyle.isBold() != null)
+				return parentStyle.isBold().booleanValue();
 			return JRFont.DEFAULT_FONT_BOLD;
 		}
 		return isBold.booleanValue();
@@ -922,8 +939,8 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 		{
 			if (reportFont != null)
 				return reportFont.isItalic();
-			if (style != null && style.isItalic() != null)
-				return style.isItalic().booleanValue();
+			if (parentStyle != null && parentStyle.isItalic() != null)
+				return parentStyle.isItalic().booleanValue();
 			return JRFont.DEFAULT_FONT_ITALIC;
 		}
 		return isItalic.booleanValue();
@@ -963,8 +980,8 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 		{
 			if (reportFont != null)
 				return reportFont.isUnderline();
-			if (style != null && style.isUnderline() != null)
-				return style.isUnderline().booleanValue();
+			if (parentStyle != null && parentStyle.isUnderline() != null)
+				return parentStyle.isUnderline().booleanValue();
 			return JRFont.DEFAULT_FONT_UNDERLINE;
 		}
 		return isUnderline.booleanValue();
@@ -1002,8 +1019,10 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 	{
 		if (isStrikeThrough == null)
 		{
-			if (reportFont != null)
-				return reportFont.isStrikeThrough();
+			JRFont font = getBaseFont();
+			if (font != null)
+				return font.isStrikeThrough();
+			JRStyle style = getBaseStyle();
 			if (style != null && style.isStrikeThrough() != null)
 				return style.isStrikeThrough().booleanValue();
 			return JRFont.DEFAULT_FONT_STRIKETHROUGH;
@@ -1043,8 +1062,10 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 	{
 		if (size == null)
 		{
-			if (reportFont != null)
-				return reportFont.getSize();
+			JRFont font = getBaseFont();
+			if (font != null)
+				return font.getSize();
+			JRStyle style = getBaseStyle();
 			if (style != null && style.getSize() != null)
 				return style.getSize().intValue();
 			return JRFont.DEFAULT_FONT_SIZE;
@@ -1086,8 +1107,8 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 		{
 			if (reportFont != null)
 				return reportFont.getPdfFontName();
-			if (style != null && style.getPdfFontName() != null)
-				return style.getPdfFontName();
+			if (parentStyle != null && parentStyle.getPdfFontName() != null)
+				return parentStyle.getPdfFontName();
 			return JRFont.DEFAULT_PDF_FONT_NAME;
 		}
 		return pdfFontName;
@@ -1119,8 +1140,8 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 		{
 			if (reportFont != null)
 				return reportFont.getPdfEncoding();
-			if (style != null && style.getPdfEncoding() != null)
-				return style.getPdfEncoding();
+			if (parentStyle != null && parentStyle.getPdfEncoding() != null)
+				return parentStyle.getPdfEncoding();
 			return JRFont.DEFAULT_PDF_ENCODING;
 		}
 		return pdfEncoding;
@@ -1152,8 +1173,8 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 		{
 			if (reportFont != null)
 				return reportFont.isPdfEmbedded();
-			if (style != null && style.isPdfEmbedded() != null)
-				return style.isPdfEmbedded().booleanValue();
+			if (parentStyle != null && parentStyle.isPdfEmbedded() != null)
+				return parentStyle.isPdfEmbedded().booleanValue();
 			return JRFont.DEFAULT_PDF_EMBEDDED;
 		}
 		return isPdfEmbedded.booleanValue();
@@ -1313,6 +1334,6 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 
 	public JRStyle getStyle()
 	{
-		return style;
+		return parentStyle;
 	}
 }

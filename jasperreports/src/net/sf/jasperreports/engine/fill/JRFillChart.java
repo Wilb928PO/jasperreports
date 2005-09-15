@@ -486,7 +486,7 @@ public class JRFillChart extends JRFillElement implements JRChart
 	{
 		if (template == null)
 		{
-			template = new JRTemplateImage((JRChart)parent);
+			template = new JRTemplateImage(filler.getJasperPrint().getDefaultStyleProvider(), (JRChart)parent);
 		}
 		
 		return (JRTemplateImage)template;

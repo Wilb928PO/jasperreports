@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import net.sf.jasperreports.engine.JRDefaultStyleProvider;
 import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRElementGroup;
 import net.sf.jasperreports.engine.JRException;
@@ -108,6 +109,15 @@ public abstract class JRFillElement implements JRElement
 		/*   */
 		printWhenGroupChanges = factory.getGroup(element.getPrintWhenGroupChanges());
 		elementGroup = (JRFillElementGroup)factory.getElementGroup(element.getElementGroup());
+	}
+
+
+	/**
+	 *
+	 */
+	public JRDefaultStyleProvider getDefaultStyleProvider()
+	{
+		return parent.getDefaultStyleProvider();
 	}
 
 

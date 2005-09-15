@@ -34,10 +34,15 @@ import java.awt.Color;
  * @author Teodor Danciu (teodord@users.sourceforge.net)
  * @version $Id$
  */
-public interface JRPrintElement
+public interface JRPrintElement extends JRStyleContainer
 {
 
 
+	/**
+	 *
+	 */
+	public void setStyle(JRStyle style);
+	
 	/**
 	 *
 	 */

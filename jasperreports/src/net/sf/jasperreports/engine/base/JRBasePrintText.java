@@ -34,6 +34,7 @@ import java.util.Map;
 import net.sf.jasperreports.engine.JRAlignment;
 import net.sf.jasperreports.engine.JRAnchor;
 import net.sf.jasperreports.engine.JRBox;
+import net.sf.jasperreports.engine.JRDefaultStyleProvider;
 import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRFont;
 import net.sf.jasperreports.engine.JRGraphicElement;
@@ -42,6 +43,7 @@ import net.sf.jasperreports.engine.JRPrintText;
 import net.sf.jasperreports.engine.JRReportFont;
 import net.sf.jasperreports.engine.JRTextElement;
 import net.sf.jasperreports.engine.util.JRFontUtil;
+import net.sf.jasperreports.engine.util.JRStyleResolver;
 
 
 /**
@@ -121,11 +123,11 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
 	/**
 	 *
 	 */
-	public JRBasePrintText()
+	public JRBasePrintText(JRDefaultStyleProvider defaultStyleProvider)
 	{
-		super();
+		super(defaultStyleProvider);
 		
-		mode = JRElement.MODE_TRANSPARENT;
+		mode = JRElement.MODE_TRANSPARENT;//FIXME STYLE
 	}
 
 
@@ -439,6 +441,8 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
 	 */
 	public void setFont(JRFont font)
 	{
+		reportFont = font.getReportFont();
+		
 		fontName = font.getOwnFontName();
 		isBold = font.isOwnBold();
 		isItalic = font.isOwnItalic();
@@ -1045,15 +1049,7 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
 	 */
 	public String getFontName()
 	{
-		if (fontName == null)
-		{
-			if (reportFont != null)
-				return reportFont.getFontName();
-			if (style != null && style.getFontName() != null)
-				return style.getFontName();
-			return DEFAULT_FONT_NAME;
-		}
-		return fontName;
+		return JRStyleResolver.getFontName(this);
 	}
 
 	/**
