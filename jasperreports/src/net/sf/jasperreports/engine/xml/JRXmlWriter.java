@@ -535,7 +535,7 @@ public class JRXmlWriter
 		sb.append("\"");
 
 		sb.append(" size=\"");
-		sb.append(font.getSize());
+		sb.append(font.getFontSize());
 		sb.append("\"");
 
 		sb.append(" isBold=\"");
@@ -590,8 +590,8 @@ public class JRXmlWriter
 		sb.append(style.getFontName());
 		sb.append("\"");
 
-		sb.append(" size=\"");
-		sb.append(style.getSize());
+		sb.append(" fontSize=\"");
+		sb.append(style.getFontSize());
 		sb.append("\"");
 
 		sb.append(" isBold=\"");
@@ -1512,10 +1512,10 @@ public class JRXmlWriter
 				tmpBuffer.append("\"");
 			}
 
-			if (font.getOwnSize() != null)
+			if (font.getOwnFontSize() != null)
 			{
 				tmpBuffer.append(" size=\"");
-				tmpBuffer.append(font.getOwnSize());
+				tmpBuffer.append(font.getOwnFontSize());
 				tmpBuffer.append("\"");
 			}
 

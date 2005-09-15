@@ -470,7 +470,7 @@ public class JRXlsExporter extends JRXlsAbstractExporter
 			if (
 				cf.getFontName().equals(fontName) &&
 				(cf.getColor() == forecolor) &&
-				(cf.getFontHeightInPoints() == (short)font.getSize()) &&
+				(cf.getFontHeightInPoints() == (short)font.getFontSize()) &&
 				((cf.getUnderline() == HSSFFont.U_SINGLE)?(font.isUnderline()):(!font.isUnderline())) &&
 				(cf.getStrikeout() == font.isStrikeThrough()) &&
 				((cf.getBoldweight() == HSSFFont.BOLDWEIGHT_BOLD)?(font.isBold()):(!font.isBold())) &&
@@ -488,7 +488,7 @@ public class JRXlsExporter extends JRXlsAbstractExporter
 
 			cellFont.setFontName(fontName);
 			cellFont.setColor(forecolor);
-			cellFont.setFontHeightInPoints((short)font.getSize());
+			cellFont.setFontHeightInPoints((short)font.getFontSize());
 
 			if (font.isUnderline())
 			{

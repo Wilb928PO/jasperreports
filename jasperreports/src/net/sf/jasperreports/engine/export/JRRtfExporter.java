@@ -813,7 +813,7 @@ public class JRRtfExporter extends JRAbstractExporter
 			writer.write("\\strike");
 		if (font.isUnderline())
 			writer.write("\\ul");
-		writer.write("\\fs" + (font.getSize() * 2));
+		writer.write("\\fs" + (font.getFontSize() * 2));
 
 		switch (text.getHorizontalAlignment())
 		{
@@ -893,7 +893,7 @@ public class JRRtfExporter extends JRAbstractExporter
 			int fontIndex = getFontIndex(fontName); 
 			writer.write("\\f" + fontIndex);
 			
-			int fontSize = styleFont.getSize();
+			int fontSize = styleFont.getFontSize();
 
 			writer.write("\\fs" + (2 * fontSize) + " ");
 

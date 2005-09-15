@@ -352,12 +352,12 @@ public interface JRStyle extends JRStyleContainer
 	/**
 	 *
 	 */
-	public Integer getSize();
+	public Integer getFontSize();
 
 	/**
 	 *
 	 */
-	public Integer getOwnSize();
+	public Integer getOwnFontSize();
 
 	/**
 	 *
@@ -707,10 +707,10 @@ public interface JRStyle extends JRStyleContainer
 	/**
 	 *
 	 */
-	public void setSize(int size);
+	public void setFontSize(int fontSize);
 
 	/**
 	 *
 	 */
-	public void setSize(Integer size);
+	public void setFontSize(Integer fontSize);
 }

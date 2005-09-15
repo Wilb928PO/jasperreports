@@ -96,7 +96,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 	protected Boolean isItalic = null;
 	protected Boolean isUnderline = null;
 	protected Boolean isStrikeThrough = null;
-	protected Integer size = null;
+	protected Integer fontSize = null;
 	protected String pdfFontName = null;
 	protected String pdfEncoding = null;
 	protected Boolean isPdfEmbedded = null;
@@ -164,7 +164,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 		isItalic = style.isOwnItalic();
 		isUnderline = style.isOwnUnderline();
 		isStrikeThrough = style.isOwnStrikeThrough();
-		size = style.getOwnSize();
+		fontSize = style.getOwnFontSize();
 		pdfFontName = style.getOwnPdfFontName();
 		pdfEncoding = style.getOwnPdfEncoding();
 		isPdfEmbedded = style.isOwnPdfEmbedded();
@@ -621,14 +621,14 @@ public class JRBaseStyle implements JRStyle, Serializable
 		return isStrikeThrough;
 	}
 
-	public Integer getSize()
+	public Integer getFontSize()
 	{
 		return JRStyleResolver.getFontSize(this);
 	}
 
-	public Integer getOwnSize()
+	public Integer getOwnFontSize()
 	{
-		return size;
+		return fontSize;
 	}
 
 	public String getPdfFontName()
@@ -1176,16 +1176,16 @@ public class JRBaseStyle implements JRStyle, Serializable
 	/**
 	 *
 	 */
-	public void setSize(int size)
+	public void setFontSize(int fontSize)
 	{
-		setSize(new Integer(size));
+		setFontSize(new Integer(fontSize));
 	}
 
 	/**
 	 *
 	 */
-	public void setSize(Integer size)
+	public void setFontSize(Integer fontSize)
 	{
-		this.size = size;
+		this.fontSize = fontSize;
 	}
 }

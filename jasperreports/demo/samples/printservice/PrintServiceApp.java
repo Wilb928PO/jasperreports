@@ -174,7 +174,7 @@ public class PrintServiceApp
 		normalStyle.setName("Arial_Normal");
 		//FIXME STYLE normalStyle.setDefault(true);
 		normalStyle.setFontName("Arial");
-		normalStyle.setSize(8);
+		normalStyle.setFontSize(8);
 		normalStyle.setPdfFontName("Helvetica");
 		normalStyle.setPdfEncoding("Cp1252");
 		normalStyle.setPdfEmbedded(false);
@@ -184,7 +184,7 @@ public class PrintServiceApp
 		boldStyle.setName("Arial_Bold");
 		//FIXME STYLE boldStyle.setDefault(false);
 		boldStyle.setFontName("Arial");
-		boldStyle.setSize(8);
+		boldStyle.setFontSize(8);
 		boldStyle.setBold(true);
 		boldStyle.setPdfFontName("Helvetica-Bold");
 		boldStyle.setPdfEncoding("Cp1252");
@@ -195,7 +195,7 @@ public class PrintServiceApp
 		italicStyle.setName("Arial_Italic");
 		//FIXME STYLE italicStyle.setDefault(false);
 		italicStyle.setFontName("Arial");
-		italicStyle.setSize(8);
+		italicStyle.setFontSize(8);
 		italicStyle.setItalic(true);
 		italicStyle.setPdfFontName("Helvetica-Oblique");
 		italicStyle.setPdfEncoding("Cp1252");

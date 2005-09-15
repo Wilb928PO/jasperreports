@@ -74,7 +74,7 @@ public class JRBaseFont implements JRFont, Serializable
 	protected Boolean isItalic = null;
 	protected Boolean isUnderline = null;
 	protected Boolean isStrikeThrough = null;
-	protected Integer size = null;
+	protected Integer fontSize = null;
 	protected String pdfFontName = null;
 	protected String pdfEncoding = null;
 	protected Boolean isPdfEmbedded = null;
@@ -179,7 +179,7 @@ public class JRBaseFont implements JRFont, Serializable
 		isItalic = font.isOwnItalic();
 		isUnderline = font.isOwnUnderline();
 		isStrikeThrough = font.isOwnStrikeThrough();
-		size = font.getOwnSize();
+		fontSize = font.getOwnFontSize();
 		pdfFontName = font.getOwnPdfFontName();
 		pdfEncoding = font.getOwnPdfEncoding();
 		isPdfEmbedded = font.isOwnPdfEmbedded();
@@ -394,7 +394,7 @@ public class JRBaseFont implements JRFont, Serializable
 	/**
 	 *
 	 */
-	public int getSize()
+	public int getFontSize()
 	{
 		return JRStyleResolver.getFontSize(this);
 	}
@@ -402,28 +402,60 @@ public class JRBaseFont implements JRFont, Serializable
 	/**
 	 *
 	 */
-	public Integer getOwnSize()
+	public Integer getOwnFontSize()
 	{
-		return size;
+		return fontSize;
 	}
 	
 	/**
 	 *
 	 */
-	public void setSize(int size)
+	public void setFontSize(int fontSize)
 	{
-		setSize(new Integer(size));
+		setFontSize(new Integer(fontSize));
 	}
 
 	/**
 	 * Alternative setSize method which allows also to reset
 	 * the "own" size property.
 	 */
-	public void setSize(Integer size) 
+	public void setFontSize(Integer fontSize) 
 	{
-		this.size = size;
+		this.fontSize = fontSize;
 		this.attributes = null;
 	}
+
+	/**
+	 * @deprecated
+	 */
+	public int getSize()
+	{
+		return getFontSize();
+	}
+	
+	/**
+	 * @deprecated
+	 */
+	public Integer getOwnSize()
+	{
+		return getOwnFontSize();
+	}
+	
+	/**
+	 * @deprecated
+	 */
+	public void setSize(int size)
+	{
+		setFontSize(size);
+	}
+
+	/**
+	 * @deprecated
+	 */
+	public void setSize(Integer size) 
+	{
+		setFontSize(size)
+;	}
 
 	/**
 	 *

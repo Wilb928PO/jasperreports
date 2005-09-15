@@ -72,8 +72,8 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
 	protected float textHeight = 0;
 	protected Byte lineSpacing = null;
 	protected Boolean isStyledText = null;
-	protected JRBox box = null;
-	protected JRFont font = null;
+	//protected JRBox box = null;
+	//protected JRFont font = null;
 	protected String anchorName = null;
 	protected byte hyperlinkType = JRHyperlink.HYPERLINK_TYPE_NONE;
 	protected byte hyperlinkTarget = JRHyperlink.HYPERLINK_TARGET_SELF;
@@ -106,7 +106,7 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
 	protected Boolean isItalic = null;
 	protected Boolean isUnderline = null;
 	protected Boolean isStrikeThrough = null;
-	protected Integer size = null;
+	protected Integer fontSize = null;
 	protected String pdfFontName = null;
 	protected String pdfEncoding = null;
 	protected Boolean isPdfEmbedded = null;
@@ -448,7 +448,7 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
 		isItalic = font.isOwnItalic();
 		isUnderline = font.isOwnUnderline();
 		isStrikeThrough = font.isOwnStrikeThrough();
-		size = font.getOwnSize();
+		fontSize = font.getOwnSize();
 		pdfFontName = font.getOwnPdfFontName();
 		pdfEncoding = font.getOwnPdfEncoding();
 		isPdfEmbedded = font.isOwnPdfEmbedded();
@@ -1205,7 +1205,7 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
 	/**
 	 *
 	 */
-	public int getSize()
+	public int getFontSize()
 	{
 		return JRStyleResolver.getFontSize(this);
 	}
@@ -1213,26 +1213,58 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
 	/**
 	 *
 	 */
-	public Integer getOwnSize()
+	public Integer getOwnFontSize()
 	{
-		return size;
+		return fontSize;
 	}
 
 	/**
 	 *
 	 */
-	public void setSize(int size)
+	public void setFontSize(int fontSize)
 	{
-		setSize(new Integer(size));
+		setFontSize(new Integer(fontSize));
 	}
 
 	/**
 	 * Alternative setSize method which allows also to reset
 	 * the "own" size property.
 	 */
+	public void setFontSize(Integer fontSize)
+	{
+		this.fontSize = fontSize;
+	}
+
+	/**
+	 * @deprecated
+	 */
+	public int getSize()
+	{
+		return getFontSize();
+	}
+
+	/**
+	 * @deprecated
+	 */
+	public Integer getOwnSize()
+	{
+		return getOwnFontSize();
+	}
+
+	/**
+	 * @deprecated
+	 */
+	public void setSize(int size)
+	{
+		setFontSize(size);
+	}
+
+	/**
+	 * @deprecated
+	 */
 	public void setSize(Integer size)
 	{
-		this.size = size;
+		setFontSize(size);
 	}
 
 	/**

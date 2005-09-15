@@ -100,7 +100,7 @@ public class JRReportFontFactory extends JRBaseFactory
 		String size = atts.getValue(ATTRIBUTE_size);
 		if (size != null && size.length() > 0)
 		{
-			reportFont.setSize(Integer.parseInt(size));
+			reportFont.setFontSize(Integer.parseInt(size));
 		}
 
 		reportFont.setPdfFontName(atts.getValue(ATTRIBUTE_pdfFontName));

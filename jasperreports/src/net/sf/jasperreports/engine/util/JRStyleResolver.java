@@ -215,14 +215,14 @@ public class JRStyleResolver
 	 */
 	public static int getFontSize(JRFont font)
 	{
-		if (font.getOwnSize() != null)
-			return font.getOwnSize().intValue();
+		if (font.getOwnFontSize() != null)
+			return font.getOwnFontSize().intValue();
 		JRFont baseFont = getBaseFont(font);
 		if (baseFont != null)
-			return baseFont.getSize();
+			return baseFont.getFontSize();
 		JRStyle baseStyle = getBaseStyle(font);
-		if (baseStyle != null && baseStyle.getSize() != null)
-			return baseStyle.getSize().intValue();
+		if (baseStyle != null && baseStyle.getFontSize() != null)
+			return baseStyle.getFontSize().intValue();
 		return JRFont.DEFAULT_FONT_SIZE;
 	}
 	
@@ -231,11 +231,11 @@ public class JRStyleResolver
 	 */
 	public static Integer getFontSize(JRStyle style)
 	{
-		if (style.getOwnSize() != null)
-			return style.getOwnSize();
+		if (style.getOwnFontSize() != null)
+			return style.getOwnFontSize();
 		JRStyle baseStyle = getBaseStyle(style);
 		if (baseStyle != null)
-			return baseStyle.getOwnSize();
+			return baseStyle.getOwnFontSize();
 		return null;
 	}
 

@@ -1069,29 +1069,59 @@ public abstract class JRFillTextElement extends JRFillElement implements JRTextE
 	/**
 	 *
 	 */
-	public int getSize()
+	public int getFontSize()
 	{
-		return ((JRFont)parent).getSize();
+		return ((JRFont)parent).getFontSize();
 	}
 
 	/**
 	 *
 	 */
-	public Integer getOwnSize()
+	public Integer getOwnFontSize()
 	{
-		return ((JRFont)parent).getOwnSize();
+		return ((JRFont)parent).getOwnFontSize();
 	}
 
 	/**
 	 *
 	 */
-	public void setSize(int size)
+	public void setFontSize(int size)
 	{
 	}
 
 	/**
 	 * Alternative setSize method which allows also to reset
 	 * the "own" size property.
+	 */
+	public void setFontSize(Integer size)
+	{
+	}
+
+	/**
+	 * @deprecated
+	 */
+	public int getSize()
+	{
+		return getFontSize();
+	}
+
+	/**
+	 * @deprecated
+	 */
+	public Integer getOwnSize()
+	{
+		return getOwnFontSize();
+	}
+
+	/**
+	 * @deprecated
+	 */
+	public void setSize(int size)
+	{
+	}
+
+	/**
+	 * @deprecated
 	 */
 	public void setSize(Integer size)
 	{

@@ -53,7 +53,7 @@ public class JRFontFactory extends JRBaseFactory
 	private static final String ATTRIBUTE_isItalic = "isItalic";
 	private static final String ATTRIBUTE_isUnderline = "isUnderline";
 	private static final String ATTRIBUTE_isStrikeThrough = "isStrikeThrough";
-	private static final String ATTRIBUTE_size = "size";
+	private static final String ATTRIBUTE_fontSize = "fontSize";
 	private static final String ATTRIBUTE_pdfFontName = "pdfFontName";
 	private static final String ATTRIBUTE_pdfEncoding = "pdfEncoding";
 	private static final String ATTRIBUTE_isPdfEmbedded = "isPdfEmbedded";
@@ -102,8 +102,8 @@ public class JRFontFactory extends JRBaseFactory
 		if (atts.getValue(ATTRIBUTE_isStrikeThrough) != null)
 			element.setStrikeThrough(Boolean.valueOf(atts.getValue(ATTRIBUTE_isStrikeThrough)));
 
-		if (atts.getValue(ATTRIBUTE_size) != null)
-			element.setSize(Integer.parseInt(atts.getValue(ATTRIBUTE_size)));
+		if (atts.getValue(ATTRIBUTE_fontSize) != null)
+			element.setFontSize(Integer.parseInt(atts.getValue(ATTRIBUTE_fontSize)));
 
 		if (atts.getValue(ATTRIBUTE_pdfFontName) != null)
 			element.setPdfFontName(atts.getValue(ATTRIBUTE_pdfFontName));

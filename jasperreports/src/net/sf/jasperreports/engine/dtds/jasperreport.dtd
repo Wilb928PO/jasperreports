@@ -81,7 +81,7 @@
 	lineSpacing (Single | 1_1_2 | Double) "Single"
 	isStyledText (true | false) "false"
 	fontName CDATA #IMPLIED
-	size NMTOKEN #IMPLIED
+	fontSize NMTOKEN #IMPLIED
 	isBold (true | false) #IMPLIED
 	isItalic (true | false) #IMPLIED
 	isUnderline (true | false) #IMPLIED

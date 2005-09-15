@@ -409,7 +409,7 @@ public class JRXmlExporter extends JRAbstractExporter
 		writer.write("\"");
 
 		writer.write(" size=\"");
-		writer.write(String.valueOf(font.getSize()));
+		writer.write(String.valueOf(font.getFontSize()));
 		writer.write("\"");
 
 		writer.write(" isBold=\"");
@@ -464,8 +464,8 @@ public class JRXmlExporter extends JRAbstractExporter
 		writer.write(style.getFontName());
 		writer.write("\"");
 
-		writer.write(" size=\"");
-		writer.write(String.valueOf(style.getSize()));
+		writer.write(" fontSize=\"");
+		writer.write(String.valueOf(style.getFontSize()));
 		writer.write("\"");
 
 		writer.write(" isBold=\"");
@@ -1175,10 +1175,10 @@ public class JRXmlExporter extends JRAbstractExporter
 				tmpBuffer.append("\"");
 			}
 
-			if (font.getOwnSize() != null)
+			if (font.getOwnFontSize() != null)
 			{
 				tmpBuffer.append(" size=\"");
-				tmpBuffer.append(font.getOwnSize());
+				tmpBuffer.append(font.getOwnFontSize());
 				tmpBuffer.append("\"");
 			}
 

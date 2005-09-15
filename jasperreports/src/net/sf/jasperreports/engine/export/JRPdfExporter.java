@@ -1472,7 +1472,7 @@ public class JRPdfExporter extends JRAbstractExporter
 					pdfFont.getPdfFontName(),
 					pdfFont.getPdfEncoding(),
 					pdfFont.isPdfEmbedded(),
-					jrFont.getSize(),
+					jrFont.getFontSize(),
 //					(jrFont.isBold() ? Font.BOLD : 0) | (jrFont.isItalic() ? Font.ITALIC : 0) |
 					(jrFont.isUnderline() ? Font.UNDERLINE : 0) | (jrFont.isStrikeThrough() ? Font.STRIKETHRU : 0),
 					forecolor
@@ -1483,7 +1483,7 @@ public class JRPdfExporter extends JRAbstractExporter
 					jrFont.getPdfFontName(),
 					jrFont.getPdfEncoding(),
 					jrFont.isPdfEmbedded(),
-					jrFont.getSize(),
+					jrFont.getFontSize(),
 //					(jrFont.isBold() ? Font.BOLD : 0) | (jrFont.isItalic() ? Font.ITALIC : 0) |
 					(jrFont.isUnderline() ? Font.UNDERLINE : 0) | (jrFont.isStrikeThrough() ? Font.STRIKETHRU : 0),
 					forecolor
@@ -1528,7 +1528,7 @@ public class JRPdfExporter extends JRAbstractExporter
 			font =
 				new Font(
 					baseFont,
-					jrFont.getSize(),
+					jrFont.getFontSize(),
 					//((jrFont.isBold())?Font.BOLD:0) +
 					//((jrFont.isItalic())?Font.ITALIC:0) +
 					(jrFont.isUnderline() ? Font.UNDERLINE : 0) 

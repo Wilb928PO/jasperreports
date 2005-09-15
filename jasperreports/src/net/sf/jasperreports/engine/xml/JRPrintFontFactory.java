@@ -102,7 +102,7 @@ public class JRPrintFontFactory extends JRBaseFactory
 			font.setStrikeThrough(Boolean.valueOf(atts.getValue(ATTRIBUTE_isStrikeThrough)));
 
 		if (atts.getValue(ATTRIBUTE_size) != null)
-			font.setSize(Integer.parseInt(atts.getValue(ATTRIBUTE_size)));
+			font.setFontSize(Integer.parseInt(atts.getValue(ATTRIBUTE_size)));
 
 		if (atts.getValue(ATTRIBUTE_pdfFontName) != null)
 			font.setPdfFontName(atts.getValue(ATTRIBUTE_pdfFontName));

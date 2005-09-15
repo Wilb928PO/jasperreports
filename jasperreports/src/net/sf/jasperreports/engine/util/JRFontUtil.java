@@ -61,7 +61,7 @@ public class JRFontUtil
 	private static Map setNonPdfAttributes(Map attributes, JRFont font)
 	{
 		attributes.put(TextAttribute.FAMILY, font.getFontName());
-		attributes.put(TextAttribute.SIZE, new Float(font.getSize()));
+		attributes.put(TextAttribute.SIZE, new Float(font.getFontSize()));
 
 		if (font.isBold())
 		{

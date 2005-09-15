@@ -307,7 +307,7 @@ public class NoXmlDesignApp
 		normalStyle.setName("Arial_Normal");
 //		FIXME STYLE normalStyle.setDefault(true);
 		normalStyle.setFontName("Arial");
-		normalStyle.setSize(12);
+		normalStyle.setFontSize(12);
 		normalStyle.setPdfFontName("Helvetica");
 		normalStyle.setPdfEncoding("Cp1252");
 		normalStyle.setPdfEmbedded(false);
@@ -317,7 +317,7 @@ public class NoXmlDesignApp
 		boldStyle.setName("Arial_Bold");
 		//FIXME STYLE boldStyle.setDefault(false);
 		boldStyle.setFontName("Arial");
-		boldStyle.setSize(12);
+		boldStyle.setFontSize(12);
 		boldStyle.setBold(true);
 		boldStyle.setPdfFontName("Helvetica-Bold");
 		boldStyle.setPdfEncoding("Cp1252");
@@ -328,7 +328,7 @@ public class NoXmlDesignApp
 		italicStyle.setName("Arial_Italic");
 //		FIXME STYLE italicStyle.setDefault(false);
 		italicStyle.setFontName("Arial");
-		italicStyle.setSize(12);
+		italicStyle.setFontSize(12);
 		italicStyle.setItalic(true);
 		italicStyle.setPdfFontName("Helvetica-Oblique");
 		italicStyle.setPdfEncoding("Cp1252");

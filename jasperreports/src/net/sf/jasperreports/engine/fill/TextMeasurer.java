@@ -287,7 +287,7 @@ public class TextMeasurer
 							lineStartPosition, 
 							lineStartPosition + layout.getCharacterCount()
 							).getIterator(),
-						fillTextElement.getSize()
+						fillTextElement.getFontSize()
 						);
 						
 				if (lines == 1)
