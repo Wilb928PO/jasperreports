@@ -40,6 +40,7 @@ import net.sf.jasperreports.engine.JRGroup;
 import net.sf.jasperreports.engine.JRHyperlink;
 import net.sf.jasperreports.engine.JRImage;
 import net.sf.jasperreports.engine.JRStyle;
+import net.sf.jasperreports.engine.util.JRStyleResolver;
 import net.sf.jasperreports.engine.xml.JRXmlWriter;
 
 
@@ -188,13 +189,7 @@ public class JRBaseImage extends JRBaseGraphicElement implements JRImage
 	 */
 	public byte getMode()
 	{
-		if (mode == null) {
-			JRStyle style = getBaseStyle();
-			if (style != null && style.getMode() != null)
-				return style.getMode().byteValue();
-			return MODE_TRANSPARENT;
-		}
-		return mode.byteValue();
+		return JRStyleResolver.getMode(this, MODE_TRANSPARENT);
 	}
 
 	/**

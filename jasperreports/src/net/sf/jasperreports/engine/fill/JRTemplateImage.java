@@ -31,9 +31,11 @@ import net.sf.jasperreports.engine.JRAlignment;
 import net.sf.jasperreports.engine.JRBox;
 import net.sf.jasperreports.engine.JRChart;
 import net.sf.jasperreports.engine.JRDefaultStyleProvider;
+import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRGraphicElement;
 import net.sf.jasperreports.engine.JRHyperlink;
 import net.sf.jasperreports.engine.JRImage;
+import net.sf.jasperreports.engine.util.JRStyleResolver;
 
 
 /**
@@ -118,6 +120,14 @@ public class JRTemplateImage extends JRTemplateGraphicElement
 		//box = chart.getBox();
 	}
 
+	/**
+	 *
+	 */
+	public byte getMode()
+	{
+		return JRStyleResolver.getMode(this, JRElement.MODE_TRANSPARENT);
+	}
+		
 	/**
 	 *
 	 */

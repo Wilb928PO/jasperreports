@@ -126,11 +126,17 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
 	public JRBasePrintText(JRDefaultStyleProvider defaultStyleProvider)
 	{
 		super(defaultStyleProvider);
-		
-		mode = JRElement.MODE_TRANSPARENT;//FIXME STYLE
 	}
 
 
+	/**
+	 *
+	 */
+	public byte getMode()
+	{
+		return JRStyleResolver.getMode(this, JRElement.MODE_TRANSPARENT);
+	}
+		
 	/**
 	 *
 	 */

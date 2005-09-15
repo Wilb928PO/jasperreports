@@ -37,6 +37,7 @@ import net.sf.jasperreports.engine.JRHyperlink;
 import net.sf.jasperreports.engine.JRImage;
 import net.sf.jasperreports.engine.JRPrintImage;
 import net.sf.jasperreports.engine.JRRenderable;
+import net.sf.jasperreports.engine.util.JRStyleResolver;
 
 
 /**
@@ -83,11 +84,18 @@ public class JRBasePrintImage extends JRBasePrintGraphicElement implements JRPri
 	{
 		super(defaultStyleProvider);
 		
-		this.mode = JRElement.MODE_TRANSPARENT;
 		this.pen = JRGraphicElement.PEN_NONE;
 	}
 
 
+	/**
+	 *
+	 */
+	public byte getMode()
+	{
+		return JRStyleResolver.getMode(this, JRElement.MODE_TRANSPARENT);
+	}
+		
 	/**
 	 *
 	 */

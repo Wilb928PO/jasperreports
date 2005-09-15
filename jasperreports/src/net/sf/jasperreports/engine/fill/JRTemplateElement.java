@@ -34,6 +34,7 @@ import net.sf.jasperreports.engine.JRDefaultStyleProvider;
 import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.JRStyleContainer;
+import net.sf.jasperreports.engine.util.JRStyleResolver;
 
 
 /**
@@ -124,21 +125,9 @@ public abstract class JRTemplateElement implements JRStyleContainer, Serializabl
 	 */
 	public byte getMode()
 	{
-		if (mode == null)
-		{
-			JRStyle style = getBaseStyle();
-			if (style != null && style.getMode() != null)
-				return style.getMode().byteValue();
-			return getDefaultMode();
-		}
-		return mode.byteValue();
+		return JRStyleResolver.getMode(this, JRElement.MODE_OPAQUE);
 	}
 		
-	/**
-	 *
-	 */
-	protected abstract byte getDefaultMode();
-	
 	/**
 	 *
 	 */

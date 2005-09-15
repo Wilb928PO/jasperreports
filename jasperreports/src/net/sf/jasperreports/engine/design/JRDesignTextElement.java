@@ -133,13 +133,7 @@ public abstract class JRDesignTextElement extends JRDesignElement implements JRT
 	 */
 	public byte getMode()
 	{
-		if (mode == null) {
-			JRStyle style = getBaseStyle();
-			if (style != null && style.getMode() != null)
-				return style.getMode().byteValue();
-			return MODE_TRANSPARENT;
-		}
-		return mode.byteValue();
+		return JRStyleResolver.getMode(this, MODE_TRANSPARENT);
 	}
 
 

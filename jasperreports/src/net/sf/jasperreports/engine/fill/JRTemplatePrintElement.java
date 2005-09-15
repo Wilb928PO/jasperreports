@@ -100,7 +100,22 @@ public class JRTemplatePrintElement implements JRPrintElement, Serializable
 	/**
 	 *
 	 */
+	public Byte getOwnMode()
+	{
+		return null;
+	}
+	
+	/**
+	 *
+	 */
 	public void setMode(byte mode)
+	{
+	}
+	
+	/**
+	 *
+	 */
+	public void setMode(Byte mode)
 	{
 	}
 	

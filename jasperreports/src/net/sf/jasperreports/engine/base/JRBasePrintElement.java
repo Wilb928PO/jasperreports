@@ -34,6 +34,7 @@ import net.sf.jasperreports.engine.JRDefaultStyleProvider;
 import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRPrintElement;
 import net.sf.jasperreports.engine.JRStyle;
+import net.sf.jasperreports.engine.util.JRStyleResolver;
 
 
 /**
@@ -52,7 +53,7 @@ public class JRBasePrintElement implements JRPrintElement, Serializable
 	/**
 	 *
 	 */
-	protected byte mode = JRElement.MODE_OPAQUE;
+	protected Byte mode = null;
 	protected int x = 0;
 	protected int y = 0;
 	protected int width = 0;
@@ -102,13 +103,29 @@ public class JRBasePrintElement implements JRPrintElement, Serializable
 	 */
 	public byte getMode()
 	{
-		return this.mode;
+		return JRStyleResolver.getMode(this, JRElement.MODE_OPAQUE);
+	}
+	
+	/**
+	 *
+	 */
+	public Byte getOwnMode()
+	{
+		return mode;
 	}
 	
 	/**
 	 *
 	 */
 	public void setMode(byte mode)
+	{
+		this.mode = new Byte(mode);
+	}
+	
+	/**
+	 *
+	 */
+	public void setMode(Byte mode)
 	{
 		this.mode = mode;
 	}

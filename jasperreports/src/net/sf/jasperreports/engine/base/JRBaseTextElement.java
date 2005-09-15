@@ -388,15 +388,12 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 		return this;
 	}
 
+	/**
+	 *
+	 */
 	public byte getMode()
 	{
-		if (mode == null) {
-			JRStyle style = getBaseStyle();
-			if (style != null && style.getMode() != null)
-				return style.getMode().byteValue();
-			return MODE_TRANSPARENT;
-		}
-		return mode.byteValue();
+		return JRStyleResolver.getMode(this, MODE_TRANSPARENT);
 	}
 
 	/**
@@ -413,6 +410,9 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 		return border.byteValue();
 	}
 
+	/**
+	 *
+	 */
 	public Byte getOwnBorder()
 	{
 		return border;

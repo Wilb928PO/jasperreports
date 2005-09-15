@@ -30,6 +30,7 @@ package net.sf.jasperreports.engine.design;
 import net.sf.jasperreports.engine.JRDefaultStyleProvider;
 import net.sf.jasperreports.engine.JRGraphicElement;
 import net.sf.jasperreports.engine.JRStyle;
+import net.sf.jasperreports.engine.util.JRStyleResolver;
 
 
 /**
@@ -69,13 +70,7 @@ public abstract class JRDesignGraphicElement extends JRDesignElement implements 
 	 */
 	public byte getMode()
 	{
-		if (mode == null) {
-			JRStyle style = getBaseStyle();
-			if (style != null && style.getMode() != null)
-				return style.getMode().byteValue();
-			return MODE_OPAQUE;
-		}
-		return mode.byteValue();
+		return JRStyleResolver.getMode(this, MODE_OPAQUE);
 	}
 
 	/**

@@ -205,11 +205,10 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 	/**
 	 *
 	 */
-	protected byte getDefaultMode()
+	public byte getMode()
 	{
-		return JRElement.MODE_TRANSPARENT;
+		return JRStyleResolver.getMode(this, JRElement.MODE_TRANSPARENT);
 	}
-		
 		
 	/**
 	 * @deprecated Replaced by {@link #getHorizontalAlignment()}.

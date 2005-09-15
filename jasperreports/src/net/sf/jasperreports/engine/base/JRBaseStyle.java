@@ -675,9 +675,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 
 	public Byte getMode()
 	{
-		if (mode == null && parentStyle != null)
-			return parentStyle.getMode();
-		return mode;
+		return JRStyleResolver.getMode(this);
 	}
 
 	public Byte getOwnMode()

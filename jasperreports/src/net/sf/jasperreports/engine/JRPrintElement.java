@@ -51,7 +51,17 @@ public interface JRPrintElement extends JRStyleContainer
 	/**
 	 *
 	 */
+	public Byte getOwnMode();
+	
+	/**
+	 *
+	 */
 	public void setMode(byte mode);
+	
+	/**
+	 *
+	 */
+	public void setMode(Byte mode);
 	
 	/**
 	 *

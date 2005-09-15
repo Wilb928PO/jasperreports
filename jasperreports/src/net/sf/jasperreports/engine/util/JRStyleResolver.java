@@ -27,9 +27,12 @@
  */
 package net.sf.jasperreports.engine.util;
 
+import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRFont;
+import net.sf.jasperreports.engine.JRPrintElement;
 import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.JRStyleContainer;
+import net.sf.jasperreports.engine.fill.JRTemplateElement;
 
 
 /**
@@ -64,6 +67,56 @@ public class JRStyleResolver
 		return null;
 	}
 
+
+	/**
+	 *
+	 */
+	public static byte getMode(JRElement element, byte defaultMode)
+	{
+		if (element.getOwnMode() != null) 
+			return element.getOwnMode().byteValue();
+		JRStyle style = getBaseStyle(element);
+		if (style != null && style.getMode() != null)
+			return style.getMode().byteValue();
+		return defaultMode;
+	}
+
+	/**
+	 *
+	 */
+	public static byte getMode(JRPrintElement element, byte defaultMode)
+	{
+		if (element.getOwnMode() != null) 
+			return element.getOwnMode().byteValue();
+		JRStyle style = getBaseStyle(element);
+		if (style != null && style.getMode() != null)
+			return style.getMode().byteValue();
+		return defaultMode;
+	}
+
+	/**
+	 *
+	 */
+	public static byte getMode(JRTemplateElement element, byte defaultMode)
+	{
+		if (element.getOwnMode() != null) 
+			return element.getOwnMode().byteValue();
+		JRStyle style = getBaseStyle(element);
+		if (style != null && style.getMode() != null)
+			return style.getMode().byteValue();
+		return defaultMode;
+	}
+
+	/**
+	 *
+	 */
+	public static Byte getMode(JRStyle style)
+	{
+		JRStyle baseStyle = getBaseStyle(style);
+		if (baseStyle != null)
+			return baseStyle.getMode();
+		return null;
+	}
 
 	/**
 	 *
