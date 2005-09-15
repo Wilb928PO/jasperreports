@@ -1074,15 +1074,7 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
 	 */
 	public boolean isBold()
 	{
-		if (isBold == null)
-		{
-			if (reportFont != null)
-				return reportFont.isBold();
-			if (style != null && style.isBold() != null)
-				return style.isBold().booleanValue();
-			return DEFAULT_FONT_BOLD;
-		}
-		return isBold.booleanValue();
+		return JRStyleResolver.isBold(this);
 	}
 
 	/**
@@ -1116,15 +1108,7 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
 	 */
 	public boolean isItalic()
 	{
-		if (isItalic == null)
-		{
-			if (reportFont != null)
-				return reportFont.isItalic();
-			if (style != null && style.isItalic() != null)
-				return style.isItalic().booleanValue();
-			return DEFAULT_FONT_ITALIC;
-		}
-		return isItalic.booleanValue();
+		return JRStyleResolver.isItalic(this);
 	}
 
 	/**

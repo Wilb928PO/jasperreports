@@ -998,17 +998,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 	 */
 	public boolean isBold()
 	{
-		if (isBold == null)
-		{
-			JRFont font = getBaseFont();
-			if (font != null)
-				return font.isBold();
-			JRStyle style = getBaseStyle();
-			if (style != null && style.isBold() != null)
-				return style.isBold().booleanValue();
-			return DEFAULT_FONT_BOLD;
-		}
-		return isBold.booleanValue();
+		return JRStyleResolver.isBold(this);
 	}
 
 	/**
@@ -1042,17 +1032,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 	 */
 	public boolean isItalic()
 	{
-		if (isItalic == null)
-		{
-			JRFont font = getBaseFont();
-			if (font != null)
-				return font.isItalic();
-			JRStyle style = getBaseStyle();
-			if (style != null && style.isItalic() != null)
-				return style.isItalic().booleanValue();
-			return DEFAULT_FONT_ITALIC;
-		}
-		return isItalic.booleanValue();
+		return JRStyleResolver.isItalic(this);
 	}
 
 	/**

@@ -583,9 +583,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 
 	public Boolean isBold()
 	{
-		if (isBold == null && parentStyle != null)
-			return parentStyle.isBold();
-		return isBold;
+		return JRStyleResolver.isBold(this);
 	}
 
 	public Boolean isOwnBold()
@@ -595,9 +593,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 
 	public Boolean isItalic()
 	{
-		if (isItalic == null && parentStyle != null)
-			return parentStyle.isItalic();
-		return isItalic;
+		return JRStyleResolver.isItalic(this);
 	}
 
 	public Boolean isOwnItalic()

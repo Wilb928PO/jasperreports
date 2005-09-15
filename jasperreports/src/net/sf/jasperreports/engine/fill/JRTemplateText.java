@@ -893,15 +893,7 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 	 */
 	public boolean isBold()
 	{
-		if (isBold == null)
-		{
-			if (reportFont != null)
-				return reportFont.isBold();
-			if (parentStyle != null && parentStyle.isBold() != null)
-				return parentStyle.isBold().booleanValue();
-			return JRFont.DEFAULT_FONT_BOLD;
-		}
-		return isBold.booleanValue();
+		return JRStyleResolver.isBold(this);
 	}
 
 	/**
@@ -935,15 +927,7 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 	 */
 	public boolean isItalic()
 	{
-		if (isItalic == null)
-		{
-			if (reportFont != null)
-				return reportFont.isItalic();
-			if (parentStyle != null && parentStyle.isItalic() != null)
-				return parentStyle.isItalic().booleanValue();
-			return JRFont.DEFAULT_FONT_ITALIC;
-		}
-		return isItalic.booleanValue();
+		return JRStyleResolver.isItalic(this);
 	}
 
 	/**

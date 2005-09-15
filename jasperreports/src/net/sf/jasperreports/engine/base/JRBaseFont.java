@@ -56,7 +56,7 @@ public class JRBaseFont implements JRFont, Serializable
 
 	/**
 	 *
-	 */
+	 *
 	private static JRFont defaultFont = null;
 
 	/**
@@ -80,7 +80,7 @@ public class JRBaseFont implements JRFont, Serializable
 	protected Boolean isPdfEmbedded = null;
 
 	protected boolean isCachingAttributes = false;
-	protected transient Map attributes = null;
+	protected transient Map attributes = null;//FIXME STYLE caching does not make sense if parent modification
 
 
 	/**
@@ -259,11 +259,7 @@ public class JRBaseFont implements JRFont, Serializable
 	 */
 	public boolean isBold()
 	{
-		if (isBold == null)
-		{
-			return getBaseFont().isBold();
-		}
-		return isBold.booleanValue();
+		return JRStyleResolver.isBold(this);
 	}
 	
 	/**
@@ -298,11 +294,7 @@ public class JRBaseFont implements JRFont, Serializable
 	 */
 	public boolean isItalic()
 	{
-		if (isItalic == null)
-		{
-			return getBaseFont().isItalic();
-		}
-		return isItalic.booleanValue();
+		return JRStyleResolver.isItalic(this);
 	}
 	
 	/**
@@ -336,11 +328,7 @@ public class JRBaseFont implements JRFont, Serializable
 	 */
 	public boolean isUnderline()
 	{
-		if (isUnderline == null)
-		{
-			return getBaseFont().isUnderline();
-		}
-		return isUnderline.booleanValue();
+		return JRStyleResolver.isUnderline(this);
 	}
 	
 	/**
@@ -374,11 +362,7 @@ public class JRBaseFont implements JRFont, Serializable
 	 */
 	public boolean isStrikeThrough()
 	{
-		if (isStrikeThrough == null)
-		{
-			return getBaseFont().isStrikeThrough();
-		}
-		return isStrikeThrough.booleanValue();
+		return JRStyleResolver.isStrikeThrough(this);
 	}
 	
 	/**
@@ -412,11 +396,7 @@ public class JRBaseFont implements JRFont, Serializable
 	 */
 	public int getSize()
 	{
-		if (size == null)
-		{
-			return getBaseFont().getSize();
-		}
-		return size.intValue();
+		return JRStyleResolver.getFontSize(this);
 	}
 	
 	/**
@@ -450,11 +430,7 @@ public class JRBaseFont implements JRFont, Serializable
 	 */
 	public String getPdfFontName()
 	{
-		if (pdfFontName == null)
-		{
-			return getBaseFont().getPdfFontName();
-		}
-		return pdfFontName;
+		return JRStyleResolver.getPdfFontName(this);
 	}
 
 	/**
@@ -479,11 +455,7 @@ public class JRBaseFont implements JRFont, Serializable
 	 */
 	public String getPdfEncoding()
 	{
-		if (pdfEncoding == null)
-		{
-			return getBaseFont().getPdfEncoding();
-		}
-		return pdfEncoding;
+		return JRStyleResolver.getPdfEncoding(this);
 	}
 	
 	/**
@@ -508,11 +480,7 @@ public class JRBaseFont implements JRFont, Serializable
 	 */
 	public boolean isPdfEmbedded()
 	{
-		if (isPdfEmbedded == null)
-		{
-			return getBaseFont().isPdfEmbedded();
-		}
-		return isPdfEmbedded.booleanValue();
+		return JRStyleResolver.isPdfEmbedded(this);
 	}
 
 	/**
@@ -583,7 +551,7 @@ public class JRBaseFont implements JRFont, Serializable
 
 	/**
 	 *
-	 */
+	 *
 	private JRFont getBaseFont()
 	{
 		JRFont baseFont = null;
@@ -610,7 +578,7 @@ public class JRBaseFont implements JRFont, Serializable
 
 	/**
 	 *
-	 */
+	 *
 	public static JRFont getDefaultFont()
 	{
 		if (defaultFont == null)
@@ -629,5 +597,6 @@ public class JRBaseFont implements JRFont, Serializable
 		
 		return defaultFont;
 	}
+	*/
 	
 }
