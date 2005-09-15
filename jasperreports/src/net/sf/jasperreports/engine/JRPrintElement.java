@@ -111,12 +111,22 @@ public interface JRPrintElement extends JRStyleContainer
 	/**
 	 *
 	 */
+	public Color getOwnForecolor();
+	
+	/**
+	 *
+	 */
 	public void setForecolor(Color color);
 	
 	/**
 	 *
 	 */
 	public Color getBackcolor();
+
+	/**
+	 *
+	 */
+	public Color getOwnBackcolor();
 
 	/**
 	 *

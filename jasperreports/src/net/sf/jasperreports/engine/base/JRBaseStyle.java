@@ -208,11 +208,8 @@ public class JRBaseStyle implements JRStyle, Serializable
 	 */
 	public Color getForecolor()
 	{
-		if (forecolor == null && parentStyle != null)
-			return parentStyle.getForecolor();
-		return forecolor;
+		return JRStyleResolver.getForecolor(this);
 	}
-
 
 	/**
 	 *
@@ -224,9 +221,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 
 	public Color getBackcolor()
 	{
-		if (backcolor == null && parentStyle != null)
-			return parentStyle.getBackcolor();
-		return backcolor;
+		return JRStyleResolver.getBackcolor(this);
 	}
 
 	public Color getOwnBackcolor()

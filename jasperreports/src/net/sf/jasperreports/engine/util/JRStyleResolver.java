@@ -27,6 +27,8 @@
  */
 package net.sf.jasperreports.engine.util;
 
+import java.awt.Color;
+
 import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRFont;
 import net.sf.jasperreports.engine.JRPrintElement;
@@ -71,7 +73,7 @@ public class JRStyleResolver
 	/**
 	 *
 	 */
-	public static byte getMode(JRElement element, byte defaultMode)
+	public static byte getMode(JRElement element, byte defaultMode)//FIXME STYLE make interface for reducing number of similar mode methods
 	{
 		if (element.getOwnMode() != null) 
 			return element.getOwnMode().byteValue();
@@ -115,6 +117,106 @@ public class JRStyleResolver
 		JRStyle baseStyle = getBaseStyle(style);
 		if (baseStyle != null)
 			return baseStyle.getMode();
+		return null;
+	}
+
+	/**
+	 *
+	 */
+	public static Color getForecolor(JRElement element)
+	{
+		if (element.getOwnForecolor() != null) 
+			return element.getOwnForecolor();
+		JRStyle style = getBaseStyle(element);
+		if (style != null && style.getForecolor() != null)
+			return style.getForecolor();
+		return Color.black;
+	}
+
+	/**
+	 *
+	 */
+	public static Color getForecolor(JRPrintElement element)
+	{
+		if (element.getOwnForecolor() != null) 
+			return element.getOwnForecolor();
+		JRStyle style = getBaseStyle(element);
+		if (style != null && style.getForecolor() != null)
+			return style.getForecolor();
+		return Color.black;
+	}
+
+	/**
+	 *
+	 */
+	public static Color getForecolor(JRTemplateElement element)
+	{
+		if (element.getOwnForecolor() != null) 
+			return element.getOwnForecolor();
+		JRStyle style = getBaseStyle(element);
+		if (style != null && style.getOwnForecolor() != null)
+			return style.getOwnForecolor();
+		return Color.black;
+	}
+
+	/**
+	 *
+	 */
+	public static Color getForecolor(JRStyle style)
+	{
+		JRStyle baseStyle = getBaseStyle(style);
+		if (baseStyle != null)
+			return baseStyle.getForecolor();
+		return null;
+	}
+
+	/**
+	 *
+	 */
+	public static Color getBackcolor(JRElement element)
+	{
+		if (element.getOwnBackcolor() != null) 
+			return element.getOwnBackcolor();
+		JRStyle style = getBaseStyle(element);
+		if (style != null && style.getBackcolor() != null)
+			return style.getBackcolor();
+		return Color.white;
+	}
+
+	/**
+	 *
+	 */
+	public static Color getBackcolor(JRPrintElement element)
+	{
+		if (element.getOwnBackcolor() != null) 
+			return element.getOwnBackcolor();
+		JRStyle style = getBaseStyle(element);
+		if (style != null && style.getBackcolor() != null)
+			return style.getBackcolor();
+		return Color.white;
+	}
+
+	/**
+	 *
+	 */
+	public static Color getBackcolor(JRTemplateElement element)
+	{
+		if (element.getOwnBackcolor() != null) 
+			return element.getOwnBackcolor();
+		JRStyle style = getBaseStyle(element);
+		if (style != null && style.getOwnBackcolor() != null)
+			return style.getOwnBackcolor();
+		return Color.white;
+	}
+
+	/**
+	 *
+	 */
+	public static Color getBackcolor(JRStyle style)
+	{
+		JRStyle baseStyle = getBaseStyle(style);
+		if (baseStyle != null)
+			return baseStyle.getBackcolor();
 		return null;
 	}
 

@@ -173,14 +173,7 @@ public abstract class JRTemplateElement implements JRStyleContainer, Serializabl
 	 */
 	public Color getForecolor()
 	{
-		if (forecolor == null)
-		{
-			JRStyle style = getBaseStyle();
-			if (style != null && style.getForecolor() != null)
-				return style.getForecolor();
-			return Color.black;
-		}
-		return forecolor;
+		return JRStyleResolver.getForecolor(this);
 	}
 	
 	/**
@@ -204,14 +197,7 @@ public abstract class JRTemplateElement implements JRStyleContainer, Serializabl
 	 */
 	public Color getBackcolor()
 	{
-		if (backcolor == null)
-		{
-			JRStyle style = getBaseStyle();
-			if (style != null && style.getBackcolor() != null)
-				return style.getBackcolor();
-			return Color.white;
-		}
-		return backcolor;
+		return JRStyleResolver.getBackcolor(this);
 	}
 	
 	/**

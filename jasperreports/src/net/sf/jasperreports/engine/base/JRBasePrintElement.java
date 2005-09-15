@@ -199,7 +199,15 @@ public class JRBasePrintElement implements JRPrintElement, Serializable
 	 */
 	public Color getForecolor()
 	{
-		return this.forecolor;
+		return JRStyleResolver.getForecolor(this);
+	}
+	
+	/**
+	 *
+	 */
+	public Color getOwnForecolor()
+	{
+		return forecolor;
 	}
 	
 	/**
@@ -215,7 +223,15 @@ public class JRBasePrintElement implements JRPrintElement, Serializable
 	 */
 	public Color getBackcolor()
 	{
-		return this.backcolor;
+		return JRStyleResolver.getBackcolor(this);
+	}
+
+	/**
+	 *
+	 */
+	public Color getOwnBackcolor()
+	{
+		return backcolor;
 	}
 
 	/**

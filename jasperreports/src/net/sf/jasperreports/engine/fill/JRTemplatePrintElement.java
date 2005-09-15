@@ -193,6 +193,14 @@ public class JRTemplatePrintElement implements JRPrintElement, Serializable
 	/**
 	 *
 	 */
+	public Color getOwnForecolor()
+	{
+		return null;
+	}
+	
+	/**
+	 *
+	 */
 	public void setForecolor(Color color)
 	{
 	}
@@ -203,6 +211,14 @@ public class JRTemplatePrintElement implements JRPrintElement, Serializable
 	public Color getBackcolor()
 	{
 		return this.template.getBackcolor();
+	}
+
+	/**
+	 *
+	 */
+	public Color getOwnBackcolor()
+	{
+		return null;
 	}
 
 	/**
