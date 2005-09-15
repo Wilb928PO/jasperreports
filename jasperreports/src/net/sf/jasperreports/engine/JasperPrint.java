@@ -230,6 +230,7 @@ public class JasperPrint implements Serializable
 		
 	/**
 	 * Gets an array of report fonts.
+	 * @deprecated
 	 */
 	public JRReportFont[] getFonts()
 	{
@@ -242,6 +243,7 @@ public class JasperPrint implements Serializable
 
 	/**
 	 * Gets a list of report fonts.
+	 * @deprecated
 	 */
 	public List getFontsList()
 	{
@@ -250,6 +252,7 @@ public class JasperPrint implements Serializable
 
 	/**
 	 * Gets a map of report fonts.
+	 * @deprecated
 	 */
 	public Map getFontsMap()
 	{
@@ -258,6 +261,7 @@ public class JasperPrint implements Serializable
 
 	/**
 	 * Adds a new font to the report fonts.
+	 * @deprecated
 	 */
 	public void addFont(JRReportFont reportFont) throws JRException
 	{
@@ -276,7 +280,7 @@ public class JasperPrint implements Serializable
 	}
 
 	/**
-	 *
+	 * @deprecated
 	 */
 	public JRReportFont removeFont(String fontName)
 	{
@@ -286,7 +290,7 @@ public class JasperPrint implements Serializable
 	}
 
 	/**
-	 *
+	 * @deprecated
 	 */
 	public JRReportFont removeFont(JRReportFont reportFont)
 	{
@@ -324,7 +328,7 @@ public class JasperPrint implements Serializable
 	 * When we want to virtualize pages, we want a style provider that
 	 * is <i>not</i> the print object itself.
 	 */
-	public JRDefaultStyleProvider getDefaultStyleProvider()
+	public JRDefaultStyleProvider getDefaultStyleProvider()//FIXME STYLE does this work with subreports?
 	{
 		return defaultStyleProvider;
 	}
