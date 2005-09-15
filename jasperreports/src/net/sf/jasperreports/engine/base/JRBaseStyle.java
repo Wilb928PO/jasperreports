@@ -603,9 +603,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 
 	public Boolean isUnderline()
 	{
-		if (isUnderline == null && parentStyle != null)
-				return parentStyle.isUnderline();
-		return isUnderline;
+		return JRStyleResolver.isUnderline(this);
 	}
 
 	public Boolean isOwnUnderline()
@@ -615,9 +613,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 
 	public Boolean isStrikeThrough()
 	{
-		if (isStrikeThrough == null && parentStyle != null)
-			return parentStyle.isStrikeThrough();
-		return isStrikeThrough;
+		return JRStyleResolver.isStrikeThrough(this);
 	}
 
 	public Boolean isOwnStrikeThrough()
@@ -627,9 +623,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 
 	public Integer getSize()
 	{
-		if (size == null && parentStyle != null)
-			return parentStyle.getSize();
-		return size;
+		return JRStyleResolver.getFontSize(this);
 	}
 
 	public Integer getOwnSize()
@@ -639,9 +633,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 
 	public String getPdfFontName()
 	{
-		if (pdfFontName == null && parentStyle != null)
-			return parentStyle.getPdfFontName();
-		return pdfFontName;
+		return JRStyleResolver.getPdfFontName(this);
 	}
 
 	public String getOwnPdfFontName()
@@ -651,9 +643,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 
 	public String getPdfEncoding()
 	{
-		if (pdfEncoding == null && parentStyle != null)
-				return parentStyle.getPdfEncoding();
-		return pdfEncoding;
+		return JRStyleResolver.getPdfEncoding(this);
 	}
 
 	public String getOwnPdfEncoding()
@@ -663,9 +653,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 
 	public Boolean isPdfEmbedded()
 	{
-		if (isPdfEmbedded == null && parentStyle != null)
-				return parentStyle.isPdfEmbedded();
-		return isPdfEmbedded;
+		return JRStyleResolver.isPdfEmbedded(this);
 	}
 
 	public Boolean isOwnPdfEmbedded()

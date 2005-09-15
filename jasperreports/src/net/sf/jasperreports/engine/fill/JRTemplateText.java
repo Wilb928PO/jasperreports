@@ -960,15 +960,7 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 	 */
 	public boolean isUnderline()
 	{
-		if (isUnderline == null)
-		{
-			if (reportFont != null)
-				return reportFont.isUnderline();
-			if (parentStyle != null && parentStyle.isUnderline() != null)
-				return parentStyle.isUnderline().booleanValue();
-			return JRFont.DEFAULT_FONT_UNDERLINE;
-		}
-		return isUnderline.booleanValue();
+		return JRStyleResolver.isUnderline(this);
 	}
 
 	/**
@@ -1001,17 +993,7 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 	 */
 	public boolean isStrikeThrough()
 	{
-		if (isStrikeThrough == null)
-		{
-			JRFont font = getBaseFont();
-			if (font != null)
-				return font.isStrikeThrough();
-			JRStyle style = getBaseStyle();
-			if (style != null && style.isStrikeThrough() != null)
-				return style.isStrikeThrough().booleanValue();
-			return JRFont.DEFAULT_FONT_STRIKETHROUGH;
-		}
-		return isStrikeThrough.booleanValue();
+		return JRStyleResolver.isStrikeThrough(this);
 	}
 
 	/**
@@ -1044,17 +1026,7 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 	 */
 	public int getSize()
 	{
-		if (size == null)
-		{
-			JRFont font = getBaseFont();
-			if (font != null)
-				return font.getSize();
-			JRStyle style = getBaseStyle();
-			if (style != null && style.getSize() != null)
-				return style.getSize().intValue();
-			return JRFont.DEFAULT_FONT_SIZE;
-		}
-		return size.intValue();
+		return JRStyleResolver.getFontSize(this);
 	}
 
 	/**
@@ -1087,15 +1059,7 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 	 */
 	public String getPdfFontName()
 	{
-		if (pdfFontName == null)
-		{
-			if (reportFont != null)
-				return reportFont.getPdfFontName();
-			if (parentStyle != null && parentStyle.getPdfFontName() != null)
-				return parentStyle.getPdfFontName();
-			return JRFont.DEFAULT_PDF_FONT_NAME;
-		}
-		return pdfFontName;
+		return JRStyleResolver.getPdfFontName(this);
 	}
 
 	/**
@@ -1120,15 +1084,7 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 	 */
 	public String getPdfEncoding()
 	{
-		if (pdfEncoding == null)
-		{
-			if (reportFont != null)
-				return reportFont.getPdfEncoding();
-			if (parentStyle != null && parentStyle.getPdfEncoding() != null)
-				return parentStyle.getPdfEncoding();
-			return JRFont.DEFAULT_PDF_ENCODING;
-		}
-		return pdfEncoding;
+		return JRStyleResolver.getPdfEncoding(this);
 	}
 
 	/**
@@ -1153,15 +1109,7 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 	 */
 	public boolean isPdfEmbedded()
 	{
-		if (isPdfEmbedded == null)
-		{
-			if (reportFont != null)
-				return reportFont.isPdfEmbedded();
-			if (parentStyle != null && parentStyle.isPdfEmbedded() != null)
-				return parentStyle.isPdfEmbedded().booleanValue();
-			return JRFont.DEFAULT_PDF_EMBEDDED;
-		}
-		return isPdfEmbedded.booleanValue();
+		return JRStyleResolver.isPdfEmbedded(this);
 	}
 
 	/**

@@ -1065,17 +1065,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 	 */
 	public boolean isUnderline()
 	{
-		if (isUnderline == null)
-		{
-			JRFont font = getBaseFont();
-			if (font != null)
-				return font.isUnderline();
-			JRStyle style = getBaseStyle();
-			if (style != null && style.isUnderline() != null)
-				return style.isUnderline().booleanValue();
-			return DEFAULT_FONT_UNDERLINE;
-		}
-		return isUnderline.booleanValue();
+		return JRStyleResolver.isUnderline(this);
 	}
 
 	/**
@@ -1108,17 +1098,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 	 */
 	public boolean isStrikeThrough()
 	{
-		if (isStrikeThrough == null)
-		{
-			JRFont font = getBaseFont();
-			if (font != null)
-				return font.isStrikeThrough();
-			JRStyle style = getBaseStyle();
-			if (style != null && style.isStrikeThrough() != null)
-				return style.isStrikeThrough().booleanValue();
-			return DEFAULT_FONT_STRIKETHROUGH;
-		}
-		return isStrikeThrough.booleanValue();
+		return JRStyleResolver.isStrikeThrough(this);
 	}
 
 	/**
@@ -1151,17 +1131,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 	 */
 	public int getSize()
 	{
-		if (size == null)
-		{
-			JRFont font = getBaseFont();
-			if (font != null)
-				return font.getSize();
-			JRStyle style = getBaseStyle();
-			if (style != null && style.getSize() != null)
-				return style.getSize().intValue();
-			return DEFAULT_FONT_SIZE;
-		}
-		return size.intValue();
+		return JRStyleResolver.getFontSize(this);
 	}
 
 	/**
@@ -1194,17 +1164,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 	 */
 	public String getPdfFontName()
 	{
-		if (pdfFontName == null)
-		{
-			JRFont font = getBaseFont();
-			if (font != null && font.getPdfFontName() != null)
-				return font.getPdfFontName();
-			JRStyle style = getBaseStyle();
-			if (style != null && style.getPdfFontName() != null)
-				return style.getPdfFontName();
-			return DEFAULT_PDF_FONT_NAME;
-		}
-		return pdfFontName;
+		return JRStyleResolver.getPdfFontName(this);
 	}
 
 	/**
@@ -1229,17 +1189,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 	 */
 	public String getPdfEncoding()
 	{
-		if (pdfEncoding == null)
-		{
-			JRFont font = getBaseFont();
-			if (font != null && font.getPdfEncoding() != null)
-				return font.getPdfEncoding();
-			JRStyle style = getBaseStyle();
-			if (style != null && style.getPdfEncoding() != null)
-				return style.getPdfEncoding();
-			return DEFAULT_PDF_ENCODING;
-		}
-		return pdfEncoding;
+		return JRStyleResolver.getPdfEncoding(this);
 	}
 
 	/**
@@ -1264,17 +1214,7 @@ public abstract class JRBaseTextElement extends JRBaseElement implements JRTextE
 	 */
 	public boolean isPdfEmbedded()
 	{
-		if (isPdfEmbedded == null)
-		{
-			JRFont font = getBaseFont();
-			if (font != null)
-				return font.isPdfEmbedded();
-			JRStyle style = getBaseStyle();
-			if (style != null && style.isPdfEmbedded() != null)
-				return style.isPdfEmbedded().booleanValue();
-			return DEFAULT_PDF_EMBEDDED;
-		}
-		return isPdfEmbedded.booleanValue();
+		return JRStyleResolver.isPdfEmbedded(this);
 	}
 
 	/**
