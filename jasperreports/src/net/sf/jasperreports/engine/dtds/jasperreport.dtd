@@ -19,7 +19,7 @@
 	isSummaryNewPage (true | false) "false"
 	isFloatColumnFooter (true | false) "false"
 	scriptletClass NMTOKEN #IMPLIED
-	resourceBundle NMTOKEN #IMPLIED
+	resourceBundle CDATA #IMPLIED
 	whenResourceMissingType (Null | Empty | Key | Error) "Null"
 >
 
@@ -53,7 +53,7 @@
 <!ATTLIST subDataset
 	name NMTOKEN #REQUIRED
 	scriptletClass NMTOKEN #IMPLIED
-	resourceBundle NMTOKEN #IMPLIED
+	resourceBundle CDATA #IMPLIED
 	whenResourceMissingType (Null | Empty | Key | Error) "Null"
 >
 
@@ -447,24 +447,26 @@
 <!ELEMENT rowGroup (bucket, crosstabRowHeader?, crosstabTotalRowHeader?)>
 <!ATTLIST rowGroup
 	name NMTOKEN #REQUIRED
-	headerWidth NMTOKEN #IMPLIED
+	width NMTOKEN #REQUIRED
 	totalPosition (Start | End | None) "None"
+	headerPosition (Top | Middle | Bottom | Stretch) "Top"
 >
 
-<!ELEMENT crosstabRowHeader (cell?)>
+<!ELEMENT crosstabRowHeader (cellContents?)>
 
-<!ELEMENT crosstabTotalRowHeader (cell?)>
+<!ELEMENT crosstabTotalRowHeader (cellContents?)>
 
 <!ELEMENT columnGroup (bucket, crosstabColumnHeader?, crosstabTotalColumnHeader?)>
 <!ATTLIST columnGroup
 	name NMTOKEN #REQUIRED
-	headerHeight NMTOKEN #IMPLIED
+	height NMTOKEN #REQUIRED
 	totalPosition (Start | End | None) "None"
+	headerPosition (Left | Center | Right | Stretch) "Left"
 >
 
-<!ELEMENT crosstabColumnHeader (cell?)>
+<!ELEMENT crosstabColumnHeader (cellContents?)>
 
-<!ELEMENT crosstabTotalColumnHeader (cell?)>
+<!ELEMENT crosstabTotalColumnHeader (cellContents?)>
 
 <!ELEMENT bucket (bucketExpression, comparatorExpression?)>
 <!ATTLIST bucket
@@ -487,15 +489,15 @@
 
 <!ELEMENT measureExpression (#PCDATA)>
 
-<!ELEMENT crosstabCell (cell?)>
+<!ELEMENT crosstabCell (cellContents?)>
 <!ATTLIST crosstabCell
 	width NMTOKEN #IMPLIED
 	height NMTOKEN #IMPLIED
-	rowTotalGroup NMTOKEN #REQUIRED
-	columnTotalGroup NMTOKEN #REQUIRED
+	rowTotalGroup NMTOKEN #IMPLIED
+	columnTotalGroup NMTOKEN #IMPLIED
 >
 
-<!ELEMENT cell (box?, (line | rectangle | ellipse | image | staticText | textField | elementGroup)*)>
-<!ATTLIST cell
+<!ELEMENT cellContents (box?, (line | rectangle | ellipse | image | staticText | textField | elementGroup)*)>
+<!ATTLIST cellContents
 	backcolor CDATA #IMPLIED
 >

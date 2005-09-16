@@ -54,6 +54,7 @@ public class JRTemplatePrintElement implements JRPrintElement, Serializable
 	private int x = 0;
 	private int y = 0;
 	private int height = 0;
+	private int width = 0;
 
 
 	/**
@@ -116,7 +117,7 @@ public class JRTemplatePrintElement implements JRPrintElement, Serializable
 	 */
 	public int getWidth()
 	{
-		return this.template.getWidth();
+		return this.width;
 	}
 	
 	/**
@@ -124,6 +125,7 @@ public class JRTemplatePrintElement implements JRPrintElement, Serializable
 	 */
 	public void setWidth(int width)
 	{
+		this.width = width;
 	}
 	
 	/**

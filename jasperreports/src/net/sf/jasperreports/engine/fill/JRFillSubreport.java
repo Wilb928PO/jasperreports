@@ -485,7 +485,7 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport, Runna
 	protected boolean prepare(
 		int availableStretchHeight,
 		boolean isOverflow
-		)
+		) throws JRException
 	{
 		boolean willOverflow = false;
 
@@ -677,6 +677,7 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport, Runna
 		printRectangle = new JRTemplatePrintRectangle(getJRTemplateRectangle());
 		printRectangle.setX(getX());
 		printRectangle.setY(getRelativeY());
+		printRectangle.setWidth(getWidth());
 		printRectangle.setHeight(getStretchHeight());
 		
 		return printRectangle;

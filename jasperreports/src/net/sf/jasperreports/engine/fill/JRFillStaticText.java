@@ -105,7 +105,7 @@ public class JRFillStaticText extends JRFillTextElement implements JRStaticText
 	protected boolean prepare(
 		int availableStretchHeight,
 		boolean isOverflow
-		)
+		) throws JRException
 	{
 		boolean willOverflow = false;
 
@@ -184,6 +184,7 @@ public class JRFillStaticText extends JRFillTextElement implements JRStaticText
 		text = new JRTemplatePrintText(getJRTemplateText());
 		text.setX(getX());
 		text.setY(getRelativeY());
+		text.setWidth(getWidth());
 		if (getRotation() == ROTATION_NONE)
 		{
 			text.setHeight(getStretchHeight());

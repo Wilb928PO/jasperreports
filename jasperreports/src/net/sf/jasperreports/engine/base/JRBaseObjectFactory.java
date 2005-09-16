@@ -75,7 +75,6 @@ import net.sf.jasperreports.charts.base.JRBaseXyzDataset;
 import net.sf.jasperreports.charts.base.JRBaseXyzSeries;
 import net.sf.jasperreports.engine.JRAbstractObjectFactory;
 import net.sf.jasperreports.engine.JRBand;
-import net.sf.jasperreports.engine.JRCell;
 import net.sf.jasperreports.engine.JRChart;
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRDatasetRun;
@@ -101,6 +100,7 @@ import net.sf.jasperreports.engine.JRSubreportReturnValue;
 import net.sf.jasperreports.engine.JRSubreportParameter;
 import net.sf.jasperreports.engine.JRTextField;
 import net.sf.jasperreports.engine.JRVariable;
+import net.sf.jasperreports.engine.base.crosstab.JRBaseCellContents;
 import net.sf.jasperreports.engine.base.crosstab.JRBaseCrosstab;
 import net.sf.jasperreports.engine.base.crosstab.JRBaseCrosstabBucket;
 import net.sf.jasperreports.engine.base.crosstab.JRBaseCrosstabCell;
@@ -109,6 +109,7 @@ import net.sf.jasperreports.engine.base.crosstab.JRBaseCrosstabDataset;
 import net.sf.jasperreports.engine.base.crosstab.JRBaseCrosstabMeasure;
 import net.sf.jasperreports.engine.base.crosstab.JRBaseCrosstabParameter;
 import net.sf.jasperreports.engine.base.crosstab.JRBaseCrosstabRowGroup;
+import net.sf.jasperreports.engine.crosstab.JRCellContents;
 import net.sf.jasperreports.engine.crosstab.JRCrosstab;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabBucket;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabCell;
@@ -1180,16 +1181,16 @@ public class JRBaseObjectFactory extends JRAbstractObjectFactory
 	}
 	
 
-	public JRBaseCell getCell(JRCell cell)
+	public JRBaseCellContents getCell(JRCellContents cell)
 	{
-		JRBaseCell baseCell = null;
+		JRBaseCellContents baseCell = null;
 		
 		if (cell != null)
 		{
-			baseCell = (JRBaseCell)get(cell);
+			baseCell = (JRBaseCellContents)get(cell);
 			if (baseCell == null)
 			{
-				baseCell = new JRBaseCell(cell, this);
+				baseCell = new JRBaseCellContents(cell, this);
 			}
 		}
 		

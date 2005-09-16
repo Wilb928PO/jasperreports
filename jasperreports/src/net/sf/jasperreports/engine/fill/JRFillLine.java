@@ -110,6 +110,7 @@ public class JRFillLine extends JRFillGraphicElement implements JRLine
 		printLine = new JRTemplatePrintLine(this.getJRTemplateLine());
 		printLine.setX(this.getX());
 		printLine.setY(this.getRelativeY());
+		printLine.setWidth(getWidth());
 		printLine.setHeight(this.getStretchHeight());
 		
 		return printLine;

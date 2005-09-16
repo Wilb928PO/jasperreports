@@ -91,10 +91,16 @@ public abstract class JRFillTextElement extends JRFillElement implements JRTextE
 		font = factory.getFont(textElement.getFont());
 		
 		/*   */
-		textMeasurer = new TextMeasurer(this);
+		createTextMeasurer();
 
 		/*   */
 		textChopper = isStyledText() ? styledTextChopper : simpleTextChopper;
+	}
+
+
+	private void createTextMeasurer()
+	{
+		textMeasurer = new TextMeasurer(this);
 	}
 
 
@@ -505,5 +511,21 @@ public abstract class JRFillTextElement extends JRFillElement implements JRTextE
 						);
 			}
 		};
+
+
+	public void setHeight(int height)
+	{
+		super.setHeight(height);
+		
+		createTextMeasurer();
+	}
+
+
+	public void setWidth(int width)
+	{
+		super.setWidth(width);
+		
+		createTextMeasurer();
+	}
 
 }

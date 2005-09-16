@@ -351,7 +351,7 @@ public class JRFillTextField extends JRFillTextElement implements JRTextField
 	protected boolean prepare(
 		int availableStretchHeight,
 		boolean isOverflow
-		)
+		) throws JRException
 	{
 		boolean willOverflow = false;
 
@@ -559,6 +559,7 @@ public class JRFillTextField extends JRFillTextElement implements JRTextField
 		text = new JRTemplatePrintText(getJRTemplateText());
 		text.setX(getX());
 		text.setY(getRelativeY());
+		text.setWidth(getWidth());
 		if (getRotation() == ROTATION_NONE)
 		{
 			text.setHeight(getStretchHeight());

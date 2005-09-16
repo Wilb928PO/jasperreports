@@ -542,6 +542,7 @@ public class JRFillImage extends JRFillGraphicElement implements JRImage
 		
 		printImage.setX(this.getX());
 		printImage.setY(this.getRelativeY());
+		printImage.setWidth(getWidth());
 		printImage.setHeight(this.getStretchHeight());
 
 		switch (this.getEvaluationTime())

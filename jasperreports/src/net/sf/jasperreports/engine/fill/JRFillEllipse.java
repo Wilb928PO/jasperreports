@@ -95,6 +95,7 @@ public class JRFillEllipse extends JRFillGraphicElement implements JREllipse
 		printEllipse = new JRTemplatePrintEllipse(this.getJRTemplateEllipse());
 		printEllipse.setX(this.getX());
 		printEllipse.setY(this.getRelativeY());
+		printEllipse.setWidth(getWidth());
 		printEllipse.setHeight(this.getStretchHeight());
 		
 		return printEllipse;

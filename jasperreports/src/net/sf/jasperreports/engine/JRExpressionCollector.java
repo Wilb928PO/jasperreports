@@ -55,6 +55,7 @@ import net.sf.jasperreports.charts.JRXyDataset;
 import net.sf.jasperreports.charts.JRXySeries;
 import net.sf.jasperreports.charts.JRXyzDataset;
 import net.sf.jasperreports.charts.JRXyzSeries;
+import net.sf.jasperreports.engine.crosstab.JRCellContents;
 import net.sf.jasperreports.engine.crosstab.JRCrosstab;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabBucket;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabCell;
@@ -731,6 +732,8 @@ public class JRExpressionCollector
 	public void collect(JRCrosstab crosstab)
 	{
 		JRCrosstabDataset dataset = crosstab.getDataset();
+		collect(dataset);
+		
 		JRExpressionCollector datasetCollector = getCollector(dataset);
 		JRExpressionCollector crosstabCollector = getCollector(crosstab);
 		
@@ -816,7 +819,12 @@ public class JRExpressionCollector
 	 */
 	protected void collect(JRChartDataset dataset)
 	{
-		JRDatasetRun datasetRun = dataset.getDatasetRun();
+		collect(dataset.getDatasetRun());
+	}
+
+
+	private void collect(JRDatasetRun datasetRun)
+	{
 		if (datasetRun != null)
 		{
 			addExpression(datasetRun.getParametersMapExpression());
@@ -835,7 +843,7 @@ public class JRExpressionCollector
 	}
 	
 	
-	protected void collect(JRCell cell)
+	protected void collect(JRCellContents cell)
 	{
 		if (cell != null)
 		{

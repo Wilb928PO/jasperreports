@@ -43,6 +43,7 @@ import net.sf.jasperreports.engine.JRPrintText;
 import net.sf.jasperreports.engine.JRReport;
 import net.sf.jasperreports.engine.JRTextElement;
 import net.sf.jasperreports.engine.JRVariable;
+import net.sf.jasperreports.engine.crosstab.JRCellContents;
 import net.sf.jasperreports.engine.crosstab.JRCrosstab;
 import net.sf.jasperreports.engine.crosstab.calculation.Bucket;
 import net.sf.jasperreports.engine.crosstab.calculation.Measure;
@@ -955,6 +956,60 @@ public class JRXmlConstants
 		}
 		
 		return crosstabFillOrderMap;
+	}
+	
+	
+	private static final String CROSSTAB_ROW_POSITION_TOP = "Top";
+	private static final String CROSSTAB_ROW_POSITION_MIDDLE = "Middle";
+	private static final String CROSSTAB_ROW_POSITION_BOTTOM = "Bottom";
+	private static final String CROSSTAB_ROW_POSITION_STRETCH = "Stretch";
+	
+	private static Map crosstabRowPositionMap = null;
+	
+	
+	public static Map getCrosstabRowPositionMap()
+	{
+		if (crosstabRowPositionMap == null)
+		{
+			crosstabRowPositionMap = new HashMap();
+			crosstabRowPositionMap.put(CROSSTAB_ROW_POSITION_TOP, new Byte(JRCellContents.POSITION_Y_TOP));
+			crosstabRowPositionMap.put(CROSSTAB_ROW_POSITION_MIDDLE, new Byte(JRCellContents.POSITION_Y_MIDDLE));
+			crosstabRowPositionMap.put(CROSSTAB_ROW_POSITION_BOTTOM, new Byte(JRCellContents.POSITION_Y_BOTTOM));
+			crosstabRowPositionMap.put(CROSSTAB_ROW_POSITION_STRETCH, new Byte(JRCellContents.POSITION_Y_STRETCH));
+			crosstabRowPositionMap.put(new Byte(JRCellContents.POSITION_Y_TOP), CROSSTAB_ROW_POSITION_TOP);
+			crosstabRowPositionMap.put(new Byte(JRCellContents.POSITION_Y_MIDDLE), CROSSTAB_ROW_POSITION_MIDDLE);
+			crosstabRowPositionMap.put(new Byte(JRCellContents.POSITION_Y_BOTTOM), CROSSTAB_ROW_POSITION_BOTTOM);
+			crosstabRowPositionMap.put(new Byte(JRCellContents.POSITION_Y_STRETCH), CROSSTAB_ROW_POSITION_STRETCH);
+		}
+		
+		return crosstabRowPositionMap;
+	}
+	
+	
+	private static final String CROSSTAB_COLUMN_POSITION_LEFT = "Left";
+	private static final String CROSSTAB_COLUMN_POSITION_CENTER = "Center";
+	private static final String CROSSTAB_COLUMN_POSITION_RIGHT = "Right";
+	private static final String CROSSTAB_COLUMN_POSITION_STRETCH = "Stretch";
+	
+	private static Map crosstabColumnPositionMap = null;
+	
+	
+	public static Map getCrosstabColumnPositionMap()
+	{
+		if (crosstabColumnPositionMap == null)
+		{
+			crosstabColumnPositionMap = new HashMap();
+			crosstabColumnPositionMap.put(CROSSTAB_COLUMN_POSITION_LEFT, new Byte(JRCellContents.POSITION_X_LEFT));
+			crosstabColumnPositionMap.put(CROSSTAB_COLUMN_POSITION_CENTER, new Byte(JRCellContents.POSITION_X_CENTER));
+			crosstabColumnPositionMap.put(CROSSTAB_COLUMN_POSITION_RIGHT, new Byte(JRCellContents.POSITION_X_RIGHT));
+			crosstabColumnPositionMap.put(CROSSTAB_COLUMN_POSITION_STRETCH, new Byte(JRCellContents.POSITION_X_STRETCH));
+			crosstabColumnPositionMap.put(new Byte(JRCellContents.POSITION_X_LEFT), CROSSTAB_COLUMN_POSITION_LEFT);
+			crosstabColumnPositionMap.put(new Byte(JRCellContents.POSITION_X_CENTER), CROSSTAB_COLUMN_POSITION_CENTER);
+			crosstabColumnPositionMap.put(new Byte(JRCellContents.POSITION_X_RIGHT), CROSSTAB_COLUMN_POSITION_RIGHT);
+			crosstabColumnPositionMap.put(new Byte(JRCellContents.POSITION_X_STRETCH), CROSSTAB_COLUMN_POSITION_STRETCH);
+		}
+		
+		return crosstabColumnPositionMap;
 	}
 	
 }

@@ -511,7 +511,7 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 	 * 
 	 * @return the report parameters map
 	 */
-	public Map getParametersMap()
+	protected Map getParametersMap()
 	{
 		return mainDataset.parametersMap;
 	}
@@ -522,7 +522,7 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 	 * 
 	 * @return the report fields map
 	 */
-	public Map getFieldsMap()
+	protected Map getFieldsMap()
 	{
 		return mainDataset.fieldsMap;
 	}
@@ -533,7 +533,7 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 	 * 
 	 * @return the report variables map
 	 */
-	public Map getVariablesMap()
+	protected Map getVariablesMap()
 	{
 		return mainDataset.variablesMap;
 	}
@@ -734,10 +734,7 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 				}
 			}
 
-			for (int i = 0; i < formattedTextFields.size(); i++)
-			{
-				((JRFillTextField) formattedTextFields.get(i)).setFormat();
-			}
+			setTextFieldsFormats();
 
 			loadedSubreports = new HashMap();
 
@@ -796,6 +793,17 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 		{
 			fillingThread = null;
 		}
+	}
+
+
+	protected void setTextFieldsFormats()
+	{
+		for (int i = 0; i < formattedTextFields.size(); i++)
+		{
+			((JRFillTextField) formattedTextFields.get(i)).setFormat();
+		}
+		
+		formattedTextFields.clear();
 	}
 
 	/**
@@ -1412,13 +1420,13 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 	}
 	
 	
-	public byte getWhenResourceMissingType()
+	protected byte getWhenResourceMissingType()
 	{
 		return mainDataset.whenResourceMissingType;
 	}
 	
 	
-	public JasperReport getJasperReport()
+	protected JasperReport getJasperReport()
 	{
 		return jasperReport;
 	}

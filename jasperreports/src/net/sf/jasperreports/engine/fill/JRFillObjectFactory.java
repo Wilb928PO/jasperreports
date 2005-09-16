@@ -80,7 +80,6 @@ import net.sf.jasperreports.charts.fill.JRFillXyzDataset;
 import net.sf.jasperreports.charts.fill.JRFillXyzSeries;
 import net.sf.jasperreports.engine.JRAbstractObjectFactory;
 import net.sf.jasperreports.engine.JRBand;
-import net.sf.jasperreports.engine.JRCell;
 import net.sf.jasperreports.engine.JRChart;
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRDatasetRun;
@@ -101,15 +100,17 @@ import net.sf.jasperreports.engine.JRTextField;
 import net.sf.jasperreports.engine.JRVariable;
 import net.sf.jasperreports.engine.base.JRBaseFont;
 import net.sf.jasperreports.engine.base.JRBaseReportFont;
+import net.sf.jasperreports.engine.crosstab.JRCellContents;
 import net.sf.jasperreports.engine.crosstab.JRCrosstab;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabCell;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabColumnGroup;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabDataset;
+import net.sf.jasperreports.engine.crosstab.JRCrosstabMeasure;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabParameter;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabRowGroup;
-import net.sf.jasperreports.engine.fill.crosstab.JRFillCrosstab;
 import net.sf.jasperreports.engine.fill.crosstab.JRFillCrosstabCell;
 import net.sf.jasperreports.engine.fill.crosstab.JRFillCrosstabColumnGroup;
+import net.sf.jasperreports.engine.fill.crosstab.JRFillCrosstabMeasure;
 import net.sf.jasperreports.engine.fill.crosstab.JRFillCrosstabParameter;
 import net.sf.jasperreports.engine.fill.crosstab.JRFillCrosstabRowGroup;
 
@@ -1067,16 +1068,16 @@ public class JRFillObjectFactory extends JRAbstractObjectFactory
 	}
 	
 	
-	public JRFillCell getCell(JRCell cell)
+	public JRFillCellContents getCell(JRCellContents cell)
 	{
-		JRFillCell fillCell = null;
+		JRFillCellContents fillCell = null;
 
 		if (cell != null)
 		{
-			fillCell = (JRFillCell) get(cell);
+			fillCell = (JRFillCellContents) get(cell);
 			if (fillCell == null)
 			{
-				fillCell = new JRFillCell(cell, this);
+				fillCell = new JRFillCellContents(cell, this);
 			}
 		}
 
@@ -1132,5 +1133,22 @@ public class JRFillObjectFactory extends JRAbstractObjectFactory
 		}
 
 		return fillCell;
+	}
+	
+	
+	public JRFillCrosstabMeasure getCrosstabMeasure(JRCrosstabMeasure measure)
+	{
+		JRFillCrosstabMeasure fillMeasure = null;
+
+		if (measure != null)
+		{
+			fillMeasure = (JRFillCrosstabMeasure) get(measure);
+			if (fillMeasure == null)
+			{
+				fillMeasure = new JRFillCrosstabMeasure(measure, this);
+			}
+		}
+
+		return fillMeasure;
 	}
 }

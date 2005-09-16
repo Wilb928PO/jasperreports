@@ -84,6 +84,11 @@ public abstract class JRFillElement implements JRElement
 	private int stretchHeight = 0;
 	private int bandBottomY = 0;
 
+	private int x;
+	private int y;
+	private int width;
+	private int height;
+	
 	/**
 	 *
 	 *
@@ -109,6 +114,11 @@ public abstract class JRFillElement implements JRElement
 		/*   */
 		printWhenGroupChanges = factory.getGroup(element.getPrintWhenGroupChanges());
 		elementGroup = (JRFillElementGroup)factory.getElementGroup(element.getElementGroup());
+		
+		x = element.getX();
+		y = element.getY();
+		width = element.getWidth();
+		height = element.getHeight();
 	}
 
 
@@ -185,7 +195,7 @@ public abstract class JRFillElement implements JRElement
 	 */
 	public int getX()
 	{
-		return this.parent.getX();
+		return x;
 	}
 	
 	/**
@@ -193,6 +203,15 @@ public abstract class JRFillElement implements JRElement
 	 */
 	public void setX(int x)
 	{
+		this.x = x;
+	}
+	
+	/**
+	 *
+	 */
+	public void setY(int y)
+	{
+		this.y = y;
 	}
 	
 	/**
@@ -200,7 +219,7 @@ public abstract class JRFillElement implements JRElement
 	 */
 	public int getY()
 	{
-		return this.parent.getY();
+		return y;
 	}
 	
 	/**
@@ -208,7 +227,7 @@ public abstract class JRFillElement implements JRElement
 	 */
 	public int getWidth()
 	{
-		return this.parent.getWidth();
+		return width;
 	}
 	
 	/**
@@ -216,6 +235,15 @@ public abstract class JRFillElement implements JRElement
 	 */
 	public void setWidth(int width)
 	{
+		this.width = width;
+	}
+	
+	/**
+	 *
+	 */
+	public void setHeight(int height)
+	{
+		this.height = height;
 	}
 	
 	/**
@@ -223,7 +251,7 @@ public abstract class JRFillElement implements JRElement
 	 */
 	public int getHeight()
 	{
-		return this.parent.getHeight();
+		return height;
 	}
 	
 	/**
@@ -529,8 +557,8 @@ public abstract class JRFillElement implements JRElement
 	 */
 	protected void reset()
 	{
-		relativeY = parent.getY();
-		stretchHeight = parent.getHeight();
+		relativeY = y;
+		stretchHeight = height;
 
 		if (elementGroup != null)
 		{
@@ -595,7 +623,7 @@ public abstract class JRFillElement implements JRElement
 	protected boolean prepare(
 		int availableStretchHeight,
 		boolean isOverflow
-		)
+		) throws JRException
 	{
 		if (
 			this.isPrintWhenExpressionNull() ||

@@ -27,58 +27,16 @@
  */
 package net.sf.jasperreports.engine.fill;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import net.sf.jasperreports.engine.JRPrintElement;
 
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
  * @version $Id$
  */
-public class JRPrintBand
+public class JRPrintBand extends JRPrintElementContainer
 {
-	
-
-	/**
-	 *
-	 */
-	private int height = 0;
-	private List elements = new ArrayList();
-
-	
-	/**
-	 *
-	 */
-	public int getHeight()
+	public JRPrintBand()
 	{
-		return this.height;
+		super();
 	}
-		
-	/**
-	 *
-	 */
-	public void setHeight(int height)
-	{
-		this.height = height;
-	}
-
-	/**
-	 *
-	 */
-	public List getElements()
-	{
-		return this.elements;
-	}
-	
-	/**
-	 *
-	 */
-	public void addElement(JRPrintElement element)
-	{
-		this.elements.add(element);
-	}
-		
-
 }
