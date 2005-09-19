@@ -303,9 +303,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 
 	public Byte getBorder()
 	{
-		if (border == null && parentStyle != null)
-			return parentStyle.getBorder();
-		return border;
+		return JRStyleResolver.getBorder(this);
 	}
 
 	public Byte getOwnBorder()
@@ -315,9 +313,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 
 	public Color getBorderColor()
 	{
-		if (borderColor == null && parentStyle != null)
-			return parentStyle.getBorderColor();
-		return borderColor;
+		return JRStyleResolver.getBorderColor(this);
 	}
 
 	public Color getOwnBorderColor()
@@ -327,9 +323,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 
 	public Integer getPadding()
 	{
-		if (padding == null && parentStyle != null)
-			return parentStyle.getPadding();
-		return padding;
+		return JRStyleResolver.getPadding(this);
 	}
 
 	public Integer getOwnPadding()
@@ -339,13 +333,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 
 	public Byte getTopBorder()
 	{
-		if (topBorder == null) {
-			if (border != null)
-				return border;
-			if (parentStyle != null)
-				return parentStyle.getTopBorder();
-		}
-		return topBorder;
+		return JRStyleResolver.getTopBorder(this);
 	}
 
 	public Byte getOwnTopBorder()
@@ -355,13 +343,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 
 	public Color getTopBorderColor()
 	{
-		if (topBorderColor == null) {
-			if (borderColor != null)
-				return borderColor;
-			if (parentStyle != null)
-				return parentStyle.getTopBorderColor();
-		}
-		return topBorderColor;
+		return JRStyleResolver.getTopBorderColor(this);
 	}
 
 	public Color getOwnTopBorderColor()
@@ -371,13 +353,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 
 	public Integer getTopPadding()
 	{
-		if (topPadding == null) {
-			if (padding != null)
-				return padding;
-			if (parentStyle != null)
-				return parentStyle.getTopPadding();
-		}
-		return topPadding;
+		return JRStyleResolver.getTopPadding(this);
 	}
 
 	public Integer getOwnTopPadding()
@@ -387,13 +363,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 
 	public Byte getLeftBorder()
 	{
-		if (leftBorder == null) {
-			if (border != null)
-				return border;
-			if (parentStyle != null)
-				return parentStyle.getLeftBorder();
-		}
-		return leftBorder;
+		return JRStyleResolver.getLeftBorder(this);
 	}
 
 	public Byte getOwnLeftBorder()
@@ -403,13 +373,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 
 	public Color getLeftBorderColor()
 	{
-		if (leftBorderColor == null) {
-			if (borderColor != null)
-				return borderColor;
-			if (parentStyle != null)
-				return parentStyle.getLeftBorderColor();
-		}
-		return leftBorderColor;
+		return JRStyleResolver.getLeftBorderColor(this);
 	}
 
 	public Color getOwnLeftBorderColor()
@@ -419,13 +383,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 
 	public Integer getLeftPadding()
 	{
-		if (leftPadding == null) {
-			if (padding != null)
-				return padding;
-			if (parentStyle != null)
-				return parentStyle.getLeftPadding();
-		}
-		return leftPadding;
+		return JRStyleResolver.getLeftPadding(this);
 	}
 
 	public Integer getOwnLeftPadding()
@@ -435,13 +393,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 
 	public Byte getBottomBorder()
 	{
-		if (bottomBorder == null) {
-			if (border != null)
-				return border;
-			if (parentStyle != null)
-				return parentStyle.getBottomBorder();
-		}
-		return bottomBorder;
+		return JRStyleResolver.getBottomBorder(this);
 	}
 
 	public Byte getOwnBottomBorder()
@@ -451,13 +403,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 
 	public Color getBottomBorderColor()
 	{
-		if (bottomBorderColor == null) {
-			if (borderColor != null)
-				return borderColor;
-			if (parentStyle != null)
-				return parentStyle.getBottomBorderColor();
-		}
-		return bottomBorderColor;
+		return JRStyleResolver.getBottomBorderColor(this);
 	}
 
 	public Color getOwnBottomBorderColor()
@@ -467,13 +413,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 
 	public Integer getBottomPadding()
 	{
-		if (bottomPadding == null) {
-			if (padding != null)
-				return padding;
-			if (parentStyle != null)
-				return parentStyle.getBottomPadding();
-		}
-		return bottomPadding;
+		return JRStyleResolver.getBottomPadding(this);
 	}
 
 	public Integer getOwnBottomPadding()
@@ -483,13 +423,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 
 	public Byte getRightBorder()
 	{
-		if (rightBorder == null) {
-			if (border != null)
-				return border;
-			if (parentStyle != null)
-				return parentStyle.getRightBorder();
-		}
-		return rightBorder;
+		return JRStyleResolver.getRightBorder(this);
 	}
 
 	public Byte getOwnRightBorder()
@@ -499,13 +433,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 
 	public Color getRightBorderColor()
 	{
-		if (rightBorderColor == null) {
-			if (borderColor != null)
-				return borderColor;
-			if (parentStyle != null)
-				return parentStyle.getRightBorderColor();
-		}
-		return rightBorderColor;
+		return JRStyleResolver.getRightBorderColor(this);
 	}
 
 	public Color getOwnRightBorderColor()
@@ -515,13 +443,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 
 	public Integer getRightPadding()
 	{
-		if (rightPadding == null) {
-			if (padding != null)
-				return padding;
-			if (parentStyle != null)
-				return parentStyle.getRightPadding();
-		}
-		return rightPadding;
+		return JRStyleResolver.getRightPadding(this);
 	}
 
 	public Integer getOwnRightPadding()

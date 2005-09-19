@@ -35,7 +35,6 @@ import net.sf.jasperreports.engine.JRBox;
 import net.sf.jasperreports.engine.JRChild;
 import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRExpressionCollector;
-import net.sf.jasperreports.engine.JRGraphicElement;
 import net.sf.jasperreports.engine.JRGroup;
 import net.sf.jasperreports.engine.JRHyperlink;
 import net.sf.jasperreports.engine.JRImage;
@@ -476,13 +475,7 @@ public class JRBaseImage extends JRBaseGraphicElement implements JRImage
 	 */
 	public byte getBorder()
 	{
-		if (border == null) {
-			JRStyle style = getBaseStyle();
-			if (style != null && style.getBorder() != null)
-				return style.getBorder().byteValue();
-			return JRGraphicElement.PEN_NONE;
-		}
-		return border.byteValue();
+		return JRStyleResolver.getBorder(this);
 	}
 
 	public Byte getOwnBorder()
@@ -503,13 +496,7 @@ public class JRBaseImage extends JRBaseGraphicElement implements JRImage
 	 */
 	public Color getBorderColor()
 	{
-		if (borderColor == null) {
-			JRStyle style = getBaseStyle();
-			if (style != null && style.getBorderColor() != null)
-				return style.getBorderColor();
-			return Color.black;
-		}
-		return borderColor;
+		return JRStyleResolver.getBorderColor(this, getForecolor());
 	}
 
 	public Color getOwnBorderColor()
@@ -530,13 +517,7 @@ public class JRBaseImage extends JRBaseGraphicElement implements JRImage
 	 */
 	public int getPadding()
 	{
-		if (padding == null) {
-			JRStyle style = getBaseStyle();
-			if (style != null && style.getPadding() != null)
-				return style.getPadding().intValue();
-			return 0;
-		}
-		return padding.intValue();
+		return JRStyleResolver.getPadding(this);
 	}
 
 	public Integer getOwnPadding()
@@ -557,16 +538,7 @@ public class JRBaseImage extends JRBaseGraphicElement implements JRImage
 	 */
 	public byte getTopBorder()
 	{
-		if (topBorder == null)
-		{
-			if (border != null)
-				return border.byteValue();
-			JRStyle style = getBaseStyle();
-			if (style != null && style.getTopBorder() != null)
-				return style.getTopBorder().byteValue();
-			return PEN_NONE;
-		}
-		return topBorder.byteValue();
+		return JRStyleResolver.getTopBorder(this);
 	}
 
 	/**
@@ -590,15 +562,7 @@ public class JRBaseImage extends JRBaseGraphicElement implements JRImage
 	 */
 	public Color getTopBorderColor()
 	{
-		if (topBorderColor == null)
-		{
-			if (borderColor != null)
-				return borderColor;
-			JRStyle style = getBaseStyle();
-			if (style != null && style.getTopBorderColor() != null)
-				return style.getTopBorderColor();
-		}
-		return topBorderColor;
+		return JRStyleResolver.getTopBorderColor(this, getForecolor());
 	}
 
 	/**
@@ -622,16 +586,7 @@ public class JRBaseImage extends JRBaseGraphicElement implements JRImage
 	 */
 	public int getTopPadding()
 	{
-		if (topPadding == null)
-		{
-			if (padding != null)
-				return padding.intValue();
-			JRStyle style = getBaseStyle();
-			if (style != null && style.getTopPadding() != null)
-				return style.getTopPadding().intValue();
-			return 0;
-		}
-		return topPadding.intValue();
+		return JRStyleResolver.getTopPadding(this);
 	}
 
 	/**
@@ -655,16 +610,7 @@ public class JRBaseImage extends JRBaseGraphicElement implements JRImage
 	 */
 	public byte getLeftBorder()
 	{
-		if (leftBorder == null)
-		{
-			if (border != null)
-				return border.byteValue();
-			JRStyle style = getBaseStyle();
-			if (style != null && style.getLeftBorder() != null)
-				return style.getLeftBorder().byteValue();
-			return PEN_NONE;
-		}
-		return leftBorder.byteValue();
+		return JRStyleResolver.getLeftBorder(this);
 	}
 
 	/**
@@ -688,15 +634,7 @@ public class JRBaseImage extends JRBaseGraphicElement implements JRImage
 	 */
 	public Color getLeftBorderColor()
 	{
-		if (leftBorderColor == null)
-		{
-			if (borderColor != null)
-				return borderColor;
-			JRStyle style = getBaseStyle();
-			if (style != null && style.getLeftBorderColor() != null)
-				return style.getLeftBorderColor();
-		}
-		return leftBorderColor;
+		return JRStyleResolver.getLeftBorderColor(this, getForecolor());
 	}
 
 	/**
@@ -720,16 +658,7 @@ public class JRBaseImage extends JRBaseGraphicElement implements JRImage
 	 */
 	public int getLeftPadding()
 	{
-		if (leftPadding == null)
-		{
-			if (padding != null)
-				return padding.intValue();
-			JRStyle style = getBaseStyle();
-			if (style != null && style.getLeftPadding() != null)
-				return style.getLeftPadding().intValue();
-			return 0;
-		}
-		return leftPadding.intValue();
+		return JRStyleResolver.getLeftPadding(this);
 	}
 
 	/**
@@ -753,16 +682,7 @@ public class JRBaseImage extends JRBaseGraphicElement implements JRImage
 	 */
 	public byte getBottomBorder()
 	{
-		if (bottomBorder == null)
-		{
-			if (border != null)
-				return border.byteValue();
-			JRStyle style = getBaseStyle();
-			if (style != null && style.getBottomBorder() != null)
-				return style.getBottomBorder().byteValue();
-			return PEN_NONE;
-		}
-		return bottomBorder.byteValue();
+		return JRStyleResolver.getBottomBorder(this);
 	}
 
 	/**
@@ -786,15 +706,7 @@ public class JRBaseImage extends JRBaseGraphicElement implements JRImage
 	 */
 	public Color getBottomBorderColor()
 	{
-		if (bottomBorderColor == null)
-		{
-			if (borderColor != null)
-				return borderColor;
-			JRStyle style = getBaseStyle();
-			if (style != null && style.getBottomBorderColor() != null)
-				return style.getBottomBorderColor();
-		}
-		return bottomBorderColor;
+		return JRStyleResolver.getBottomBorderColor(this, getForecolor());
 	}
 
 	/**
@@ -818,16 +730,7 @@ public class JRBaseImage extends JRBaseGraphicElement implements JRImage
 	 */
 	public int getBottomPadding()
 	{
-		if (bottomPadding == null)
-		{
-			if (padding != null)
-				return padding.intValue();
-			JRStyle style = getBaseStyle();
-			if (style != null && style.getBottomPadding() != null)
-				return style.getBottomPadding().intValue();
-			return 0;
-		}
-		return bottomPadding.intValue();
+		return JRStyleResolver.getBottomPadding(this);
 	}
 
 	/**
@@ -851,16 +754,7 @@ public class JRBaseImage extends JRBaseGraphicElement implements JRImage
 	 */
 	public byte getRightBorder()
 	{
-		if (rightBorder == null)
-		{
-			if (border != null)
-				return border.byteValue();
-			JRStyle style = getBaseStyle();
-			if (style != null && style.getRightBorder() != null)
-				return style.getRightBorder().byteValue();
-			return PEN_NONE;
-		}
-		return rightBorder.byteValue();
+		return JRStyleResolver.getRightBorder(this);
 	}
 
 	/**
@@ -884,15 +778,7 @@ public class JRBaseImage extends JRBaseGraphicElement implements JRImage
 	 */
 	public Color getRightBorderColor()
 	{
-		if (rightBorderColor == null)
-		{
-			if (borderColor != null)
-				return borderColor;
-			JRStyle style = getBaseStyle();
-			if (style != null && style.getRightBorderColor() != null)
-				return style.getRightBorderColor();
-		}
-		return rightBorderColor;
+		return JRStyleResolver.getRightBorderColor(this, getForecolor());
 	}
 
 	/**
@@ -916,16 +802,7 @@ public class JRBaseImage extends JRBaseGraphicElement implements JRImage
 	 */
 	public int getRightPadding()
 	{
-		if (rightPadding == null)
-		{
-			if (padding != null)
-				return padding.intValue();
-			JRStyle style = getBaseStyle();
-			if (style != null && style.getRightPadding() != null)
-				return style.getRightPadding().intValue();
-			return 0;
-		}
-		return rightPadding.intValue();
+		return JRStyleResolver.getRightPadding(this);
 	}
 
 	/**

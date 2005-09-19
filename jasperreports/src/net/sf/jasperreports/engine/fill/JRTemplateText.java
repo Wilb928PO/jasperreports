@@ -37,7 +37,6 @@ import net.sf.jasperreports.engine.JRBox;
 import net.sf.jasperreports.engine.JRDefaultStyleProvider;
 import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRFont;
-import net.sf.jasperreports.engine.JRGraphicElement;
 import net.sf.jasperreports.engine.JRHyperlink;
 import net.sf.jasperreports.engine.JRReportFont;
 import net.sf.jasperreports.engine.JRStaticText;
@@ -392,12 +391,7 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 	 */
 	public byte getBorder()
 	{
-		if (border == null) {
-			if (parentStyle != null && parentStyle.getBorder() != null)
-				return parentStyle.getBorder().byteValue();
-			return JRGraphicElement.PEN_NONE;
-		}
-		return border.byteValue();
+		return JRStyleResolver.getBorder(this);
 	}
 
 	public Byte getOwnBorder()
@@ -418,12 +412,7 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 	 */
 	public Color getBorderColor()
 	{
-		if (borderColor == null) {
-			if (parentStyle != null && parentStyle.getBorderColor() != null)
-				return parentStyle.getBorderColor();
-			return Color.black;
-		}
-		return borderColor;
+		return JRStyleResolver.getBorderColor(this, getForecolor());
 	}
 
 	public Color getOwnBorderColor()
@@ -444,12 +433,7 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 	 */
 	public int getPadding()
 	{
-		if (padding == null) {
-			if (parentStyle != null && parentStyle.getPadding() != null)
-				return parentStyle.getPadding().intValue();
-			return 0;
-		}
-		return padding.intValue();
+		return JRStyleResolver.getPadding(this);
 	}
 
 	public Integer getOwnPadding()
@@ -470,15 +454,7 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 	 */
 	public byte getTopBorder()
 	{
-		if (topBorder == null)
-		{
-			if (border != null)
-				return border.byteValue();
-			if (parentStyle != null && parentStyle.getTopBorder() != null)
-				return parentStyle.getTopBorder().byteValue();
-			return JRGraphicElement.PEN_NONE;
-		}
-		return topBorder.byteValue();
+		return JRStyleResolver.getTopBorder(this);
 	}
 
 	/**
@@ -502,14 +478,7 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 	 */
 	public Color getTopBorderColor()
 	{
-		if (topBorderColor == null)
-		{
-			if (borderColor != null)
-				return borderColor;
-			if (parentStyle != null && parentStyle.getTopBorderColor() != null)
-				return parentStyle.getTopBorderColor();
-		}
-		return topBorderColor;
+		return JRStyleResolver.getTopBorderColor(this, getForecolor());
 	}
 
 	/**
@@ -533,15 +502,7 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 	 */
 	public int getTopPadding()
 	{
-		if (topPadding == null)
-		{
-			if (padding != null)
-				return padding.intValue();
-			if (parentStyle != null && parentStyle.getTopPadding() != null)
-				return parentStyle.getTopPadding().intValue();
-			return 0;
-		}
-		return topPadding.intValue();
+		return JRStyleResolver.getTopPadding(this);
 	}
 
 	/**
@@ -565,15 +526,7 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 	 */
 	public byte getLeftBorder()
 	{
-		if (leftBorder == null)
-		{
-			if (border != null)
-				return border.byteValue();
-			if (parentStyle != null && parentStyle.getLeftBorder() != null)
-				return parentStyle.getLeftBorder().byteValue();
-			return JRGraphicElement.PEN_NONE;
-		}
-		return leftBorder.byteValue();
+		return JRStyleResolver.getLeftBorder(this);
 	}
 
 	/**
@@ -597,14 +550,7 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 	 */
 	public Color getLeftBorderColor()
 	{
-		if (leftBorderColor == null)
-		{
-			if (borderColor != null)
-				return borderColor;
-			if (parentStyle != null && parentStyle.getLeftBorderColor() != null)
-				return parentStyle.getLeftBorderColor();
-		}
-		return leftBorderColor;
+		return JRStyleResolver.getLeftBorderColor(this, getForecolor());
 	}
 
 	/**
@@ -628,15 +574,7 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 	 */
 	public int getLeftPadding()
 	{
-		if (leftPadding == null)
-		{
-			if (padding != null)
-				return padding.intValue();
-			if (parentStyle != null && parentStyle.getLeftPadding() != null)
-				return parentStyle.getLeftPadding().intValue();
-			return 0;
-		}
-		return leftPadding.intValue();
+		return JRStyleResolver.getLeftPadding(this);
 	}
 
 	/**
@@ -660,15 +598,7 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 	 */
 	public byte getBottomBorder()
 	{
-		if (bottomBorder == null)
-		{
-			if (border != null)
-				return border.byteValue();
-			if (parentStyle != null && parentStyle.getBottomBorder() != null)
-				return parentStyle.getBottomBorder().byteValue();
-			return JRGraphicElement.PEN_NONE;
-		}
-		return bottomBorder.byteValue();
+		return JRStyleResolver.getBottomBorder(this);
 	}
 
 	/**
@@ -692,14 +622,7 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 	 */
 	public Color getBottomBorderColor()
 	{
-		if (bottomBorderColor == null)
-		{
-			if (borderColor != null)
-				return borderColor;
-			if (parentStyle != null && parentStyle.getBottomBorderColor() != null)
-				return parentStyle.getBottomBorderColor();
-		}
-		return bottomBorderColor;
+		return JRStyleResolver.getBottomBorderColor(this, getForecolor());
 	}
 
 	/**
@@ -723,15 +646,7 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 	 */
 	public int getBottomPadding()
 	{
-		if (bottomPadding == null)
-		{
-			if (padding != null)
-				return padding.intValue();
-			if (parentStyle != null && parentStyle.getBottomPadding() != null)
-				return parentStyle.getBottomPadding().intValue();
-			return 0;
-		}
-		return bottomPadding.intValue();
+		return JRStyleResolver.getBottomPadding(this);
 	}
 
 	/**
@@ -755,15 +670,7 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 	 */
 	public byte getRightBorder()
 	{
-		if (rightBorder == null)
-		{
-			if (border != null)
-				return border.byteValue();
-			if (parentStyle != null && parentStyle.getRightBorder() != null)
-				return parentStyle.getRightBorder().byteValue();
-			return JRGraphicElement.PEN_NONE;
-		}
-		return rightBorder.byteValue();
+		return JRStyleResolver.getRightBorder(this);
 	}
 
 	/**
@@ -787,14 +694,7 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 	 */
 	public Color getRightBorderColor()
 	{
-		if (rightBorderColor == null)
-		{
-			if (borderColor != null)
-				return borderColor;
-			if (parentStyle != null && parentStyle.getRightBorderColor() != null)
-				return parentStyle.getRightBorderColor();
-		}
-		return rightBorderColor;
+		return JRStyleResolver.getRightBorderColor(this, getForecolor());
 	}
 
 	/**
@@ -818,15 +718,7 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 	 */
 	public int getRightPadding()
 	{
-		if (rightPadding == null)
-		{
-			if (padding != null)
-				return padding.intValue();
-			if (parentStyle != null && parentStyle.getRightPadding() != null)
-				return parentStyle.getRightPadding().intValue();
-			return 0;
-		}
-		return rightPadding.intValue();
+		return JRStyleResolver.getRightPadding(this);
 	}
 
 	/**
@@ -1252,7 +1144,7 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 	/**
 	 *
 	 */
-	public Map getNonPdfAttributes()
+	public Map getNonPdfAttributes()//FIXME STYLE remove everywhere
 	{
 		Map nonPdfAttributes = new HashMap();
 
