@@ -28,7 +28,6 @@
 package net.sf.jasperreports.engine.fill;
 
 import java.awt.Color;
-import java.awt.font.TextAttribute;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -1144,37 +1143,6 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 	/**
 	 *
 	 */
-	public Map getNonPdfAttributes()//FIXME STYLE remove everywhere
-	{
-		Map nonPdfAttributes = new HashMap();
-
-		nonPdfAttributes.put(TextAttribute.FAMILY, getFontName());
-		nonPdfAttributes.put(TextAttribute.SIZE, new Float(getSize()));
-
-		if (isBold())
-		{
-			nonPdfAttributes.put(TextAttribute.WEIGHT, TextAttribute.WEIGHT_BOLD);
-		}
-		if (isItalic())
-		{
-			nonPdfAttributes.put(TextAttribute.POSTURE, TextAttribute.POSTURE_OBLIQUE);
-		}
-		if (isUnderline())
-		{
-			nonPdfAttributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
-		}
-		if (isStrikeThrough())
-		{
-			nonPdfAttributes.put(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON);
-		}
-
-		return nonPdfAttributes;
-	}
-
-
-	/**
-	 *
-	 */
 	public Map getAttributes()
 	{
 		if (attributes == null)
@@ -1187,8 +1155,12 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 		return attributes;
 	}
 
+	/**
+	 *
+	 */
 	public JRStyle getStyle()
 	{
 		return parentStyle;
 	}
+
 }
