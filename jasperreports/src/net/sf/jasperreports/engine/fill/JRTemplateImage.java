@@ -56,7 +56,7 @@ public class JRTemplateImage extends JRTemplateGraphicElement implements JRAlign
 	/**
 	 *
 	 */
-	private byte scaleImage = JRImage.SCALE_IMAGE_CLIP;
+	private Byte scaleImage = null;
 	private Byte horizontalAlignment = null;
 	private Byte verticalAlignment = null;
 	protected boolean isLazy = false;
@@ -173,15 +173,39 @@ public class JRTemplateImage extends JRTemplateGraphicElement implements JRAlign
 	/**
 	 *
 	 */
+	public byte getPen()
+	{
+		return JRStyleResolver.getPen(this, JRGraphicElement.PEN_NONE);
+	}
+		
+	/**
+	 *
+	 */
 	public byte getScaleImage()
 	{
-		return this.scaleImage;
+		return JRStyleResolver.getScaleImage(this);
+	}
+		
+	/**
+	 *
+	 */
+	public Byte getOwnScaleImage()
+	{
+		return scaleImage;
 	}
 		
 	/**
 	 *
 	 */
 	protected void setScaleImage(byte scaleImage)
+	{
+		this.scaleImage = new Byte(scaleImage);
+	}
+
+	/**
+	 *
+	 */
+	protected void setScaleImage(Byte scaleImage)
 	{
 		this.scaleImage = scaleImage;
 	}
@@ -191,12 +215,7 @@ public class JRTemplateImage extends JRTemplateGraphicElement implements JRAlign
 	 */
 	public byte getHorizontalAlignment()
 	{
-		if (horizontalAlignment == null) {
-			if (parentStyle != null && parentStyle.getHorizontalAlignment() != null)
-				return parentStyle.getHorizontalAlignment().byteValue();
-			return JRAlignment.HORIZONTAL_ALIGN_LEFT;
-		}
-		return horizontalAlignment.byteValue();
+		return JRStyleResolver.getHorizontalAlignment(this);
 	}
 		
 	/**
@@ -228,12 +247,7 @@ public class JRTemplateImage extends JRTemplateGraphicElement implements JRAlign
 	 */
 	public byte getVerticalAlignment()
 	{
-		if (verticalAlignment == null) {
-			if (parentStyle != null && parentStyle.getVerticalAlignment() != null)
-				return parentStyle.getVerticalAlignment().byteValue();
-			return JRAlignment.VERTICAL_ALIGN_TOP;
-		}
-		return verticalAlignment.byteValue();
+		return JRStyleResolver.getVerticalAlignment(this);
 	}
 		
 	/**

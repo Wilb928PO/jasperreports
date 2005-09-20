@@ -231,9 +231,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 
 	public Byte getPen()
 	{
-		if (pen == null && parentStyle != null)
-			return parentStyle.getPen();
-		return pen;
+		return JRStyleResolver.getPen(this);
 	}
 
 	public Byte getOwnPen()
@@ -243,9 +241,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 
 	public Byte getFill()
 	{
-		if (fill == null && parentStyle != null)
-			return parentStyle.getFill();
-		return fill;
+		return JRStyleResolver.getFill(this);
 	}
 
 	public Byte getOwnFill()
@@ -255,9 +251,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 
 	public Integer getRadius()
 	{
-		if (radius == null && parentStyle != null)
-			return parentStyle.getRadius();
-		return radius;
+		return JRStyleResolver.getRadius(this);
 	}
 
 	public Integer getOwnRadius()
@@ -267,9 +261,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 
 	public Byte getScaleImage()
 	{
-		if (scaleImage == null && parentStyle != null)
-			return parentStyle.getScaleImage();
-		return scaleImage;
+		return JRStyleResolver.getScaleImage(this);
 	}
 
 	public Byte getOwnScaleImage()
@@ -279,9 +271,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 
 	public Byte getHorizontalAlignment()
 	{
-		if (horizontalAlignment == null && parentStyle != null)
-			return parentStyle.getHorizontalAlignment();
-		return horizontalAlignment;
+		return JRStyleResolver.getHorizontalAlignment(this);
 	}
 
 	public Byte getOwnHorizontalAlignment()
@@ -291,9 +281,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 
 	public Byte getVerticalAlignment()
 	{
-		if (verticalAlignment == null && parentStyle != null)
-			return parentStyle.getVerticalAlignment();
-		return verticalAlignment;
+		return JRStyleResolver.getVerticalAlignment(this);
 	}
 
 	public Byte getOwnVerticalAlignment()

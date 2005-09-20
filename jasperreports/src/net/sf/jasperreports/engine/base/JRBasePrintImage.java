@@ -29,7 +29,6 @@ package net.sf.jasperreports.engine.base;
 
 import java.awt.Color;
 
-import net.sf.jasperreports.engine.JRAlignment;
 import net.sf.jasperreports.engine.JRAnchor;
 import net.sf.jasperreports.engine.JRBox;
 import net.sf.jasperreports.engine.JRDefaultStyleProvider;
@@ -59,9 +58,9 @@ public class JRBasePrintImage extends JRBasePrintGraphicElement implements JRPri
 	 *
 	 */
 	protected JRRenderable renderer = null;
-	protected byte scaleImage = JRImage.SCALE_IMAGE_RETAIN_SHAPE;
-	protected byte horizontalAlignment = JRAlignment.HORIZONTAL_ALIGN_LEFT;
-	protected byte verticalAlignment = JRAlignment.VERTICAL_ALIGN_TOP;
+	protected Byte scaleImage = null;
+	protected Byte horizontalAlignment = null;
+	protected Byte verticalAlignment = null;
 	protected boolean isLazy = false;
 	protected byte onErrorType = JRImage.ON_ERROR_TYPE_ERROR;
 	//protected JRBox box = null;
@@ -104,8 +103,6 @@ public class JRBasePrintImage extends JRBasePrintGraphicElement implements JRPri
 	public JRBasePrintImage(JRDefaultStyleProvider defaultStyleProvider)
 	{
 		super(defaultStyleProvider);
-		
-		this.pen = JRGraphicElement.PEN_NONE;
 	}
 
 
@@ -115,6 +112,14 @@ public class JRBasePrintImage extends JRBasePrintGraphicElement implements JRPri
 	public byte getMode()
 	{
 		return JRStyleResolver.getMode(this, JRElement.MODE_TRANSPARENT);
+	}
+		
+	/**
+	 *
+	 */
+	public byte getPen()
+	{
+		return JRStyleResolver.getPen(this, JRGraphicElement.PEN_NONE);
 	}
 		
 	/**
@@ -138,6 +143,14 @@ public class JRBasePrintImage extends JRBasePrintGraphicElement implements JRPri
 	 */
 	public byte getScaleImage()
 	{
+		return JRStyleResolver.getScaleImage(this);
+	}
+
+	/**
+	 *
+	 */
+	public Byte getOwnScaleImage()
+	{
 		return scaleImage;
 	}
 
@@ -145,6 +158,14 @@ public class JRBasePrintImage extends JRBasePrintGraphicElement implements JRPri
 	 *
 	 */
 	public void setScaleImage(byte scaleImage)
+	{
+		this.scaleImage = new Byte(scaleImage);
+	}
+
+	/**
+	 *
+	 */
+	public void setScaleImage(Byte scaleImage)
 	{
 		this.scaleImage = scaleImage;
 	}
@@ -154,6 +175,14 @@ public class JRBasePrintImage extends JRBasePrintGraphicElement implements JRPri
 	 */
 	public byte getHorizontalAlignment()
 	{
+		return JRStyleResolver.getHorizontalAlignment(this);
+	}
+		
+	/**
+	 *
+	 */
+	public Byte getOwnHorizontalAlignment()
+	{
 		return horizontalAlignment;
 	}
 		
@@ -161,6 +190,14 @@ public class JRBasePrintImage extends JRBasePrintGraphicElement implements JRPri
 	 *
 	 */
 	public void setHorizontalAlignment(byte horizontalAlignment)
+	{
+		this.horizontalAlignment = new Byte(horizontalAlignment);
+	}
+
+	/**
+	 *
+	 */
+	public void setHorizontalAlignment(Byte horizontalAlignment)
 	{
 		this.horizontalAlignment = horizontalAlignment;
 	}
@@ -170,6 +207,14 @@ public class JRBasePrintImage extends JRBasePrintGraphicElement implements JRPri
 	 */
 	public byte getVerticalAlignment()
 	{
+		return JRStyleResolver.getVerticalAlignment(this);
+	}
+		
+	/**
+	 *
+	 */
+	public Byte getOwnVerticalAlignment()
+	{
 		return verticalAlignment;
 	}
 		
@@ -177,6 +222,14 @@ public class JRBasePrintImage extends JRBasePrintGraphicElement implements JRPri
 	 *
 	 */
 	public void setVerticalAlignment(byte verticalAlignment)
+	{
+		this.verticalAlignment = new Byte(verticalAlignment);
+	}
+
+	/**
+	 *
+	 */
+	public void setVerticalAlignment(Byte verticalAlignment)
 	{
 		this.verticalAlignment = verticalAlignment;
 	}

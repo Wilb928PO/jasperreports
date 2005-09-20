@@ -50,5 +50,7 @@ public interface JRRectangle extends JRGraphicElement
 	 */
 	public void setRadius(int radius);
 
+	public void setRadius(Integer radius);
+
 	
 }

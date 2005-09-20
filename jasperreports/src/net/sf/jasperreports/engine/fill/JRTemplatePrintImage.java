@@ -99,7 +99,22 @@ public class JRTemplatePrintImage extends JRTemplatePrintGraphicElement implemen
 	/**
 	 *
 	 */
+	public Byte getOwnScaleImage()
+	{
+		return null;
+	}
+
+	/**
+	 *
+	 */
 	public void setScaleImage(byte scaleImage)
+	{
+	}
+
+	/**
+	 *
+	 */
+	public void setScaleImage(Byte scaleImage)
 	{
 	}
 
@@ -114,7 +129,22 @@ public class JRTemplatePrintImage extends JRTemplatePrintGraphicElement implemen
 	/**
 	 *
 	 */
+	public Byte getOwnHorizontalAlignment()
+	{
+		return null;
+	}
+		
+	/**
+	 *
+	 */
 	public void setHorizontalAlignment(byte horizontalAlignment)
+	{
+	}
+		
+	/**
+	 *
+	 */
+	public void setHorizontalAlignment(Byte horizontalAlignment)
 	{
 	}
 		
@@ -129,7 +159,22 @@ public class JRTemplatePrintImage extends JRTemplatePrintGraphicElement implemen
 	/**
 	 *
 	 */
+	public Byte getOwnVerticalAlignment()
+	{
+		return null;
+	}
+		
+	/**
+	 *
+	 */
 	public void setVerticalAlignment(byte verticalAlignment)
+	{
+	}
+		
+	/**
+	 *
+	 */
+	public void setVerticalAlignment(Byte verticalAlignment)
 	{
 	}
 		

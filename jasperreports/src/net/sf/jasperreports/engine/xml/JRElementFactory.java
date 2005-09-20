@@ -102,7 +102,7 @@ public class JRElementFactory extends JRBaseFactory
 		Byte mode = (Byte)JRXmlConstants.getModeMap().get(atts.getValue(ATTRIBUTE_mode));
 		if (mode != null)
 		{
-			element.setMode(mode.byteValue());
+			element.setMode(mode);//FIXME STYLE change all
 		}
 		
 		String x = atts.getValue(ATTRIBUTE_x);

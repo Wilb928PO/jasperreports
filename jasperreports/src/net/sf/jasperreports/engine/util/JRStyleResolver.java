@@ -29,14 +29,23 @@ package net.sf.jasperreports.engine.util;
 
 import java.awt.Color;
 
+import net.sf.jasperreports.engine.JRAlignment;
 import net.sf.jasperreports.engine.JRBox;
 import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRFont;
 import net.sf.jasperreports.engine.JRGraphicElement;
+import net.sf.jasperreports.engine.JRImage;
 import net.sf.jasperreports.engine.JRPrintElement;
+import net.sf.jasperreports.engine.JRPrintGraphicElement;
+import net.sf.jasperreports.engine.JRPrintImage;
+import net.sf.jasperreports.engine.JRPrintRectangle;
+import net.sf.jasperreports.engine.JRRectangle;
 import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.JRStyleContainer;
 import net.sf.jasperreports.engine.fill.JRTemplateElement;
+import net.sf.jasperreports.engine.fill.JRTemplateGraphicElement;
+import net.sf.jasperreports.engine.fill.JRTemplateImage;
+import net.sf.jasperreports.engine.fill.JRTemplateRectangle;
 
 
 /**
@@ -75,7 +84,7 @@ public class JRStyleResolver
 	/**
 	 *
 	 */
-	public static byte getMode(JRElement element, byte defaultMode)//FIXME STYLE make interface for reducing number of similar mode methods
+	public static byte getMode(JRElement element, byte defaultMode)//FIXME STYLE make interface(S) for reducing number of similar mode methods
 	{
 		if (element.getOwnMode() != null) 
 			return element.getOwnMode().byteValue();
@@ -116,6 +125,8 @@ public class JRStyleResolver
 	 */
 	public static Byte getMode(JRStyle style)
 	{
+		if (style.getOwnMode() != null)
+			return style.getOwnMode();
 		JRStyle baseStyle = getBaseStyle(style);
 		if (baseStyle != null)
 			return baseStyle.getMode();
@@ -166,6 +177,8 @@ public class JRStyleResolver
 	 */
 	public static Color getForecolor(JRStyle style)
 	{
+		if (style.getOwnForecolor() != null)
+			return style.getOwnForecolor();
 		JRStyle baseStyle = getBaseStyle(style);
 		if (baseStyle != null)
 			return baseStyle.getForecolor();
@@ -216,12 +229,273 @@ public class JRStyleResolver
 	 */
 	public static Color getBackcolor(JRStyle style)
 	{
+		if (style.getOwnBackcolor() != null)
+			return style.getOwnBackcolor();
 		JRStyle baseStyle = getBaseStyle(style);
 		if (baseStyle != null)
 			return baseStyle.getBackcolor();
 		return null;
 	}
 
+	/**
+	 *
+	 */
+	public static byte getPen(JRGraphicElement element, byte defaultPen)
+	{
+		if (element.getOwnPen() != null)
+			element.getOwnPen();
+		JRStyle baseStyle = getBaseStyle(element);
+		if (baseStyle != null && baseStyle.getPen() != null)
+			return baseStyle.getPen().byteValue();
+		return defaultPen;
+	}
+
+	/**
+	 *
+	 */
+	public static byte getPen(JRPrintGraphicElement element, byte defaultPen)
+	{
+		if (element.getOwnPen() != null)
+			element.getOwnPen();
+		JRStyle baseStyle = getBaseStyle(element);
+		if (baseStyle != null && baseStyle.getPen() != null)
+			return baseStyle.getPen().byteValue();
+		return defaultPen;
+	}
+
+	/**
+	 *
+	 */
+	public static byte getPen(JRTemplateGraphicElement element, byte defaultPen)
+	{
+		if (element.getOwnPen() != null)
+			element.getOwnPen();
+		JRStyle baseStyle = getBaseStyle(element);
+		if (baseStyle != null && baseStyle.getPen() != null)
+			return baseStyle.getPen().byteValue();
+		return defaultPen;
+	}
+
+	/**
+	 *
+	 */
+	public static Byte getPen(JRStyle style)
+	{
+		if (style.getOwnPen() != null)
+			return style.getOwnPen();
+		JRStyle baseStyle = getBaseStyle(style);
+		if (baseStyle != null)
+			return baseStyle.getPen();
+		return null;
+	}
+
+	/**
+	 *
+	 */
+	public static byte getFill(JRGraphicElement element, byte defaultFill)
+	{
+		if (element.getOwnFill() != null)
+			element.getOwnFill();
+		JRStyle baseStyle = getBaseStyle(element);
+		if (baseStyle != null && baseStyle.getFill() != null)
+			return baseStyle.getFill().byteValue();
+		return defaultFill;
+	}
+
+	/**
+	 *
+	 */
+	public static byte getFill(JRPrintGraphicElement element, byte defaultFill)
+	{
+		if (element.getOwnFill() != null)
+			element.getOwnFill();
+		JRStyle baseStyle = getBaseStyle(element);
+		if (baseStyle != null && baseStyle.getFill() != null)
+			return baseStyle.getFill().byteValue();
+		return defaultFill;
+	}
+
+	/**
+	 *
+	 */
+	public static byte getFill(JRTemplateGraphicElement element, byte defaultFill)
+	{
+		if (element.getOwnFill() != null)
+			element.getOwnFill();
+		JRStyle baseStyle = getBaseStyle(element);
+		if (baseStyle != null && baseStyle.getFill() != null)
+			return baseStyle.getFill().byteValue();
+		return defaultFill;
+	}
+
+	/**
+	 *
+	 */
+	public static Byte getFill(JRStyle style)
+	{
+		if (style.getOwnFill() != null)
+			return style.getOwnFill();
+		JRStyle baseStyle = getBaseStyle(style);
+		if (baseStyle != null)
+			return baseStyle.getFill();
+		return null;
+	}
+
+	/**
+	 *
+	 */
+	public static int getRadius(JRRectangle rectangle)
+	{
+		if (rectangle.getOwnRadius() != null)
+			return rectangle.getOwnRadius().intValue();
+		JRStyle baseStyle = getBaseStyle(rectangle);
+		if (baseStyle != null && baseStyle.getRadius() != null)
+			return baseStyle.getRadius().intValue();
+		return 0;
+	}
+
+	/**
+	 *
+	 */
+	public static int getRadius(JRPrintRectangle rectangle)
+	{
+		if (rectangle.getOwnRadius() != null)
+			return rectangle.getOwnRadius().intValue();
+		JRStyle baseStyle = getBaseStyle(rectangle);
+		if (baseStyle != null && baseStyle.getRadius() != null)
+			return baseStyle.getRadius().intValue();
+		return 0;
+	}
+
+	/**
+	 *
+	 */
+	public static int getRadius(JRTemplateRectangle rectangle)
+	{
+		if (rectangle.getOwnRadius() != null)
+			return rectangle.getOwnRadius().intValue();
+		JRStyle baseStyle = getBaseStyle(rectangle);
+		if (baseStyle != null && baseStyle.getRadius() != null)
+			return baseStyle.getRadius().intValue();
+		return 0;
+	}
+
+	/**
+	 *
+	 */
+	public static Integer getRadius(JRStyle style)
+	{
+		if (style.getOwnRadius() != null)
+			return style.getOwnRadius();
+		JRStyle baseStyle = getBaseStyle(style);
+		if (baseStyle != null)
+			return baseStyle.getRadius();
+		return null;
+	}
+
+	/**
+	 *
+	 */
+	public static byte getScaleImage(JRImage image)
+	{
+		if (image.getOwnScaleImage() != null)
+			return image.getOwnScaleImage().byteValue();
+		JRStyle baseStyle = getBaseStyle(image);
+		if (baseStyle != null && baseStyle.getScaleImage() != null)
+			return baseStyle.getScaleImage().byteValue();
+		return JRImage.SCALE_IMAGE_RETAIN_SHAPE;
+	}
+
+	/**
+	 *
+	 */
+	public static byte getScaleImage(JRPrintImage image)
+	{
+		if (image.getOwnScaleImage() != null)
+			return image.getOwnScaleImage().byteValue();
+		JRStyle baseStyle = getBaseStyle(image);
+		if (baseStyle != null && baseStyle.getScaleImage() != null)
+			return baseStyle.getScaleImage().byteValue();
+		return JRImage.SCALE_IMAGE_RETAIN_SHAPE;
+	}
+
+	/**
+	 *
+	 */
+	public static byte getScaleImage(JRTemplateImage image)
+	{
+		if (image.getOwnScaleImage() != null)
+			return image.getOwnScaleImage().byteValue();
+		JRStyle baseStyle = getBaseStyle(image);
+		if (baseStyle != null && baseStyle.getScaleImage() != null)
+			return baseStyle.getScaleImage().byteValue();
+		return JRImage.SCALE_IMAGE_RETAIN_SHAPE;
+	}
+
+	/**
+	 *
+	 */
+	public static Byte getScaleImage(JRStyle style)
+	{
+		if (style.getOwnScaleImage() != null)
+			return style.getOwnScaleImage();
+		JRStyle baseStyle = getBaseStyle(style);
+		if (baseStyle != null )
+			return baseStyle.getScaleImage();
+		return null;
+	}
+
+	/**
+	 *
+	 */
+	public static byte getHorizontalAlignment(JRAlignment alignment)
+	{
+		if (alignment.getOwnHorizontalAlignment() != null)
+			return alignment.getOwnHorizontalAlignment().byteValue();
+		JRStyle baseStyle = getBaseStyle(alignment);
+		if (baseStyle != null && baseStyle.getHorizontalAlignment() != null)
+			return baseStyle.getHorizontalAlignment().byteValue();
+		return JRAlignment.HORIZONTAL_ALIGN_LEFT;
+	}
+
+	/**
+	 *
+	 */
+	public static Byte getHorizontalAlignment(JRStyle style)
+	{
+		if (style.getOwnHorizontalAlignment() != null)
+			return style.getOwnHorizontalAlignment();
+		JRStyle baseStyle = getBaseStyle(style);
+		if (baseStyle != null && baseStyle.getHorizontalAlignment() != null)
+			return baseStyle.getHorizontalAlignment();
+		return null;
+	}
+
+	/**
+	 *
+	 */
+	public static byte getVerticalAlignment(JRAlignment alignment)
+	{
+		if (alignment.getOwnVerticalAlignment() != null)
+			return alignment.getOwnVerticalAlignment().byteValue();
+		JRStyle baseStyle = getBaseStyle(alignment);
+		if (baseStyle != null && baseStyle.getVerticalAlignment() != null)
+			return baseStyle.getVerticalAlignment().byteValue();
+		return JRAlignment.VERTICAL_ALIGN_TOP;
+	}
+
+	/**
+	 *
+	 */
+	public static Byte getVerticalAlignment(JRStyle style)
+	{
+		if (style.getOwnVerticalAlignment() != null)
+			return style.getOwnVerticalAlignment();
+		JRStyle baseStyle = getBaseStyle(style);
+		if (baseStyle != null && baseStyle.getVerticalAlignment() != null)
+			return baseStyle.getVerticalAlignment();
+		return null;
+	}
 	/**
 	 *
 	 */

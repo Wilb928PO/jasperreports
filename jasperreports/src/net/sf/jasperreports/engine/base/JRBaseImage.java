@@ -38,7 +38,6 @@ import net.sf.jasperreports.engine.JRExpressionCollector;
 import net.sf.jasperreports.engine.JRGroup;
 import net.sf.jasperreports.engine.JRHyperlink;
 import net.sf.jasperreports.engine.JRImage;
-import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.util.JRStyleResolver;
 import net.sf.jasperreports.engine.xml.JRXmlWriter;
 
@@ -174,13 +173,7 @@ public class JRBaseImage extends JRBaseGraphicElement implements JRImage
 	 */
 	public byte getPen()
 	{
-		if (pen == null) {
-			JRStyle style = getBaseStyle();
-			if (style != null && style.getPen() != null)
-				return style.getPen().byteValue();
-			return PEN_NONE;
-		}
-		return pen.byteValue();
+		return JRStyleResolver.getPen(this, PEN_NONE);
 	}
 
 	/**
@@ -196,13 +189,7 @@ public class JRBaseImage extends JRBaseGraphicElement implements JRImage
 	 */
 	public byte getScaleImage()
 	{
-		if (scaleImage == null) {
-			JRStyle style = getBaseStyle();
-			if (style != null && style.getScaleImage() != null)
-				return style.getScaleImage().byteValue();
-			return SCALE_IMAGE_RETAIN_SHAPE;
-		}
-		return scaleImage.byteValue();
+		return JRStyleResolver.getScaleImage(this);
 	}
 
 	public Byte getOwnScaleImage()
@@ -223,13 +210,7 @@ public class JRBaseImage extends JRBaseGraphicElement implements JRImage
 	 */
 	public byte getHorizontalAlignment()
 	{
-		if (horizontalAlignment == null) {
-			JRStyle style = getBaseStyle();
-			if (style != null && style.getHorizontalAlignment() != null)
-				return style.getHorizontalAlignment().byteValue();
-			return HORIZONTAL_ALIGN_LEFT;
-		}
-		return horizontalAlignment.byteValue();
+		return JRStyleResolver.getHorizontalAlignment(this);
 	}
 
 	public Byte getOwnHorizontalAlignment()
@@ -258,13 +239,7 @@ public class JRBaseImage extends JRBaseGraphicElement implements JRImage
 	 */
 	public byte getVerticalAlignment()
 	{
-		if (verticalAlignment == null) {
-			JRStyle style = getBaseStyle();
-			if (style != null && style.getVerticalAlignment() != null)
-				return style.getVerticalAlignment().byteValue();
-			return VERTICAL_ALIGN_TOP;
-		}
-		return verticalAlignment.byteValue();
+		return JRStyleResolver.getVerticalAlignment(this);
 	}
 
 	public Byte getOwnVerticalAlignment()

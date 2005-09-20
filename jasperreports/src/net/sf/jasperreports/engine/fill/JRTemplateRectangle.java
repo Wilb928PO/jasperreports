@@ -29,6 +29,7 @@ package net.sf.jasperreports.engine.fill;
 
 import net.sf.jasperreports.engine.JRDefaultStyleProvider;
 import net.sf.jasperreports.engine.JRRectangle;
+import net.sf.jasperreports.engine.util.JRStyleResolver;
 
 
 /**
@@ -47,7 +48,7 @@ public class JRTemplateRectangle extends JRTemplateGraphicElement
 	/**
 	 *
 	 */
-	private int radius = 0;
+	private Integer radius = null;
 
 
 	/**
@@ -77,13 +78,29 @@ public class JRTemplateRectangle extends JRTemplateGraphicElement
 	 */
 	public int getRadius()
 	{
-		return this.radius;
+		return JRStyleResolver.getRadius(this);
+	}
+
+	/**
+	 *
+	 */
+	public Integer getOwnRadius()
+	{
+		return radius;
 	}
 
 	/**
 	 *
 	 */
 	protected void setRadius(int radius)
+	{
+		this.radius = new Integer(radius);
+	}
+
+	/**
+	 *
+	 */
+	protected void setRadius(Integer radius)
 	{
 		this.radius = radius;
 	}

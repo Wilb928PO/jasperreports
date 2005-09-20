@@ -28,7 +28,7 @@
 package net.sf.jasperreports.engine.base;
 
 import net.sf.jasperreports.engine.JRGraphicElement;
-import net.sf.jasperreports.engine.JRStyle;
+import net.sf.jasperreports.engine.util.JRStyleResolver;
 
 
 /**
@@ -84,13 +84,7 @@ public abstract class JRBaseGraphicElement extends JRBaseElement implements JRGr
 	 */
 	public byte getPen()
 	{
-		if (pen == null) {
-			JRStyle style = getBaseStyle();
-			if (style != null && style.getPen() != null)
-				return style.getPen().byteValue();
-			return PEN_1_POINT;
-		}
-		return pen.byteValue();
+		return JRStyleResolver.getPen(this, PEN_1_POINT);
 	}
 		
 	public Byte getOwnPen()
@@ -119,13 +113,7 @@ public abstract class JRBaseGraphicElement extends JRBaseElement implements JRGr
 	 */
 	public byte getFill()
 	{
-		if (fill == null) {
-			JRStyle style = getBaseStyle();
-			if (style != null && style.getFill() != null)
-				return style.getFill().byteValue();
-			return FILL_SOLID;
-		}
-		return fill.byteValue();
+		return JRStyleResolver.getFill(this, FILL_SOLID);
 	}
 
 	public Byte getOwnFill()

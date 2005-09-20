@@ -31,7 +31,6 @@ import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sf.jasperreports.engine.JRAlignment;
 import net.sf.jasperreports.engine.JRAnchor;
 import net.sf.jasperreports.engine.JRBox;
 import net.sf.jasperreports.engine.JRDefaultStyleProvider;
@@ -205,12 +204,7 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
 	 */
 	public byte getHorizontalAlignment()
 	{
-		if (horizontalAlignment == null) {
-			if (style != null && style.getHorizontalAlignment() != null)
-				return style.getHorizontalAlignment().byteValue();
-			return JRAlignment.HORIZONTAL_ALIGN_LEFT;
-		}
-		return horizontalAlignment.byteValue();
+		return JRStyleResolver.getHorizontalAlignment(this);
 	}
 		
 	public Byte getOwnHorizontalAlignment()
@@ -239,12 +233,7 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
 	 */
 	public byte getVerticalAlignment()
 	{
-		if (verticalAlignment == null) {
-			if (style != null && style.getVerticalAlignment() != null)
-				return style.getVerticalAlignment().byteValue();
-			return JRAlignment.VERTICAL_ALIGN_TOP;
-		}
-		return verticalAlignment.byteValue();
+		return JRStyleResolver.getVerticalAlignment(this);
 	}
 		
 	public Byte getOwnVerticalAlignment()

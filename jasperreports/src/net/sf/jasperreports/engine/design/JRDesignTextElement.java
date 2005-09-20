@@ -163,13 +163,7 @@ public abstract class JRDesignTextElement extends JRDesignElement implements JRT
 	 */
 	public byte getHorizontalAlignment()
 	{
-		if (horizontalAlignment == null) {
-			JRStyle style = getBaseStyle();
-			if (style != null && style.getHorizontalAlignment() != null)
-				return style.getHorizontalAlignment().byteValue();
-			return HORIZONTAL_ALIGN_LEFT;
-		}
-		return horizontalAlignment.byteValue();
+		return JRStyleResolver.getHorizontalAlignment(this);
 	}
 
 	public Byte getOwnHorizontalAlignment()
@@ -198,13 +192,7 @@ public abstract class JRDesignTextElement extends JRDesignElement implements JRT
 	 */
 	public byte getVerticalAlignment()
 	{
-		if (verticalAlignment == null) {
-			JRStyle style = getBaseStyle();
-			if (style != null && style.getVerticalAlignment() != null)
-				return style.getVerticalAlignment().byteValue();
-			return VERTICAL_ALIGN_TOP;
-		}
-		return verticalAlignment.byteValue();
+		return JRStyleResolver.getVerticalAlignment(this);
 	}
 
 	public Byte getOwnVerticalAlignment()

@@ -81,6 +81,13 @@ public class JRFillRectangle extends JRFillGraphicElement implements JRRectangle
 	/**
 	 *
 	 */
+	public void setRadius(Integer radius)
+	{
+	}
+
+	/**
+	 *
+	 */
 	protected JRTemplateRectangle getJRTemplateRectangle()
 	{
 		if (template == null)

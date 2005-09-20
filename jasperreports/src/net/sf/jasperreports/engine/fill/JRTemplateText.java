@@ -221,12 +221,7 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 	 */
 	public byte getHorizontalAlignment()
 	{
-		if (horizontalAlignment == null) {
-			if (parentStyle != null && parentStyle.getHorizontalAlignment() != null)
-				return parentStyle.getHorizontalAlignment().byteValue();
-			return JRAlignment.HORIZONTAL_ALIGN_LEFT;
-		}
-		return horizontalAlignment.byteValue();
+		return JRStyleResolver.getHorizontalAlignment(this);
 	}
 		
 	/**
@@ -258,12 +253,7 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 	 */
 	public byte getVerticalAlignment()
 	{
-		if (verticalAlignment == null) {
-			if (parentStyle != null && parentStyle.getVerticalAlignment() != null)
-				return parentStyle.getVerticalAlignment().byteValue();
-			return JRAlignment.VERTICAL_ALIGN_TOP;
-		}
-		return verticalAlignment.byteValue();
+		return JRStyleResolver.getVerticalAlignment(this);
 	}
 		
 	/**
