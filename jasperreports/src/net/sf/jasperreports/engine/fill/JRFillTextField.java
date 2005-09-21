@@ -153,7 +153,22 @@ public class JRFillTextField extends JRFillTextElement implements JRTextField
 	/**
 	 *
 	 */
+	public Boolean isOwnBlankWhenNull()
+	{
+		return ((JRTextField)parent).isOwnBlankWhenNull();
+	}
+
+	/**
+	 *
+	 */
 	public void setBlankWhenNull(boolean isBlank)
+	{
+	}
+
+	/**
+	 *
+	 */
+	public void setBlankWhenNull(Boolean isBlank)
 	{
 	}
 

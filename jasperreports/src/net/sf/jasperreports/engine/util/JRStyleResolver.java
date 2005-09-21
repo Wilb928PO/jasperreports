@@ -39,13 +39,17 @@ import net.sf.jasperreports.engine.JRPrintElement;
 import net.sf.jasperreports.engine.JRPrintGraphicElement;
 import net.sf.jasperreports.engine.JRPrintImage;
 import net.sf.jasperreports.engine.JRPrintRectangle;
+import net.sf.jasperreports.engine.JRPrintText;
 import net.sf.jasperreports.engine.JRRectangle;
 import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.JRStyleContainer;
+import net.sf.jasperreports.engine.JRTextElement;
+import net.sf.jasperreports.engine.JRTextField;
 import net.sf.jasperreports.engine.fill.JRTemplateElement;
 import net.sf.jasperreports.engine.fill.JRTemplateGraphicElement;
 import net.sf.jasperreports.engine.fill.JRTemplateImage;
 import net.sf.jasperreports.engine.fill.JRTemplateRectangle;
+import net.sf.jasperreports.engine.fill.JRTemplateText;
 
 
 /**
@@ -496,6 +500,215 @@ public class JRStyleResolver
 			return baseStyle.getVerticalAlignment();
 		return null;
 	}
+
+	/**
+	 *
+	 */
+	public static byte getRotation(JRTextElement element)
+	{
+		if (element.getOwnRotation() != null)
+			return element.getOwnRotation().byteValue();
+		JRStyle baseStyle = getBaseStyle(element);
+		if (baseStyle != null && baseStyle.getRotation() != null)
+			return baseStyle.getRotation().byteValue();
+		return JRTextElement.ROTATION_NONE;
+	}
+
+	/**
+	 *
+	 */
+	public static byte getRotation(JRPrintText element)
+	{
+		if (element.getOwnRotation() != null)
+			return element.getOwnRotation().byteValue();
+		JRStyle baseStyle = getBaseStyle(element);
+		if (baseStyle != null && baseStyle.getRotation() != null)
+			return baseStyle.getRotation().byteValue();
+		return JRTextElement.ROTATION_NONE;
+	}
+
+	/**
+	 *
+	 */
+	public static byte getRotation(JRTemplateText element)
+	{
+		if (element.getOwnRotation() != null)
+			return element.getOwnRotation().byteValue();
+		JRStyle baseStyle = getBaseStyle(element);
+		if (baseStyle != null && baseStyle.getRotation() != null)
+			return baseStyle.getRotation().byteValue();
+		return JRTextElement.ROTATION_NONE;
+	}
+
+	/**
+	 *
+	 */
+	public static Byte getRotation(JRStyle style)
+	{
+		if (style.getOwnRotation() != null)
+			return style.getOwnRotation();
+		JRStyle baseStyle = getBaseStyle(style);
+		if (baseStyle != null)
+			return baseStyle.getRotation();
+		return null;
+	}
+
+	/**
+	 *
+	 */
+	public static byte getLineSpacing(JRTextElement element)
+	{
+		if (element.getOwnLineSpacing() != null)
+			return element.getOwnLineSpacing().byteValue();
+		JRStyle baseStyle = getBaseStyle(element);
+		if (baseStyle != null && baseStyle.getLineSpacing() != null)
+			return baseStyle.getLineSpacing().byteValue();
+		return JRTextElement.LINE_SPACING_SINGLE;
+	}
+
+	/**
+	 *
+	 */
+	public static byte getLineSpacing(JRPrintText element)
+	{
+		if (element.getOwnLineSpacing() != null)
+			return element.getOwnLineSpacing().byteValue();
+		JRStyle baseStyle = getBaseStyle(element);
+		if (baseStyle != null && baseStyle.getLineSpacing() != null)
+			return baseStyle.getLineSpacing().byteValue();
+		return JRTextElement.LINE_SPACING_SINGLE;
+	}
+
+	/**
+	 *
+	 */
+	public static byte getLineSpacing(JRTemplateText element)
+	{
+		if (element.getOwnLineSpacing() != null)
+			return element.getOwnLineSpacing().byteValue();
+		JRStyle baseStyle = getBaseStyle(element);
+		if (baseStyle != null && baseStyle.getLineSpacing() != null)
+			return baseStyle.getLineSpacing().byteValue();
+		return JRTextElement.LINE_SPACING_SINGLE;
+	}
+
+	/**
+	 *
+	 */
+	public static Byte getLineSpacing(JRStyle style)
+	{
+		if (style.getOwnLineSpacing() != null)
+			return style.getOwnLineSpacing();
+		JRStyle baseStyle = getBaseStyle(style);
+		if (baseStyle != null)
+			return baseStyle.getLineSpacing();
+		return null;
+	}
+
+	/**
+	 *
+	 */
+	public static boolean isStyledText(JRTextElement element)
+	{
+		if (element.isOwnStyledText() != null)
+			return element.isOwnStyledText().booleanValue();
+		JRStyle baseStyle = getBaseStyle(element);
+		if (baseStyle != null && baseStyle.isStyledText() != null)
+			return baseStyle.isStyledText().booleanValue();
+		return false;
+	}
+
+	/**
+	 *
+	 */
+	public static boolean isStyledText(JRPrintText element)
+	{
+		if (element.isOwnStyledText() != null)
+			return element.isOwnStyledText().booleanValue();
+		JRStyle baseStyle = getBaseStyle(element);
+		if (baseStyle != null && baseStyle.isStyledText() != null)
+			return baseStyle.isStyledText().booleanValue();
+		return false;
+	}
+
+	/**
+	 *
+	 */
+	public static boolean isStyledText(JRTemplateText element)
+	{
+		if (element.isOwnStyledText() != null)
+			return element.isOwnStyledText().booleanValue();
+		JRStyle baseStyle = getBaseStyle(element);
+		if (baseStyle != null && baseStyle.isStyledText() != null)
+			return baseStyle.isStyledText().booleanValue();
+		return false;
+	}
+
+	/**
+	 *
+	 */
+	public static Boolean isStyledText(JRStyle style)
+	{
+		if (style.isOwnStyledText() != null)
+			return style.isOwnStyledText();
+		JRStyle baseStyle = getBaseStyle(style);
+		if (baseStyle != null)
+			return baseStyle.isStyledText();
+		return null;
+	}
+
+	/**
+	 *
+	 */
+	public static String getPattern(JRTextField element)
+	{
+		if (element.getOwnPattern() != null)
+			return element.getOwnPattern();
+		JRStyle baseStyle = getBaseStyle(element);
+		if (baseStyle != null)
+			return baseStyle.getPattern();
+		return null;
+	}
+
+	/**
+	 *
+	 */
+	public static String getPattern(JRStyle style)
+	{
+		if (style.getOwnPattern() != null)
+			return style.getOwnPattern();
+		JRStyle baseStyle = getBaseStyle(style);
+		if (baseStyle != null)
+			return baseStyle.getPattern();
+		return null;
+	}
+
+	/**
+	 *
+	 */
+	public static boolean isBlankWhenNull(JRTextField element)
+	{
+		if (element.isOwnBlankWhenNull() != null)
+			return element.isOwnBlankWhenNull().booleanValue();
+		JRStyle baseStyle = getBaseStyle(element);
+		if (baseStyle != null && baseStyle.isBlankWhenNull() != null)
+			return baseStyle.isBlankWhenNull().booleanValue();
+		return false;
+	}
+
+	/**
+	 *
+	 */
+	public static Boolean isBlankWhenNull(JRStyle style)
+	{
+		if (style.isOwnBlankWhenNull() != null)
+			return style.isOwnBlankWhenNull();
+		JRStyle baseStyle = getBaseStyle(style);
+		if (baseStyle != null)
+			return baseStyle.isBlankWhenNull();
+		return null;
+	}
+
 	/**
 	 *
 	 */

@@ -35,6 +35,7 @@ import net.sf.jasperreports.engine.JRExpressionCollector;
 import net.sf.jasperreports.engine.JRGroup;
 import net.sf.jasperreports.engine.JRHyperlink;
 import net.sf.jasperreports.engine.JRTextField;
+import net.sf.jasperreports.engine.util.JRStyleResolver;
 import net.sf.jasperreports.engine.xml.JRXmlWriter;
 
 
@@ -59,7 +60,7 @@ public class JRBaseTextField extends JRBaseTextElement implements JRTextField
 	protected boolean isStretchWithOverflow = false;
 	protected byte evaluationTime = JRExpression.EVALUATION_TIME_NOW;
 	protected String pattern;
-	protected boolean isBlankWhenNull = false;
+	protected Boolean isBlankWhenNull = null;
 	protected byte hyperlinkType = JRHyperlink.HYPERLINK_TYPE_NONE;
 	protected byte hyperlinkTarget = JRHyperlink.HYPERLINK_TARGET_SELF;
 
@@ -89,7 +90,7 @@ public class JRBaseTextField extends JRBaseTextElement implements JRTextField
 		isStretchWithOverflow = textField.isStretchWithOverflow();
 		evaluationTime = textField.getEvaluationTime();
 		pattern = textField.getOwnPattern();
-		isBlankWhenNull = textField.isBlankWhenNull();
+		isBlankWhenNull = textField.isOwnBlankWhenNull();
 		hyperlinkType = textField.getHyperlinkType();
 		hyperlinkTarget = textField.getHyperlinkTarget();
 
@@ -132,12 +133,7 @@ public class JRBaseTextField extends JRBaseTextElement implements JRTextField
 	 */
 	public String getPattern()
 	{
-		if (pattern == null) {
-			if (getStyle() != null && getStyle().getPattern() != null)
-				return getStyle().getPattern();
-			return null;
-		}
-		return pattern;
+		return JRStyleResolver.getPattern(this);
 	}
 		
 	public String getOwnPattern()
@@ -158,7 +154,23 @@ public class JRBaseTextField extends JRBaseTextElement implements JRTextField
 	 */
 	public boolean isBlankWhenNull()
 	{
-		return this.isBlankWhenNull;
+		return JRStyleResolver.isBlankWhenNull(this);
+	}
+
+	/**
+	 *
+	 */
+	public Boolean isOwnBlankWhenNull()
+	{
+		return isBlankWhenNull;
+	}
+
+	/**
+	 *
+	 */
+	public void setBlankWhenNull(Boolean isBlank)
+	{
+		this.isBlankWhenNull = isBlank;
 	}
 
 	/**
@@ -166,7 +178,7 @@ public class JRBaseTextField extends JRBaseTextElement implements JRTextField
 	 */
 	public void setBlankWhenNull(boolean isBlank)
 	{
-		this.isBlankWhenNull = isBlank;
+		this.isBlankWhenNull = isBlank ? Boolean.TRUE : Boolean.FALSE;
 	}
 
 	/**

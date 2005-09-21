@@ -51,31 +51,31 @@ public class JRBaseStyle implements JRStyle, Serializable
 	/**
 	 *
 	 */
-	protected JRDefaultStyleProvider defaultStyleProvider;
-	protected JRStyle parentStyle;
+	protected JRDefaultStyleProvider defaultStyleProvider = null;
+	protected JRStyle parentStyle = null;
 
 	/**
 	 *
 	 */
-	protected String name;
+	protected String name = null;
 	protected boolean isDefault = false;
 
-	protected Byte positionType;
-	protected Byte stretchType;
-	protected Byte mode;
-	protected Color forecolor;
-	protected Color backcolor;
+	protected Byte positionType = null;
+	protected Byte stretchType = null;
+	protected Byte mode = null;
+	protected Color forecolor = null;
+	protected Color backcolor = null;
 
-	protected Byte pen;
-	protected Byte fill;
+	protected Byte pen = null;
+	protected Byte fill = null;
 
-	protected Integer radius;
+	protected Integer radius = null;
 
-	protected Byte scaleImage;
-	protected Byte horizontalAlignment;
-	protected Byte verticalAlignment;
+	protected Byte scaleImage = null;
+	protected Byte horizontalAlignment = null;
+	protected Byte verticalAlignment = null;
 
-	protected Byte border;
+	protected Byte border = null;
 	protected Byte topBorder = null;
 	protected Byte leftBorder = null;
 	protected Byte bottomBorder = null;
@@ -85,7 +85,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 	protected Color leftBorderColor = null;
 	protected Color bottomBorderColor = null;
 	protected Color rightBorderColor = null;
-	protected Integer padding;
+	protected Integer padding = null;
 	protected Integer topPadding = null;
 	protected Integer leftPadding = null;
 	protected Integer bottomPadding = null;
@@ -101,11 +101,12 @@ public class JRBaseStyle implements JRStyle, Serializable
 	protected String pdfEncoding = null;
 	protected Boolean isPdfEmbedded = null;
 
-	protected Byte rotation;
-	protected Byte lineSpacing;
-	protected Boolean isStyledText;
+	protected Byte rotation = null;
+	protected Byte lineSpacing = null;
+	protected Boolean isStyledText = null;
 
 	protected String pattern = null;
+	protected Boolean isBlankWhenNull = null;
 
 	/**
 	 *
@@ -441,9 +442,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 
 	public Byte getRotation()
 	{
-		if (rotation == null && parentStyle != null)
-			return parentStyle.getRotation();
-		return rotation;
+		return JRStyleResolver.getRotation(this);
 	}
 
 	public Byte getOwnRotation()
@@ -453,9 +452,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 
 	public Byte getLineSpacing()
 	{
-		if (lineSpacing == null && parentStyle != null)
-			return parentStyle.getLineSpacing();
-		return lineSpacing;
+		return JRStyleResolver.getLineSpacing(this);
 	}
 
 	public Byte getOwnLineSpacing()
@@ -465,12 +462,20 @@ public class JRBaseStyle implements JRStyle, Serializable
 
 	public Boolean isStyledText()
 	{
-		if (isStyledText == null && parentStyle != null)
-			return parentStyle.isStyledText();
-		return isStyledText;
+		return JRStyleResolver.isStyledText(this);
 	}
 
 	public Boolean isOwnStyledText()
+	{
+		return isStyledText;
+	}
+
+	public Boolean isBlankWhenNull()
+	{
+		return JRStyleResolver.isBlankWhenNull(this);
+	}
+
+	public Boolean isOwnBlankWhenNull()
 	{
 		return isStyledText;
 	}
@@ -568,9 +573,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 
 	public String getPattern()
 	{
-		if (pattern == null && parentStyle != null)
-			return parentStyle.getPattern();
-		return pattern;
+		return JRStyleResolver.getPattern(this);
 	}
 
 	public String getOwnPattern()
@@ -953,7 +956,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 	 */
 	public void setBold(Boolean bold)
 	{
-		isBold = bold;
+		this.isBold = bold;
 	}
 
 	/**
@@ -969,7 +972,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 	 */
 	public void setItalic(Boolean italic)
 	{
-		isItalic = italic;
+		this.isItalic = italic;
 	}
 
 	/**
@@ -985,7 +988,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 	 */
 	public void setPdfEmbedded(Boolean pdfEmbedded)
 	{
-		isPdfEmbedded = pdfEmbedded;
+		this.isPdfEmbedded = pdfEmbedded;
 	}
 
 	/**
@@ -1001,7 +1004,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 	 */
 	public void setStrikeThrough(Boolean strikeThrough)
 	{
-		isStrikeThrough = strikeThrough;
+		this.isStrikeThrough = strikeThrough;
 	}
 
 	/**
@@ -1017,7 +1020,23 @@ public class JRBaseStyle implements JRStyle, Serializable
 	 */
 	public void setStyledText(Boolean styledText)
 	{
-		isStyledText = styledText;
+		this.isStyledText = styledText;
+	}
+
+	/**
+	 *
+	 */
+	public void setBlankWhenNull(boolean isBlankWhenNull)
+	{
+		setBlankWhenNull(isBlankWhenNull ? Boolean.TRUE : Boolean.FALSE);
+	}
+
+	/**
+	 *
+	 */
+	public void setBlankWhenNull(Boolean isBlankWhenNull)
+	{
+		this.isBlankWhenNull = isBlankWhenNull;
 	}
 
 	/**
@@ -1033,7 +1052,7 @@ public class JRBaseStyle implements JRStyle, Serializable
 	 */
 	public void setUnderline(Boolean underline)
 	{
-		isUnderline = underline;
+		this.isUnderline = underline;
 	}
 
 	/**

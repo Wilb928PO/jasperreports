@@ -402,6 +402,16 @@ public interface JRStyle extends JRStyleContainer
 	/**
 	 *
 	 */
+	public Boolean isBlankWhenNull();
+
+	/**
+	 *
+	 */
+	public Boolean isOwnBlankWhenNull();
+
+	/**
+	 *
+	 */
 	public void setForecolor(Color forecolor);
 
 	/**
@@ -693,6 +703,16 @@ public interface JRStyle extends JRStyleContainer
 	 *
 	 */
 	public void setPattern(String pattern);
+
+	/**
+	 *
+	 */
+	public void setBlankWhenNull(boolean isBlankWhenNull);
+
+	/**
+	 *
+	 */
+	public void setBlankWhenNull(Boolean isBlankWhenNull);
 
 	/**
 	 *

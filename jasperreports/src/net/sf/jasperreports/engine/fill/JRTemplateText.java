@@ -285,12 +285,7 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 	 */
 	public byte getRotation()
 	{
-		if (rotation == null) {
-			if (parentStyle != null && parentStyle.getRotation() != null)
-				return parentStyle.getRotation().byteValue();
-			return JRTextElement.ROTATION_NONE;
-		}
-		return rotation.byteValue();
+		return JRStyleResolver.getRotation(this);
 	}
 		
 	/**
@@ -306,12 +301,7 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 	 */
 	public byte getLineSpacing()
 	{
-		if (lineSpacing == null) {
-			if (parentStyle != null && parentStyle.getLineSpacing() != null)
-				return parentStyle.getLineSpacing().byteValue();
-			return JRTextElement.LINE_SPACING_SINGLE;
-		}
-		return lineSpacing.byteValue();
+		return JRStyleResolver.getLineSpacing(this);
 	}
 		
 	/**
@@ -327,12 +317,7 @@ public class JRTemplateText extends JRTemplateElement implements JRAlignment, JR
 	 */
 	public boolean isStyledText()
 	{
-		if (isStyledText == null) {
-			if (parentStyle != null && parentStyle.isStyledText() != null)
-				return parentStyle.isStyledText().booleanValue();
-			return false;
-		}
-		return isStyledText.booleanValue();
+		return JRStyleResolver.isStyledText(this);
 	}
 		
 	/**

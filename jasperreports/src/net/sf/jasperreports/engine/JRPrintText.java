@@ -91,6 +91,11 @@ public interface JRPrintText extends JRPrintElement, JRAlignment, JRPrintAnchor,
 	/**
 	 *
 	 */
+	public Byte getOwnRotation();
+		
+	/**
+	 *
+	 */
 	public void setRotation(byte rotation);
 		
 	/**
@@ -126,6 +131,11 @@ public interface JRPrintText extends JRPrintElement, JRAlignment, JRPrintAnchor,
 	/**
 	 *
 	 */
+	public Byte getOwnLineSpacing();
+		
+	/**
+	 *
+	 */
 	public void setLineSpacing(byte lineSpacing);
 		
 	/**
@@ -137,6 +147,11 @@ public interface JRPrintText extends JRPrintElement, JRAlignment, JRPrintAnchor,
 	 *
 	 */
 	public boolean isStyledText();
+		
+	/**
+	 *
+	 */
+	public Boolean isOwnStyledText();
 		
 	/**
 	 *

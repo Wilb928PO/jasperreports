@@ -221,13 +221,7 @@ public abstract class JRDesignTextElement extends JRDesignElement implements JRT
 	 */
 	public byte getRotation()
 	{
-		if (rotation == null) {
-			JRStyle style = getBaseStyle();
-			if (style != null && style.getRotation() != null)
-				return style.getRotation().byteValue();
-			return ROTATION_NONE;
-		}
-		return rotation.byteValue();
+		return JRStyleResolver.getRotation(this);
 	}
 
 	public Byte getOwnRotation()
@@ -256,13 +250,7 @@ public abstract class JRDesignTextElement extends JRDesignElement implements JRT
 	 */
 	public byte getLineSpacing()
 	{
-		if (lineSpacing == null) {
-			JRStyle style = getBaseStyle();
-			if (style != null && style.getLineSpacing() != null)
-				return style.getLineSpacing().byteValue();
-			return LINE_SPACING_SINGLE;
-		}
-		return lineSpacing.byteValue();
+		return JRStyleResolver.getLineSpacing(this);
 	}
 
 	public Byte getOwnLineSpacing()
@@ -291,13 +279,7 @@ public abstract class JRDesignTextElement extends JRDesignElement implements JRT
 	 */
 	public boolean isStyledText()
 	{
-		if (isStyledText == null) {
-			JRStyle style = getBaseStyle();
-			if (style != null && style.isStyledText() != null)
-				return style.isStyledText().booleanValue();
-			return false;
-		}
-		return isStyledText.booleanValue();
+		return JRStyleResolver.isStyledText(this);
 	}
 
 	public Boolean isOwnStyledText()

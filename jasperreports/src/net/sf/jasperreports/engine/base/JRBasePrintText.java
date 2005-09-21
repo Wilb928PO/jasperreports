@@ -39,7 +39,6 @@ import net.sf.jasperreports.engine.JRFont;
 import net.sf.jasperreports.engine.JRHyperlink;
 import net.sf.jasperreports.engine.JRPrintText;
 import net.sf.jasperreports.engine.JRReportFont;
-import net.sf.jasperreports.engine.JRTextElement;
 import net.sf.jasperreports.engine.util.JRFontUtil;
 import net.sf.jasperreports.engine.util.JRStyleResolver;
 
@@ -262,12 +261,7 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
 	 */
 	public byte getRotation()
 	{
-		if (rotation == null) {
-			if (style != null && style.getRotation() != null)
-				return style.getRotation().byteValue();
-			return JRTextElement.ROTATION_NONE;
-		}
-		return rotation.byteValue();
+		return JRStyleResolver.getRotation(this);
 	}
 		
 	public Byte getOwnRotation()
@@ -328,12 +322,7 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
 	 */
 	public byte getLineSpacing()
 	{
-		if (lineSpacing == null) {
-			if (style != null && style.getLineSpacing() != null)
-				return style.getLineSpacing().byteValue();
-			return JRTextElement.ROTATION_NONE;
-		}
-		return lineSpacing.byteValue();
+		return JRStyleResolver.getLineSpacing(this);
 	}
 		
 	public Byte getOwnLineSpacing()
@@ -362,13 +351,7 @@ public class JRBasePrintText extends JRBasePrintElement implements JRPrintText
 	 */
 	public boolean isStyledText()
 	{
-		if (isStyledText == null)
-		{
-			if (style != null && style.isStyledText() != null)
-				return style.isStyledText().booleanValue();
-			return false;
-		}
-		return isStyledText.booleanValue();
+		return JRStyleResolver.isStyledText(this);
 	}
 		
 	public Boolean isOwnStyledText()
