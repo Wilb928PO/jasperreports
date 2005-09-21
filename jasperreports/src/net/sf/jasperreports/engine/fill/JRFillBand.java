@@ -322,7 +322,7 @@ public class JRFillBand extends JRFillElementContainer implements JRBand, JRVirt
 	}
 
 
-	protected void addPrintElement(JRFillElement element, JRPrintElement printElement, JRPrintElementContainer printContainer)
+	protected void printElementAdded(JRFillElement element, JRPrintElement printElement, JRPrintElementContainer printContainer)
 	{
 		if (element instanceof JRFillSubreport)
 		{

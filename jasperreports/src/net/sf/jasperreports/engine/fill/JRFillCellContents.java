@@ -53,6 +53,7 @@ public class JRFillCellContents extends JRFillElementContainer implements JRCell
 	
 	private int height;
 	private int width;
+	private int span;
 
 	public JRFillCellContents(JRCellContents cell, JRFillObjectFactory factory)
 	{
@@ -98,12 +99,24 @@ public class JRFillCellContents extends JRFillElementContainer implements JRCell
 	}
 	
 	
+	public void setSpan(int span)
+	{
+		this.span = span;
+	}
+	
+	
+	public int getSpan()
+	{
+		return span;
+	}
+	
+	
 	public static JRFillCellContents getTransformedContents(
 			JRBaseFiller filler,
 			JRFillCrosstab crosstab,
 			JRFillCellContents contents, 
 			int newWidth, int newHeight,
-			byte xPosition, byte yPosition)
+			byte xPosition, byte yPosition) throws JRException
 	{
 		if ((contents.getHeight() == newHeight) && 
 				(contents.getWidth() == newWidth))
@@ -111,7 +124,12 @@ public class JRFillCellContents extends JRFillElementContainer implements JRCell
 			return contents;
 		}
 		
-		Object key = new StretchedContents(contents, newHeight, newWidth, xPosition, yPosition);
+		if (newHeight < contents.getHeight() || newWidth < contents.getWidth())
+		{
+			throw new JRException("Cannot shrink cell contents.");
+		}
+		
+		Object key = new StretchedContents(contents, newWidth, newHeight, xPosition, yPosition);
 		
 		JRFillCellContents transformedCell = (JRFillCellContents) transformedContents.get(key);
 		if (transformedCell == null)
@@ -253,7 +271,7 @@ public class JRFillCellContents extends JRFillElementContainer implements JRCell
 		return image;
 	}
 
-	protected void addPrintElement(JRFillElement element, JRPrintElement printElement, JRPrintElementContainer printContainer)
+	protected void printElementAdded(JRFillElement element, JRPrintElement printElement, JRPrintElementContainer printContainer)
 	{
 	}
 
@@ -268,7 +286,7 @@ public class JRFillCellContents extends JRFillElementContainer implements JRCell
 		final byte yPosition;
 		
 		StretchedContents(JRFillCellContents contents,
-				int newHeight, int newWidth, byte xPosition, byte yPosition)
+				int newWidth, int newHeight, byte xPosition, byte yPosition)
 		{
 			this.contents = contents;
 			this.newHeight = newHeight;

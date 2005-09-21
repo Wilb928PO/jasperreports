@@ -148,10 +148,10 @@ public class JRFillDatasetRun implements JRDatasetRun
 	{
 		dataset.start();
 
+		init();
+
 		if (dataset.next())
 		{
-			init();
-
 			detail();
 
 			while (dataset.next())
