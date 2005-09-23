@@ -52,6 +52,7 @@
 <!ELEMENT style EMPTY>
 <!ATTLIST style
 	name NMTOKEN #REQUIRED
+	isDefault (true | false) "false"
 	style NMTOKEN #IMPLIED
 	mode (Opaque | Transparent) #IMPLIED
 	forecolor CDATA #IMPLIED
