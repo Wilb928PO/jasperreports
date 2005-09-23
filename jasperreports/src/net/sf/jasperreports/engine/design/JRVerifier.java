@@ -30,10 +30,13 @@ package net.sf.jasperreports.engine.design;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.sf.jasperreports.engine.JRAnchor;
 import net.sf.jasperreports.engine.JRBand;
@@ -61,7 +64,15 @@ import net.sf.jasperreports.engine.JRTextElement;
 import net.sf.jasperreports.engine.JRTextField;
 import net.sf.jasperreports.engine.JRVariable;
 import net.sf.jasperreports.engine.crosstab.JRCrosstab;
+import net.sf.jasperreports.engine.crosstab.JRCrosstabBucket;
+import net.sf.jasperreports.engine.crosstab.JRCrosstabGroup;
+import net.sf.jasperreports.engine.crosstab.JRCrosstabMeasure;
+import net.sf.jasperreports.engine.crosstab.JRCrosstabParameter;
+import net.sf.jasperreports.engine.crosstab.JRCrosstabRowGroup;
 import net.sf.jasperreports.engine.design.crosstab.JRDesignCrosstab;
+import net.sf.jasperreports.engine.fill.JRExtendedIncrementerFactory;
+import net.sf.jasperreports.engine.fill.crosstab.JRPercentageCalculator;
+import net.sf.jasperreports.engine.fill.crosstab.JRPercentageCalculatorFactory;
 
 
 /**
@@ -1255,19 +1266,251 @@ public class JRVerifier
 
 	private void verifyCrosstab(JRDesignCrosstab crosstab)
 	{
-		verifyExpressions(crosstab);
-		
-		// TODO luci measure incrementer is extended
-		// TODO luci bucket class is comparable or comparator is not null
-		// TODO luci numeric values if percentage
 		// TODO luci cell total groups
 		// TODO luci cell elements position
 		// TODO luci cell sizes
-		// TODO luci variable names
-		// TODO luci expressions
-		// TODO luci parameters
 		// TODO luci no subreps, etc in cell contents
 		// TODO luci no delayed evaluation in cell contents
+		
+		verifyParameters(crosstab);
+		
+		JRCrosstabRowGroup[] rowGroups = crosstab.getRowGroups();
+		if (rowGroups == null || rowGroups.length == 0)
+		{
+			brokenRules.add("Crosstab " + crosstab.getName() + " should have at least one measure.");
+		}
+		else
+		{
+			for (int i = 0; i < rowGroups.length; i++)
+			{
+				verifyCrosstabRowGroup(rowGroups[i]);
+			}
+		}
+		
+		JRCrosstabMeasure[] measures = crosstab.getMeasures();
+		if (measures == null || measures.length == 0)
+		{
+			brokenRules.add("Crosstab " + crosstab.getName() + " should have at least one measure.");
+		}
+		else
+		{
+			for (int i = 0; i < measures.length; i++)
+			{
+				verifyCrosstabMeasure(measures[i]);
+			}
+		}
+		
+		JRVariable[] variables = crosstab.getVariables();
+		if (variables != null)
+		{
+			Set names = new HashSet();
+			for (int i = 0; i < variables.length; i++)
+			{
+				if (!names.add(variables[i].getName()))
+				{
+					brokenRules.add("Duplicate variable name " + variables[i].getName() + " for crosstab " + crosstab.getName() +
+							".  Crosstab groups and measures should have distinct names.");
+				}
+			}
+		}
+		
+		verifyExpressions(crosstab);
+	}
+	
+	
+	private void verifyParameters(JRDesignCrosstab crosstab)
+	{
+		JRExpression paramMapExpression = crosstab.getParametersMapExpression();
+
+		if (paramMapExpression != null)
+		{
+			Class clazz = paramMapExpression.getValueClass();
+
+			if (clazz == null)
+			{
+				brokenRules.add("Class not set for crosstab " + crosstab.getName() + " parameters map expression.");
+			}
+			else if (!java.util.Map.class.isAssignableFrom(clazz))
+			{
+				brokenRules.add("Class " + clazz + " not supported for crosstab parameters map expression. Use java.util.Map instead.");
+			}
+		}
+		
+		JRCrosstabParameter[] parameters = crosstab.getParameters();
+		if (parameters != null)
+		{
+			for (int i = 0; i < parameters.length; i++)
+			{
+				JRCrosstabParameter parameter = parameters[i];
+				
+				String paramName = parameter.getName();
+				if (paramName == null || paramName.length() == 0)
+				{
+					brokenRules.add("Missing parameter name for crosstab " + crosstab.getName());
+				}
+				
+				JRExpression expression = parameter.getExpression();
+				Class expressionClass = null;
+				if (expression != null)
+				{
+					expressionClass = expression.getValueClass();
+					
+					if (expressionClass == null)
+					{
+						brokenRules.add("Expression class not set for crosstab parameter " + paramName + ".");
+					}
+				}
+				
+				Class valueClass = parameter.getValueClass();
+				if (valueClass == null)
+				{
+					brokenRules.add("Class not set for crosstab parameter " + paramName + ".");
+				}
+				else if (expressionClass != null && !valueClass.isAssignableFrom(expressionClass))
+				{
+					brokenRules.add("Incompatible expression class for crosstab parameter " + paramName + ".");
+				}
+			}
+		}
+	}
+
+
+	private void verifyCrosstabRowGroup(JRCrosstabRowGroup group)
+	{
+		verifyCrosstabGroup(group);
+	}
+
+
+	private void verifyCrosstabGroup(JRCrosstabGroup group)
+	{
+		String groupName = group.getName();
+		if (groupName == null || groupName.length() == 0)
+		{
+			brokenRules.add("Crosstab group name missing.");
+		}
+		
+		verifyCrosstabBucket(group);
+	}
+
+
+	private void verifyCrosstabBucket(JRCrosstabGroup group)
+	{
+		JRCrosstabBucket bucket = group.getBucket();
+		
+		JRExpression expression = bucket.getExpression();
+		Class expressionClass = null;
+		if (expression == null)
+		{
+			brokenRules.add("Crosstab bucket expression missing for group " + group.getName() + ".");
+		}
+		else
+		{
+			expressionClass = expression.getValueClass();
+			
+			if (expressionClass == null)
+			{
+				brokenRules.add("Crosstab bucket expression class missing for group " + group.getName() + ".");
+			}
+		}
+		
+		Class valueClass = bucket.getValueClass();		
+		if (valueClass == null)
+		{
+			brokenRules.add("Crosstab bucket value class missing for group " + group.getName() + ".");
+		}
+		else if (expressionClass != null && !valueClass.isAssignableFrom(expressionClass))
+		{
+			brokenRules.add("The class of the expression is not compatible with the class of the crosstab bucket for group " + group.getName() + ".");
+		}
+		
+		JRExpression comparatorExpression = bucket.getComparatorExpression();
+		if (comparatorExpression == null)
+		{
+			if (valueClass != null && !Comparable.class.isAssignableFrom(valueClass))
+			{
+				brokenRules.add("No comparator expression specified and the value class is not comparable for crosstab group " + group.getName() + ".");
+			}
+		}
+		else
+		{
+			Class comparatorClass = comparatorExpression.getValueClass();
+			if (comparatorClass == null)
+			{
+				brokenRules.add("Crosstab bucket comparator expression class missing for group " + group.getName() + ".");
+			}
+			else if (!Comparator.class.isAssignableFrom(comparatorClass))
+			{
+				brokenRules.add("The comparator expression should be compatible with java.util.Comparator for crosstab group " + group.getName() + ".");
+			}
+		}
+	}
+
+
+	private void verifyCrosstabMeasure(JRCrosstabMeasure measure)
+	{
+		String measureName = measure.getName();
+		if (measureName == null || measureName.trim().length() == 0)
+		{
+			brokenRules.add("Measure name missing.");
+		}
+		
+		byte calculation = measure.getCalculation();
+		if (calculation == JRVariable.CALCULATION_SYSTEM)
+		{
+			brokenRules.add("Crosstab mesures cannot have system calculation");
+		}
+		
+		JRExpression valueExpression = measure.getValueExpression();
+		Class expressionClass = null;
+		if (valueExpression == null)
+		{
+			brokenRules.add("Missing expression for measure " + measureName);
+		}
+		else
+		{
+			expressionClass = valueExpression.getValueClass();
+			if (expressionClass == null)
+			{
+				brokenRules.add("Crosstab measure expression class missing for " + measureName + ".");
+			}
+		}
+		
+		Class valueClass = measure.getValueClass();
+		if (valueClass == null)
+		{
+			brokenRules.add("Measure value class missing.");
+		}
+		else if (expressionClass != null &&
+				calculation != JRVariable.CALCULATION_COUNT &&
+				!valueClass.isAssignableFrom(expressionClass))
+		{
+			brokenRules.add("The class of the expression is not compatible with the class of the measure " + measureName + ".");
+		}
+		
+		if (measure.getPercentageOfType() != JRCrosstabMeasure.PERCENTAGE_TYPE_NONE)
+		{
+			Class percentageCalculatorClass = measure.getPercentageCalculatorClass();
+			if (percentageCalculatorClass == null)
+			{
+				if (valueClass != null && !JRPercentageCalculatorFactory.hasBuiltInCalculator(valueClass))
+				{
+					brokenRules.add("Percentage calculator class needs to be specified for measure " + measureName + ".");
+				}
+			}
+			else
+			{
+				if (!JRPercentageCalculator.class.isAssignableFrom(percentageCalculatorClass))
+				{
+					brokenRules.add("Incompatible percentage calculator class for measure " + measureName + ".");
+				}
+			}
+		}
+		
+		Class incrementerFactoryClass = measure.getIncrementerFactoryClass();
+		if (incrementerFactoryClass != null && !JRExtendedIncrementerFactory.class.isAssignableFrom(incrementerFactoryClass))
+		{
+			brokenRules.add("Crosstab measures need extended incrementers (net.sf.jasperreports.engine.fill.JRExtendedIncrementerFactory).");
+		}
 	}
 
 

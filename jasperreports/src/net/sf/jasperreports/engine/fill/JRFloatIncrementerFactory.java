@@ -111,7 +111,6 @@ public class JRFloatIncrementerFactory extends JRAbstractExtendedIncrementerFact
 			case JRVariable.CALCULATION_SYSTEM :
 			case JRVariable.CALCULATION_NOTHING :
 			case JRVariable.CALCULATION_FIRST :
-			case JRVariable.CALCULATION_LAST :
 			default :
 			{
 				incrementer = JRDefaultIncrementerFactory.getInstance().getExtendedIncrementer(calculation);

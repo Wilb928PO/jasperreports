@@ -56,13 +56,6 @@ import net.sf.jasperreports.engine.crosstab.JRCrosstabGroup;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabMeasure;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabParameter;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabRowGroup;
-import net.sf.jasperreports.engine.crosstab.calculation.Bucket;
-import net.sf.jasperreports.engine.crosstab.calculation.BucketingService;
-import net.sf.jasperreports.engine.crosstab.calculation.CrosstabCell;
-import net.sf.jasperreports.engine.crosstab.calculation.HeaderCell;
-import net.sf.jasperreports.engine.crosstab.calculation.Measure;
-import net.sf.jasperreports.engine.crosstab.calculation.Bucket.BucketValue;
-import net.sf.jasperreports.engine.crosstab.calculation.Measure.MeasureValue;
 import net.sf.jasperreports.engine.design.JRDefaultCompiler;
 import net.sf.jasperreports.engine.design.JRDesignRectangle;
 import net.sf.jasperreports.engine.fill.crosstab.JRCrosstabExpressionEvaluator;
@@ -73,6 +66,13 @@ import net.sf.jasperreports.engine.fill.crosstab.JRFillCrosstabMeasure;
 import net.sf.jasperreports.engine.fill.crosstab.JRFillCrosstabParameter;
 import net.sf.jasperreports.engine.fill.crosstab.JRFillCrosstabRowGroup;
 import net.sf.jasperreports.engine.fill.crosstab.JRPrintCell;
+import net.sf.jasperreports.engine.fill.crosstab.calculation.Bucket;
+import net.sf.jasperreports.engine.fill.crosstab.calculation.BucketingService;
+import net.sf.jasperreports.engine.fill.crosstab.calculation.CrosstabCell;
+import net.sf.jasperreports.engine.fill.crosstab.calculation.HeaderCell;
+import net.sf.jasperreports.engine.fill.crosstab.calculation.Measure;
+import net.sf.jasperreports.engine.fill.crosstab.calculation.Bucket.BucketValue;
+import net.sf.jasperreports.engine.fill.crosstab.calculation.Measure.MeasureValue;
 import net.sf.jasperreports.engine.xml.JRXmlWriter;
 
 import org.jfree.data.general.Dataset;
@@ -111,11 +111,11 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 
 	protected JRFillCellContents[][] crossCells;
 
+	protected boolean hasData;
 	protected HeaderCell[][] columnHeadersData;
-
 	protected HeaderCell[][] rowHeadersData;
-
 	protected CrosstabCell[][] cellData;
+	protected MeasureValue[] grandTotals;
 
 	protected int[] rowYOffsets;
 
@@ -137,6 +137,8 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 	protected int lastColumnIndex;
 
 	private List fillColumnHeaders;
+
+	private boolean percentage;
 
 	public JRFillCrosstab(JRBaseFiller filler, JRCrosstab crosstab, JRFillObjectFactory factory)
 	{
@@ -190,6 +192,7 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 			JRFillCrosstabRowGroup group = rowGroups[i];
 
 			widthSum += group.getWidth();
+			
 			if (crossCells[i + 1][columnGroups.length] != null)
 			{
 				heightSum += crossCells[i + 1][columnGroups.length].getHeight();
@@ -203,12 +206,15 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 				header.setElementsBandBottomY();
 			}
 
-			JRFillCellContents totalHeader = group.getFillTotalHeader();
-			if (totalHeader != null)
+			if (group.hasTotal())
 			{
-				totalHeader.setWidth(widthSum);
-				totalHeader.setHeight(crossCells[i][columnGroups.length].getHeight());
-				totalHeader.setElementsBandBottomY();
+				JRFillCellContents totalHeader = group.getFillTotalHeader();
+				if (totalHeader != null)
+				{
+					totalHeader.setWidth(widthSum);
+					totalHeader.setHeight(crossCells[i][columnGroups.length].getHeight());
+					totalHeader.setElementsBandBottomY();
+				}
 			}
 		}
 	}
@@ -256,12 +262,15 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 				header.setElementsBandBottomY();
 			}
 
-			JRFillCellContents totalHeader = group.getFillTotalHeader();
-			if (totalHeader != null)
+			if (group.hasTotal())
 			{
-				totalHeader.setHeight(heightSum);
-				totalHeader.setWidth(crossCells[rowGroups.length][i].getWidth());
-				totalHeader.setElementsBandBottomY();
+				JRFillCellContents totalHeader = group.getFillTotalHeader();
+				if (totalHeader != null)
+				{
+					totalHeader.setHeight(heightSum);
+					totalHeader.setWidth(crossCells[rowGroups.length][i].getWidth());
+					totalHeader.setElementsBandBottomY();
+				}
 			}
 		}
 	}
@@ -307,19 +316,37 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 			JRFillCrosstabCell crosstabCell = factory.getCrosstabCell(crosstabCells[i]);
 
 			String rowTotalGroup = crosstabCell.getRowTotalGroup();
-			int rowGroupIndex = getRowGroupIndex(rowTotalGroup);
-
+			int rowGroupIndex;
 			if (rowTotalGroup == null)
 			{
+				rowGroupIndex = rowGroups.length;
 				crosstabCell.getFillContents().setWidth(crosstabCell.getWidth().intValue());
+			}
+			else
+			{
+				rowGroupIndex = ((Integer) rowGroupsMap.get(rowTotalGroup)).intValue();
+				
+				if (!rowGroups[rowGroupIndex].hasTotal())
+				{
+					continue;
+				}
 			}
 
 			String columnTotalGroup = crosstabCell.getColumnTotalGroup();
-			int columnGroupIndex = getColumnGroupIndex(columnTotalGroup);
-
+			int columnGroupIndex;
 			if (columnTotalGroup == null)
 			{
+				columnGroupIndex = columnGroups.length;
 				crosstabCell.getFillContents().setHeight(crosstabCell.getHeight().intValue());
+			}
+			else
+			{
+				columnGroupIndex = ((Integer) columnGroupsMap.get(columnTotalGroup)).intValue();
+				
+				if (!columnGroups[columnGroupIndex].hasTotal())
+				{
+					continue;
+				}
 			}
 
 			crossCells[rowGroupIndex][columnGroupIndex] = crosstabCell.getFillContents();
@@ -393,16 +420,6 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 		}
 	}
 
-	protected int getRowGroupIndex(String groupName)
-	{
-		return groupName == null ? rowGroups.length : ((Integer) rowGroupsMap.get(groupName)).intValue();
-	}
-
-	protected int getColumnGroupIndex(String groupName)
-	{
-		return groupName == null ? columnGroups.length : ((Integer) columnGroupsMap.get(groupName)).intValue();
-	}
-
 	protected void loadEvaluator(JasperReport jasperReport)
 	{
 		try
@@ -430,13 +447,15 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 			colBuckets.add(createServiceBucket(columnGroups[i], evaluation));
 		}
 
+		percentage = false;
 		List measureList = new ArrayList(measures.length);
 		for (int i = 0; i < measures.length; ++i)
 		{
-			measureList.add(createMeasure(measures[i]));
+			measureList.add(createServiceMeasure(measures[i]));
+			percentage |= measures[i].getPercentageOfType() == JRCrosstabMeasure.PERCENTAGE_TYPE_GRAND_TOTAL;
 		}
 
-		return new BucketingService(rowBuckets, colBuckets, measureList, isDataPreSorted());
+		return new BucketingService(rowBuckets, colBuckets, measureList, isDataPreSorted(), percentage);
 	}
 
 	private Bucket createServiceBucket(JRCrosstabGroup group, byte evaluation) throws JRException
@@ -453,21 +472,12 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 		return new Bucket(bucket.getValueClass(), null, comparator, bucket.getOrder(), group.getTotalPosition());
 	}
 
-	private Measure createMeasure(JRCrosstabMeasure measure)
+	private Measure createServiceMeasure(JRFillCrosstabMeasure measure)
 	{
-		JRExtendedIncrementerFactory incrementerFactory;
-
-		String incrementerFactoryClassName = measure.getIncrementerFactoryClassName();
-		if (incrementerFactoryClassName == null)
-		{
-			incrementerFactory = JRDefaultIncrementerFactory.getFactory(measure.getValueClass());
-		}
-		else
-		{
-			incrementerFactory = (JRExtendedIncrementerFactory) JRIncrementerFactoryCache.getInstance(measure.getIncrementerFactoryClass());
-		}
-
-		return new Measure(measure.getValueClass(), measure.getCalculation(), incrementerFactory, measure.getPercentageOfType());
+		return new Measure(
+				measure.getValueClass(), 
+				measure.getCalculation(), 
+				measure.getIncrementerFactory()); 
 	}
 
 	public JRFillExpressionEvaluator getExpressionEvaluator()
@@ -500,10 +510,24 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 
 			bucketingService.processData();
 
-			columnHeadersData = bucketingService.getColumnHeaders();
-			rowHeadersData = bucketingService.getRowHeaders();
-			cellData = bucketingService.getCrosstabCells();
+			hasData = bucketingService.hasData();
+			
+			if (hasData)
+			{
+				columnHeadersData = bucketingService.getColumnHeaders();
+				rowHeadersData = bucketingService.getRowHeaders();
+				cellData = bucketingService.getCrosstabCells();
+				if (percentage)
+				{
+					grandTotals = bucketingService.getGrandTotals();
+				}
 
+				columnXOffsets = computeOffsets(columnHeadersData, columnGroups, true);
+				columnBreakable = computeBreakableHeaders(columnHeadersData, columnGroups, columnXOffsets, true);
+				rowYOffsets = computeOffsets(rowHeadersData, rowGroups, false);
+				rowBreakable = computeBreakableHeaders(rowHeadersData, rowGroups, rowYOffsets, false);
+			}
+			
 			initFill();
 		}
 	}
@@ -513,11 +537,6 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 		rowIndex = 0;
 		columnIndex = 0;
 		lastColumnIndex = 0;
-
-		columnXOffsets = computeOffsets(columnHeadersData, columnGroups, true);
-		columnBreakable = computeBreakableHeaders(columnHeadersData, columnGroups, columnXOffsets, true);
-		rowYOffsets = computeOffsets(rowHeadersData, rowGroups, false);
-		rowBreakable = computeBreakableHeaders(rowHeadersData, rowGroups, rowYOffsets, false);
 	}
 
 	protected void initEvaluator(byte evaluation) throws JRException
@@ -636,7 +655,7 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 			return true;
 		}
 
-		boolean fillEnded = rowIndex >= rowHeadersData[0].length && columnIndex >= columnHeadersData[0].length;
+		boolean fillEnded = !hasData || (rowIndex >= rowHeadersData[0].length && columnIndex >= columnHeadersData[0].length);
 		if (isOverflow && fillEnded && !isPrintWhenDetailOverflows() && isAlreadyPrinted())
 		{
 			setStretchHeight(getHeight());
@@ -652,22 +671,7 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 
 		printCells.clear();
 
-		boolean willOverflow = false;
-
-		switch (getFillOrder())
-		{
-			case JRCrosstab.FILL_ORDER_VERTICAL:
-				willOverflow = fillVerticalCrosstab(availableStretchHeight, 0);
-				break;
-			case JRCrosstab.FILL_ORDER_HORIZONTAL:
-				willOverflow = fillVerticalCrosstab(availableStretchHeight, 0);
-				break;
-			default:
-				willOverflow = false;
-				break;
-		}
-
-		return willOverflow;
+		return fillVerticalCrosstab(availableStretchHeight, 0);
 	}
 
 	protected JRPrintElement fill() throws JRException
@@ -713,12 +717,16 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 
 	protected void rewind() throws JRException
 	{
-		// TODO luci Auto-generated method stub
-
+		initFill();
 	}
 
 	protected boolean fillVerticalCrosstab(int availableStretchHeight, int yOffset) throws JRException
 	{
+		if (!hasData)
+		{
+			return false;
+		}
+		
 		boolean printRowHeaders = columnIndex == 0 || isRepeatRowHeaders();
 		int rowHeadersXOffset = printRowHeaders ? rowHeadersXOffsets[rowGroups.length] : 0;
 
@@ -770,8 +778,7 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 			{
 				rowIndex = lastRowIndex = 0;
 
-				// TODO luci 10
-				return fillVerticalCrosstab(availableStretchHeight, yOffset + usedHeight + 10);
+				return fillVerticalCrosstab(availableStretchHeight, yOffset + usedHeight + getColumnBreakOffset());
 			}
 		}
 
@@ -790,6 +797,7 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 		return !fillEnded;
 	}
 
+	
 	private static List getGroupHeaders(int available, int[] offsets, boolean[] breakable, int firstIndex, HeaderCell[][] headersData, JRFillCrosstabGroup[] groups)
 	{
 		List headers = new ArrayList();
@@ -912,7 +920,7 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 						contents = header;
 					}
 
-					if (contents != null)
+					if (contents != null && contents.getHeight() > 0)
 					{
 						int width = columnXOffsets[j + cell.getLevelSpan()] - columnXOffsets[j];
 
@@ -926,6 +934,8 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 				}
 			}
 		}
+		
+		setGroupVariablesNull(columnGroups);
 	}
 
 	protected void addPrintCell(JRPrintCell cell)
@@ -957,7 +967,7 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 						contents = group.getFillHeader();
 					}
 
-					if (contents != null)
+					if (contents != null && contents.getWidth() > 0)
 					{
 						int height = rowYOffsets[i + rowIndex + cell.getLevelSpan()] - rowYOffsets[i + rowIndex];
 
@@ -971,9 +981,11 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 				}
 			}
 		}
+		
+		setGroupVariablesNull(rowGroups);
 	}
 
-	private void setGroupVariables(JRFillCrosstabGroup[] groups, BucketValue[] bucketValues)
+	private static void setGroupVariables(JRFillCrosstabGroup[] groups, BucketValue[] bucketValues)
 	{
 		for (int i = 0; i < groups.length; i++)
 		{
@@ -986,14 +998,50 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 		}
 	}
 
+	private static void setGroupVariablesNull(JRFillCrosstabGroup[] groups)
+	{
+		for (int i = 0; i < groups.length; i++)
+		{
+			groups[i].getFillVariable().setValue(null);
+		}
+	}
+
 	private void setMeasureVariables(MeasureValue[] values)
 	{
 		for (int i = 0; i < measures.length; i++)
 		{
-			measures[i].getFillVariable().setValue(values[i].getValue());
+			Object value;
+			
+			if (measures[i].getPercentageOfType() == JRCrosstabMeasure.PERCENTAGE_TYPE_GRAND_TOTAL)
+			{
+				if (values[i].isInitialized())
+				{
+					value = values[i].getValue();
+				}
+				else
+				{
+					value = measures[i].getPercentageCalculator().calculatePercentage(values[i], grandTotals[i]);
+				}
+			}
+			else
+			{
+				value = values[i].getValue();
+			}
+			
+			measures[i].getFillVariable().setValue(value);
 		}
 	}
 
+	
+	private void setMeasureVariablesNull()
+	{
+		for (int i = 0; i < measures.length; i++)
+		{
+			measures[i].getFillVariable().setValue(null);
+		}
+	}
+
+	
 	private void fillDataCells(int lastRowIndex, int xOffset, int yOffset) throws JRException
 	{
 		for (int i = rowIndex; i < lastRowIndex; ++i)
@@ -1014,6 +1062,10 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 				addPrintCell(printCell);
 			}
 		}
+		
+		setGroupVariablesNull(rowGroups);		
+		setGroupVariablesNull(columnGroups);
+		setMeasureVariablesNull();
 	}
 
 	private JRPrintCell fillCellContents(JRFillCellContents contents) throws JRException
@@ -1150,9 +1202,9 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 		return parentCrosstab.isDataPreSorted();
 	}
 
-	public byte getFillOrder()
+	public int getColumnBreakOffset()
 	{
-		return parentCrosstab.getFillOrder();
+		return parentCrosstab.getColumnBreakOffset();
 	}
 
 	public boolean isRepeatColumnHeaders()

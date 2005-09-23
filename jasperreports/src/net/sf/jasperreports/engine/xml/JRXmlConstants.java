@@ -44,9 +44,8 @@ import net.sf.jasperreports.engine.JRReport;
 import net.sf.jasperreports.engine.JRTextElement;
 import net.sf.jasperreports.engine.JRVariable;
 import net.sf.jasperreports.engine.crosstab.JRCellContents;
-import net.sf.jasperreports.engine.crosstab.JRCrosstab;
-import net.sf.jasperreports.engine.crosstab.calculation.Bucket;
-import net.sf.jasperreports.engine.crosstab.calculation.Measure;
+import net.sf.jasperreports.engine.crosstab.JRCrosstabMeasure;
+import net.sf.jasperreports.engine.fill.crosstab.calculation.Bucket;
 
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.xy.XYBubbleRenderer;
@@ -499,7 +498,6 @@ public class JRXmlConstants
 	private static final String CALCULATION_VARIANCE = "Variance";
 	private static final String CALCULATION_SYSTEM = "System";
 	private static final String CALCULATION_FIRST = "First";
-	private static final String CALCULATION_LAST = "Last";
 
 	private static Map calculationMap = null;
 
@@ -518,7 +516,6 @@ public class JRXmlConstants
 			calculationMap.put(CALCULATION_VARIANCE,           new Byte(JRVariable.CALCULATION_VARIANCE));
 			calculationMap.put(CALCULATION_SYSTEM,             new Byte(JRVariable.CALCULATION_SYSTEM));
 			calculationMap.put(CALCULATION_FIRST,             new Byte(JRVariable.CALCULATION_FIRST));
-			calculationMap.put(CALCULATION_LAST,             new Byte(JRVariable.CALCULATION_LAST));
 			calculationMap.put(new Byte(JRVariable.CALCULATION_NOTHING),            CALCULATION_NOTHING);
 			calculationMap.put(new Byte(JRVariable.CALCULATION_COUNT),              CALCULATION_COUNT);
 			calculationMap.put(new Byte(JRVariable.CALCULATION_SUM),                CALCULATION_SUM);
@@ -529,7 +526,6 @@ public class JRXmlConstants
 			calculationMap.put(new Byte(JRVariable.CALCULATION_VARIANCE),           CALCULATION_VARIANCE);
 			calculationMap.put(new Byte(JRVariable.CALCULATION_SYSTEM),             CALCULATION_SYSTEM);
 			calculationMap.put(new Byte(JRVariable.CALCULATION_FIRST),             CALCULATION_FIRST);
-			calculationMap.put(new Byte(JRVariable.CALCULATION_LAST),             CALCULATION_LAST);
 		}
 
 		return calculationMap;
@@ -904,10 +900,10 @@ public class JRXmlConstants
 		if (crosstabPercentageMap == null)
 		{
 			crosstabPercentageMap = new HashMap();
-			crosstabPercentageMap.put(CROSSTAB_PERCENTAGE_NONE, new Byte(Measure.PERCENTAGE_TYPE_NONE));
-			crosstabPercentageMap.put(CROSSTAB_PERCENTAGE_GRAND_TOTAL, new Byte(Measure.PERCENTAGE_TYPE_GRAND_TOTAL));
-			crosstabPercentageMap.put(new Byte(Measure.PERCENTAGE_TYPE_NONE), CROSSTAB_PERCENTAGE_NONE);
-			crosstabPercentageMap.put(new Byte(Measure.PERCENTAGE_TYPE_GRAND_TOTAL), CROSSTAB_PERCENTAGE_GRAND_TOTAL);
+			crosstabPercentageMap.put(CROSSTAB_PERCENTAGE_NONE, new Byte(JRCrosstabMeasure.PERCENTAGE_TYPE_NONE));
+			crosstabPercentageMap.put(CROSSTAB_PERCENTAGE_GRAND_TOTAL, new Byte(JRCrosstabMeasure.PERCENTAGE_TYPE_GRAND_TOTAL));
+			crosstabPercentageMap.put(new Byte(JRCrosstabMeasure.PERCENTAGE_TYPE_NONE), CROSSTAB_PERCENTAGE_NONE);
+			crosstabPercentageMap.put(new Byte(JRCrosstabMeasure.PERCENTAGE_TYPE_GRAND_TOTAL), CROSSTAB_PERCENTAGE_GRAND_TOTAL);
 		}
 		
 		return crosstabPercentageMap;
@@ -935,27 +931,6 @@ public class JRXmlConstants
 		}
 		
 		return crosstabTotalPositionMap;
-	}
-	
-	
-	private static final String CROSSTAB_FILL_ORDER_HORIZONTAL = "Horizontal";
-	private static final String CROSSTAB_FILL_ORDER_VERTICAL = "Vertical";
-	
-	private static Map crosstabFillOrderMap = null;
-	
-	
-	public static Map getCrosstabFillOrderMap()
-	{
-		if (crosstabFillOrderMap == null)
-		{
-			crosstabFillOrderMap = new HashMap();
-			crosstabFillOrderMap.put(CROSSTAB_FILL_ORDER_HORIZONTAL, new Byte(JRCrosstab.FILL_ORDER_HORIZONTAL));
-			crosstabFillOrderMap.put(CROSSTAB_FILL_ORDER_VERTICAL, new Byte(JRCrosstab.FILL_ORDER_VERTICAL));
-			crosstabFillOrderMap.put(new Byte(JRCrosstab.FILL_ORDER_HORIZONTAL), CROSSTAB_FILL_ORDER_HORIZONTAL);
-			crosstabFillOrderMap.put(new Byte(JRCrosstab.FILL_ORDER_VERTICAL), CROSSTAB_FILL_ORDER_VERTICAL);
-		}
-		
-		return crosstabFillOrderMap;
 	}
 	
 	

@@ -82,7 +82,6 @@ public class JRDefaultIncrementerFactory extends JRAbstractExtendedIncrementerFa
 				break;
 			}
 			case JRVariable.CALCULATION_NOTHING :
-			case JRVariable.CALCULATION_LAST :
 			case JRVariable.CALCULATION_COUNT :
 			case JRVariable.CALCULATION_SUM :
 			case JRVariable.CALCULATION_AVERAGE :

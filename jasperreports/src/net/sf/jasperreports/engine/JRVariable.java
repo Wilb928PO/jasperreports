@@ -191,7 +191,6 @@ public interface JRVariable
 	
 	
 	public static final byte CALCULATION_FIRST = 9;
-	public static final byte CALCULATION_LAST = 10;
 
 
 
