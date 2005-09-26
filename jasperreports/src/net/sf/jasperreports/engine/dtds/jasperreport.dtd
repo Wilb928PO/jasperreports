@@ -52,17 +52,17 @@
 <!ELEMENT style EMPTY>
 <!ATTLIST style
 	name NMTOKEN #REQUIRED
-	isDefault (true | false) "false"
+	isDefault (true | false) #IMPLIED
 	style NMTOKEN #IMPLIED
 	mode (Opaque | Transparent) #IMPLIED
 	forecolor CDATA #IMPLIED
 	backcolor CDATA #IMPLIED
 	pen (None | Thin | 1Point | 2Point | 4Point | Dotted) #IMPLIED
-	fill (Solid) "Solid"
-	radius NMTOKEN "0"
-	scaleImage (Clip | FillFrame | RetainShape) "RetainShape"
-	hAlign (Left | Center | Right | Justified) "Left"
-	vAlign (Top | Middle | Bottom) "Top"
+	fill (Solid) #IMPLIED
+	radius NMTOKEN #IMPLIED
+	scaleImage (Clip | FillFrame | RetainShape) #IMPLIED
+	hAlign (Left | Center | Right | Justified) #IMPLIED
+	vAlign (Top | Middle | Bottom) #IMPLIED
 	border (None | Thin | 1Point | 2Point | 4Point | Dotted) #IMPLIED
 	borderColor CDATA #IMPLIED
 	padding NMTOKEN #IMPLIED
@@ -78,9 +78,9 @@
 	rightBorder (None | Thin | 1Point | 2Point | 4Point | Dotted) #IMPLIED
 	rightBorderColor CDATA #IMPLIED
 	rightPadding NMTOKEN #IMPLIED
-	rotation (None | Left | Right) "None"
-	lineSpacing (Single | 1_1_2 | Double) "Single"
-	isStyledText (true | false) "false"
+	rotation (None | Left | Right) #IMPLIED
+	lineSpacing (Single | 1_1_2 | Double) #IMPLIED
+	isStyledText (true | false) #IMPLIED
 	fontName CDATA #IMPLIED
 	fontSize NMTOKEN #IMPLIED
 	isBold (true | false) #IMPLIED
@@ -91,7 +91,7 @@
 	pdfEncoding CDATA #IMPLIED
 	isPdfEmbedded (true | false) #IMPLIED
 	pattern CDATA #IMPLIED
-	isBlankWhenNull (true | false) "false"
+	isBlankWhenNull (true | false) #IMPLIED
 >
 
 <!ELEMENT parameter (parameterDescription?, defaultValueExpression?)>

@@ -47,6 +47,7 @@ import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JRQuery;
 import net.sf.jasperreports.engine.JRQueryChunk;
 import net.sf.jasperreports.engine.JRReportFont;
+import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.JRSubreport;
 import net.sf.jasperreports.engine.JRSubreportParameter;
 import net.sf.jasperreports.engine.JRSubreportReturnValue;
@@ -109,6 +110,9 @@ public class JRVerifier
 
 		/*   */
 		verifyReportFonts();
+
+		/*   */
+		verifyStyles();
 
 		/*   */
 		verifyParameters();
@@ -407,7 +411,7 @@ public class JRVerifier
 	/**
 	 *
 	 */
-	private void verifyReportFonts()//FIXME STYLES
+	private void verifyReportFonts()
 	{
 		JRReportFont[] fonts = jasperDesign.getFonts();
 		if (fonts != null && fonts.length > 0)
@@ -419,6 +423,27 @@ public class JRVerifier
 				if (font.getName() == null || font.getName().trim().length() == 0)
 				{
 					brokenRules.add("Report font name missing.");
+				}
+			}
+		}
+	}
+
+
+	/**
+	 *
+	 */
+	private void verifyStyles()
+	{
+		JRStyle[] styles = jasperDesign.getStyles();
+		if (styles != null && styles.length > 0)
+		{
+			for(int index = 0; index < styles.length; index++)
+			{
+				JRStyle style = styles[index];
+				
+				if (style.getName() == null || style.getName().trim().length() == 0)
+				{
+					brokenRules.add("Report style name missing.");
 				}
 			}
 		}
