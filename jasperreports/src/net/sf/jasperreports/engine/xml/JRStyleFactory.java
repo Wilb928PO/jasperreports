@@ -17,6 +17,7 @@ public class JRStyleFactory extends JRBaseFactory
 {
 	private static final String ATTRIBUTE_name = "name";
 	private static final String ATTRIBUTE_isDefault = "isDefault";
+	private static final String ATTRIBUTE_mode = "mode";
 	private static final String ATTRIBUTE_forecolor = "forecolor";
 	private static final String ATTRIBUTE_backcolor = "backcolor";
 	private static final String ATTRIBUTE_style = "style";
@@ -50,6 +51,8 @@ public class JRStyleFactory extends JRBaseFactory
 	private static final String ATTRIBUTE_rotation = "rotation";
 	private static final String ATTRIBUTE_lineSpacing = "lineSpacing";
 	private static final String ATTRIBUTE_isStyledText = "isStyledText";
+	private static final String ATTRIBUTE_pattern = "pattern";
+	private static final String ATTRIBUTE_isBlankWhenNull = "isBlankWhenNull";
 
 	private static final String ATTRIBUTE_fontName = "fontName";
 	private static final String ATTRIBUTE_isBold = "isBold";
@@ -95,17 +98,11 @@ public class JRStyleFactory extends JRBaseFactory
 
 
 		// get JRElement attributes
-//		Byte positionType = (Byte)JRXmlConstants.getPositionTypeMap().get(atts.getValue(ATTRIBUTE_positionType));
-//		if (positionType != null)
-//		{
-//			style.setPositionType(positionType.byteValue());
-//		}
-//
-//		Byte stretchType = (Byte)JRXmlConstants.getStretchTypeMap().get(atts.getValue(ATTRIBUTE_stretchType));
-//		if (stretchType != null)
-//		{
-//			style.setStretchType(stretchType.byteValue());
-//		}
+		Byte mode = (Byte)JRXmlConstants.getModeMap().get(atts.getValue(ATTRIBUTE_mode));
+		if (mode != null)
+		{
+			style.setMode(mode);//FIXME STYLE change all
+		}
 
 		String forecolor = atts.getValue(ATTRIBUTE_forecolor);
 		style.setForecolor(getColor(forecolor, null));
@@ -262,6 +259,14 @@ public class JRStyleFactory extends JRBaseFactory
 		if (isStyledText != null && isStyledText.length() > 0)
 		{
 			style.setStyledText(Boolean.valueOf(isStyledText));
+		}
+
+		style.setPattern(atts.getValue(ATTRIBUTE_pattern));
+
+		String isBlankWhenNull = atts.getValue(ATTRIBUTE_isBlankWhenNull);
+		if (isBlankWhenNull != null && isBlankWhenNull.length() > 0)
+		{
+			style.setBlankWhenNull(Boolean.valueOf(isBlankWhenNull).booleanValue());
 		}
 
 		if (atts.getValue(ATTRIBUTE_fontName) != null)
