@@ -881,7 +881,7 @@ public class JRHtmlExporter extends JRAbstractExporter
 			styleBuffer.append("; ");
 		}
 
-		appendBorder(//FIXME STYLE test minimum HTML output
+		appendBorder(
 			styleBuffer, 
 			text.getTopBorder(),
 			text.getTopBorderColor() == null ? text.getForecolor() : text.getTopBorderColor(),
