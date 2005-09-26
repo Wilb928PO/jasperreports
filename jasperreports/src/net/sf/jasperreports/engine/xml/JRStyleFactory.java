@@ -16,6 +16,7 @@ import org.xml.sax.Attributes;
 public class JRStyleFactory extends JRBaseFactory
 {
 	private static final String ATTRIBUTE_name = "name";
+	private static final String ATTRIBUTE_isDefault = "isDefault";
 	private static final String ATTRIBUTE_forecolor = "forecolor";
 	private static final String ATTRIBUTE_backcolor = "backcolor";
 	private static final String ATTRIBUTE_style = "style";
@@ -72,6 +73,12 @@ public class JRStyleFactory extends JRBaseFactory
 
 		// get style name
 		style.setName(atts.getValue(ATTRIBUTE_name));
+
+		String isDefault = atts.getValue(ATTRIBUTE_isDefault);
+		if (isDefault != null && isDefault.length() > 0)
+		{
+			style.setDefault(Boolean.valueOf(isDefault).booleanValue());
+		}
 
 		// get parent style
 		if (atts.getValue(ATTRIBUTE_style) != null)

@@ -850,6 +850,11 @@ public class JasperDesign extends JRBaseReport
 
 		stylesList.add(style);
 		stylesMap.put(style.getName(), style);
+		
+		if (style.isDefault())
+		{
+			setDefaultStyle(style);
+		}
 	}
 
 
@@ -871,6 +876,11 @@ public class JasperDesign extends JRBaseReport
 	{
 		if (style != null)
 		{
+			if (style.isDefault())
+			{
+				setDefaultStyle(null);
+			}
+
 			stylesList.remove(style);
 			stylesMap.remove(style.getName());
 		}

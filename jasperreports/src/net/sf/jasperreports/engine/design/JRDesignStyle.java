@@ -60,6 +60,14 @@ public class JRDesignStyle extends JRBaseStyle
 	/**
 	 *
 	 */
+	public void setDefault(boolean isDefault)
+	{
+		this.isDefault = isDefault;
+	}
+
+	/**
+	 *
+	 */
 	public void setParentStyle(JRStyle parentStyle)
 	{
 		this.parentStyle = parentStyle;
