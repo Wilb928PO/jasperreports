@@ -190,16 +190,16 @@
 
 <!ELEMENT rectangle (reportElement, graphicElement?)>
 <!ATTLIST rectangle
-	radius NMTOKEN "0"
+	radius NMTOKEN #IMPLIED
 >
 
 <!ELEMENT ellipse (reportElement, graphicElement?)>
 
 <!ELEMENT image (reportElement, box?, graphicElement?, imageExpression?, anchorNameExpression?, hyperlinkReferenceExpression?, hyperlinkAnchorExpression?, hyperlinkPageExpression?)>
 <!ATTLIST image
-	scaleImage (Clip | FillFrame | RetainShape) "RetainShape"
-	hAlign (Left | Center | Right) "Left"
-	vAlign (Top | Middle | Bottom) "Top"
+	scaleImage (Clip | FillFrame | RetainShape) #IMPLIED
+	hAlign (Left | Center | Right) #IMPLIED
+	vAlign (Top | Middle | Bottom) #IMPLIED
 	isUsingCache (true | false) #IMPLIED
 	isLazy (true | false) "false"
 	onErrorType (Error | Blank | Icon) "Error"
@@ -243,11 +243,11 @@
 
 <!ELEMENT textElement (font?)>
 <!ATTLIST textElement
-	textAlignment (Left | Center | Right | Justified) "Left"
-	verticalAlignment (Top | Middle | Bottom) "Top"
-	rotation (None | Left | Right) "None"
-	lineSpacing (Single | 1_1_2 | Double) "Single"
-	isStyledText (true | false) "false"
+	textAlignment (Left | Center | Right | Justified) #IMPLIED
+	verticalAlignment (Top | Middle | Bottom) #IMPLIED
+	rotation (None | Left | Right) #IMPLIED
+	lineSpacing (Single | 1_1_2 | Double) #IMPLIED
+	isStyledText (true | false) #IMPLIED
 >
 
 <!ELEMENT font EMPTY>
@@ -270,7 +270,7 @@
 	evaluationTime (Now | Report | Page | Column | Group | Band) "Now"
 	evaluationGroup CDATA #IMPLIED
 	pattern CDATA #IMPLIED
-	isBlankWhenNull (true | false) "false"
+	isBlankWhenNull (true | false) #IMPLIED
 	hyperlinkType (None | Reference | LocalAnchor | LocalPage | RemoteAnchor | RemotePage) "None"
 	hyperlinkTarget (Self | Blank) "Self"
 	bookmarkLevel NMTOKEN "0"

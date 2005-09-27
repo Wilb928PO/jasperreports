@@ -57,7 +57,6 @@ import net.sf.jasperreports.charts.JRXyDataset;
 import net.sf.jasperreports.charts.JRXySeries;
 import net.sf.jasperreports.charts.JRXyzDataset;
 import net.sf.jasperreports.charts.JRXyzSeries;
-import net.sf.jasperreports.engine.JRAlignment;
 import net.sf.jasperreports.engine.JRAnchor;
 import net.sf.jasperreports.engine.JRBand;
 import net.sf.jasperreports.engine.JRBox;
@@ -575,7 +574,6 @@ public class JRXmlWriter
 	 */
 	private void writeStyle(JRStyle style)
 	{
-//		FIXME STYLE
 		sb.append("\t<style");
 
 		sb.append(" name=\"");
@@ -586,41 +584,288 @@ public class JRXmlWriter
 		sb.append(style.isDefault());
 		sb.append("\"");
 
-		sb.append(" fontName=\"");
-		sb.append(style.getFontName());
-		sb.append("\"");
+		if (style.getStyle() != null)
+		{
+			JRStyle baseStyle = 
+				(JRStyle)stylesMap.get(
+						style.getStyle().getName()
+					);
+			if(baseStyle != null)
+			{
+				sb.append(" style=\"");
+				sb.append(style.getStyle().getName());
+				sb.append("\"");
+			}
+			else
+			{
+				throw 
+					new JRRuntimeException(
+						"Referenced report style not found : " 
+						+ style.getStyle().getName()
+						);
+			}
+		}
+	
+		if (style.getOwnMode() != null)
+		{
+			sb.append(" mode=\"");
+			sb.append((String)JRXmlConstants.getModeMap().get(style.getOwnMode()));
+			sb.append("\"");
+		}
 
-		sb.append(" fontSize=\"");
-		sb.append(style.getFontSize());
-		sb.append("\"");
+		if (style.getOwnForecolor() != null)
+		{
+			sb.append(" forecolor=\"#");
+			sb.append(Integer.toHexString(style.getOwnForecolor().getRGB() & colorMask));
+			sb.append("\"");
+		}
 
-		sb.append(" isBold=\"");
-		sb.append(style.isBold());
-		sb.append("\"");
+		if (style.getOwnBackcolor() != null)
+		{
+			sb.append(" backcolor=\"#");
+			sb.append(Integer.toHexString(style.getOwnBackcolor().getRGB() & colorMask));
+			sb.append("\"");
+		}
 
-		sb.append(" isItalic=\"");
-		sb.append(style.isItalic());
-		sb.append("\"");
 
-		sb.append(" isUnderline=\"");
-		sb.append(style.isUnderline());
-		sb.append("\"");
+		if (style.getOwnPen() != null)
+		{
+			sb.append(" pen=\"");
+			sb.append((String)JRXmlConstants.getPenMap().get(style.getOwnPen()));
+			sb.append("\"");
+		}
 
-		sb.append(" isStrikeThrough=\"");
-		sb.append(style.isStrikeThrough());
-		sb.append("\"");
+		if (style.getOwnFill() != null)
+		{
+			sb.append(" fill=\"");
+			sb.append((String)JRXmlConstants.getFillMap().get(style.getOwnFill()));
+			sb.append("\"");
+		}
 
-		sb.append(" pdfFontName=\"");
-		sb.append(style.getPdfFontName());
-		sb.append("\"");
+		if (style.getOwnRadius() != null)
+		{
+			sb.append(" radius=\"");
+			sb.append(style.getOwnRadius());
+			sb.append("\"");
+		}
 
-		sb.append(" pdfEncoding=\"");
-		sb.append(style.getPdfEncoding());
-		sb.append("\"");
+		if (style.getOwnScaleImage() != null)
+		{
+			sb.append(" scaleImage=\"");
+			sb.append((String)JRXmlConstants.getScaleImageMap().get(style.getOwnScaleImage()));
+			sb.append("\"");
+		}
 
-		sb.append(" isPdfEmbedded=\"");
-		sb.append(style.isPdfEmbedded());
-		sb.append("\"");
+		if (style.getOwnHorizontalAlignment() != null)
+		{
+			sb.append(" hAlign=\"");
+			sb.append((String)JRXmlConstants.getHorizontalAlignMap().get(style.getOwnHorizontalAlignment()));
+			sb.append("\"");
+		}
+
+		if (style.getOwnVerticalAlignment() != null)
+		{
+			sb.append(" vAlign=\"");
+			sb.append((String)JRXmlConstants.getVerticalAlignMap().get(style.getOwnVerticalAlignment()));
+			sb.append("\"");
+		}
+
+		if (style.getOwnRotation() != null)
+		{
+			sb.append(" rotation=\"");
+			sb.append((String)JRXmlConstants.getRotationMap().get(style.getOwnRotation()));
+			sb.append("\"");
+		}
+
+		if (style.getOwnLineSpacing() != null)
+		{
+			sb.append(" lineSpacing=\"");
+			sb.append((String)JRXmlConstants.getLineSpacingMap().get(style.getOwnLineSpacing()));
+			sb.append("\"");
+		}
+
+		if (style.isOwnStyledText() != null)
+		{
+			sb.append(" isStyledText=\"");
+			sb.append(style.isOwnStyledText());
+			sb.append("\"");
+		}
+
+		if (style.getOwnPattern() != null)
+		{
+			sb.append(" pattern=\"");
+			sb.append(style.getOwnPattern());
+			sb.append("\"");
+		}
+
+		if (style.isOwnBlankWhenNull() != null)
+		{
+			sb.append(" isBlankWhenNull=\"");
+			sb.append(style.isOwnBlankWhenNull());
+			sb.append("\"");
+		}
+
+		if (style.getOwnBorder() == null)
+		{
+			sb.append(" border=\"");
+			sb.append((String)JRXmlConstants.getPenMap().get(style.getOwnBorder()));
+			sb.append("\"");
+		}
+		if (style.getOwnBorderColor() != null)
+		{
+			sb.append(" borderColor=\"#");
+			sb.append(Integer.toHexString(style.getOwnBorderColor().getRGB() & colorMask));
+			sb.append("\"");
+		}
+		if (style.getOwnPadding() != null)
+		{
+			sb.append(" padding=\"");
+			sb.append(style.getOwnPadding());
+			sb.append("\"");
+		}
+	
+
+		if (style.getOwnTopBorder() != null)
+		{
+			sb.append(" topBorder=\"");
+			sb.append((String)JRXmlConstants.getPenMap().get(style.getOwnTopBorder()));
+			sb.append("\"");
+		}
+		if (style.getOwnTopBorderColor() != null)
+		{
+			sb.append(" topBorderColor=\"#");
+			sb.append(Integer.toHexString(style.getOwnTopBorderColor().getRGB() & colorMask));
+			sb.append("\"");
+		}
+		if (style.getOwnTopPadding() != null)
+		{
+			sb.append(" topPadding=\"");
+			sb.append(style.getOwnTopPadding());
+			sb.append("\"");
+		}
+
+		
+		if (style.getOwnLeftBorder() != null)
+		{
+			sb.append(" leftBorder=\"");
+			sb.append((String)JRXmlConstants.getPenMap().get(style.getOwnLeftBorder()));
+			sb.append("\"");
+		}
+		if (style.getOwnLeftBorderColor() != null)
+		{
+			sb.append(" leftBorderColor=\"#");
+			sb.append(Integer.toHexString(style.getOwnLeftBorderColor().getRGB() & colorMask));
+			sb.append("\"");
+		}
+		if (style.getOwnLeftPadding() != null)
+		{
+			sb.append(" leftPadding=\"");
+			sb.append(style.getOwnLeftPadding());
+			sb.append("\"");
+		}
+
+		
+		if (style.getOwnBottomBorder() != null)
+		{
+			sb.append(" bottomBorder=\"");
+			sb.append((String)JRXmlConstants.getPenMap().get(style.getOwnBottomBorder()));
+			sb.append("\"");
+		}
+		if (style.getOwnBottomBorderColor() != null)
+		{
+			sb.append(" bottomBorderColor=\"#");
+			sb.append(Integer.toHexString(style.getOwnBottomBorderColor().getRGB() & colorMask));
+			sb.append("\"");
+		}
+		if (style.getOwnBottomPadding() != null)
+		{
+			sb.append(" bottomPadding=\"");
+			sb.append(style.getOwnBottomPadding());
+			sb.append("\"");
+		}
+
+		
+		if (style.getOwnRightBorder() != null)
+		{
+			sb.append(" rightBorder=\"");
+			sb.append((String)JRXmlConstants.getPenMap().get(style.getOwnRightBorder()));
+			sb.append("\"");
+		}
+		if (style.getOwnRightBorderColor() != null)
+		{
+			sb.append(" rightBorderColor=\"#");
+			sb.append(Integer.toHexString(style.getOwnRightBorderColor().getRGB() & colorMask));
+			sb.append("\"");
+		}
+		if (style.getOwnRightPadding() != null)
+		{
+			sb.append(" rightPadding=\"");
+			sb.append(style.getOwnRightPadding());
+			sb.append("\"");
+		}
+
+		if (style.getOwnFontName() != null)
+		{
+			sb.append(" fontName=\"");
+			sb.append(style.getOwnFontName());
+			sb.append("\"");
+		}
+
+		if (style.getOwnFontSize() != null)
+		{
+			sb.append(" fontSize=\"");
+			sb.append(style.getOwnFontSize());
+			sb.append("\"");
+		}
+
+		if (style.isOwnBold() != null)
+		{
+			sb.append(" isBold=\"");
+			sb.append(style.isOwnBold());
+			sb.append("\"");
+		}
+
+		if (style.isOwnItalic() != null)
+		{
+			sb.append(" isItalic=\"");
+			sb.append(style.isOwnItalic());
+			sb.append("\"");
+		}
+
+		if (style.isOwnUnderline() != null)
+		{
+			sb.append(" isUnderline=\"");
+			sb.append(style.isOwnUnderline());
+			sb.append("\"");
+		}
+
+		if (style.isOwnStrikeThrough() != null)
+		{
+			sb.append(" isStrikeThrough=\"");
+			sb.append(style.isOwnStrikeThrough());
+			sb.append("\"");
+		}
+
+		if (style.getOwnPdfFontName() != null)
+		{
+			sb.append(" pdfFontName=\"");
+			sb.append(style.getOwnPdfFontName());
+			sb.append("\"");
+		}
+
+		if (style.getOwnPdfEncoding() != null)
+		{
+			sb.append(" pdfEncoding=\"");
+			sb.append(style.getOwnPdfEncoding());
+			sb.append("\"");
+		}
+
+		if (style.isOwnPdfEmbedded() != null)
+		{
+			sb.append(" isPdfEmbedded=\"");
+			sb.append(style.isOwnPdfEmbedded());
+			sb.append("\"");
+		}
 
 		sb.append("/>\n");
 	}
@@ -984,17 +1229,10 @@ public class JRXmlWriter
 			sb.append("\"");
 		}
 
-		if (
-			(element instanceof JRLine && element.getMode() != JRElement.MODE_OPAQUE) ||
-			(element instanceof JRRectangle && element.getMode() != JRElement.MODE_OPAQUE) ||
-			(element instanceof JREllipse && element.getMode() != JRElement.MODE_OPAQUE) ||
-			(element instanceof JRImage && element.getMode() != JRElement.MODE_TRANSPARENT) ||
-			(element instanceof JRTextElement && element.getMode() != JRElement.MODE_TRANSPARENT) ||
-			(element instanceof JRSubreport && element.getMode() != JRElement.MODE_TRANSPARENT)
-			)
+		if (element.getOwnMode() != null)
 		{
 			sb.append(" mode=\"");
-			sb.append((String)JRXmlConstants.getModeMap().get(new Byte(element.getMode())));
+			sb.append((String)JRXmlConstants.getModeMap().get(element.getOwnMode()));
 			sb.append("\"");
 		}
 
@@ -1042,17 +1280,17 @@ public class JRXmlWriter
 			sb.append("\"");
 		}
 
-		if (element.getForecolor().getRGB() != Color.black.getRGB())
+		if (element.getOwnForecolor() != null)
 		{
 			sb.append(" forecolor=\"#");
-			sb.append(Integer.toHexString(element.getForecolor().getRGB() & colorMask));
+			sb.append(Integer.toHexString(element.getOwnForecolor().getRGB() & colorMask));
 			sb.append("\"");
 		}
 
-		if (element.getBackcolor().getRGB() != Color.white.getRGB())
+		if (element.getOwnBackcolor() != null)
 		{
 			sb.append(" backcolor=\"#");
-			sb.append(Integer.toHexString(element.getBackcolor().getRGB() & colorMask));
+			sb.append(Integer.toHexString(element.getOwnBackcolor().getRGB() & colorMask));
 			sb.append("\"");
 		}
 
@@ -1080,22 +1318,17 @@ public class JRXmlWriter
 	{
 		sb.append("\t\t\t\t<graphicElement");
 
-		if (
-			(element instanceof JRLine && element.getPen() != JRGraphicElement.PEN_1_POINT) ||
-			(element instanceof JRRectangle && element.getPen() != JRGraphicElement.PEN_1_POINT) ||
-			(element instanceof JREllipse && element.getPen() != JRGraphicElement.PEN_1_POINT) ||
-			(element instanceof JRImage && element.getPen() != JRGraphicElement.PEN_NONE)
-			)
+		if (element.getOwnPen() != null)
 		{
 			sb.append(" pen=\"");
-			sb.append((String)JRXmlConstants.getPenMap().get(new Byte(element.getPen())));
+			sb.append((String)JRXmlConstants.getPenMap().get(element.getOwnPen()));
 			sb.append("\"");
 		}
 
-		if (element.getFill() != JRGraphicElement.FILL_SOLID)
+		if (element.getOwnFill() != null)
 		{
 			sb.append(" fill=\"");
-			sb.append((String)JRXmlConstants.getFillMap().get(new Byte(element.getFill())));
+			sb.append((String)JRXmlConstants.getFillMap().get(element.getOwnFill()));
 			sb.append("\"");
 		}
 
@@ -1110,10 +1343,10 @@ public class JRXmlWriter
 	{
 		sb.append("\t\t\t<rectangle");
 
-		if (rectangle.getRadius() != 0)
+		if (rectangle.getOwnRadius() != null)
 		{
 			sb.append(" radius=\"");
-			sb.append(rectangle.getRadius());
+			sb.append(rectangle.getOwnRadius());
 			sb.append("\"");
 		}
 
@@ -1147,24 +1380,24 @@ public class JRXmlWriter
 	{
 		sb.append("\t\t\t<image");
 
-		if (image.getScaleImage() != JRImage.SCALE_IMAGE_RETAIN_SHAPE)
+		if (image.getOwnScaleImage() != null)
 		{
 			sb.append(" scaleImage=\"");
-			sb.append((String)JRXmlConstants.getScaleImageMap().get(new Byte(image.getScaleImage())));
+			sb.append((String)JRXmlConstants.getScaleImageMap().get(image.getOwnScaleImage()));
 			sb.append("\"");
 		}
 
-		if (image.getHorizontalAlignment() != JRAlignment.HORIZONTAL_ALIGN_LEFT)
+		if (image.getOwnHorizontalAlignment() != null)
 		{
 			sb.append(" hAlign=\"");
-			sb.append((String)JRXmlConstants.getHorizontalAlignMap().get(new Byte(image.getHorizontalAlignment())));
+			sb.append((String)JRXmlConstants.getHorizontalAlignMap().get(image.getOwnHorizontalAlignment()));
 			sb.append("\"");
 		}
 
-		if (image.getVerticalAlignment() != JRAlignment.VERTICAL_ALIGN_TOP)
+		if (image.getOwnVerticalAlignment() != null)
 		{
 			sb.append(" vAlign=\"");
-			sb.append((String)JRXmlConstants.getVerticalAlignMap().get(new Byte(image.getVerticalAlignment())));
+			sb.append((String)JRXmlConstants.getVerticalAlignMap().get(image.getOwnVerticalAlignment()));
 			sb.append("\"");
 		}
 
@@ -1421,38 +1654,38 @@ public class JRXmlWriter
 	{
 		sb.append("\t\t\t\t<textElement");
 
-		if (textElement.getHorizontalAlignment() != JRAlignment.HORIZONTAL_ALIGN_LEFT)
+		if (textElement.getOwnHorizontalAlignment() != null)
 		{
 			sb.append(" textAlignment=\"");
-			sb.append((String)JRXmlConstants.getHorizontalAlignMap().get(new Byte(textElement.getHorizontalAlignment())));
+			sb.append((String)JRXmlConstants.getHorizontalAlignMap().get(textElement.getOwnHorizontalAlignment()));
 			sb.append("\"");
 		}
 
-		if (textElement.getVerticalAlignment() != JRAlignment.VERTICAL_ALIGN_TOP)
+		if (textElement.getOwnVerticalAlignment() != null)
 		{
 			sb.append(" verticalAlignment=\"");
-			sb.append((String)JRXmlConstants.getVerticalAlignMap().get(new Byte(textElement.getVerticalAlignment())));
+			sb.append((String)JRXmlConstants.getVerticalAlignMap().get(textElement.getOwnVerticalAlignment()));
 			sb.append("\"");
 		}
 
-		if (textElement.getRotation() != JRTextElement.ROTATION_NONE)
+		if (textElement.getOwnRotation() != null)
 		{
 			sb.append(" rotation=\"");
-			sb.append((String)JRXmlConstants.getRotationMap().get(new Byte(textElement.getRotation())));
+			sb.append((String)JRXmlConstants.getRotationMap().get(textElement.getOwnRotation()));
 			sb.append("\"");
 		}
 
-		if (textElement.getLineSpacing() != JRTextElement.LINE_SPACING_SINGLE)
+		if (textElement.getOwnLineSpacing() != null)
 		{
 			sb.append(" lineSpacing=\"");
-			sb.append((String)JRXmlConstants.getLineSpacingMap().get(new Byte(textElement.getLineSpacing())));
+			sb.append((String)JRXmlConstants.getLineSpacingMap().get(textElement.getOwnLineSpacing()));
 			sb.append("\"");
 		}
 
-		if (textElement.isStyledText())
+		if (textElement.isOwnStyledText() != null)
 		{
 			sb.append(" isStyledText=\"");
-			sb.append(textElement.isStyledText());
+			sb.append(textElement.isOwnStyledText());
 			sb.append("\"");
 		}
 
@@ -1606,17 +1839,17 @@ public class JRXmlWriter
 			sb.append("\"");
 		}
 
-		if (textField.getPattern() != null)
+		if (textField.getOwnPattern() != null)
 		{
 			sb.append(" pattern=\"");
-			sb.append(textField.getPattern());
+			sb.append(textField.getOwnPattern());
 			sb.append("\"");
 		}
 
-		if (textField.isBlankWhenNull())
+		if (textField.isOwnBlankWhenNull() != null)
 		{
 			sb.append(" isBlankWhenNull=\"");
-			sb.append(textField.isBlankWhenNull());
+			sb.append(textField.isOwnBlankWhenNull());
 			sb.append("\"");
 		}
 
