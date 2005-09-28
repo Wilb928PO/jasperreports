@@ -33,11 +33,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import net.sf.jasperreports.engine.JRBand;
 import net.sf.jasperreports.engine.JRDataset;
+import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExpressionCollector;
 import net.sf.jasperreports.engine.JRField;
@@ -47,6 +49,8 @@ import net.sf.jasperreports.engine.JRQuery;
 import net.sf.jasperreports.engine.JRReportFont;
 import net.sf.jasperreports.engine.JRVariable;
 import net.sf.jasperreports.engine.base.JRBaseReport;
+import net.sf.jasperreports.engine.crosstab.JRCrosstab;
+import net.sf.jasperreports.engine.design.crosstab.JRDesignCrosstab;
 
 
 /**
@@ -166,6 +170,8 @@ public class JasperDesign extends JRBaseReport
 	 */
 	private Map datasetMap = new HashMap();
 	private List datasetList = new ArrayList();
+	
+	private transient List crosstabs;
 	
 	/**
 	 *
@@ -946,5 +952,75 @@ public class JasperDesign extends JRBaseReport
 	public void setMainDataset(JRDesignDataset dataset)
 	{
 		this.mainDataset = this.mainDesignDataset = dataset;
+	}
+	
+	
+	/**
+	 * Performs preliminary processing and calculations prior to compilation.
+	 */
+	public void preprocess()
+	{
+		collectCrosstabs();
+		
+		for (Iterator it = crosstabs.iterator(); it.hasNext();)
+		{
+			JRDesignCrosstab crosstab = (JRDesignCrosstab) it.next();
+			crosstab.calculateSizes();
+		}
+	}
+	
+	protected List getCrosstabs()
+	{
+		if (crosstabs == null)
+		{
+			collectCrosstabs();
+		}
+		
+		return crosstabs;
+	}
+	
+	protected List collectCrosstabs()
+	{
+		crosstabs = new ArrayList();
+		collectCrosstabs(background);
+		collectCrosstabs(title);
+		collectCrosstabs(pageHeader);
+		collectCrosstabs(columnHeader);
+		collectCrosstabs(detail);
+		collectCrosstabs(columnFooter);
+		collectCrosstabs(pageFooter);
+		collectCrosstabs(lastPageFooter);
+		collectCrosstabs(summary);
+		
+		JRGroup[] groups = getGroups();
+		if (groups != null)
+		{
+			for (int i = 0; i < groups.length; i++)
+			{
+				collectCrosstabs(groups[i].getGroupHeader());
+				collectCrosstabs(groups[i].getGroupFooter());
+			}
+		}
+		
+		return crosstabs;
+	}
+
+
+	protected void collectCrosstabs(JRBand band)
+	{
+		if (band != null)
+		{
+			JRElement[] elements = band.getElements();
+			if (elements != null)
+			{
+				for (int i = 0; i < elements.length; i++)
+				{
+					if (elements[i] instanceof JRCrosstab)
+					{
+						crosstabs.add(elements[i]);
+					}
+				}
+			}
+		}
 	}
 }

@@ -33,11 +33,8 @@ import java.util.Map;
 import net.sf.jasperreports.engine.JRBox;
 import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRGraphicElement;
 import net.sf.jasperreports.engine.JRPrintElement;
-import net.sf.jasperreports.engine.base.JRBasePrintImage;
 import net.sf.jasperreports.engine.crosstab.JRCellContents;
-import net.sf.jasperreports.engine.fill.crosstab.JRPrintCell;
 
 import org.apache.commons.collections.ReferenceMap;
 
@@ -47,23 +44,33 @@ import org.apache.commons.collections.ReferenceMap;
  */
 public class JRFillCellContents extends JRFillElementContainer implements JRCellContents
 {
-	protected static Map transformedContents = new ReferenceMap();
+	protected static final Map transformedContents = new ReferenceMap();
 	
-	private JRCellContents parentCell;
+	private final JRFillCrosstab crosstab;
+	private final JRCellContents parentCell;
 	
 	private int height;
 	private int width;
 	private int span;
+	
+	private final JRTemplateFrame template;
 
 	public JRFillCellContents(JRCellContents cell, JRFillObjectFactory factory)
 	{
 		super(cell, factory);
 		
+		crosstab = factory.getCrosstab();
 		parentCell = cell;
 		
+		width = cell.getWidth();
+		height = cell.getHeight();
+		
 		initElements();
+		
+		template = new JRTemplateFrame(crosstab, this);
 	}
 
+	
 	public Color getBackcolor()
 	{
 		return parentCell.getBackcolor();
@@ -134,7 +141,7 @@ public class JRFillCellContents extends JRFillElementContainer implements JRCell
 		JRFillCellContents transformedCell = (JRFillCellContents) transformedContents.get(key);
 		if (transformedCell == null)
 		{
-			JRFillObjectFactory factory = new JRFillObjectFactory(filler, crosstab.getExpressionEvaluator());
+			JRFillObjectFactory factory = new JRFillObjectFactory(filler, crosstab);
 			transformedCell = factory.getCell(contents.parentCell);
 			filler.setTextFieldsFormats();
 			
@@ -230,7 +237,7 @@ public class JRFillCellContents extends JRFillElementContainer implements JRCell
 	}
 
 	
-	protected JRPrintCell fill(int availableStretchHeight) throws JRException
+	protected JRPrintFrame fill(int availableStretchHeight, int x, int y) throws JRException
 	{
 		initFill();
 		
@@ -244,31 +251,15 @@ public class JRFillCellContents extends JRFillElementContainer implements JRCell
 
 		this.removeBlankElements();
 
-		JRPrintCell printCell = new JRPrintCell();
+		JRTemplatePrintFrame printCell = new JRTemplatePrintFrame(template);
+		printCell.setX(x);
+		printCell.setY(y);
 		printCell.setWidth(width);
 		printCell.setHeight(height);
-		
-		printCell.addElement(getCellElement());
 		
 		fillElements(printCell);
 		
 		return printCell;
-	}
-
-
-	private JRPrintElement getCellElement()
-	{
-		JRBasePrintImage image = new JRBasePrintImage();
-		image.setX(0);
-		image.setY(0);
-		image.setWidth(width);
-		image.setHeight(height);
-		image.setMode(JRElement.MODE_OPAQUE);
-		Color backcolor = getBackcolor();
-		image.setBackcolor(backcolor == null ? Color.white : backcolor);
-		image.setFill(JRGraphicElement.FILL_SOLID);
-		image.setBox(getBox());
-		return image;
 	}
 
 	protected void printElementAdded(JRFillElement element, JRPrintElement printElement, JRPrintElementContainer printContainer)

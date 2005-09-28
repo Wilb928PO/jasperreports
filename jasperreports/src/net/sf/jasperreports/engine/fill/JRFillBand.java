@@ -105,8 +105,6 @@ public class JRFillBand extends JRFillElementContainer implements JRBand, JRVirt
 		}
 		
 		initElements();
-		
-		setElementsBandBottomY();
 	}
 
 

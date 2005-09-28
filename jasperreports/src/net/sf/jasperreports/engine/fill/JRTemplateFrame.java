@@ -27,58 +27,40 @@
  */
 package net.sf.jasperreports.engine.fill;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import net.sf.jasperreports.engine.JRPrintElement;
-
+import net.sf.jasperreports.engine.JRBox;
 
 /**
- * @author Teodor Danciu (teodord@users.sourceforge.net)
+ * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
-public class JRPrintBand implements JRPrintElementContainer
+public class JRTemplateFrame extends JRTemplateElement
 {
-	
+	private JRBox box;
 
-	/**
-	 *
-	 */
-	private int height = 0;
-	private List elements = new ArrayList();
-
-	
-	/**
-	 *
-	 */
-	public int getHeight()
+	protected JRTemplateFrame(JRFillCrosstab crosstab, JRFillCellContents cell)
 	{
-		return this.height;
-	}
+		super();
 		
-	/**
-	 *
-	 */
-	public void setHeight(int height)
-	{
-		this.height = height;
+		setMode(crosstab.getMode());
+		setForecolor(crosstab.getForecolor());
+		if (cell.getBackcolor() != null)
+		{
+			setBackcolor(cell.getBackcolor());
+		}
+		else
+		{
+			setBackcolor(crosstab.getBackcolor());
+		}
+		setBox(cell.getBox());
 	}
 
-	/**
-	 *
-	 */
-	public List getElements()
+	public JRBox getBox()
 	{
-		return this.elements;
+		return box;
 	}
-	
-	/**
-	 *
-	 */
-	public void addElement(JRPrintElement element)
-	{
-		this.elements.add(element);
-	}
-		
 
+	protected void setBox(JRBox box)
+	{
+		this.box = box;
+	}
 }

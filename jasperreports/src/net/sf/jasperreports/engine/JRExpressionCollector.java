@@ -784,12 +784,18 @@ public class JRExpressionCollector
 			}
 		}
 		
-		JRCrosstabCell[] cells = crosstab.getCells();
+		JRCrosstabCell[][] cells = crosstab.getCells();
 		if (cells != null)
 		{
 			for (int i = 0; i < cells.length; ++i)
 			{
-				crosstabCollector.collect(cells[i].getContents());
+				for (int j = 0; j < cells[i].length; j++)
+				{
+					if (cells[i][j] != null)
+					{
+						crosstabCollector.collect(cells[i][j].getContents());
+					}
+				}
 			}
 		}
 	}

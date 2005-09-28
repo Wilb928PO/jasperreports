@@ -28,17 +28,14 @@
 package net.sf.jasperreports.engine.base;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import net.sf.jasperreports.engine.JRBand;
 import net.sf.jasperreports.engine.JRDataset;
-import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRExpressionCollector;
 import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.JRGroup;
@@ -47,7 +44,6 @@ import net.sf.jasperreports.engine.JRQuery;
 import net.sf.jasperreports.engine.JRReport;
 import net.sf.jasperreports.engine.JRReportFont;
 import net.sf.jasperreports.engine.JRVariable;
-import net.sf.jasperreports.engine.crosstab.JRCrosstab;
 
 
 /**
@@ -588,51 +584,5 @@ public class JRBaseReport implements JRReport, Serializable
 	public JRDataset[] getDatasets()
 	{
 		return datasets;
-	}
-	
-	
-	public List getCrosstabs()
-	{
-		List crosstabs = new ArrayList();
-		collectCrosstabs(background, crosstabs);
-		collectCrosstabs(title, crosstabs);
-		collectCrosstabs(pageHeader, crosstabs);
-		collectCrosstabs(columnHeader, crosstabs);
-		collectCrosstabs(detail, crosstabs);
-		collectCrosstabs(columnFooter, crosstabs);
-		collectCrosstabs(pageFooter, crosstabs);
-		collectCrosstabs(lastPageFooter, crosstabs);
-		collectCrosstabs(summary, crosstabs);
-		
-		JRGroup[] groups = getGroups();
-		if (groups != null)
-		{
-			for (int i = 0; i < groups.length; i++)
-			{
-				collectCrosstabs(groups[i].getGroupHeader(), crosstabs);
-				collectCrosstabs(groups[i].getGroupFooter(), crosstabs);
-			}
-		}
-		
-		return crosstabs;
-	}
-
-
-	private void collectCrosstabs(JRBand band, List crosstabs)
-	{
-		if (band != null)
-		{
-			JRElement[] elements = band.getElements();
-			if (elements != null)
-			{
-				for (int i = 0; i < elements.length; i++)
-				{
-					if (elements[i] instanceof JRCrosstab)
-					{
-						crosstabs.add(elements[i]);
-					}
-				}
-			}
-		}
 	}
 }

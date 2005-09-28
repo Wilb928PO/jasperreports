@@ -30,55 +30,38 @@ package net.sf.jasperreports.engine.fill;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sf.jasperreports.engine.JRBox;
 import net.sf.jasperreports.engine.JRPrintElement;
 
-
 /**
- * @author Teodor Danciu (teodord@users.sourceforge.net)
+ * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
-public class JRPrintBand implements JRPrintElementContainer
+public class JRTemplatePrintFrame extends JRTemplatePrintElement implements JRPrintFrame, JRPrintElementContainer
 {
-	
+	protected JRTemplateFrame templateFrame;
+	private List elements;
 
-	/**
-	 *
-	 */
-	private int height = 0;
-	private List elements = new ArrayList();
-
-	
-	/**
-	 *
-	 */
-	public int getHeight()
+	protected JRTemplatePrintFrame(JRTemplateFrame templateFrame)
 	{
-		return this.height;
-	}
+		super(templateFrame);
 		
-	/**
-	 *
-	 */
-	public void setHeight(int height)
-	{
-		this.height = height;
+		this.templateFrame = templateFrame;
+		elements = new ArrayList();
 	}
 
-	/**
-	 *
-	 */
+	public JRBox getBox()
+	{
+		return templateFrame.getBox();
+	}
+
 	public List getElements()
 	{
-		return this.elements;
+		return elements;
 	}
-	
-	/**
-	 *
-	 */
+
 	public void addElement(JRPrintElement element)
 	{
-		this.elements.add(element);
+		elements.add(element);
 	}
-		
-
 }

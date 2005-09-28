@@ -50,7 +50,6 @@ public class JRTemplateElement implements Serializable
 	 *
 	 */
 	private byte mode = JRElement.MODE_OPAQUE;
-	private int width = 0;
 	private Color forecolor = Color.black;
 	private Color backcolor = Color.white;
 
@@ -77,7 +76,6 @@ public class JRTemplateElement implements Serializable
 	protected void setElement(JRElement element)
 	{
 		setMode(element.getMode());
-		setWidth(element.getWidth());
 		setForecolor(element.getForecolor());
 		setBackcolor(element.getBackcolor());
 	}
@@ -96,22 +94,6 @@ public class JRTemplateElement implements Serializable
 	protected void setMode(byte mode)
 	{
 		this.mode = mode;
-	}
-	
-	/**
-	 *
-	 */
-	public int getWidth()
-	{
-		return this.width;
-	}
-	
-	/**
-	 *
-	 */
-	protected void setWidth(int width)
-	{
-		this.width = width;
 	}
 	
 	/**

@@ -47,9 +47,7 @@ import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.text.AttributedCharacterIterator;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -57,6 +55,7 @@ import java.util.Map;
 
 import net.sf.jasperreports.engine.JRAbstractExporter;
 import net.sf.jasperreports.engine.JRAlignment;
+import net.sf.jasperreports.engine.JRBox;
 import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExporterParameter;
@@ -76,6 +75,7 @@ import net.sf.jasperreports.engine.JRRenderable;
 import net.sf.jasperreports.engine.JRWrappingSvgRenderer;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.base.JRBaseFont;
+import net.sf.jasperreports.engine.fill.JRPrintFrame;
 import net.sf.jasperreports.engine.util.JRStringUtil;
 import net.sf.jasperreports.engine.util.JRStyledText;
 import net.sf.jasperreports.engine.util.JRStyledTextParser;
@@ -155,14 +155,6 @@ public class JRHtmlExporter extends JRAbstractExporter
 	 *
 	 */
 	protected static final int colorMask = Integer.parseInt("FFFFFF", 16);
-
-	/**
-	 *
-	 */
-	protected JRExporterGridCell grid[][] = null;
-	protected boolean isRowNotEmpty[] = null;
-	protected List xCuts = null;
-	protected List yCuts = null;
 
 	protected boolean isWrapBreakWord = false;
 
@@ -568,38 +560,52 @@ public class JRHtmlExporter extends JRAbstractExporter
 	 */
 	protected void exportPage(JRPrintPage page) throws JRException, IOException
 	{
-		writer.write("<table style=\"width: " + jasperPrint.getPageWidth() + sizeUnit + "\" cellpadding=0 cellspacing=0 border=0\n");
-		if (isWhitePageBackground)
+		JRHtmlGridLayout layout = getPageGridLayout(page);
+		exportGrid(layout, isWhitePageBackground);
+		
+		if (progressMonitor != null)
+		{
+			progressMonitor.afterPageExport();
+		}
+	}
+
+	
+	protected void exportGrid(JRHtmlGridLayout gridLayout, boolean whitePageBackground) throws IOException, JRException
+	{
+		List xCutsList = gridLayout.getXCuts();
+		JRExporterGridCell[][] gridCells = gridLayout.getGrid();
+		boolean[] rowNotEmpty = gridLayout.getIsRowNotEmpty();
+		
+		writer.write("<table style=\"width: " + gridLayout.getWidth() + sizeUnit + "\" cellpadding=0 cellspacing=0 border=0");
+		if (whitePageBackground)
 		{
 			writer.write(" bgcolor=white");
 		}
 		writer.write(">\n");
-
-		layoutGrid(page);
-
+		
 		writer.write("<tr>\n");
 		int width = 0;
-		for(int i = 1; i < xCuts.size(); i++)
+		for(int i = 1; i < xCutsList.size(); i++)
 		{
-			width = ((Integer)xCuts.get(i)).intValue() - ((Integer)xCuts.get(i - 1)).intValue();
+			width = ((Integer)xCutsList.get(i)).intValue() - ((Integer)xCutsList.get(i - 1)).intValue();
 			writer.write("  <td" + emptyCellStringProvider.getStringForCollapsedTD(imagesURI) + " style=\"width: " + width + sizeUnit + "; height: 1" + sizeUnit + "\"></td>\n");
 		}
 		writer.write("</tr>\n");
-
+		
 		JRPrintElement element = null;
-		for(int y = 0; y < grid.length; y++)
+		for(int y = 0; y < gridCells.length; y++)
 		{
-			if (isRowNotEmpty[y] || !isRemoveEmptySpace)
+			if (rowNotEmpty[y] || !isRemoveEmptySpace)
 			{
 				writer.write("<tr valign=top>\n");
-	
+		
 				int emptyCellColSpan = 0;
 				int emptyCellWidth = 0;
-				int lastRowHeight = grid[y][0].height;
-	
-				for(int x = 0; x < grid[y].length; x++)
+				int lastRowHeight = gridCells[y][0].height;
+		
+				for(int x = 0; x < gridCells[y].length; x++)
 				{
-					if(grid[y][x].element != null)
+					if(gridCells[y][x].element != null)
 					{
 						if (emptyCellColSpan > 0)
 						{
@@ -612,39 +618,43 @@ public class JRHtmlExporter extends JRAbstractExporter
 							emptyCellColSpan = 0;
 							emptyCellWidth = 0;
 						}
-	
-						element = grid[y][x].element;
-	
+		
+						element = gridCells[y][x].element;
+		
 						if (element instanceof JRPrintLine)
 						{
-							exportLine((JRPrintLine)element, grid[y][x]);
+							exportLine((JRPrintLine)element, gridCells[y][x]);
 						}
 						else if (element instanceof JRPrintRectangle)
 						{
-							exportRectangle(element, grid[y][x]);
+							exportRectangle(element, gridCells[y][x]);
 						}
 						else if (element instanceof JRPrintEllipse)
 						{
-							exportRectangle(element, grid[y][x]);
+							exportRectangle(element, gridCells[y][x]);
 						}
 						else if (element instanceof JRPrintImage)
 						{
-							exportImage((JRPrintImage)element, grid[y][x]);
+							exportImage((JRPrintImage)element, gridCells[y][x]);
 						}
 						else if (element instanceof JRPrintText)
 						{
-							exportText((JRPrintText)element, grid[y][x]);
+							exportText((JRPrintText)element, gridCells[y][x]);
 						}
-	
-						x += grid[y][x].colSpan - 1;
+						else if (element instanceof JRPrintFrame)
+						{
+							exportFrame((JRPrintFrame) element, gridCells[y][x]);
+						}
+		
+						x += gridCells[y][x].colSpan - 1;
 					}
 					else
 					{
 						emptyCellColSpan++;
-						emptyCellWidth += grid[y][x].width;
+						emptyCellWidth += gridCells[y][x].width;
 					}
 				}
-	
+		
 				if (emptyCellColSpan > 0)
 				{
 					writer.write("  <td");
@@ -654,34 +664,20 @@ public class JRHtmlExporter extends JRAbstractExporter
 					}
 					writer.write(emptyCellStringProvider.getStringForCollapsedTD(imagesURI) + " style=\"width: " + emptyCellWidth + sizeUnit + "; height: " + lastRowHeight + sizeUnit + "\"></td>\n");
 				}
-	
+		
 				writer.write("</tr>\n");
 			}
 		}
-
-		writer.write("</table>\n");
 		
-		if (progressMonitor != null)
-		{
-			progressMonitor.afterPageExport();
-		}
+		writer.write("</table>\n");
 	}
-
 
 	/**
 	 *
 	 */
 	protected void exportLine(JRPrintLine line, JRExporterGridCell gridCell) throws IOException
 	{
-		writer.write("  <td");
-		if (gridCell.colSpan > 1)
-		{
-			writer.write(" colspan=" + gridCell.colSpan);
-		}
-		if (gridCell.rowSpan > 1)
-		{
-			writer.write(" rowspan=" + gridCell.rowSpan);
-		}
+		writeCellTDStart(gridCell);
 		
 		if (
 			line.getForecolor().getRGB() != Color.white.getRGB() 
@@ -701,10 +697,7 @@ public class JRHtmlExporter extends JRAbstractExporter
 	}
 
 
-	/**
-	 *
-	 */
-	protected void exportRectangle(JRPrintElement element, JRExporterGridCell gridCell) throws IOException
+	protected void writeCellTDStart(JRExporterGridCell gridCell) throws IOException
 	{
 		writer.write("  <td");
 		if (gridCell.colSpan > 1)
@@ -715,6 +708,15 @@ public class JRHtmlExporter extends JRAbstractExporter
 		{
 			writer.write(" rowspan=" + gridCell.rowSpan);
 		}
+	}
+
+
+	/**
+	 *
+	 */
+	protected void exportRectangle(JRPrintElement element, JRExporterGridCell gridCell) throws IOException
+	{
+		writeCellTDStart(gridCell);
 		
 		if (
 			element.getBackcolor().getRGB() != Color.white.getRGB() 
@@ -887,15 +889,7 @@ public class JRHtmlExporter extends JRAbstractExporter
 			textLength = styledText.length();
 		}
 
-		writer.write("  <td");
-		if (gridCell.colSpan > 1)
-		{
-			writer.write(" colspan=" + gridCell.colSpan);
-		}
-		if (gridCell.rowSpan > 1)
-		{
-			writer.write(" rowspan=" + gridCell.rowSpan);
-		}
+		writeCellTDStart(gridCell);
 		
 		String verticalAlignment = HTML_VERTICAL_ALIGN_TOP;
 
@@ -931,47 +925,8 @@ public class JRHtmlExporter extends JRAbstractExporter
 		}
 
 		StringBuffer styleBuffer = new StringBuffer();
-
-		if (text.getBackcolor().getRGB() != Color.white.getRGB() && text.getMode() == JRElement.MODE_OPAQUE)
-		{
-			styleBuffer.append("background-color: #");
-			String hexa = Integer.toHexString(text.getBackcolor().getRGB() & colorMask).toUpperCase();
-			hexa = ("000000" + hexa).substring(hexa.length());
-			styleBuffer.append(hexa);
-			styleBuffer.append("; ");
-		}
-
-		if (text.getBox() != null)
-		{
-			appendBorder(
-				styleBuffer, 
-				text.getBox().getTopBorder(),
-				text.getBox().getTopBorderColor() == null ? text.getForecolor() : text.getBox().getTopBorderColor(),
-				text.getBox().getTopPadding(),
-				"top"
-				);
-			appendBorder(
-				styleBuffer, 
-				text.getBox().getLeftBorder(),
-				text.getBox().getLeftBorderColor() == null ? text.getForecolor() : text.getBox().getLeftBorderColor(),
-				text.getBox().getLeftPadding(),
-				"left"
-				);
-			appendBorder(
-				styleBuffer, 
-				text.getBox().getBottomBorder(),
-				text.getBox().getBottomBorderColor() == null ? text.getForecolor() : text.getBox().getBottomBorderColor(),
-				text.getBox().getBottomPadding(),
-				"bottom"
-				);
-			appendBorder(
-				styleBuffer, 
-				text.getBox().getRightBorder(),
-				text.getBox().getRightBorderColor() == null ? text.getForecolor() : text.getBox().getRightBorderColor(),
-				text.getBox().getRightPadding(),
-				"right"
-				);
-		}
+		appendBackcolorStyle(text, styleBuffer);
+		appendBorderStyle(text, text.getBox(), styleBuffer);
 
 		String horizontalAlignment = CSS_TEXT_ALIGN_LEFT;
 
@@ -1139,27 +1094,61 @@ public class JRHtmlExporter extends JRAbstractExporter
 	}
 
 
+	private void appendBorderStyle(JRPrintElement element, JRBox box, StringBuffer styleBuffer)
+	{
+		if (box != null)
+		{
+			appendBorder(
+				styleBuffer, 
+				box.getTopBorder(),
+				box.getTopBorderColor() == null ? element.getForecolor() : box.getTopBorderColor(),
+				box.getTopPadding(),
+				"top"
+				);
+			appendBorder(
+				styleBuffer, 
+				box.getLeftBorder(),
+				box.getLeftBorderColor() == null ? element.getForecolor() : box.getLeftBorderColor(),
+				box.getLeftPadding(),
+				"left"
+				);
+			appendBorder(
+				styleBuffer, 
+				box.getBottomBorder(),
+				box.getBottomBorderColor() == null ? element.getForecolor() : box.getBottomBorderColor(),
+				box.getBottomPadding(),
+				"bottom"
+				);
+			appendBorder(
+				styleBuffer, 
+				box.getRightBorder(),
+				box.getRightBorderColor() == null ? element.getForecolor() : box.getRightBorderColor(),
+				box.getRightPadding(),
+				"right"
+				);
+		}
+	}
+
+
+	private void appendBackcolorStyle(JRPrintElement element, StringBuffer styleBuffer)
+	{
+		if (element.getMode() == JRElement.MODE_OPAQUE && element.getBackcolor().getRGB() != Color.white.getRGB())
+		{
+			styleBuffer.append("background-color: #");
+			String hexa = Integer.toHexString(element.getBackcolor().getRGB() & colorMask).toUpperCase();
+			hexa = ("000000" + hexa).substring(hexa.length());
+			styleBuffer.append(hexa);
+			styleBuffer.append("; ");
+		}
+	}
+
+
 	/**
 	 *
 	 */
 	protected void exportImage(JRPrintImage image, JRExporterGridCell gridCell) throws JRException, IOException
 	{
-		writer.write("  <td");
-		if (gridCell.colSpan > 1)
-		{
-			writer.write(" colspan=" + gridCell.colSpan);
-		}
-		if (gridCell.rowSpan > 1)
-		{
-			writer.write(" rowspan=" + gridCell.rowSpan);
-		}
-//		if (image.getBackcolor().getRGB() != Color.white.getRGB() && image.getMode() == JRElement.MODE_OPAQUE)
-//		{
-//			writer.write(" bgcolor=#");
-//			String hexa = Integer.toHexString(image.getBackcolor().getRGB() & colorMask).toUpperCase();
-//			hexa = ("000000" + hexa).substring(hexa.length());
-//			writer.write(hexa);
-//		}
+		writeCellTDStart(gridCell);
 
 		String horizontalAlignment = CSS_TEXT_ALIGN_LEFT;
 
@@ -1218,47 +1207,8 @@ public class JRHtmlExporter extends JRAbstractExporter
 		}
 
 		StringBuffer styleBuffer = new StringBuffer();
-
-		if (image.getBackcolor().getRGB() != Color.white.getRGB() && image.getMode() == JRElement.MODE_OPAQUE)
-		{
-			styleBuffer.append("background-color: #");
-			String hexa = Integer.toHexString(image.getBackcolor().getRGB() & colorMask).toUpperCase();
-			hexa = ("000000" + hexa).substring(hexa.length());
-			styleBuffer.append(hexa);
-			styleBuffer.append("; ");
-		}
-
-		if (image.getBox() != null)
-		{
-			appendBorder(
-				styleBuffer, 
-				image.getBox().getTopBorder(),
-				image.getBox().getTopBorderColor() == null ? image.getForecolor() : image.getBox().getTopBorderColor(),
-				image.getBox().getTopPadding(),
-				"top"
-				);
-			appendBorder(
-				styleBuffer, 
-				image.getBox().getLeftBorder(),
-				image.getBox().getLeftBorderColor() == null ? image.getForecolor() : image.getBox().getLeftBorderColor(),
-				image.getBox().getLeftPadding(),
-				"left"
-				);
-			appendBorder(
-				styleBuffer, 
-				image.getBox().getBottomBorder(),
-				image.getBox().getBottomBorderColor() == null ? image.getForecolor() : image.getBox().getBottomBorderColor(),
-				image.getBox().getBottomPadding(),
-				"bottom"
-				);
-			appendBorder(
-				styleBuffer, 
-				image.getBox().getRightBorder(),
-				image.getBox().getRightBorderColor() == null ? image.getForecolor() : image.getBox().getRightBorderColor(),
-				image.getBox().getRightPadding(),
-				"right"
-				);
-		}
+		appendBackcolorStyle(image, styleBuffer);
+		appendBorderStyle(image, image.getBox(), styleBuffer);
 
 		if (styleBuffer.length() > 0)
 		{
@@ -1514,172 +1464,13 @@ public class JRHtmlExporter extends JRAbstractExporter
 	}
 
 
-	/**
-	 *
-	 */
-	protected void layoutGrid(JRPrintPage page)
+	protected JRHtmlGridLayout getPageGridLayout(JRPrintPage page)
 	{
-		xCuts = new ArrayList();
-		yCuts = new ArrayList();
-
-		xCuts.add(new Integer(0));
-		xCuts.add(new Integer(jasperPrint.getPageWidth()));
-		yCuts.add(new Integer(0));
-		yCuts.add(new Integer(jasperPrint.getPageHeight()));
-
-		Integer x = null;
-		Integer y = null;
-		
-		JRPrintElement element = null;
-
-		List elems = page.getElements();
-		for(Iterator it = elems.iterator(); it.hasNext();)
-		{
-			element = ((JRPrintElement)it.next());
-			
-			/*
-			if (element instanceof JRPrintLine)
-			{
-				//
-			}
-			else if (element instanceof JRPrintEllipse)
-			{
-				//
-			}
-			else if (
-				(element instanceof JRPrintRectangle) ||
-				(element instanceof JRPrintImage) ||
-				(element instanceof JRPrintText)
-				)
-			*/
-			{
-				x = new Integer(element.getX() + globalOffsetX);
-				if (!xCuts.contains(x))
-				{
-					xCuts.add(x);
-				}
-				x = new Integer(element.getX() + globalOffsetX + element.getWidth());
-				if (!xCuts.contains(x))
-				{
-					xCuts.add(x);
-				}
-				y = new Integer(element.getY() + globalOffsetY);
-				if (!yCuts.contains(y))
-				{
-					yCuts.add(y);
-				}
-				y = new Integer(element.getY() + globalOffsetY + element.getHeight());
-				if (!yCuts.contains(y))
-				{
-					yCuts.add(y);
-				}
-			}
-		}
-
-		Collections.sort(xCuts);
-		Collections.sort(yCuts);
-
-		int xCellCount = xCuts.size() - 1;
-		int yCellCount = yCuts.size() - 1;
-
-		grid = new JRExporterGridCell[yCellCount][xCellCount];
-		isRowNotEmpty = new boolean[yCellCount];
-				
-		for(int j = 0; j < yCellCount; j++)
-		{ 
-			for(int i = 0; i < xCellCount; i++)
-			{ 
-				grid[j][i] = 
-					new JRExporterGridCell(
-						null,
-						((Integer)xCuts.get(i + 1)).intValue() - ((Integer)xCuts.get(i)).intValue(),
-						((Integer)yCuts.get(j + 1)).intValue() - ((Integer)yCuts.get(j)).intValue(),
-						1,
-						1
-						);
-			}
-		}
-
-		int x1 = 0;
-		int y1 = 0;
-		int x2 = 0;
-		int y2 = 0;
-		int xi = 0;
-		int yi = 0;
-		boolean isOverlap = false;
-		
-		for(int i = elems.size() - 1; i >= 0; i--)
-		{
-			element = ((JRPrintElement)elems.get(i));
-			
-			/*
-			if (element instanceof JRPrintLine)
-			{
-				//
-			}
-			else if (element instanceof JRPrintEllipse)
-			{
-				//
-			}
-			else if (
-				(element instanceof JRPrintRectangle) ||
-				(element instanceof JRPrintImage) ||
-				(element instanceof JRPrintText)
-				)
-			*/
-			{
-				x1 = xCuts.indexOf(new Integer(element.getX() + globalOffsetX));
-				y1 = yCuts.indexOf(new Integer(element.getY() + globalOffsetY));
-				x2 = xCuts.indexOf(new Integer(element.getX() + globalOffsetX + element.getWidth()));
-				y2 = yCuts.indexOf(new Integer(element.getY() + globalOffsetY + element.getHeight()));
-				
-				isOverlap = false;
-				yi = y1;
-				while(yi < y2 && !isOverlap)
-				{
-					xi = x1;
-					while(xi < x2 && !isOverlap)
-					{
-						if(grid[yi][xi].element != null)
-						{
-							isOverlap = true;
-						}
-						xi++;
-					}
-					yi++;
-				}
-
-				if (!isOverlap)
-				{
-					yi = y1;
-					while(yi < y2)
-					{
-						xi = x1;
-						while(xi < x2)
-						{
-							grid[yi][xi] = JRExporterGridCell.OCCUPIED_CELL;
-							xi++;
-						}
-						isRowNotEmpty[yi] = true;
-						yi++;
-					}
-
-					if (x2 - x1 != 0 && y2 - y1 != 0)
-					{
-						grid[y1][x1] = 
-							new JRExporterGridCell(
-								element,
-								element.getWidth(),
-								element.getHeight(),
-								x2 - x1,
-								y2 - y1
-								);
-					}
-				}
-			}
-		}
+		JRHtmlGridLayout layout = new JRHtmlGridLayout(page.getElements(),
+				jasperPrint.getPageWidth(), jasperPrint.getPageHeight(),
+				globalOffsetX, globalOffsetY);
+		return layout;
 	}
-	
 	
 	/**
 	 *
@@ -1800,5 +1591,28 @@ public class JRHtmlExporter extends JRAbstractExporter
 		}
 	}
 
+
+	protected void exportFrame(JRPrintFrame frame, JRExporterGridCell gridCell) throws IOException, JRException
+	{
+		writeCellTDStart(gridCell);
+		
+		StringBuffer styleBuffer = new StringBuffer();
+		appendBackcolorStyle(frame, styleBuffer);
+		appendBorderStyle(frame, frame.getBox(), styleBuffer);
+
+		if (styleBuffer.length() > 0)
+		{
+			writer.write(" style=\"");
+			writer.write(styleBuffer.toString());
+			writer.write("\"");
+		}
+		
+		writer.write(">\n");
+		
+		JRHtmlGridLayout layout = new JRHtmlGridLayout(frame.getElements(), frame.getWidth(), frame.getHeight(), 0, 0);
+		exportGrid(layout, false);
+		
+		writer.write("</td>\n");
+	}
 
 }

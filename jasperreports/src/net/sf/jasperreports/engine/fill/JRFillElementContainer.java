@@ -108,7 +108,9 @@ public abstract class JRFillElementContainer extends JRFillElementGroup
 		}
 		
 		/*   */
-		this.setDependentElements();
+		setDependentElements();
+		
+		setElementsBandBottomY();
 	}
 
 	protected final void setElementsBandBottomY()

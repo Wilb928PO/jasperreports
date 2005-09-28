@@ -61,7 +61,6 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.base.JRBasePrintPage;
 import net.sf.jasperreports.engine.base.JRVirtualPrintPage;
-import net.sf.jasperreports.engine.crosstab.JRCrosstab;
 import net.sf.jasperreports.engine.util.JRGraphEnvInitializer;
 import net.sf.jasperreports.engine.util.JRStyledTextParser;
 
@@ -465,8 +464,6 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 		pageFooter = factory.getBand(jasperReport.getPageFooter());
 		lastPageFooter = factory.getBand(jasperReport.getLastPageFooter());
 		summary = factory.getBand(jasperReport.getSummary());
-		
-		createCrosstabEvaluators(factory);
 
 		mainDataset.initChartDatasets(factory);		
 		initDatasets(factory);
@@ -489,20 +486,6 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 		mainDataset.initCalculator();
 
 		initBands();
-	}
-
-
-	private void createCrosstabEvaluators(JRFillObjectFactory factory)
-	{
-		List crosstabs = jasperReport.getCrosstabs();
-		if (crosstabs != null)
-		{
-			for (Iterator iter = crosstabs.iterator(); iter.hasNext();)
-			{
-				JRCrosstab crosstab = (JRCrosstab) iter.next();
-				factory.getCrosstab(crosstab);
-			}
-		}
 	}
 
 

@@ -128,6 +128,7 @@ public class JRFillObjectFactory extends JRAbstractObjectFactory
 	 */
 	private JRBaseFiller filler = null;
 	private JRFillExpressionEvaluator evaluator;
+	private JRFillCrosstab crosstab;
 
 	private JRFont defaultFont = null;
 
@@ -152,6 +153,20 @@ public class JRFillObjectFactory extends JRAbstractObjectFactory
 	{
 		this.filler = filler;
 		this.evaluator = expressionEvaluator;
+	}
+
+	
+	public JRFillObjectFactory(JRBaseFiller filler, JRFillCrosstab crosstab)
+	{
+		this(filler, crosstab.getExpressionEvaluator());
+		
+		this.crosstab = crosstab;
+	}
+	
+	
+	public JRFillCrosstab getCrosstab()
+	{
+		return crosstab;
 	}
 
 	
@@ -960,16 +975,16 @@ public class JRFillObjectFactory extends JRAbstractObjectFactory
 	}
 
 
-	public JRCrosstab getCrosstab(JRCrosstab crosstab)
+	public JRCrosstab getCrosstab(JRCrosstab crosstabElement)
 	{
 		JRFillCrosstab fillCrosstab = null;
 		
-		if (crosstab != null)
+		if (crosstabElement != null)
 		{
-			fillCrosstab = (JRFillCrosstab) get(crosstab);
+			fillCrosstab = (JRFillCrosstab) get(crosstabElement);
 			if (fillCrosstab == null)
 			{
-				fillCrosstab = new JRFillCrosstab(filler, crosstab, this);
+				fillCrosstab = new JRFillCrosstab(filler, crosstabElement, this);
 			}
 		}
 		

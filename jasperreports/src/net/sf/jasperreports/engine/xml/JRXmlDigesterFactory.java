@@ -84,13 +84,9 @@ import net.sf.jasperreports.engine.JRQuery;
 import net.sf.jasperreports.engine.JRReportFont;
 import net.sf.jasperreports.engine.JRSubreportParameter;
 import net.sf.jasperreports.engine.JRSubreportReturnValue;
-import net.sf.jasperreports.engine.crosstab.JRCellContents;
-import net.sf.jasperreports.engine.crosstab.JRCrosstabCell;
-import net.sf.jasperreports.engine.crosstab.JRCrosstabColumnGroup;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabDataset;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabMeasure;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabParameter;
-import net.sf.jasperreports.engine.crosstab.JRCrosstabRowGroup;
 import net.sf.jasperreports.engine.design.JRDesignDataset;
 import net.sf.jasperreports.engine.design.JRDesignElement;
 import net.sf.jasperreports.engine.design.JRDesignElementGroup;
@@ -98,7 +94,11 @@ import net.sf.jasperreports.engine.design.JRDesignExpression;
 import net.sf.jasperreports.engine.design.JRDesignGroup;
 import net.sf.jasperreports.engine.design.JRDesignVariable;
 import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.design.crosstab.JRDesignCellContents;
 import net.sf.jasperreports.engine.design.crosstab.JRDesignCrosstabBucket;
+import net.sf.jasperreports.engine.design.crosstab.JRDesignCrosstabCell;
+import net.sf.jasperreports.engine.design.crosstab.JRDesignCrosstabColumnGroup;
+import net.sf.jasperreports.engine.design.crosstab.JRDesignCrosstabRowGroup;
 import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.engine.xml.crosstab.JRCellContentsFactory;
 import net.sf.jasperreports.engine.xml.crosstab.JRCrosstabBucketExpressionFactory;
@@ -702,22 +702,22 @@ public class JRXmlDigesterFactory
 		digester.addSetNext("*/crosstab/dataset", "setDataset", JRCrosstabDataset.class.getName());
 		
 		digester.addFactoryCreate("*/crosstab/rowGroup", JRCrosstabRowGroupFactory.class.getName());		
-		digester.addSetNext("*/crosstab/rowGroup", "addRowGroup", JRCrosstabRowGroup.class.getName());		
+		digester.addSetNext("*/crosstab/rowGroup", "addRowGroup", JRDesignCrosstabRowGroup.class.getName());		
 		
 		digester.addFactoryCreate("*/crosstab/rowGroup/crosstabRowHeader/cellContents", JRCellContentsFactory.class.getName());
-		digester.addSetNext("*/crosstab/rowGroup/crosstabRowHeader/cellContents", "setHeader", JRCellContents.class.getName());
+		digester.addSetNext("*/crosstab/rowGroup/crosstabRowHeader/cellContents", "setHeader", JRDesignCellContents.class.getName());
 		
 		digester.addFactoryCreate("*/crosstab/rowGroup/crosstabTotalRowHeader/cellContents", JRCellContentsFactory.class.getName());
-		digester.addSetNext("*/crosstab/rowGroup/crosstabTotalRowHeader/cellContents", "setTotalHeader", JRCellContents.class.getName());
+		digester.addSetNext("*/crosstab/rowGroup/crosstabTotalRowHeader/cellContents", "setTotalHeader", JRDesignCellContents.class.getName());
 		
 		digester.addFactoryCreate("*/crosstab/columnGroup", JRCrosstabColumnGroupFactory.class.getName());		
-		digester.addSetNext("*/crosstab/columnGroup", "addColumnGroup", JRCrosstabColumnGroup.class.getName());		
+		digester.addSetNext("*/crosstab/columnGroup", "addColumnGroup", JRDesignCrosstabColumnGroup.class.getName());		
 		
 		digester.addFactoryCreate("*/crosstab/columnGroup/crosstabColumnHeader/cellContents", JRCellContentsFactory.class.getName());
-		digester.addSetNext("*/crosstab/columnGroup/crosstabColumnHeader/cellContents", "setHeader", JRCellContents.class.getName());
+		digester.addSetNext("*/crosstab/columnGroup/crosstabColumnHeader/cellContents", "setHeader", JRDesignCellContents.class.getName());
 		
 		digester.addFactoryCreate("*/crosstab/columnGroup/crosstabTotalColumnHeader/cellContents", JRCellContentsFactory.class.getName());
-		digester.addSetNext("*/crosstab/columnGroup/crosstabTotalColumnHeader/cellContents", "setTotalHeader", JRCellContents.class.getName());
+		digester.addSetNext("*/crosstab/columnGroup/crosstabTotalColumnHeader/cellContents", "setTotalHeader", JRDesignCellContents.class.getName());
 		
 		digester.addFactoryCreate("*/bucket", JRCrosstabBucketFactory.class.getName());		
 		digester.addSetNext("*/bucket", "setBucket", JRDesignCrosstabBucket.class.getName());
@@ -738,9 +738,9 @@ public class JRXmlDigesterFactory
 		digester.addCallMethod("*/crosstab/measure/measureExpression", "setText", 0);
 		
 		digester.addFactoryCreate("*/crosstab/crosstabCell", JRCrosstabCellFactory.class.getName());
-		digester.addSetNext("*/crosstab/crosstabCell", "addCell", JRCrosstabCell.class.getName());
+		digester.addSetNext("*/crosstab/crosstabCell", "addCell", JRDesignCrosstabCell.class.getName());
 		digester.addFactoryCreate("*/crosstab/crosstabCell/cellContents", JRCellContentsFactory.class.getName());
-		digester.addSetNext("*/crosstab/crosstabCell/cellContents", "setContents", JRCellContents.class.getName());
+		digester.addSetNext("*/crosstab/crosstabCell/cellContents", "setContents", JRDesignCellContents.class.getName());
 	}
 	
 	

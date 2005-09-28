@@ -32,6 +32,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -62,7 +63,20 @@ public abstract class JRAbstractExporter implements JRExporter
 	protected int globalOffsetX = 0;
 	protected int globalOffsetY = 0;
 
+	private LinkedList elementOffsetStack;
+	private int elementOffsetX;
+	private int elementOffsetY;
 
+	
+	protected JRAbstractExporter()
+	{
+		elementOffsetStack = new LinkedList();
+		
+		elementOffsetX = globalOffsetX;
+		elementOffsetY = globalOffsetY;
+	}
+	
+	
 	/**
 	 *
 	 */
@@ -121,6 +135,9 @@ public abstract class JRAbstractExporter implements JRExporter
 		{
 			globalOffsetY = offsetY.intValue();
 		}
+		
+		elementOffsetX = globalOffsetX;
+		elementOffsetY = globalOffsetY;
 	}
 	
 
@@ -248,6 +265,42 @@ public abstract class JRAbstractExporter implements JRExporter
 	protected void setOutput()
 	{
 	}
-	
 
+
+	protected int getOffsetX()
+	{
+		return elementOffsetX;
+	}
+
+
+	protected int getOffsetY()
+	{
+		return elementOffsetY;
+	}
+
+	
+	protected void pushElementOffsets(int offsetX, int offsetY)
+	{
+		elementOffsetStack.addLast(new int[]{elementOffsetX, elementOffsetY});
+		
+		elementOffsetX = globalOffsetX + offsetX;
+		elementOffsetY = globalOffsetX + offsetY;
+	}
+
+	
+	protected void pushRelativeElementOffsets()
+	{
+		elementOffsetStack.addLast(new int[]{elementOffsetX, elementOffsetY});
+		
+		elementOffsetX = 0;
+		elementOffsetY = 0;
+	}
+
+	
+	protected void popElementOffsets()
+	{
+		int[] offsets = (int[]) elementOffsetStack.removeLast();
+		elementOffsetX = offsets[0];
+		elementOffsetY = offsets[1];
+	}
 }

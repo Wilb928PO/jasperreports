@@ -25,60 +25,48 @@
  * San Francisco CA 94107
  * http://www.jaspersoft.com
  */
-package net.sf.jasperreports.engine.fill;
+package net.sf.jasperreports.engine.base;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sf.jasperreports.engine.JRBox;
 import net.sf.jasperreports.engine.JRPrintElement;
-
+import net.sf.jasperreports.engine.fill.JRPrintFrame;
 
 /**
- * @author Teodor Danciu (teodord@users.sourceforge.net)
+ * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
-public class JRPrintBand implements JRPrintElementContainer
+public class JRBasePrintFrame extends JRBasePrintElement implements JRPrintFrame
 {
+	private List elements;
+	private JRBox box;
 	
-
-	/**
-	 *
-	 */
-	private int height = 0;
-	private List elements = new ArrayList();
-
-	
-	/**
-	 *
-	 */
-	public int getHeight()
+	public JRBasePrintFrame()
 	{
-		return this.height;
-	}
+		super();
 		
-	/**
-	 *
-	 */
-	public void setHeight(int height)
-	{
-		this.height = height;
+		elements = new ArrayList();
 	}
 
-	/**
-	 *
-	 */
-	public List getElements()
+	public void setBox(JRBox box)
 	{
-		return this.elements;
+		this.box = box;
 	}
 	
-	/**
-	 *
-	 */
+	public JRBox getBox()
+	{
+		return box;
+	}
+
 	public void addElement(JRPrintElement element)
 	{
-		this.elements.add(element);
+		elements.add(element);
 	}
-		
-
+	
+	public List getElements()
+	{
+		return elements;
+	}
 }

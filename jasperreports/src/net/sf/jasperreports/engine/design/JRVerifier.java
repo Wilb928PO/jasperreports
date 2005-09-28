@@ -32,14 +32,13 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import net.sf.jasperreports.engine.JRAnchor;
 import net.sf.jasperreports.engine.JRBand;
+import net.sf.jasperreports.engine.JRBox;
 import net.sf.jasperreports.engine.JRChart;
 import net.sf.jasperreports.engine.JRChartDataset;
 import net.sf.jasperreports.engine.JRDataset;
@@ -58,13 +57,16 @@ import net.sf.jasperreports.engine.JRQuery;
 import net.sf.jasperreports.engine.JRQueryChunk;
 import net.sf.jasperreports.engine.JRReportFont;
 import net.sf.jasperreports.engine.JRSubreport;
-import net.sf.jasperreports.engine.JRSubreportReturnValue;
 import net.sf.jasperreports.engine.JRSubreportParameter;
+import net.sf.jasperreports.engine.JRSubreportReturnValue;
 import net.sf.jasperreports.engine.JRTextElement;
 import net.sf.jasperreports.engine.JRTextField;
 import net.sf.jasperreports.engine.JRVariable;
+import net.sf.jasperreports.engine.crosstab.JRCellContents;
 import net.sf.jasperreports.engine.crosstab.JRCrosstab;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabBucket;
+import net.sf.jasperreports.engine.crosstab.JRCrosstabCell;
+import net.sf.jasperreports.engine.crosstab.JRCrosstabColumnGroup;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabGroup;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabMeasure;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabParameter;
@@ -786,21 +788,7 @@ public class JRVerifier
 				{
 					JRElement element = elements[index];
 	
-					expression = element.getPrintWhenExpression();
-					
-					if (expression != null)
-					{
-						Class clazz = expression.getValueClass();
-		
-						if (clazz == null)
-						{
-							brokenRules.add("Class not set for element \"print when\" expression.");
-						}
-						else if (!java.lang.Boolean.class.isAssignableFrom(clazz))
-						{
-							brokenRules.add("Class " + clazz + " not supported for element \"print when\" expression. Use java.lang.Boolean instead.");
-						}
-					}
+					verifyPrintWhenExpr(element);
 
 					/*
 					if (element.getY() < 0)
@@ -848,6 +836,27 @@ public class JRVerifier
 						verifyChart((JRChart) element);
 					}
 				}
+			}
+		}
+	}
+
+
+	private void verifyPrintWhenExpr(JRElement element)
+	{
+		JRExpression expression;
+		expression = element.getPrintWhenExpression();
+		
+		if (expression != null)
+		{
+			Class clazz = expression.getValueClass();
+
+			if (clazz == null)
+			{
+				brokenRules.add("Class not set for element \"print when\" expression.");
+			}
+			else if (!java.lang.Boolean.class.isAssignableFrom(clazz))
+			{
+				brokenRules.add("Class " + clazz + " not supported for element \"print when\" expression. Use java.lang.Boolean instead.");
 			}
 		}
 	}
@@ -1266,24 +1275,33 @@ public class JRVerifier
 
 	private void verifyCrosstab(JRDesignCrosstab crosstab)
 	{
-		// TODO luci cell total groups
-		// TODO luci cell elements position
 		// TODO luci cell sizes
-		// TODO luci no subreps, etc in cell contents
-		// TODO luci no delayed evaluation in cell contents
 		
 		verifyParameters(crosstab);
 		
 		JRCrosstabRowGroup[] rowGroups = crosstab.getRowGroups();
 		if (rowGroups == null || rowGroups.length == 0)
 		{
-			brokenRules.add("Crosstab " + crosstab.getName() + " should have at least one measure.");
+			brokenRules.add("Crosstab " + crosstab.getName() + " should have at least one row group.");
 		}
 		else
 		{
 			for (int i = 0; i < rowGroups.length; i++)
 			{
 				verifyCrosstabRowGroup(rowGroups[i]);
+			}
+		}
+		
+		JRCrosstabColumnGroup[] colGroups = crosstab.getColumnGroups();
+		if (colGroups == null || colGroups.length == 0)
+		{
+			brokenRules.add("Crosstab " + crosstab.getName() + " should have at least one column group.");
+		}
+		else
+		{
+			for (int i = 0; i < colGroups.length; i++)
+			{
+				verifyCrosstabColumnGroup(colGroups[i]);
 			}
 		}
 		
@@ -1300,24 +1318,12 @@ public class JRVerifier
 			}
 		}
 		
-		JRVariable[] variables = crosstab.getVariables();
-		if (variables != null)
-		{
-			Set names = new HashSet();
-			for (int i = 0; i < variables.length; i++)
-			{
-				if (!names.add(variables[i].getName()))
-				{
-					brokenRules.add("Duplicate variable name " + variables[i].getName() + " for crosstab " + crosstab.getName() +
-							".  Crosstab groups and measures should have distinct names.");
-				}
-			}
-		}
+		verifyCrosstabCells(crosstab);
 		
 		verifyExpressions(crosstab);
 	}
-	
-	
+
+
 	private void verifyParameters(JRDesignCrosstab crosstab)
 	{
 		JRExpression paramMapExpression = crosstab.getParametersMapExpression();
@@ -1381,6 +1387,12 @@ public class JRVerifier
 	}
 
 
+	private void verifyCrosstabColumnGroup(JRCrosstabColumnGroup group)
+	{
+		verifyCrosstabGroup(group);
+	}
+
+
 	private void verifyCrosstabGroup(JRCrosstabGroup group)
 	{
 		String groupName = group.getName();
@@ -1390,6 +1402,8 @@ public class JRVerifier
 		}
 		
 		verifyCrosstabBucket(group);
+		verifyCellContents(group.getHeader());
+		verifyCellContents(group.getTotalHeader());
 	}
 
 
@@ -1441,6 +1455,23 @@ public class JRVerifier
 			else if (!Comparator.class.isAssignableFrom(comparatorClass))
 			{
 				brokenRules.add("The comparator expression should be compatible with java.util.Comparator for crosstab group " + group.getName() + ".");
+			}
+		}
+	}
+	
+	
+	private void verifyCrosstabCells(JRDesignCrosstab crosstab)
+	{
+		JRCrosstabCell[][] cells = crosstab.getCells();
+		for (int i = 0; i < cells.length; ++i)
+		{
+			for (int j = 0; j < cells[i].length; ++j)
+			{
+				JRCrosstabCell cell = cells[i][j];
+				if (cell != null)
+				{
+					verifyCellContents(cell.getContents());
+				}
 			}
 		}
 	}
@@ -1526,6 +1557,88 @@ public class JRVerifier
 	private void verifyChart(JRChart chart)
 	{
 		verifyChartDataset(chart.getDataset());
+	}
+
+
+	private void verifyCellContents(JRCellContents contents)
+	{
+		if (contents != null)
+		{
+			JRElement[] elements = contents.getElements();
+			if (elements != null && elements.length > 0)
+			{
+				int topPadding = 0;
+				int leftPadding = 0;
+				int bottomPadding = 0;
+				int rightPadding = 0;
+				
+				JRBox box = contents.getBox();
+				if (box != null)
+				{
+					topPadding = box.getTopPadding();
+					leftPadding = box.getLeftPadding();
+					bottomPadding = box.getBottomPadding();
+					rightPadding = box.getRightPadding();
+				}
+
+				int cellWidth = contents.getWidth() - leftPadding - rightPadding;
+				int cellHeight = contents.getHeight() - topPadding - bottomPadding;
+				
+				for (int i = 0; i < elements.length; i++)
+				{
+					JRElement element = elements[i];
+					
+					verifyPrintWhenExpr(element);
+					
+					if (element.getX() + element.getWidth() > cellWidth)
+					{
+						brokenRules.add("Element reaches outside cell width: x=" + element.getX() + ", width="
+								+ element.getWidth() + ", cell width=" + cellWidth + ".");
+					}
+					
+					if (element.getY() + element.getHeight() > cellHeight)
+					{
+						brokenRules.add("Element reaches outside cell width: y=" + element.getY() + ", height="
+								+ element.getHeight() + ", cell height=" + cellHeight + ".");
+					}
+					
+					if (element instanceof JRTextField)
+					{
+						JRTextField textField = (JRTextField) element;
+						
+						if (textField.getEvaluationTime() != JRExpression.EVALUATION_TIME_NOW)
+						{
+							brokenRules.add("Elements with delayed evaluation time are not supported inside crosstab cells.");
+						}
+						
+						verifyTextField(textField);
+					}
+					else if (element instanceof JRImage)
+					{
+						JRImage image = (JRImage) element;
+						
+						if (image.getEvaluationTime() != JRExpression.EVALUATION_TIME_NOW)
+						{
+							brokenRules.add("Elements with delayed evaluation time are not supported inside crosstab cells.");
+						}
+						
+						verifyImage(image);
+					}
+					else if (element instanceof JRSubreport)
+					{
+						brokenRules.add("Subreports are not allowed inside crosstab cells.");
+					}
+					else if (element instanceof JRCrosstab)
+					{
+						brokenRules.add("Crosstabs are not allowed inside crosstab cells.");
+					}
+					else if (element instanceof JRChart)
+					{
+						brokenRules.add("Charts are not allowed inside crosstab cells.");
+					}
+				}
+			}
+		}
 	}
 
 
