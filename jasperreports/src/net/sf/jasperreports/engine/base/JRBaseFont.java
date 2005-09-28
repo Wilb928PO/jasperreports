@@ -117,7 +117,7 @@ public class JRBaseFont implements JRFont, Serializable
 		Float sizeAttr = (Float)attributes.get(TextAttribute.SIZE);
 		if (sizeAttr != null)
 		{
-			setSize(sizeAttr.intValue());
+			setFontSize(sizeAttr.intValue());
 		}
 		
 		Object underline = attributes.get(TextAttribute.UNDERLINE);
