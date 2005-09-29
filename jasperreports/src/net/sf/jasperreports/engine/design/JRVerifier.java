@@ -67,6 +67,7 @@ import net.sf.jasperreports.engine.crosstab.JRCrosstab;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabBucket;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabCell;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabColumnGroup;
+import net.sf.jasperreports.engine.crosstab.JRCrosstabDataset;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabGroup;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabMeasure;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabParameter;
@@ -1277,12 +1278,28 @@ public class JRVerifier
 	{
 		// TODO luci cell sizes
 		
+		String name = crosstab.getName();
+		if (name == null || name.length() == 0)
+		{
+			brokenRules.add("Crosstab name missing");
+		}
+		
 		verifyParameters(crosstab);
+		
+		JRCrosstabDataset dataset = crosstab.getDataset();
+		if (dataset == null)
+		{
+			brokenRules.add("Crosstab " + name + " dataset missing.");
+		}
+		else
+		{
+			verifyChartDataset(dataset);
+		}
 		
 		JRCrosstabRowGroup[] rowGroups = crosstab.getRowGroups();
 		if (rowGroups == null || rowGroups.length == 0)
 		{
-			brokenRules.add("Crosstab " + crosstab.getName() + " should have at least one row group.");
+			brokenRules.add("Crosstab " + name + " should have at least one row group.");
 		}
 		else
 		{
@@ -1295,7 +1312,7 @@ public class JRVerifier
 		JRCrosstabColumnGroup[] colGroups = crosstab.getColumnGroups();
 		if (colGroups == null || colGroups.length == 0)
 		{
-			brokenRules.add("Crosstab " + crosstab.getName() + " should have at least one column group.");
+			brokenRules.add("Crosstab " + name + " should have at least one column group.");
 		}
 		else
 		{
@@ -1308,7 +1325,7 @@ public class JRVerifier
 		JRCrosstabMeasure[] measures = crosstab.getMeasures();
 		if (measures == null || measures.length == 0)
 		{
-			brokenRules.add("Crosstab " + crosstab.getName() + " should have at least one measure.");
+			brokenRules.add("Crosstab " + name + " should have at least one measure.");
 		}
 		else
 		{
@@ -1403,7 +1420,10 @@ public class JRVerifier
 		
 		verifyCrosstabBucket(group);
 		verifyCellContents(group.getHeader());
-		verifyCellContents(group.getTotalHeader());
+		if (group.hasTotal())
+		{
+			verifyCellContents(group.getTotalHeader());
+		}
 	}
 
 

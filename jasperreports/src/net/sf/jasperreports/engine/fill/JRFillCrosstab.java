@@ -27,6 +27,7 @@
  */
 package net.sf.jasperreports.engine.fill;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -785,6 +786,11 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 						int width = columnXOffsets[j + cell.getLevelSpan()] - columnXOffsets[j];
 
 						contents = JRFillCellContents.getTransformedContents(filler, this, contents, width, contents.getHeight(), position, JRCellContents.POSITION_Y_TOP);
+						
+						if (j == columnIndex)
+						{
+							contents = JRFillCellContents.getBoxContents(contents, true, false);
+						}
 
 						JRPrintFrame printCell = fillCellContents(contents, 
 								columnXOffsets[j] - columnXOffsets[columnIndex] + xOffset, 
@@ -832,6 +838,11 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 						int height = rowYOffsets[i + rowIndex + cell.getLevelSpan()] - rowYOffsets[i + rowIndex];
 
 						contents = JRFillCellContents.getTransformedContents(filler, this, contents, contents.getWidth(), height, JRCellContents.POSITION_X_LEFT, group.getPosition());
+						
+						if (i == 0)
+						{
+							contents = JRFillCellContents.getBoxContents(contents, false, true);
+						}
 
 						JRPrintFrame printCell = fillCellContents(contents, 
 								rowHeadersXOffsets[j], 
@@ -904,6 +915,9 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 	
 	private void fillDataCells(int lastRowIndex, int xOffset, int yOffset) throws JRException
 	{
+		final boolean leftEmpty = columnIndex != 0 && !isRepeatRowHeaders();
+		final boolean topEmpty = rowIndex != 0 && !isRepeatColumnHeaders();
+		
 		for (int i = rowIndex; i < lastRowIndex; ++i)
 		{
 			for (int j = columnIndex; j < lastColumnIndex; ++j)
@@ -916,9 +930,18 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 				setGroupVariables(columnGroups, data.getColumnBucketValues());
 				setMeasureVariables(data.getMesureValues());
 
-				if (cell != null)
+				JRFillCellContents contents = cell == null ? null : cell.getFillContents();
+				if (contents != null)
 				{
-					JRPrintFrame printCell = fillCellContents(cell.getFillContents(), 
+					boolean left = leftEmpty && j == columnIndex;
+					boolean top = topEmpty && i == rowIndex;
+					
+					if (left || top)
+					{
+						contents = JRFillCellContents.getBoxContents(contents, left, top);
+					}
+					
+					JRPrintFrame printCell = fillCellContents(contents, 
 							columnXOffsets[j] - columnXOffsets[columnIndex] + xOffset, 
 							rowYOffsets[i] - rowYOffsets[rowIndex] + yOffset);
 					addPrintCell(printCell);
@@ -958,7 +981,7 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 		return factory.getCrosstab(this);
 	}
 
-	public void writeXml(JRXmlWriter writer)
+	public void writeXml(JRXmlWriter writer) throws IOException
 	{
 		writer.writeCrosstab(this);
 	}

@@ -77,6 +77,32 @@ public class JRBaseBox implements JRBox, Serializable
 		
 
 	/**
+	 * Creates a clone of a box object.
+	 * 
+	 * @param box the object to be cloned
+	 */
+	public JRBaseBox(JRBox box)
+	{
+		border = box.getBorder();
+		topBorder = box.getOwnTopBorder();
+		leftBorder = box.getOwnLeftBorder();
+		bottomBorder = box.getOwnBottomBorder();
+		rightBorder = box.getOwnRightBorder();
+		
+		borderColor = box.getBorderColor();
+		topBorderColor = box.getOwnTopBorderColor();
+		leftBorderColor = box.getOwnLeftBorderColor();
+		bottomBorderColor = box.getOwnBottomBorderColor();
+		rightBorderColor = box.getOwnRightBorderColor();
+		
+		padding = box.getPadding();
+		topPadding = box.getOwnTopPadding();
+		leftPadding = box.getOwnLeftPadding();
+		bottomPadding = box.getOwnBottomPadding();
+		rightPadding = box.getOwnRightPadding();
+	}
+	
+	/**
 	 *
 	 */
 	public byte getBorder()

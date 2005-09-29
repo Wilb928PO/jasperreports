@@ -36,7 +36,7 @@ import net.sf.jasperreports.engine.JRException;
  */
 public interface JRIncrementer
 {
-
+//TODO luci compat
 
 	/**
 	 *

@@ -33,7 +33,10 @@ import java.util.Map;
 import net.sf.jasperreports.engine.JRBox;
 import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRGraphicElement;
 import net.sf.jasperreports.engine.JRPrintElement;
+import net.sf.jasperreports.engine.JRRuntimeException;
+import net.sf.jasperreports.engine.base.JRBaseBox;
 import net.sf.jasperreports.engine.crosstab.JRCellContents;
 
 import org.apache.commons.collections.ReferenceMap;
@@ -42,18 +45,21 @@ import org.apache.commons.collections.ReferenceMap;
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
-public class JRFillCellContents extends JRFillElementContainer implements JRCellContents
+public class JRFillCellContents extends JRFillElementContainer implements JRCellContents, Cloneable
 {
-	protected static final Map transformedContents = new ReferenceMap();
+	protected static final Map transformedContentsCache = new ReferenceMap();
+	protected static final Map boxContentsCache = new ReferenceMap();
 	
 	private final JRFillCrosstab crosstab;
 	private final JRCellContents parentCell;
+	
+	private JRBox box;
 	
 	private int height;
 	private int width;
 	private int span;
 	
-	private final JRTemplateFrame template;
+	private JRTemplateFrame template;
 
 	public JRFillCellContents(JRCellContents cell, JRFillObjectFactory factory)
 	{
@@ -62,14 +68,20 @@ public class JRFillCellContents extends JRFillElementContainer implements JRCell
 		crosstab = factory.getCrosstab();
 		parentCell = cell;
 		
+		box = cell.getBox();
+		
 		width = cell.getWidth();
 		height = cell.getHeight();
 		
 		initElements();
 		
-		template = new JRTemplateFrame(crosstab, this);
+		createTemplate();
 	}
 
+	protected void createTemplate()
+	{
+		template = new JRTemplateFrame(crosstab, this);
+	}
 	
 	public Color getBackcolor()
 	{
@@ -78,9 +90,14 @@ public class JRFillCellContents extends JRFillElementContainer implements JRCell
 
 	public JRBox getBox()
 	{
-		return parentCell.getBox();
+		return box;
 	}
 
+	protected void setBox(JRBox box)
+	{
+		this.box = box;
+		createTemplate();
+	}
 	
 	public int getHeight()
 	{
@@ -94,13 +111,13 @@ public class JRFillCellContents extends JRFillElementContainer implements JRCell
 	}
 	
 	
-	public void setHeight(int height)
+	protected void setHeight(int height)
 	{
 		this.height = height;
 	}
 	
 	
-	public void setWidth(int width)
+	protected void setWidth(int width)
 	{
 		this.width = width;
 	}
@@ -115,6 +132,60 @@ public class JRFillCellContents extends JRFillElementContainer implements JRCell
 	public int getSpan()
 	{
 		return span;
+	}
+	
+	
+	public static JRFillCellContents getBoxContents(JRFillCellContents contents, boolean left, boolean top)
+	{
+		JRBox box = contents.getBox();
+		if (box == null)
+		{
+			return contents;
+		}
+		
+		boolean copyLeft = left && box.getLeftBorder() == JRGraphicElement.PEN_NONE && box.getRightBorder() != JRGraphicElement.PEN_NONE;
+		boolean copyTop = top && box.getTopBorder() == JRGraphicElement.PEN_NONE && box.getBottomBorder() != JRGraphicElement.PEN_NONE;
+		
+		if (!(copyLeft || copyTop))
+		{
+			return contents;
+		}
+		
+		Object key = new BoxContents(contents, copyLeft, copyTop);
+		JRFillCellContents boxContents = (JRFillCellContents) boxContentsCache.get(key);
+		if (boxContents == null)
+		{
+			try
+			{
+				boxContents = (JRFillCellContents) contents.clone();
+				
+				JRBaseBox newBox = new JRBaseBox(box);
+				
+				if (copyLeft)
+				{
+					newBox.setLeftBorder(box.getRightBorder());
+					newBox.setLeftBorderColor(box.getRightBorderColor());
+				}
+				
+				if (copyTop)
+				{
+					newBox.setTopBorder(box.getBottomBorder());
+					newBox.setTopBorderColor(box.getBottomBorderColor());
+				}
+				
+				boxContents.setBox(newBox);
+				
+				boxContentsCache.put(key, boxContents);
+			}
+			catch (CloneNotSupportedException e)
+			{
+				// doesn't happen
+				throw new JRRuntimeException(e);
+			}
+			
+		}
+		
+		return boxContents;
 	}
 	
 	
@@ -138,7 +209,7 @@ public class JRFillCellContents extends JRFillElementContainer implements JRCell
 		
 		Object key = new StretchedContents(contents, newWidth, newHeight, xPosition, yPosition);
 		
-		JRFillCellContents transformedCell = (JRFillCellContents) transformedContents.get(key);
+		JRFillCellContents transformedCell = (JRFillCellContents) transformedContentsCache.get(key);
 		if (transformedCell == null)
 		{
 			JRFillObjectFactory factory = new JRFillObjectFactory(filler, crosstab);
@@ -151,7 +222,7 @@ public class JRFillCellContents extends JRFillElementContainer implements JRCell
 			
 			transformedCell.setElementsBandBottomY();
 			
-			transformedContents.put(key, transformedCell);
+			transformedContentsCache.put(key, transformedCell);
 		}
 		
 		return transformedCell;
@@ -267,6 +338,45 @@ public class JRFillCellContents extends JRFillElementContainer implements JRCell
 	}
 
 	
+	protected static class BoxContents
+	{
+		final JRFillCellContents contents;
+		final boolean left;
+		final boolean top;
+		final int hashCode;
+		
+		public BoxContents(JRFillCellContents contents, boolean left, boolean top)
+		{
+			this.contents = contents;
+			this.left = left;
+			this.top = top;
+			
+			int hash = contents.hashCode();
+			hash = 31*hash + (left ? 1231 : 1237);
+			hash = 31*hash + (top ? 1231 : 1237);
+			hashCode = hash;
+		}
+
+		public boolean equals(Object obj)
+		{
+			if (obj == this)
+			{
+				return true;
+			}
+			
+			BoxContents b = (BoxContents) obj;
+			
+			return b.contents.equals(contents) && 
+				b.left == left && b.top == top;
+		}
+
+		public int hashCode()
+		{
+			// TODO Auto-generated method stub
+			return super.hashCode();
+		}
+	}
+	
 	protected static class StretchedContents
 	{
 		final JRFillCellContents contents;
@@ -295,9 +405,9 @@ public class JRFillCellContents extends JRFillElementContainer implements JRCell
 		
 		public boolean equals(Object o)
 		{
-			if (!(o instanceof StretchedContents))
+			if (o == this)
 			{
-				return false;				
+				return true;
 			}
 			
 			StretchedContents s = (StretchedContents) o;

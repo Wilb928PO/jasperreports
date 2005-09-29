@@ -35,8 +35,11 @@ import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.sf.jasperreports.charts.JRAreaPlot;
 import net.sf.jasperreports.charts.JRBar3DPlot;
@@ -94,8 +97,25 @@ import net.sf.jasperreports.engine.JRSubreportReturnValue;
 import net.sf.jasperreports.engine.JRTextElement;
 import net.sf.jasperreports.engine.JRTextField;
 import net.sf.jasperreports.engine.JRVariable;
+import net.sf.jasperreports.engine.crosstab.JRCellContents;
 import net.sf.jasperreports.engine.crosstab.JRCrosstab;
+import net.sf.jasperreports.engine.crosstab.JRCrosstabBucket;
+import net.sf.jasperreports.engine.crosstab.JRCrosstabCell;
+import net.sf.jasperreports.engine.crosstab.JRCrosstabColumnGroup;
+import net.sf.jasperreports.engine.crosstab.JRCrosstabMeasure;
+import net.sf.jasperreports.engine.crosstab.JRCrosstabParameter;
+import net.sf.jasperreports.engine.crosstab.JRCrosstabRowGroup;
+import net.sf.jasperreports.engine.design.crosstab.JRDesignCrosstab;
+import net.sf.jasperreports.engine.fill.crosstab.calculation.Bucket;
 import net.sf.jasperreports.engine.util.XmlWriter;
+import net.sf.jasperreports.engine.xml.crosstab.JRCellContentsFactory;
+import net.sf.jasperreports.engine.xml.crosstab.JRCrosstabBucketFactory;
+import net.sf.jasperreports.engine.xml.crosstab.JRCrosstabCellFactory;
+import net.sf.jasperreports.engine.xml.crosstab.JRCrosstabColumnGroupFactory;
+import net.sf.jasperreports.engine.xml.crosstab.JRCrosstabFactory;
+import net.sf.jasperreports.engine.xml.crosstab.JRCrosstabGroupFactory;
+import net.sf.jasperreports.engine.xml.crosstab.JRCrosstabMeasureFactory;
+import net.sf.jasperreports.engine.xml.crosstab.JRCrosstabRowGroupFactory;
 
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.BarRenderer3D;
@@ -571,7 +591,8 @@ public class JRXmlWriter
 			(element instanceof JREllipse && element.getMode() != JRElement.MODE_OPAQUE) ||
 			(element instanceof JRImage && element.getMode() != JRElement.MODE_TRANSPARENT) ||
 			(element instanceof JRTextElement && element.getMode() != JRElement.MODE_TRANSPARENT) ||
-			(element instanceof JRSubreport && element.getMode() != JRElement.MODE_TRANSPARENT)
+			(element instanceof JRSubreport && element.getMode() != JRElement.MODE_TRANSPARENT) ||
+			(element instanceof JRCrosstab && element.getMode() != JRElement.MODE_TRANSPARENT)
 			)
 		{
 			writer.addAttribute("mode", element.getMode(), JRXmlConstants.getModeMap());
@@ -1635,12 +1656,212 @@ public class JRXmlWriter
 	}
 
 
-	public void writeCrosstab(JRCrosstab crosstab)
+	public void writeCrosstab(JRCrosstab crosstab) throws IOException
 	{
-		//TODO luci write
+		writer.startElement("crosstab");
+		writer.addAttribute(JRCrosstabFactory.ATTRIBUTE_name, crosstab.getName());
+		writer.addAttribute(JRCrosstabFactory.ATTRIBUTE_isDataPreSorted, crosstab.isDataPreSorted(), false);
+		writer.addAttribute(JRCrosstabFactory.ATTRIBUTE_isRepeatColumnHeaders, crosstab.isRepeatColumnHeaders(), true);
+		writer.addAttribute(JRCrosstabFactory.ATTRIBUTE_isRepeatRowHeaders, crosstab.isRepeatRowHeaders(), true);
+		writer.addAttribute(JRCrosstabFactory.ATTRIBUTE_columnBreakOffset, crosstab.getColumnBreakOffset(), JRCrosstab.DEFAULT_COLUMN_BREAK_OFFSET);
+		
+		writeReportElement(crosstab);
+		
+		JRCrosstabParameter[] parameters = crosstab.getParameters();
+		if (parameters != null)
+		{
+			for (int i = 0; i < parameters.length; i++)
+			{
+				writeCrosstabParameter(parameters[i]);
+			}
+		}
+		
+		writer.writeExpression("parametersMapExpression", crosstab.getParametersMapExpression(), false);
+		
+		writeChartDataset(crosstab.getDataset());
+		
+		JRCrosstabRowGroup[] rowGroups = crosstab.getRowGroups();
+		for (int i = 0; i < rowGroups.length; i++)
+		{
+			writeCrosstabRowGroup(rowGroups[i]);
+		}
+		
+		JRCrosstabColumnGroup[] columnGroups = crosstab.getColumnGroups();
+		for (int i = 0; i < columnGroups.length; i++)
+		{
+			writeCrosstabColumnGroup(columnGroups[i]);
+		}
+		
+		JRCrosstabMeasure[] measures = crosstab.getMeasures();
+		for (int i = 0; i < measures.length; i++)
+		{
+			writeCrosstabMeasure(measures[i]);
+		}
+		
+		if (crosstab instanceof JRDesignCrosstab)
+		{
+			List cellsList = ((JRDesignCrosstab) crosstab).getCellsList();
+			for (Iterator it = cellsList.iterator(); it.hasNext();)
+			{
+				JRCrosstabCell cell = (JRCrosstabCell) it.next();
+				writeCrosstabCell(cell);
+			}
+		}
+		else
+		{
+			JRCrosstabCell[][] cells = crosstab.getCells();
+			Set cellsSet = new HashSet();
+			for (int i = cells.length - 1; i >= 0 ; --i)
+			{
+				for (int j = cells[i].length - 1; j >= 0 ; --j)
+				{
+					JRCrosstabCell cell = cells[i][j];
+					if (cell != null && cellsSet.add(cell))
+					{
+						writeCrosstabCell(cell);
+					}
+				}
+			}
+		}
+		
+		writer.closeElement();
 	}
 	
 	
+	protected void writeCrosstabRowGroup(JRCrosstabRowGroup group) throws IOException
+	{
+		writer.startElement("rowGroup");
+		writer.addAttribute(JRCrosstabGroupFactory.ATTRIBUTE_name, group.getName());
+		writer.addAttribute(JRCrosstabRowGroupFactory.ATTRIBUTE_width, group.getWidth());
+		writer.addAttribute(JRCrosstabGroupFactory.ATTRIBUTE_totalPosition, group.getTotalPosition(), JRXmlConstants.getCrosstabTotalPositionMap(), Bucket.TOTAL_POSITION_NONE);
+		writer.addAttribute(JRCrosstabRowGroupFactory.ATTRIBUTE_headerPosition, group.getPosition(), JRXmlConstants.getCrosstabRowPositionMap(), JRCellContents.POSITION_Y_TOP);
+
+		writeBucket(group.getBucket());
+		
+		JRCellContents header = group.getHeader();
+		if (header != null)
+		{
+			writer.startElement("crosstabRowHeader");
+			writeCellContents(header);
+			writer.closeElement();
+		}
+		
+		JRCellContents totalHeader = group.getTotalHeader();
+		if (totalHeader != null)
+		{
+			writer.startElement("crosstabTotalRowHeader");
+			writeCellContents(totalHeader);
+			writer.closeElement();
+		}
+		
+		writer.closeElement();
+		
+	}
+	
+	
+	protected void writeCrosstabColumnGroup(JRCrosstabColumnGroup group) throws IOException
+	{
+		writer.startElement("columnGroup");
+		writer.addAttribute(JRCrosstabGroupFactory.ATTRIBUTE_name, group.getName());
+		writer.addAttribute(JRCrosstabColumnGroupFactory.ATTRIBUTE_height, group.getHeight());
+		writer.addAttribute(JRCrosstabGroupFactory.ATTRIBUTE_totalPosition, group.getTotalPosition(), JRXmlConstants.getCrosstabTotalPositionMap(), Bucket.TOTAL_POSITION_NONE);
+		writer.addAttribute(JRCrosstabColumnGroupFactory.ATTRIBUTE_headerPosition, group.getPosition(), JRXmlConstants.getCrosstabColumnPositionMap(), JRCellContents.POSITION_X_LEFT);
+
+		writeBucket(group.getBucket());
+		
+		JRCellContents header = group.getHeader();
+		if (header != null)
+		{
+			writer.startElement("crosstabColumnHeader");
+			writeCellContents(header);
+			writer.closeElement();
+		}
+		
+		JRCellContents totalHeader = group.getTotalHeader();
+		if (totalHeader != null)
+		{
+			writer.startElement("crosstabTotalColumnHeader");
+			writeCellContents(totalHeader);
+			writer.closeElement();
+		}
+		
+		writer.closeElement();
+		
+	}
+
+
+	protected void writeBucket(JRCrosstabBucket bucket) throws IOException
+	{
+		writer.startElement("bucket");
+		writer.addAttribute(JRCrosstabBucketFactory.ATTRIBUTE_class, bucket.getValueClassName(), "java.lang.String");
+		writer.addAttribute(JRCrosstabBucketFactory.ATTRIBUTE_order, bucket.getOrder(), JRXmlConstants.getCrosstabBucketOrderMap(), Bucket.ORDER_ASCENDING);
+		writer.writeExpression("bucketExpression", bucket.getExpression(), false);
+		writer.writeExpression("comparatorExpression", bucket.getComparatorExpression(), false);		
+		writer.closeElement();
+	}
+
+
+	protected void writeCrosstabMeasure(JRCrosstabMeasure measure) throws IOException
+	{
+		writer.startElement("measure");
+		writer.addAttribute(JRCrosstabMeasureFactory.ATTRIBUTE_name, measure.getName());
+		writer.addAttribute(JRCrosstabMeasureFactory.ATTRIBUTE_class, measure.getValueClassName());
+		writer.addAttribute(JRCrosstabMeasureFactory.ATTRIBUTE_calculation, measure.getCalculation(), JRXmlConstants.getCalculationMap(), JRVariable.CALCULATION_NOTHING);
+		writer.addAttribute(JRCrosstabMeasureFactory.ATTRIBUTE_percentageOf, measure.getPercentageOfType(), JRXmlConstants.getCrosstabPercentageMap(), JRCrosstabMeasure.PERCENTAGE_TYPE_NONE);
+		writer.addAttribute(JRCrosstabMeasureFactory.ATTRIBUTE_percentageCalculatorClass, measure.getPercentageCalculatorClassName());
+		writer.writeExpression("measureExpression", measure.getValueExpression(), false);
+		writer.closeElement();
+	}
+
+
+	protected void writeCrosstabCell(JRCrosstabCell cell) throws IOException
+	{
+		writer.startElement("crosstabCell");
+		writer.addAttribute(JRCrosstabCellFactory.ATTRIBUTE_width, cell.getWidth());
+		writer.addAttribute(JRCrosstabCellFactory.ATTRIBUTE_height, cell.getHeight());
+		writer.addAttribute(JRCrosstabCellFactory.ATTRIBUTE_rowTotalGroup, cell.getRowTotalGroup());
+		writer.addAttribute(JRCrosstabCellFactory.ATTRIBUTE_columnTotalGroup, cell.getColumnTotalGroup());
+		
+		writeCellContents(cell.getContents());
+		
+		writer.closeElement();
+	}
+
+
+	protected void writeCellContents(JRCellContents contents) throws IOException
+	{
+		if (contents != null)
+		{
+			writer.startElement("cellContents");
+			writer.addAttribute(JRCellContentsFactory.ATTRIBUTE_backcolor, contents.getBackcolor());
+			
+			writeBox(contents.getBox());
+			
+			List children = contents.getChildren();
+			if (children != null)
+			{
+				for (Iterator it = children.iterator(); it.hasNext();)
+				{
+					JRChild element = (JRChild) it.next();
+					element.writeXml(this);
+				}
+			}
+			
+			writer.closeElement();
+		}
+	}
+
+
+	protected void writeCrosstabParameter(JRCrosstabParameter parameter) throws IOException
+	{
+		writer.startElement("crosstabParameter");
+		writer.addAttribute("name", parameter.getName());
+		writer.addAttribute("class", parameter.getValueClassName(), "java.lang.String");
+		writer.writeExpression("parameterValueExpression", parameter.getExpression(), false);
+		writer.closeElement();
+	}
+
+
 	public void writeDataset(JRDataset dataset) throws IOException
 	{
 		writer.startElement("subDataset");
