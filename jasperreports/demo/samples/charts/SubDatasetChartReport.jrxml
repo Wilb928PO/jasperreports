@@ -38,8 +38,6 @@
 	</field>
 	<title>
 		<band height="50">
-			<elementGroup>
-			</elementGroup>
 			<staticText>
 				<reportElement x="0" y="0" width="555" height="35"/>
 				<box topBorder="Thin" leftBorder="None" bottomBorder="None" rightBorder="None"/>
