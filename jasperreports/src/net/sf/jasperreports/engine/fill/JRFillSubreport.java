@@ -28,6 +28,7 @@
 package net.sf.jasperreports.engine.fill;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.sql.Connection;
@@ -703,7 +704,7 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport, Runna
 	/**
 	 *
 	 */
-	public void writeXml(JRXmlWriter xmlWriter)
+	public void writeXml(JRXmlWriter xmlWriter) throws IOException
 	{
 		xmlWriter.writeSubreport(this);
 	}

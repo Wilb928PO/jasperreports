@@ -321,7 +321,6 @@ public class JRXmlExporter extends JRAbstractExporter
 		xmlWriter.addAttribute("pageWidth", jasperPrint.getPageWidth());
 		xmlWriter.addAttribute("pageHeight", jasperPrint.getPageHeight());
 		xmlWriter.addAttribute("orientation", jasperPrint.getOrientation(), JRXmlConstants.getOrientationMap(), JRReport.ORIENTATION_PORTRAIT);
-		xmlWriter.endElementAttributes();
 		
 		JRReportFont[] fonts = jasperPrint.getFonts();
 		if (fonts != null && fonts.length > 0)
@@ -376,7 +375,7 @@ public class JRXmlExporter extends JRAbstractExporter
 		xmlWriter.addAttribute("pdfFontName", font.getPdfFontName());
 		xmlWriter.addAttribute("pdfEncoding", font.getPdfEncoding());
 		xmlWriter.addAttribute("isPdfEmbedded", font.isPdfEmbedded());
-		xmlWriter.closeEmptyElement();
+		xmlWriter.closeElement();
 	}
 
 
@@ -387,7 +386,7 @@ public class JRXmlExporter extends JRAbstractExporter
 	 */
 	protected void exportPage(JRPrintPage page) throws JRException, IOException
 	{
-		xmlWriter.startElementNoAttributes("page");
+		xmlWriter.startElement("page");
 
 		Collection elements = page.getElements();
 		exportElements(elements);
@@ -448,7 +447,6 @@ public class JRXmlExporter extends JRAbstractExporter
 	{
 		xmlWriter.startElement("line");
 		xmlWriter.addAttribute("direction", line.getDirection(), JRXmlConstants.getDirectionMap(), JRLine.DIRECTION_TOP_DOWN);
-		xmlWriter.endElementAttributes();
 
 		exportReportElement(line);
 		exportGraphicElement(line);
@@ -484,7 +482,7 @@ public class JRXmlExporter extends JRAbstractExporter
 		xmlWriter.addAttribute("forecolor", element.getForecolor(), Color.black);
 		xmlWriter.addAttribute("backcolor", element.getBackcolor(), Color.white);
 
-		xmlWriter.closeEmptyElement();
+		xmlWriter.closeElement();
 	}
 
 
@@ -509,7 +507,7 @@ public class JRXmlExporter extends JRAbstractExporter
 
 		xmlWriter.addAttribute("fill", element.getFill(), JRXmlConstants.getFillMap(), JRGraphicElement.FILL_SOLID);
 
-		xmlWriter.closeEmptyElement();
+		xmlWriter.closeElement();
 	}
 
 
@@ -521,11 +519,7 @@ public class JRXmlExporter extends JRAbstractExporter
 	protected void exportRectangle(JRPrintRectangle rectangle) throws IOException
 	{
 		xmlWriter.startElement("rectangle");
-		if (rectangle.getRadius() != 0)
-		{
-			xmlWriter.addAttribute("radius", rectangle.getRadius());
-		}
-		xmlWriter.endElementAttributes();
+		xmlWriter.addAttribute("radius", rectangle.getRadius(), 0);
 
 		exportReportElement(rectangle);
 		exportGraphicElement(rectangle);
@@ -541,7 +535,7 @@ public class JRXmlExporter extends JRAbstractExporter
 	 */
 	protected void exportEllipse(JRPrintEllipse ellipse) throws IOException
 	{
-		xmlWriter.startElementNoAttributes("ellipse");
+		xmlWriter.startElement("ellipse");
 
 		exportReportElement(ellipse);
 		exportGraphicElement(ellipse);
@@ -569,7 +563,6 @@ public class JRXmlExporter extends JRAbstractExporter
 		xmlWriter.addAttribute("hyperlinkReference", image.getHyperlinkReference());
 		xmlWriter.addAttribute("hyperlinkAnchor", image.getHyperlinkAnchor());
 		xmlWriter.addAttribute("hyperlinkPage", image.getHyperlinkPage());
-		xmlWriter.endElementAttributes();
 
 		exportReportElement(image);
 		exportBox(image.getBox());
@@ -581,7 +574,6 @@ public class JRXmlExporter extends JRAbstractExporter
 		{
 			xmlWriter.startElement("imageSource");
 			xmlWriter.addAttribute("isEmbedded", isEmbeddingImages && !image.isLazy(), false);
-			xmlWriter.endElementAttributes();
 	
 			String imageSource = "";
 			
@@ -671,7 +663,6 @@ public class JRXmlExporter extends JRAbstractExporter
 		xmlWriter.addAttribute("hyperlinkReference", text.getHyperlinkReference());
 		xmlWriter.addAttribute("hyperlinkAnchor", text.getHyperlinkAnchor());
 		xmlWriter.addAttribute("hyperlinkPage", text.getHyperlinkPage());
-		xmlWriter.endElementAttributes();
 
 		exportReportElement(text);
 		exportBox(text.getBox());
@@ -699,13 +690,9 @@ public class JRXmlExporter extends JRAbstractExporter
 			xmlWriter.startElement("box");
 
 			xmlWriter.addAttribute("border", box.getBorder(), JRXmlConstants.getPenMap(), JRGraphicElement.PEN_NONE);
-			xmlWriter.addAttribute("borderColor", box.getBorderColor());
+			xmlWriter.addAttribute("borderColor", box.getBorderColor());			
+			xmlWriter.addAttributePositive("padding", box.getPadding());
 			
-			if (box.getPadding() > 0)
-			{
-				xmlWriter.addAttribute("padding", box.getPadding());
-			}
-
 			xmlWriter.addAttribute("topBorder", box.getOwnTopBorder(), JRXmlConstants.getPenMap());
 			xmlWriter.addAttribute("topBorderColor", box.getOwnTopBorderColor());
 			xmlWriter.addAttribute("topPadding", box.getOwnTopPadding());
@@ -723,7 +710,7 @@ public class JRXmlExporter extends JRAbstractExporter
 			xmlWriter.addAttribute("rightBorderColor", box.getOwnRightBorderColor());
 			xmlWriter.addAttribute("rightPadding", box.getOwnRightPadding());
 			
-			xmlWriter.closeEmptyElement(true);
+			xmlWriter.closeElement(true);
 		}
 	}
 
@@ -766,14 +753,14 @@ public class JRXmlExporter extends JRAbstractExporter
 			xmlWriter.addAttribute("pdfFontName", font.getOwnPdfFontName());
 			xmlWriter.addAttribute("pdfEncoding", font.getOwnPdfEncoding());
 			xmlWriter.addAttribute("isPdfEmbedded", font.isOwnPdfEmbedded());
-			xmlWriter.closeEmptyElement(true);
+			xmlWriter.closeElement(true);
 		}
 	}
 	
 	
 	protected void exportFrame(JRPrintFrame frame) throws IOException, JRException
 	{
-		xmlWriter.startElementNoAttributes("frame");
+		xmlWriter.startElement("frame");
 		
 		pushRelativeElementOffsets();
 		

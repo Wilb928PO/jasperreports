@@ -27,6 +27,8 @@
  */
 package net.sf.jasperreports.engine.design;
 
+import java.io.IOException;
+
 import net.sf.jasperreports.engine.JRAbstractObjectFactory;
 import net.sf.jasperreports.engine.JRChild;
 import net.sf.jasperreports.engine.JREllipse;
@@ -69,7 +71,7 @@ public class JRDesignEllipse extends JRDesignGraphicElement implements JREllipse
 	/**
 	 *
 	 */
-	public void writeXml(JRXmlWriter xmlWriter)
+	public void writeXml(JRXmlWriter xmlWriter) throws IOException
 	{
 		xmlWriter.writeEllipse(this);
 	}
