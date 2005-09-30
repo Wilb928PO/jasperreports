@@ -965,7 +965,7 @@ public class JasperDesign extends JRBaseReport
 		for (Iterator it = crosstabs.iterator(); it.hasNext();)
 		{
 			JRDesignCrosstab crosstab = (JRDesignCrosstab) it.next();
-			crosstab.calculateSizes();
+			crosstab.preprocess();
 		}
 	}
 	

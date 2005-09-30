@@ -1276,8 +1276,6 @@ public class JRVerifier
 
 	private void verifyCrosstab(JRDesignCrosstab crosstab)
 	{
-		// TODO luci cell sizes
-		
 		String name = crosstab.getName();
 		if (name == null || name.length() == 0)
 		{
@@ -1419,10 +1417,10 @@ public class JRVerifier
 		}
 		
 		verifyCrosstabBucket(group);
-		verifyCellContents(group.getHeader());
+		verifyCellContents(group.getHeader(), groupName + " header");
 		if (group.hasTotal())
 		{
-			verifyCellContents(group.getTotalHeader());
+			verifyCellContents(group.getTotalHeader(), groupName + " total header");
 		}
 	}
 
@@ -1447,7 +1445,7 @@ public class JRVerifier
 			}
 		}
 		
-		Class valueClass = bucket.getValueClass();		
+		Class valueClass = expression == null ? null : expression.getValueClass();		
 		if (valueClass == null)
 		{
 			brokenRules.add("Crosstab bucket value class missing for group " + group.getName() + ".");
@@ -1483,19 +1481,86 @@ public class JRVerifier
 	private void verifyCrosstabCells(JRDesignCrosstab crosstab)
 	{
 		JRCrosstabCell[][] cells = crosstab.getCells();
-		for (int i = 0; i < cells.length; ++i)
+		JRCrosstabRowGroup[] rowGroups = crosstab.getRowGroups();
+		JRCrosstabColumnGroup[] columnGroups = crosstab.getColumnGroups();
+		
+		JRCrosstabCell baseCell = cells[rowGroups.length][columnGroups.length];
+		if(baseCell == null || baseCell.getWidth() == null)
 		{
-			for (int j = 0; j < cells[i].length; ++j)
+			brokenRules.add("Crosstab base cell width not specified.");
+		}
+		
+		if(baseCell == null || baseCell.getHeight() == null)
+		{
+			brokenRules.add("Crosstab base cell height not specified.");
+		}
+		
+		for (int i = rowGroups.length; i >= 0 ; --i)
+		{
+			for (int j = columnGroups.length; j >= 0 ; --j)
 			{
 				JRCrosstabCell cell = cells[i][j];
+				
+				String cellText = getCrosstabCellText(rowGroups, columnGroups, i, j);
+				
 				if (cell != null)
 				{
-					verifyCellContents(cell.getContents());
+					JRCellContents contents = cell.getContents();
+					
+					if (i < rowGroups.length)
+					{
+						JRCrosstabCell colCell = cells[rowGroups.length][j];
+						if (colCell != null && colCell.getContents().getWidth() != contents.getWidth())
+						{
+							brokenRules.add("Crosstab " + cellText + " width should be " + colCell.getContents().getWidth() + ".");
+						}
+					}
+					
+					if (j < columnGroups.length)
+					{
+						JRCrosstabCell rowCell = cells[i][columnGroups.length];
+						if (rowCell != null && rowCell.getContents().getHeight() != contents.getHeight())
+						{
+							brokenRules.add("Crosstab " + cellText + " height should be " + rowCell.getContents().getHeight() + ".");
+						}
+					}
+					
+					verifyCellContents(contents, cellText);
 				}
 			}
 		}
 	}
 
+	private String getCrosstabCellText(JRCrosstabRowGroup[] rowGroups, JRCrosstabColumnGroup[] columnGroups, 
+			int rowIndex, int columnIndex)
+	{
+		String text;
+		
+		if (rowIndex == rowGroups.length)
+		{
+			if (columnIndex == columnGroups.length)
+			{
+				text = "cell";
+			}
+			else
+			{
+				text = columnGroups[columnIndex].getName() + " total cell";
+			}
+		}
+		else
+		{
+			if (columnIndex == columnGroups.length)
+			{
+				text = rowGroups[rowIndex].getName() + " total cell";
+			}
+			else
+			{
+				text = rowGroups[rowIndex].getName() + "," + columnGroups[columnIndex].getName() + " total cell";
+			}
+		}
+		
+		return text;
+	}
 
 	private void verifyCrosstabMeasure(JRCrosstabMeasure measure)
 	{
@@ -1580,7 +1645,7 @@ public class JRVerifier
 	}
 
 
-	private void verifyCellContents(JRCellContents contents)
+	private void verifyCellContents(JRCellContents contents, String cellText)
 	{
 		if (contents != null)
 		{
@@ -1601,8 +1666,12 @@ public class JRVerifier
 					rightPadding = box.getRightPadding();
 				}
 
-				int cellWidth = contents.getWidth() - leftPadding - rightPadding;
-				int cellHeight = contents.getHeight() - topPadding - bottomPadding;
+				int cellWidth = contents.getWidth();
+				boolean widthCalculated = cellWidth != JRCellContents.NOT_CALCULATED;
+				int avlblWidth = cellWidth - leftPadding - rightPadding;
+				int cellHeight = contents.getHeight();
+				boolean heightCalculated = cellHeight != JRCellContents.NOT_CALCULATED;			
+				int avlblHeight = cellHeight - topPadding - bottomPadding;
 				
 				for (int i = 0; i < elements.length; i++)
 				{
@@ -1610,16 +1679,16 @@ public class JRVerifier
 					
 					verifyPrintWhenExpr(element);
 					
-					if (element.getX() + element.getWidth() > cellWidth)
+					if (widthCalculated && element.getX() + element.getWidth() > avlblWidth)
 					{
-						brokenRules.add("Element reaches outside cell width: x=" + element.getX() + ", width="
-								+ element.getWidth() + ", cell width=" + cellWidth + ".");
+						brokenRules.add("Element reaches outside " + cellText + " width: x=" + element.getX() + ", width="
+								+ element.getWidth() + ", available width=" + avlblWidth + ".");
 					}
 					
-					if (element.getY() + element.getHeight() > cellHeight)
+					if (heightCalculated && element.getY() + element.getHeight() > avlblHeight)
 					{
-						brokenRules.add("Element reaches outside cell width: y=" + element.getY() + ", height="
-								+ element.getHeight() + ", cell height=" + cellHeight + ".");
+						brokenRules.add("Element reaches outside " + cellText + " height: y=" + element.getY() + ", height="
+								+ element.getHeight() + ", available height=" + avlblHeight + ".");
 					}
 					
 					if (element instanceof JRTextField)

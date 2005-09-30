@@ -470,11 +470,13 @@
 
 <!ELEMENT bucket (bucketExpression, comparatorExpression?)>
 <!ATTLIST bucket
-	class NMTOKEN "java.lang.String"
 	order (Ascending | Descending) "Ascending"
 >
 
 <!ELEMENT bucketExpression (#PCDATA)>
+<!ATTLIST bucketExpression
+	class NMTOKEN #REQUIRED
+>
 
 <!ELEMENT comparatorExpression (#PCDATA)>
 

@@ -330,7 +330,7 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 			comparator = (Comparator) evaluateExpression(comparatorExpression, evaluation);
 		}
 
-		return new Bucket(bucket.getValueClass(), null, comparator, bucket.getOrder(), group.getTotalPosition());
+		return new Bucket(bucket.getExpression().getValueClass(), null, comparator, bucket.getOrder(), group.getTotalPosition());
 	}
 
 	private Measure createServiceMeasure(JRFillCrosstabMeasure measure)
@@ -781,10 +781,9 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 						contents = header;
 					}
 
-					if (contents != null && contents.getHeight() > 0)
+					int width = columnXOffsets[j + cell.getLevelSpan()] - columnXOffsets[j];
+					if (contents != null && width > 0 && contents.getHeight() > 0)
 					{
-						int width = columnXOffsets[j + cell.getLevelSpan()] - columnXOffsets[j];
-
 						contents = JRFillCellContents.getTransformedContents(filler, this, contents, width, contents.getHeight(), position, JRCellContents.POSITION_Y_TOP);
 						
 						if (j == columnIndex)
@@ -833,10 +832,9 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 						contents = group.getFillHeader();
 					}
 
-					if (contents != null && contents.getWidth() > 0)
+					int height = rowYOffsets[i + rowIndex + cell.getLevelSpan()] - rowYOffsets[i + rowIndex];
+					if (contents != null && contents.getWidth() > 0 && height > 0)
 					{
-						int height = rowYOffsets[i + rowIndex + cell.getLevelSpan()] - rowYOffsets[i + rowIndex];
-
 						contents = JRFillCellContents.getTransformedContents(filler, this, contents, contents.getWidth(), height, JRCellContents.POSITION_X_LEFT, group.getPosition());
 						
 						if (i == 0)
@@ -931,7 +929,7 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 				setMeasureVariables(data.getMesureValues());
 
 				JRFillCellContents contents = cell == null ? null : cell.getFillContents();
-				if (contents != null)
+				if (contents != null && contents.getWidth() > 0 && contents.getHeight() > 0)
 				{
 					boolean left = leftEmpty && j == columnIndex;
 					boolean top = topEmpty && i == rowIndex;

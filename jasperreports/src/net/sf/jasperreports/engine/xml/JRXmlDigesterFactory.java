@@ -723,7 +723,7 @@ public class JRXmlDigesterFactory
 		digester.addSetNext("*/bucket", "setBucket", JRDesignCrosstabBucket.class.getName());
 		
 		digester.addFactoryCreate("*/bucket/bucketExpression", JRCrosstabBucketExpressionFactory.class.getName());
-		digester.addSetNext("*/bucket/bucketExpression", "setExpression", JRExpression.class.getName());
+		digester.addSetNext("*/bucket/bucketExpression", "setExpression", JRDesignExpression.class.getName());
 		digester.addCallMethod("*/bucket/bucketExpression", "setText", 0);
 		
 		digester.addFactoryCreate("*/bucket/comparatorExpression", JRExpressionFactory.ComparatorExpressionFactory.class.getName());

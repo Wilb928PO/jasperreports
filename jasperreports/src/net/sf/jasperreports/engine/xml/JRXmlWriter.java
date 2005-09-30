@@ -1793,9 +1793,8 @@ public class JRXmlWriter
 	protected void writeBucket(JRCrosstabBucket bucket) throws IOException
 	{
 		writer.startElement("bucket");
-		writer.addAttribute(JRCrosstabBucketFactory.ATTRIBUTE_class, bucket.getValueClassName(), "java.lang.String");
 		writer.addAttribute(JRCrosstabBucketFactory.ATTRIBUTE_order, bucket.getOrder(), JRXmlConstants.getCrosstabBucketOrderMap(), Bucket.ORDER_ASCENDING);
-		writer.writeExpression("bucketExpression", bucket.getExpression(), false);
+		writer.writeExpression("bucketExpression", bucket.getExpression(), true);
 		writer.writeExpression("comparatorExpression", bucket.getComparatorExpression(), false);		
 		writer.closeElement();
 	}
