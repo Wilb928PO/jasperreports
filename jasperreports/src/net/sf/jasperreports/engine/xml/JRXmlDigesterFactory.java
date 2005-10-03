@@ -741,6 +741,9 @@ public class JRXmlDigesterFactory
 		digester.addSetNext("*/crosstab/crosstabCell", "addCell", JRDesignCrosstabCell.class.getName());
 		digester.addFactoryCreate("*/crosstab/crosstabCell/cellContents", JRCellContentsFactory.class.getName());
 		digester.addSetNext("*/crosstab/crosstabCell/cellContents", "setContents", JRDesignCellContents.class.getName());
+		
+		digester.addFactoryCreate("*/crosstab/whenNoDataCell/cellContents", JRCellContentsFactory.class.getName());
+		digester.addSetNext("*/crosstab/whenNoDataCell/cellContents", "setWhenNoDataCell", JRDesignCellContents.class.getName());
 	}
 	
 	

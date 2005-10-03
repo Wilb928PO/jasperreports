@@ -1335,6 +1335,8 @@ public class JRVerifier
 		
 		verifyCrosstabCells(crosstab);
 		
+		verifyCellContents(crosstab.getWhenNoDataCell(), "when no data cell");
+		
 		verifyExpressions(crosstab);
 	}
 

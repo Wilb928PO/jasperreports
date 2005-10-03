@@ -109,6 +109,7 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 	protected JRCrosstabExpressionEvaluator crosstabEvaluator;
 
 	protected JRFillCrosstabCell[][] crossCells;
+	protected JRFillCellContents whenNoDataCell;
 
 	protected boolean hasData;
 	protected HeaderCell[][] columnHeadersData;
@@ -159,6 +160,8 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 
 		copyCells(crosstab, crosstabFactory);
 
+		whenNoDataCell = crosstabFactory.getCell(crosstab.getWhenNoDataCell());
+		
 		dataset = factory.getCrosstabDataset(crosstab.getDataset(), this);
 
 		copyParameters(crosstab, factory);
@@ -516,6 +519,8 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 			return true;
 		}
 
+		printCells.clear();
+
 		boolean fillEnded = !hasData || (rowIndex >= rowHeadersData[0].length && columnIndex >= columnHeadersData[0].length);
 		if (isOverflow && fillEnded && !isPrintWhenDetailOverflows() && isAlreadyPrinted())
 		{
@@ -530,11 +535,20 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 			setReprinted(true);
 		}
 
-		printCells.clear();
-
 		return fillVerticalCrosstab(availableStretchHeight, 0);
 	}
 
+	
+	protected void fillNoDataCell() throws JRException
+	{
+		if (whenNoDataCell != null)
+		{
+			JRPrintFrame printCell = fillCellContents(whenNoDataCell, 0, 0);
+			addPrintCell(printCell);
+		}
+	}
+	
+	
 	protected JRPrintElement fill() throws JRException
 	{
 		JRPrintRectangle printRectangle = null;
@@ -585,6 +599,7 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 	{
 		if (!hasData)
 		{
+			fillNoDataCell();
 			return false;
 		}
 		
@@ -1096,6 +1111,11 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 	public JRCrosstabCell[][] getCells()
 	{
 		return crossCells;
+	}
+
+	public JRCellContents getWhenNoDataCell()
+	{
+		return whenNoDataCell;
 	}
 
 	public JRCrosstabParameter[] getParameters()
