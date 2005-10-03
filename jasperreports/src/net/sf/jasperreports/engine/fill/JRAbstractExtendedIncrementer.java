@@ -29,22 +29,21 @@ package net.sf.jasperreports.engine.fill;
 
 import net.sf.jasperreports.engine.JRException;
 
-
 /**
- * @author Teodor Danciu (teodord@users.sourceforge.net)
+ * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
-public interface JRIncrementer
+public abstract class JRAbstractExtendedIncrementer implements JRExtendedIncrementer
 {
 
-	/**
-	 *
-	 */
-	public Object increment(
-		JRFillVariable variable, 
-		Object expressionValue, 
-		AbstractValueProvider valueProvider
-		) throws JRException;
+	public Object increment(JRFillVariable variable, Object expressionValue, AbstractValueProvider valueProvider) throws JRException
+	{
+		return increment((JRCalculable) variable, expressionValue, valueProvider);
+	}
 
+	public Object combine(JRCalculable calculable, JRCalculable calculableValue, AbstractValueProvider valueProvider) throws JRException
+	{
+		return increment(calculable, calculableValue.getValue(), valueProvider);
+	}
 
 }

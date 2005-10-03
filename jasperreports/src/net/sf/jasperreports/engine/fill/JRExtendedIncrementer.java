@@ -35,6 +35,11 @@ import net.sf.jasperreports.engine.JRException;
  */
 public interface JRExtendedIncrementer extends JRIncrementer
 {
+	public Object increment(
+			JRCalculable calculable, 
+			Object expressionValue, 
+			AbstractValueProvider valueProvider
+			) throws JRException;
 
 	/**
 	 * Returns the initial value for this calculation.

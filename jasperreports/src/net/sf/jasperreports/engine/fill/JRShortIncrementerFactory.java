@@ -128,7 +128,7 @@ public class JRShortIncrementerFactory extends JRAbstractExtendedIncrementerFact
 /**
  *
  */
-class JRShortCountIncrementer implements JRExtendedIncrementer
+class JRShortCountIncrementer extends JRAbstractExtendedIncrementer
 {
 	/**
 	 *
@@ -214,7 +214,7 @@ class JRShortCountIncrementer implements JRExtendedIncrementer
 /**
  *
  */
-class JRShortSumIncrementer implements JRExtendedIncrementer
+class JRShortSumIncrementer extends JRAbstractExtendedIncrementer
 {
 	/**
 	 *
@@ -266,11 +266,6 @@ class JRShortSumIncrementer implements JRExtendedIncrementer
 		return new Short((short)(value.shortValue() + newValue.shortValue()));
 	}
 
-	public Object combine(JRCalculable calculable, JRCalculable calculableValue, AbstractValueProvider valueProvider) throws JRException
-	{
-		return increment(calculable, calculableValue.getValue(), valueProvider);
-	}
-
 	
 	public Object initialValue()
 	{
@@ -282,7 +277,7 @@ class JRShortSumIncrementer implements JRExtendedIncrementer
 /**
  *
  */
-class JRShortAverageIncrementer implements JRExtendedIncrementer
+class JRShortAverageIncrementer extends JRAbstractExtendedIncrementer
 {
 	/**
 	 *
@@ -326,11 +321,6 @@ class JRShortAverageIncrementer implements JRExtendedIncrementer
 		return new Short((short)(sumValue.shortValue() / countValue.shortValue()));
 	}
 
-	public Object combine(JRCalculable calculable, JRCalculable calculableValue, AbstractValueProvider valueProvider) throws JRException
-	{
-		return increment(calculable, calculableValue.getValue(), valueProvider);
-	}
-
 	
 	public Object initialValue()
 	{
@@ -342,7 +332,7 @@ class JRShortAverageIncrementer implements JRExtendedIncrementer
 /**
  *
  */
-class JRShortStandardDeviationIncrementer implements JRExtendedIncrementer
+class JRShortStandardDeviationIncrementer extends JRAbstractExtendedIncrementer
 {
 	/**
 	 *
@@ -385,11 +375,6 @@ class JRShortStandardDeviationIncrementer implements JRExtendedIncrementer
 		return new Short( (short)Math.sqrt(varianceValue.doubleValue()) );
 	}
 
-	public Object combine(JRCalculable calculable, JRCalculable calculableValue, AbstractValueProvider valueProvider) throws JRException
-	{
-		return increment(calculable, calculableValue.getValue(), valueProvider);
-	}
-
 	
 	public Object initialValue()
 	{
@@ -401,7 +386,7 @@ class JRShortStandardDeviationIncrementer implements JRExtendedIncrementer
 /**
  *
  */
-class JRShortVarianceIncrementer implements JRExtendedIncrementer
+class JRShortVarianceIncrementer extends JRAbstractExtendedIncrementer
 {
 	/**
 	 *

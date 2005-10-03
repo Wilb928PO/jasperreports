@@ -128,7 +128,7 @@ public class JRByteIncrementerFactory extends JRAbstractExtendedIncrementerFacto
 /**
  *
  */
-class JRByteCountIncrementer implements JRExtendedIncrementer
+class JRByteCountIncrementer extends JRAbstractExtendedIncrementer
 {
 	/**
 	 *
@@ -214,7 +214,7 @@ class JRByteCountIncrementer implements JRExtendedIncrementer
 /**
  *
  */
-class JRByteSumIncrementer implements JRExtendedIncrementer
+class JRByteSumIncrementer extends JRAbstractExtendedIncrementer
 {
 	/**
 	 *
@@ -266,11 +266,6 @@ class JRByteSumIncrementer implements JRExtendedIncrementer
 		return new Byte((byte)(value.byteValue() + newValue.byteValue()));
 	}
 
-	public Object combine(JRCalculable calculable, JRCalculable calculableValue, AbstractValueProvider valueProvider) throws JRException
-	{
-		return increment(calculable, calculableValue.getValue(), valueProvider);
-	}
-
 	
 	public Object initialValue()
 	{
@@ -282,7 +277,7 @@ class JRByteSumIncrementer implements JRExtendedIncrementer
 /**
  *
  */
-class JRByteAverageIncrementer implements JRExtendedIncrementer
+class JRByteAverageIncrementer extends JRAbstractExtendedIncrementer
 {
 	/**
 	 *
@@ -326,11 +321,6 @@ class JRByteAverageIncrementer implements JRExtendedIncrementer
 		return new Byte((byte)(sumValue.byteValue() / countValue.byteValue()));
 	}
 
-	public Object combine(JRCalculable calculable, JRCalculable calculableValue, AbstractValueProvider valueProvider) throws JRException
-	{
-		return increment(calculable, calculableValue.getValue(), valueProvider);
-	}
-
 	
 	public Object initialValue()
 	{
@@ -342,7 +332,7 @@ class JRByteAverageIncrementer implements JRExtendedIncrementer
 /**
  *
  */
-class JRByteStandardDeviationIncrementer implements JRExtendedIncrementer
+class JRByteStandardDeviationIncrementer extends JRAbstractExtendedIncrementer
 {
 	/**
 	 *
@@ -385,11 +375,6 @@ class JRByteStandardDeviationIncrementer implements JRExtendedIncrementer
 		return new Byte( (byte)Math.sqrt(varianceValue.doubleValue()) );
 	}
 
-	public Object combine(JRCalculable calculable, JRCalculable calculableValue, AbstractValueProvider valueProvider) throws JRException
-	{
-		return increment(calculable, calculableValue.getValue(), valueProvider);
-	}
-
 	
 	public Object initialValue()
 	{
@@ -401,7 +386,7 @@ class JRByteStandardDeviationIncrementer implements JRExtendedIncrementer
 /**
  *
  */
-class JRByteVarianceIncrementer implements JRExtendedIncrementer
+class JRByteVarianceIncrementer extends JRAbstractExtendedIncrementer
 {
 	/**
 	 *

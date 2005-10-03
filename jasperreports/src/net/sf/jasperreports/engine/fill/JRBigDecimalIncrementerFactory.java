@@ -131,7 +131,7 @@ public class JRBigDecimalIncrementerFactory extends JRAbstractExtendedIncremente
 /**
  *
  */
-class JRBigDecimalCountIncrementer implements JRExtendedIncrementer
+class JRBigDecimalCountIncrementer extends JRAbstractExtendedIncrementer
 {
 	/**
 	 *
@@ -217,7 +217,7 @@ class JRBigDecimalCountIncrementer implements JRExtendedIncrementer
 /**
  *
  */
-class JRBigDecimalSumIncrementer implements JRExtendedIncrementer
+class JRBigDecimalSumIncrementer extends JRAbstractExtendedIncrementer
 {
 	/**
 	 *
@@ -269,11 +269,6 @@ class JRBigDecimalSumIncrementer implements JRExtendedIncrementer
 		return value.add(newValue);
 	}
 
-	public Object combine(JRCalculable calculable, JRCalculable calculableValue, AbstractValueProvider valueProvider) throws JRException
-	{
-		return increment(calculable, calculableValue.getValue(), valueProvider);
-	}
-
 	
 	public Object initialValue()
 	{
@@ -285,7 +280,7 @@ class JRBigDecimalSumIncrementer implements JRExtendedIncrementer
 /**
  *
  */
-class JRBigDecimalAverageIncrementer implements JRExtendedIncrementer
+class JRBigDecimalAverageIncrementer extends JRAbstractExtendedIncrementer
 {
 	/**
 	 *
@@ -329,11 +324,6 @@ class JRBigDecimalAverageIncrementer implements JRExtendedIncrementer
 		return sumValue.divide(countValue, BigDecimal.ROUND_HALF_UP);
 	}
 
-	public Object combine(JRCalculable calculable, JRCalculable calculableValue, AbstractValueProvider valueProvider) throws JRException
-	{
-		return increment(calculable, calculableValue.getValue(), valueProvider);
-	}
-
 	
 	public Object initialValue()
 	{
@@ -345,7 +335,7 @@ class JRBigDecimalAverageIncrementer implements JRExtendedIncrementer
 /**
  *
  */
-class JRBigDecimalStandardDeviationIncrementer implements JRExtendedIncrementer
+class JRBigDecimalStandardDeviationIncrementer extends JRAbstractExtendedIncrementer
 {
 	/**
 	 *
@@ -388,11 +378,6 @@ class JRBigDecimalStandardDeviationIncrementer implements JRExtendedIncrementer
 		return new BigDecimal( Math.sqrt(varianceValue.doubleValue()) );
 	}
 
-	public Object combine(JRCalculable calculable, JRCalculable calculableValue, AbstractValueProvider valueProvider) throws JRException
-	{
-		return increment(calculable, calculableValue.getValue(), valueProvider);
-	}
-
 	
 	public Object initialValue()
 	{
@@ -404,7 +389,7 @@ class JRBigDecimalStandardDeviationIncrementer implements JRExtendedIncrementer
 /**
  *
  */
-class JRBigDecimalVarianceIncrementer implements JRExtendedIncrementer
+class JRBigDecimalVarianceIncrementer extends JRAbstractExtendedIncrementer
 {
 	/**
 	 *

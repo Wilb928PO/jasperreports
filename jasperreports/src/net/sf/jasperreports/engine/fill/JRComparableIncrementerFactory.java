@@ -27,7 +27,6 @@
  */
 package net.sf.jasperreports.engine.fill;
 
-import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRVariable;
 
 
@@ -104,7 +103,7 @@ public class JRComparableIncrementerFactory extends JRAbstractExtendedIncremente
 /**
  *
  */
-class JRComparableLowestIncrementer implements JRExtendedIncrementer
+class JRComparableLowestIncrementer extends JRAbstractExtendedIncrementer
 {
 	/**
 	 *
@@ -150,12 +149,6 @@ class JRComparableLowestIncrementer implements JRExtendedIncrementer
 	}
 
 	
-	public Object combine(JRCalculable calculable, JRCalculable calculableValue, AbstractValueProvider valueProvider) throws JRException
-	{
-		return increment(calculable, calculableValue.getValue(), valueProvider);
-	}
-
-	
 	public Object initialValue()
 	{
 		return null;
@@ -166,7 +159,7 @@ class JRComparableLowestIncrementer implements JRExtendedIncrementer
 /**
  *
  */
-class JRComparableHighestIncrementer implements JRExtendedIncrementer
+class JRComparableHighestIncrementer extends JRAbstractExtendedIncrementer
 {
 	/**
 	 *
@@ -209,12 +202,6 @@ class JRComparableHighestIncrementer implements JRExtendedIncrementer
 		}
 				
 		return newValue;
-	}
-
-	
-	public Object combine(JRCalculable calculable, JRCalculable calculableValue, AbstractValueProvider valueProvider) throws JRException
-	{
-		return increment(calculable, calculableValue.getValue(), valueProvider);
 	}
 
 	

@@ -152,7 +152,7 @@ public class JRDefaultIncrementerFactory extends JRAbstractExtendedIncrementerFa
 /**
  *
  */
-class JRDefaultNothingIncrementer implements JRExtendedIncrementer
+class JRDefaultNothingIncrementer extends JRAbstractExtendedIncrementer
 {
 
 
@@ -194,8 +194,17 @@ class JRDefaultNothingIncrementer implements JRExtendedIncrementer
 
 	public Object combine(JRCalculable calculable, JRCalculable calculableValue, AbstractValueProvider valueProvider) throws JRException
 	{
-		Object newValue = calculableValue.getValue();
-		return newValue == null ? calculable.getValue() : newValue; 
+		if (!calculableValue.isInitialized())
+		{
+			return calculableValue.getValue();
+		}
+		
+		if (!calculable.isInitialized())
+		{
+			return calculable.getValue();
+		}
+		
+		return null;
 	}
 
 	public Object initialValue()
@@ -208,7 +217,7 @@ class JRDefaultNothingIncrementer implements JRExtendedIncrementer
 /**
  *
  */
-class JRDefaultSystemIncrementer implements JRExtendedIncrementer
+class JRDefaultSystemIncrementer extends JRAbstractExtendedIncrementer
 {
 	/**
 	 *
@@ -253,7 +262,7 @@ class JRDefaultSystemIncrementer implements JRExtendedIncrementer
 	}
 }
 
-class JRDefaultFirstIncrementer implements JRExtendedIncrementer
+class JRDefaultFirstIncrementer extends JRAbstractExtendedIncrementer
 {
 	private static final JRDefaultFirstIncrementer instance = new JRDefaultFirstIncrementer();
 

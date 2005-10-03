@@ -128,7 +128,7 @@ public class JRFloatIncrementerFactory extends JRAbstractExtendedIncrementerFact
 /**
  *
  */
-class JRFloatCountIncrementer implements JRExtendedIncrementer
+class JRFloatCountIncrementer extends JRAbstractExtendedIncrementer
 {
 	/**
 	 *
@@ -214,7 +214,7 @@ class JRFloatCountIncrementer implements JRExtendedIncrementer
 /**
  *
  */
-class JRFloatSumIncrementer implements JRExtendedIncrementer
+class JRFloatSumIncrementer extends JRAbstractExtendedIncrementer
 {
 	/**
 	 *
@@ -266,11 +266,6 @@ class JRFloatSumIncrementer implements JRExtendedIncrementer
 		return new Float(value.floatValue() + newValue.floatValue());
 	}
 
-	public Object combine(JRCalculable calculable, JRCalculable calculableValue, AbstractValueProvider valueProvider) throws JRException
-	{
-		return increment(calculable, calculableValue.getValue(), valueProvider);
-	}
-
 	
 	public Object initialValue()
 	{
@@ -282,7 +277,7 @@ class JRFloatSumIncrementer implements JRExtendedIncrementer
 /**
  *
  */
-class JRFloatAverageIncrementer implements JRExtendedIncrementer
+class JRFloatAverageIncrementer extends JRAbstractExtendedIncrementer
 {
 	/**
 	 *
@@ -326,11 +321,6 @@ class JRFloatAverageIncrementer implements JRExtendedIncrementer
 		return new Float(sumValue.floatValue() / countValue.floatValue());
 	}
 
-	public Object combine(JRCalculable calculable, JRCalculable calculableValue, AbstractValueProvider valueProvider) throws JRException
-	{
-		return increment(calculable, calculableValue.getValue(), valueProvider);
-	}
-
 	
 	public Object initialValue()
 	{
@@ -342,7 +332,7 @@ class JRFloatAverageIncrementer implements JRExtendedIncrementer
 /**
  *
  */
-class JRFloatStandardDeviationIncrementer implements JRExtendedIncrementer
+class JRFloatStandardDeviationIncrementer extends JRAbstractExtendedIncrementer
 {
 	/**
 	 *
@@ -385,11 +375,6 @@ class JRFloatStandardDeviationIncrementer implements JRExtendedIncrementer
 		return new Float( Math.sqrt(varianceValue.doubleValue()) );
 	}
 
-	public Object combine(JRCalculable calculable, JRCalculable calculableValue, AbstractValueProvider valueProvider) throws JRException
-	{
-		return increment(calculable, calculableValue.getValue(), valueProvider);
-	}
-
 	
 	public Object initialValue()
 	{
@@ -401,7 +386,7 @@ class JRFloatStandardDeviationIncrementer implements JRExtendedIncrementer
 /**
  *
  */
-class JRFloatVarianceIncrementer implements JRExtendedIncrementer
+class JRFloatVarianceIncrementer extends JRAbstractExtendedIncrementer
 {
 	/**
 	 *

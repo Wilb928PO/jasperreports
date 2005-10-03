@@ -372,7 +372,6 @@ public class JRFillCellContents extends JRFillElementContainer implements JRCell
 
 		public int hashCode()
 		{
-			// TODO Auto-generated method stub
 			return super.hashCode();
 		}
 	}
