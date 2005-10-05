@@ -32,6 +32,7 @@ import java.io.Serializable;
 import net.sf.jasperreports.engine.JRDatasetRun;
 import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRSubreportParameter;
+import net.sf.jasperreports.engine.util.JRProperties;
 
 /**
  * Base implementation of the {@link net.sf.jasperreports.engine.JRDatasetRun JRDatasetRun} interface.
@@ -41,6 +42,8 @@ import net.sf.jasperreports.engine.JRSubreportParameter;
  */
 public class JRBaseDatasetRun implements JRDatasetRun, Serializable
 {
+	private static final long serialVersionUID = JRProperties.VERSION_SERIAL_UID;
+
 	protected String datasetName;
 	protected JRExpression parametersMapExpression;
 	protected JRSubreportParameter[] parameters;

@@ -33,19 +33,20 @@
 package net.sf.jasperreports.compilers;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRExpressionChunk;
 import net.sf.jasperreports.engine.JRExpressionCollector;
 import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JRVariable;
+import net.sf.jasperreports.engine.design.JRAbstractCompiler;
 import net.sf.jasperreports.engine.design.JRDesignDataset;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.design.crosstab.JRDesignCrosstab;
@@ -56,7 +57,7 @@ import net.sf.jasperreports.engine.util.JRStringUtil;
  * @author Teodor Danciu (teodord@users.sourceforge.net)
  * @version $Id$
  */
-public abstract class JRBshGenerator
+public class JRBshGenerator
 {
 	
 	
@@ -65,6 +66,16 @@ public abstract class JRBshGenerator
 	 */
 	protected JasperDesign jasperDesign = null;
 	protected JRExpressionCollector expressionCollector;
+
+	protected Map parametersMap;
+	protected Map fieldsMap;
+	protected Map variablesMap;
+	protected JRVariable[] variables;
+	
+	protected String unitName;
+	protected List expressions;
+	
+	protected boolean onlyDefaultEvaluation;
 
 	private static Map fieldPrefixMap = null;
 	private static Map variablePrefixMap = null;
@@ -89,22 +100,47 @@ public abstract class JRBshGenerator
 	}
 	
 
-	/**
-	 *
-	 */
-	protected JRBshGenerator(JasperDesign jrDesign, JRExpressionCollector expressionCollector)
+	protected JRBshGenerator(JasperDesign jrDesign, JRExpressionCollector expressionCollector,
+			Map parametersMap, Map fieldsMap, Map variablesMap, JRVariable[] variables,
+			String unitName, List expressions, boolean onlyDefaultEvaluation)
 	{
 		jasperDesign = jrDesign;
 		this.expressionCollector = expressionCollector;
+		
+		this.parametersMap = parametersMap;
+		this.fieldsMap = fieldsMap;
+		this.variablesMap = variablesMap;
+		this.variables = variables;
+		
+		this.unitName = unitName;
+		this.expressions = expressions;
+		
+		this.onlyDefaultEvaluation = onlyDefaultEvaluation;
+	}
+
+	
+	protected JRBshGenerator(JasperDesign jrDesign, JRDesignDataset dataset, JRExpressionCollector expressionCollector)
+	{
+		this(jrDesign, expressionCollector,
+				dataset.getParametersMap(), dataset.getFieldsMap(), dataset.getVariablesMap(), dataset.getVariables(),
+				JRAbstractCompiler.getUnitName(jrDesign, dataset), expressionCollector.getExpressions(dataset), false);
+	}
+
+
+	protected JRBshGenerator(JasperDesign jrDesign, JRDesignCrosstab crosstab, JRExpressionCollector expressionCollector)
+	{
+		this(jrDesign, expressionCollector,
+				crosstab.getParametersMap(), null, crosstab.getVariablesMap(), crosstab.getVariables(),
+				JRAbstractCompiler.getUnitName(jrDesign, crosstab), expressionCollector.getExpressions(crosstab), true);
 	}
 
 
 	/**
 	 *
 	 */
-	public static String generateScript(JasperDesign jrDesign, JRDesignDataset dataset, JRExpressionCollector expressionCollector) throws JRException
+	public static String generateScript(JasperDesign jrDesign, JRDesignDataset dataset, JRExpressionCollector expressionCollector)
 	{
-		JRBshGenerator generator = new JRDatasetBshGenerator(jrDesign, dataset, expressionCollector);
+		JRBshGenerator generator = new JRBshGenerator(jrDesign, dataset, expressionCollector);
 		return generator.generateScript();
 	}
 
@@ -112,10 +148,41 @@ public abstract class JRBshGenerator
 	/**
 	 *
 	 */
-	public static String generateScript(JasperDesign jrDesign, JRDesignCrosstab crosstab, JRExpressionCollector expressionCollector) throws JRException
+	public static String generateScript(JasperDesign jrDesign, JRDesignCrosstab crosstab, JRExpressionCollector expressionCollector)
 	{
-		JRBshGenerator generator = new JRCrosstabBshGenerator(jrDesign, crosstab, expressionCollector);
+		JRBshGenerator generator = new JRBshGenerator(jrDesign, crosstab, expressionCollector);
 		return generator.generateScript();
+	}
+	
+	
+	protected String generateScript()
+	{
+		StringBuffer sb = new StringBuffer();
+
+		generateScriptStart(sb);
+
+		generateDeclarations(sb);
+		generateInitMethod(sb);
+		
+		sb.append("\n");
+		sb.append("\n");
+
+		sb.append(generateMethod(JRExpression.EVALUATION_DEFAULT, expressions));
+		if (onlyDefaultEvaluation)
+		{
+			List empty = new ArrayList();
+			sb.append(generateMethod(JRExpression.EVALUATION_OLD, empty));
+			sb.append(generateMethod(JRExpression.EVALUATION_ESTIMATED, empty));
+		}
+		else
+		{
+			sb.append(generateMethod(JRExpression.EVALUATION_OLD, expressions));
+			sb.append(generateMethod(JRExpression.EVALUATION_ESTIMATED, expressions));
+		}
+
+		generateScriptEnd(sb);
+
+		return sb.toString();
 	}
 
 
@@ -164,7 +231,6 @@ public abstract class JRBshGenerator
 	protected final void generateDeclarations(StringBuffer sb)
 	{
 		/*   */
-		Map parametersMap = getParametersMap();
 		if (parametersMap != null && parametersMap.size() > 0)
 		{
 			Collection parameterNames = parametersMap.keySet();
@@ -180,7 +246,6 @@ public abstract class JRBshGenerator
 		sb.append("\n");
 
 		/*   */
-		Map fieldsMap = getFieldsMap();
 		if (fieldsMap != null && fieldsMap.size() > 0)
 		{
 			Collection fieldNames = fieldsMap.keySet();
@@ -196,7 +261,6 @@ public abstract class JRBshGenerator
 		sb.append("\n");
 
 		/*   */
-		JRVariable[] variables = getVariables();
 		if (variables != null && variables.length > 0)
 		{
 			for (int i = 0; i < variables.length; i++)
@@ -211,9 +275,6 @@ public abstract class JRBshGenerator
 
 	protected final void generateInitMethod(StringBuffer sb)
 	{
-		Map parametersMap;
-		Map fieldsMap;
-		JRVariable[] variables;
 		/*   */
 		sb.append("\n");
 		sb.append("\n");
@@ -228,7 +289,6 @@ public abstract class JRBshGenerator
 		sb.append("\n");
 
 		/*   */
-		parametersMap = getParametersMap();
 		if (parametersMap != null && parametersMap.size() > 0)
 		{
 			Collection parameterNames = parametersMap.keySet();
@@ -248,7 +308,6 @@ public abstract class JRBshGenerator
 		sb.append("\n");
 
 		/*   */
-		fieldsMap = getFieldsMap();
 		if (fieldsMap != null && fieldsMap.size() > 0)
 		{
 			Collection fieldNames = fieldsMap.keySet();
@@ -268,7 +327,6 @@ public abstract class JRBshGenerator
 		sb.append("\n");
 
 		/*   */
-		variables = getVariables();
 		if (variables != null && variables.length > 0)
 		{
 			String variableName = null;
@@ -319,7 +377,7 @@ public abstract class JRBshGenerator
 	/**
 	 *
 	 */
-	protected final String generateMethod(byte evaluationType, List expressions)
+	protected final String generateMethod(byte evaluationType, List expressionsList)
 	{
 		StringBuffer sb = new StringBuffer();
 
@@ -333,10 +391,10 @@ public abstract class JRBshGenerator
 		sb.append("        switch (id)\n");
 		sb.append("        {\n");
 
-		if (expressions != null && !expressions.isEmpty())
+		if (expressionsList != null && !expressionsList.isEmpty())
 		{
 			JRExpression expression = null;
-			for (Iterator it = expressions.iterator(); it.hasNext();)
+			for (Iterator it = expressionsList.iterator(); it.hasNext();)
 			{
 				expression = (JRExpression)it.next();
 				
@@ -377,10 +435,6 @@ public abstract class JRBshGenerator
 		byte evaluationType
 		)
 	{
-		Map parametersMap = getParametersMap();
-		Map fieldsMap = getFieldsMap();
-		Map variablesMap = getVariablesMap();
-
 		JRParameter jrParameter = null;
 		JRField jrField = null;
 		JRVariable jrVariable = null;
@@ -470,17 +524,4 @@ public abstract class JRBshGenerator
 
 		return sbuffer.toString();
 	}
-
-
-
-	protected abstract String generateScript() throws JRException;
-	
-	protected abstract Map getParametersMap();
-	
-	protected abstract Map getFieldsMap();
-	
-	protected abstract Map getVariablesMap();
-	
-	protected abstract JRVariable[] getVariables();
-
 }

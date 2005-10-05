@@ -53,12 +53,18 @@ import net.sf.jasperreports.engine.util.JRSaver;
  */
 public abstract class JRAbstractCompiler implements JRCompiler
 {
+	private final boolean needsSourceFiles;
 
 	/**
-	 * Default constructor.
+	 * Constructor.
+	 * 
+	 * @param needsSourceFiles whether the compiler needs source files or is able to do in memory compilation
+	 * <p>
+	 * If true, the generated code is saved in source files to be used by the compiler.
 	 */
-	protected JRAbstractCompiler()
+	protected JRAbstractCompiler(boolean needsSourceFiles)
 	{
+		this.needsSourceFiles = needsSourceFiles;
 	}
 
 	
@@ -115,7 +121,7 @@ public abstract class JRAbstractCompiler implements JRCompiler
 		// check if saving source files is required
 		boolean isKeepJavaFile = JRProperties.getBooleanProperty(JRProperties.COMPILER_KEEP_JAVA_FILE);
 		File tempDirFile = null;
-		if (isKeepJavaFile || needsSourceFile())
+		if (isKeepJavaFile || needsSourceFiles)
 		{
 			String tempDirStr = JRProperties.getProperty(JRProperties.COMPILER_TEMP_DIR);
 
@@ -197,7 +203,7 @@ public abstract class JRAbstractCompiler implements JRCompiler
 		}
 		finally
 		{
-			if (needsSourceFile() && !isKeepJavaFile)
+			if (needsSourceFiles && !isKeepJavaFile)
 			{
 				deleteSourceFiles(units);
 			}
@@ -344,16 +350,6 @@ public abstract class JRAbstractCompiler implements JRCompiler
 	 * @throws JRException
 	 */
 	protected abstract String compileUnits(JRCompilationUnit[] units, String classpath, File tempDirFile) throws JRException;
-
-	
-	/**
-	 * Decides whether the compiler needs source files or is able to do in memory compilation.
-	 * <p>
-	 * If an implementation returns true, the generated code is saved in source files to be used by the compiler.
-	 * 
-	 * @return <code>true</code> iff the compiler needs source files.
-	 */
-	protected abstract boolean needsSourceFile();
 
 	
 	/**

@@ -36,6 +36,7 @@ import net.sf.jasperreports.engine.JRSubreportParameter;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.base.JRBaseDatasetRun;
+import net.sf.jasperreports.engine.util.JRProperties;
 
 /**
  * Implementation of {@link net.sf.jasperreports.engine.JRDatasetRun JRDatasetRun} to be used for report desing.
@@ -45,6 +46,8 @@ import net.sf.jasperreports.engine.base.JRBaseDatasetRun;
  */
 public class JRDesignDatasetRun extends JRBaseDatasetRun
 {
+	private static final long serialVersionUID = JRProperties.VERSION_SERIAL_UID;
+
 	private Map parametersMap;
 	private List parametersList;
 	

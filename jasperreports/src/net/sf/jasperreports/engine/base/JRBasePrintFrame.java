@@ -33,6 +33,7 @@ import java.util.List;
 import net.sf.jasperreports.engine.JRBox;
 import net.sf.jasperreports.engine.JRPrintElement;
 import net.sf.jasperreports.engine.fill.JRPrintFrame;
+import net.sf.jasperreports.engine.util.JRProperties;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
@@ -40,6 +41,8 @@ import net.sf.jasperreports.engine.fill.JRPrintFrame;
  */
 public class JRBasePrintFrame extends JRBasePrintElement implements JRPrintFrame
 {
+	private static final long serialVersionUID = JRProperties.VERSION_SERIAL_UID;
+
 	private List elements;
 	private JRBox box;
 	

@@ -560,7 +560,7 @@ public class JRHtmlExporter extends JRAbstractExporter
 	 */
 	protected void exportPage(JRPrintPage page) throws JRException, IOException
 	{
-		JRHtmlGridLayout layout = getPageGridLayout(page);
+		JRGridLayout layout = getPageGridLayout(page);
 		exportGrid(layout, isWhitePageBackground);
 		
 		if (progressMonitor != null)
@@ -570,7 +570,7 @@ public class JRHtmlExporter extends JRAbstractExporter
 	}
 
 	
-	protected void exportGrid(JRHtmlGridLayout gridLayout, boolean whitePageBackground) throws IOException, JRException
+	protected void exportGrid(JRGridLayout gridLayout, boolean whitePageBackground) throws IOException, JRException
 	{
 		List xCutsList = gridLayout.getXCuts();
 		JRExporterGridCell[][] gridCells = gridLayout.getGrid();
@@ -1464,11 +1464,11 @@ public class JRHtmlExporter extends JRAbstractExporter
 	}
 
 
-	protected JRHtmlGridLayout getPageGridLayout(JRPrintPage page)
+	protected JRGridLayout getPageGridLayout(JRPrintPage page)
 	{
-		JRHtmlGridLayout layout = new JRHtmlGridLayout(page.getElements(),
+		JRGridLayout layout = new JRGridLayout(page.getElements(), null,
 				jasperPrint.getPageWidth(), jasperPrint.getPageHeight(),
-				globalOffsetX, globalOffsetY);
+				globalOffsetX, globalOffsetY, JRGridLayout.UNIVERSTAL_EXPORTER, false);
 		return layout;
 	}
 	
@@ -1609,7 +1609,9 @@ public class JRHtmlExporter extends JRAbstractExporter
 		
 		writer.write(">\n");
 		
-		JRHtmlGridLayout layout = new JRHtmlGridLayout(frame.getElements(), frame.getWidth(), frame.getHeight(), 0, 0);
+		JRGridLayout layout = new JRGridLayout(frame.getElements(), null, 
+				frame.getWidth(), frame.getHeight(), 0, 0, 
+				JRGridLayout.UNIVERSTAL_EXPORTER, false);
 		exportGrid(layout, false);
 		
 		writer.write("</td>\n");

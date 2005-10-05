@@ -61,13 +61,16 @@ public class JRCalculator implements JRFillExpressionEvaluator
 	private JRFillVariable pageNumber = null;
 	private JRFillVariable columnNumber = null;
 	
-	protected JRFillDataset dataset;
-	
+	/**
+	 * The expression evaluator
+	 */
 	private final JREvaluator evaluator;
 
 
 	/**
-	 *
+	 * Creates a calculator using an expression evaluator.
+	 * 
+	 * @param evaluator the expression evaluator
 	 */
 	protected JRCalculator(JREvaluator evaluator)
 	{
@@ -76,12 +79,13 @@ public class JRCalculator implements JRFillExpressionEvaluator
 
 
 	/**
-	 *
+	 * Initializes the calculator.
+	 * 
+	 * @param dataset the dataset this calculator is used for
+	 * @throws JRException
 	 */
-	protected void init(JRFillDataset parentDataset) throws JRException
+	protected void init(JRFillDataset dataset) throws JRException
 	{
-		dataset = parentDataset;
-		
 		parsm = dataset.parametersMap;
 		fldsm = dataset.fieldsMap;
 		varsm = dataset.variablesMap;

@@ -30,11 +30,29 @@ package net.sf.jasperreports.engine.fill;
 import net.sf.jasperreports.engine.JRException;
 
 /**
+ * Extended incrementer interface.
+ * <p>
+ * The {@link net.sf.jasperreports.engine.fill.JRIncrementer JRIncrementer} has been
+ * kept for backward compatibility.
+ * <p>
+ * The crosstab calculation engine requires extended incrementers.  An incrementer implementing
+ * {@link net.sf.jasperreports.engine.fill.JRIncrementer JRIncrementer} can be used for report
+ * variables only.
+ * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
 public interface JRExtendedIncrementer extends JRIncrementer
 {
+	/**
+	 * Increments a calculable object with a value.
+	 * 
+	 * @param calculable the calculable
+	 * @param expressionValue the value
+	 * @param valueProvider value provider
+	 * @return the incremented value
+	 * @throws JRException
+	 */
 	public Object increment(
 			JRCalculable calculable, 
 			Object expressionValue, 

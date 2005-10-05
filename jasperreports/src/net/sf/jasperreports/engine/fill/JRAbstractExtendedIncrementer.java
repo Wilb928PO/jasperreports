@@ -30,17 +30,25 @@ package net.sf.jasperreports.engine.fill;
 import net.sf.jasperreports.engine.JRException;
 
 /**
+ * Base class for extended incrementers.
+ * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
 public abstract class JRAbstractExtendedIncrementer implements JRExtendedIncrementer
 {
 
+	/**
+	 * This implementation simply calls {@link JRExtendedIncrementer#increment(JRCalculable, Object, AbstractValueProvider) increment(JRCalculable, Object, AbstractValueProvider)}.
+	 */
 	public Object increment(JRFillVariable variable, Object expressionValue, AbstractValueProvider valueProvider) throws JRException
 	{
 		return increment((JRCalculable) variable, expressionValue, valueProvider);
 	}
 
+	/**
+	 * This implementation calls {@link JRExtendedIncrementer#increment(JRCalculable, Object, AbstractValueProvider) increment(calculable, calculableValue.getValue(), valueProvider)}.
+	 */
 	public Object combine(JRCalculable calculable, JRCalculable calculableValue, AbstractValueProvider valueProvider) throws JRException
 	{
 		return increment(calculable, calculableValue.getValue(), valueProvider);

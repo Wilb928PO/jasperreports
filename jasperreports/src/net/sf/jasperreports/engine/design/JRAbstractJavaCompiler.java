@@ -46,10 +46,15 @@ import net.sf.jasperreports.engine.util.JRClassLoader;
 public abstract class JRAbstractJavaCompiler extends JRAbstractCompiler
 {
 
-
 	// @JVM Crash workaround
 	// Reference to the loaded class class in a per thread map
 	private static ThreadLocal classFromBytesRef = new ThreadLocal();
+
+
+	protected JRAbstractJavaCompiler(boolean needsSourceFiles)
+	{
+		super(needsSourceFiles);
+	}
 
 
 	protected JREvaluator loadEvaluator(Serializable compileData, String className) throws JRException

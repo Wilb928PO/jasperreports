@@ -42,6 +42,7 @@ import net.sf.jasperreports.engine.crosstab.JRCellContents;
 import org.apache.commons.collections.ReferenceMap;
 
 /**
+ * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
@@ -372,7 +373,7 @@ public class JRFillCellContents extends JRFillElementContainer implements JRCell
 
 		public int hashCode()
 		{
-			return super.hashCode();
+			return hashCode;
 		}
 	}
 	

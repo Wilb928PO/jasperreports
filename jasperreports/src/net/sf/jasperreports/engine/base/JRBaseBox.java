@@ -74,7 +74,7 @@ public class JRBaseBox implements JRBox, Serializable
 	{
 		super();
 	}
-		
+	
 
 	/**
 	 * Creates a clone of a box object.
@@ -84,22 +84,65 @@ public class JRBaseBox implements JRBox, Serializable
 	public JRBaseBox(JRBox box)
 	{
 		border = box.getBorder();
-		topBorder = box.getOwnTopBorder();
-		leftBorder = box.getOwnLeftBorder();
-		bottomBorder = box.getOwnBottomBorder();
-		rightBorder = box.getOwnRightBorder();
-		
 		borderColor = box.getBorderColor();
-		topBorderColor = box.getOwnTopBorderColor();
-		leftBorderColor = box.getOwnLeftBorderColor();
-		bottomBorderColor = box.getOwnBottomBorderColor();
-		rightBorderColor = box.getOwnRightBorderColor();
-		
 		padding = box.getPadding();
+		
+		topBorder = box.getOwnTopBorder();
+		topBorderColor = box.getOwnTopBorderColor();
 		topPadding = box.getOwnTopPadding();
+		
+		leftBorder = box.getOwnLeftBorder();
+		leftBorderColor = box.getOwnLeftBorderColor();
 		leftPadding = box.getOwnLeftPadding();
+		
+		bottomBorder = box.getOwnBottomBorder();
+		bottomBorderColor = box.getOwnBottomBorderColor();
 		bottomPadding = box.getOwnBottomPadding();
+		
+		rightBorder = box.getOwnRightBorder();
+		rightBorderColor = box.getOwnRightBorderColor();
 		rightPadding = box.getOwnRightPadding();
+	}
+	
+
+	/**
+	 * Creates a copy of a box object by keeping only some of the border sides.
+	 * 
+	 * @param box the object to be cloned
+	 * @param left whether to keep the left border
+	 * @param right whether to keep the right border
+	 * @param top whether to keep the top border
+	 * @param bottom whether to keep the bottom border
+	 */
+	public JRBaseBox(JRBox box, boolean left, boolean right, boolean top, boolean bottom)
+	{
+		if (left)
+		{
+			leftBorder = new Byte(box.getLeftBorder());
+			leftBorderColor = box.getLeftBorderColor();
+			leftPadding = new Integer(box.getLeftPadding());
+		}
+		
+		if (right)
+		{
+			rightBorder = new Byte(box.getRightBorder());
+			rightBorderColor = box.getRightBorderColor();
+			rightPadding = new Integer(box.getRightPadding());
+		}
+		
+		if (top)
+		{
+			topBorder = new Byte(box.getTopBorder());
+			topBorderColor = box.getTopBorderColor();
+			topPadding = new Integer(box.getTopPadding());
+		}
+		
+		if (bottom)
+		{
+			bottomBorder = new Byte(box.getBottomBorder());
+			bottomBorderColor = box.getBottomBorderColor();
+			bottomPadding = new Integer(box.getBottomPadding());
+		}
 	}
 	
 	/**

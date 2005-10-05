@@ -386,6 +386,9 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 	 */
 	protected Map datasetMap;
 	
+	/**
+	 * The report.
+	 */
 	protected JasperReport jasperReport;
 
 	/**
@@ -1409,6 +1412,11 @@ public abstract class JRBaseFiller implements JRDefaultFontProvider
 	}
 	
 	
+	/**
+	 * Returns the report.
+	 * 
+	 * @return the report
+	 */
 	protected JasperReport getJasperReport()
 	{
 		return jasperReport;

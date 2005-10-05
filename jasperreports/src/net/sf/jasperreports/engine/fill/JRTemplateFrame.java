@@ -28,6 +28,7 @@
 package net.sf.jasperreports.engine.fill;
 
 import net.sf.jasperreports.engine.JRBox;
+import net.sf.jasperreports.engine.util.JRProperties;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
@@ -35,6 +36,8 @@ import net.sf.jasperreports.engine.JRBox;
  */
 public class JRTemplateFrame extends JRTemplateElement
 {
+	private static final long serialVersionUID = JRProperties.VERSION_SERIAL_UID;
+
 	private JRBox box;
 
 	protected JRTemplateFrame(JRFillCrosstab crosstab, JRFillCellContents cell)

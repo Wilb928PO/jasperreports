@@ -50,6 +50,12 @@ public class JRBshCompiler extends JRAbstractCompiler
 {
 
 
+	public JRBshCompiler()
+	{
+		super(false);
+	}
+
+
 	protected JREvaluator loadEvaluator(Serializable compileData, String unitName) throws JRException
 	{
 		return new JRBshEvaluator((String) compileData);
@@ -122,12 +128,6 @@ public class JRBshCompiler extends JRAbstractCompiler
 		}
 
 		Thread.currentThread().setContextClassLoader(oldContextClassLoader);
-	}
-
-
-	protected boolean needsSourceFile()
-	{
-		return false;
 	}
 
 

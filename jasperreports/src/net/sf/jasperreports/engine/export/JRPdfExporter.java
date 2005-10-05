@@ -2024,7 +2024,7 @@ public class JRPdfExporter extends JRAbstractExporter
 	}
 	
 
-	private void exportFrame(JRPrintFrame frame) throws DocumentException, IOException, JRException
+	protected void exportFrame(JRPrintFrame frame) throws DocumentException, IOException, JRException
 	{
 		int x = frame.getX() + getOffsetX();
 		int y = frame.getY() + getOffsetY();

@@ -34,6 +34,7 @@ import java.util.Map;
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.crosstab.JRCrosstab;
+import net.sf.jasperreports.engine.util.JRProperties;
 
 /**
  * Structure used to hold a report's expression evaluator compile data.
@@ -48,6 +49,8 @@ import net.sf.jasperreports.engine.crosstab.JRCrosstab;
  */
 public class JRReportCompileData implements Serializable
 {
+	private static final long serialVersionUID = JRProperties.VERSION_SERIAL_UID;
+
 	/**
 	 * Main report dataset compile data.
 	 */

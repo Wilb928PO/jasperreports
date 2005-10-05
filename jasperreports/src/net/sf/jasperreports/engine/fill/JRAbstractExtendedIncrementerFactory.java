@@ -28,11 +28,16 @@
 package net.sf.jasperreports.engine.fill;
 
 /**
+ * Base abstract implementation of {@link net.sf.jasperreports.engine.fill.JRExtendedIncrementerFactory JRExtendedIncrementerFactory}.
+ * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
 public abstract class JRAbstractExtendedIncrementerFactory implements JRExtendedIncrementerFactory
 {
+	/**
+	 * This implementation simply calls {@link JRExtendedIncrementerFactory#getExtendedIncrementer(byte) getExtendedIncrementer}.
+	 */
 	public JRIncrementer getIncrementer(byte calculation)
 	{
 		return getExtendedIncrementer(calculation);

@@ -28,6 +28,10 @@
 package net.sf.jasperreports.engine.fill;
 
 /**
+ * Extended incrementer factory interface.
+ * <p>
+ * {@link net.sf.jasperreports.engine.fill.JRIncrementerFactory JRIncrementerFactory} is kept for backward compatibility.
+ * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */

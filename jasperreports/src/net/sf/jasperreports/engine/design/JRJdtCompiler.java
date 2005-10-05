@@ -84,6 +84,8 @@ public class JRJdtCompiler extends JRAbstractJavaCompiler
 
 	public JRJdtCompiler ()
 	{
+		super(false);
+		
 		classLoader = getClassLoader();
 		
 		try
@@ -516,12 +518,6 @@ public class JRJdtCompiler extends JRAbstractJavaCompiler
 	protected String generateSourceCode(JasperDesign jasperDesign, JRDesignCrosstab crosstab, JRExpressionCollector expressionCollector) throws JRException
 	{
 		return JRClassGenerator.generateClass(jasperDesign, crosstab, expressionCollector);
-	}
-
-
-	protected boolean needsSourceFile()
-	{
-		return false;
 	}
 
 	protected String getSourceFileName(String unitName)

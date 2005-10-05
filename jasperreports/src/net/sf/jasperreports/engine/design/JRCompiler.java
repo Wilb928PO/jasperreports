@@ -43,13 +43,27 @@ public interface JRCompiler
 
 
 	/**
-	 *
+	 * Compiles a report design.
+	 * <p>
+	 * The compilation consists of verification of the design, generation of expression evaluators
+	 * and construction of a serializable read-only version of the report.
+	 * <p>
+	 * A report compiler should usually extend {@link JRAbstractCompiler JRAbstractCompiler}.
+	 * 
+	 * 
+	 * @param jasperDesign the report design
+	 * @return the compiled report
+	 * @throws JRException
 	 */
 	public JasperReport compileReport(JasperDesign jasperDesign) throws JRException;
 
 
 	/**
-	 *
+	 * Loads the evaluator for a report's main dataset.
+	 * 
+	 * @param jasperReport the report
+	 * @return the evaluator for the report's main dataset
+	 * @throws JRException
 	 */
 	public JREvaluator loadEvaluator(JasperReport jasperReport) throws JRException;
 
