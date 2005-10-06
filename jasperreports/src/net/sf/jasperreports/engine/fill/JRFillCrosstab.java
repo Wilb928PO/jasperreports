@@ -581,8 +581,8 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 			rectangle.setPrintWhenDetailOverflows(isPrintWhenDetailOverflows());
 			rectangle.setPrintWhenGroupChanges(getPrintWhenGroupChanges());
 			rectangle.setForecolor(getForecolor());
-			rectangle.setBackcolor(getBackcolor());
-			rectangle.setPen(JRGraphicElement.PEN_NONE);
+/*			rectangle.setBackcolor(getBackcolor());
+*/			rectangle.setPen(JRGraphicElement.PEN_NONE);
 
 			template = new JRTemplateRectangle(rectangle);
 		}

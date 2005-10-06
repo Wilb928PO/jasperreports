@@ -1551,7 +1551,7 @@ public class JRPdfExporter extends JRAbstractExporter
 //					(jrFont.isBold() ? Font.BOLD : 0) | (jrFont.isItalic() ? Font.ITALIC : 0) | 
 					(jrFont.isUnderline() ? Font.UNDERLINE : 0) | (jrFont.isStrikeThrough() ? Font.STRIKETHRU : 0),
 					forecolor
-					);
+					);			
 		}
 		catch(Exception e)
 		{
@@ -2053,11 +2053,6 @@ public class JRPdfExporter extends JRAbstractExporter
 				pdfContentByte.fillStroke();
 		}
 		
-		if (frame.getBox() != null)
-		{
-			exportBox(frame.getBox(), frame);
-		}
-		
 		int topPadding;
 		int leftPadding;
 		if (frame.getBox() == null)
@@ -2078,6 +2073,11 @@ public class JRPdfExporter extends JRAbstractExporter
 		finally
 		{
 			popElementOffsets();
+		}
+		
+		if (frame.getBox() != null)
+		{
+			exportBox(frame.getBox(), frame);
 		}
 	}
 }

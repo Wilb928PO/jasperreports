@@ -949,8 +949,6 @@ public class JRGraphics2DExporter extends JRAbstractExporter
 			grx.fillRect(x, y, frame.getWidth(), frame.getHeight()); 
 		}
 		
-		exportBox(frame.getBox(), frame);
-		
 		int topPadding;
 		int leftPadding;
 		if (frame.getBox() == null)
@@ -972,6 +970,8 @@ public class JRGraphics2DExporter extends JRAbstractExporter
 		{
 			popElementOffsets();
 		}
+		
+		exportBox(frame.getBox(), frame);
 	}
 
 }

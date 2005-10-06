@@ -25,6 +25,7 @@ import net.sf.jasperreports.engine.JRTextElement;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.base.JRBaseFont;
 import net.sf.jasperreports.engine.base.JRBasePrintPage;
+import net.sf.jasperreports.engine.fill.JRPrintFrame;
 import net.sf.jasperreports.engine.util.JRStyledText;
 import net.sf.jasperreports.engine.util.JRStyledTextParser;
 
@@ -345,6 +346,10 @@ public abstract class JRXlsAbstractExporter extends JRAbstractExporter
 						{
 							exportText((JRPrintText)element, grid[y][x], x, y);
 						}
+						else if (element instanceof JRPrintFrame)
+						{
+							exportFrame((JRPrintFrame) element, grid[y][x], x, y);
+						}
 
 						x += grid[y][x].colSpan - 1;
 					}
@@ -382,7 +387,7 @@ public abstract class JRXlsAbstractExporter extends JRAbstractExporter
 			progressMonitor.afterPageExport();
 		}
 	}
-	
+
 	/**
 	 *
 	 */
@@ -568,4 +573,6 @@ public abstract class JRXlsAbstractExporter extends JRAbstractExporter
 	protected abstract void exportRectangle(JRPrintElement element, JRExporterGridCell cell, int x, int y) throws JRException;
 
 	protected abstract void exportLine(JRPrintLine line, JRExporterGridCell cell, int x, int y) throws JRException;
+	
+	protected abstract void exportFrame(JRPrintFrame frame, JRExporterGridCell cell, int x, int y) throws JRException;
 }

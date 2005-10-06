@@ -122,7 +122,7 @@ public class JRGridLayout
 		this.deep = deep;
 		
 		boxesCache = new HashMap();
-		
+
 		layoutGrid();
 	}
 
@@ -133,8 +133,8 @@ public class JRGridLayout
 	protected void layoutGrid()
 	{
 		xCuts = new SortedList();
-		//TODO luci almost sorted optimization?
 		yCuts = new SortedList();
+		//TODO luci almost sorted optimization?
 		
 		xCuts.add(new Integer(0));
 		yCuts.add(new Integer(0));
@@ -143,7 +143,11 @@ public class JRGridLayout
 		
 		xCuts.add(new Integer(width));
 		yCuts.add(new Integer(height));
-
+			
+/*		Collections.sort(xCuts);
+		Collections.sort(yCuts);
+*/		
+		
 		int xCellCount = xCuts.size() - 1;
 		int yCellCount = yCuts.size() - 1;
 
@@ -184,12 +188,30 @@ public class JRGridLayout
 				xCuts.add(new Integer(x0));
 				xCuts.add(new Integer(x1));
 				
+/*				if (!xCuts.contains(new Integer(x0)))
+				{
+					xCuts.add(new Integer(x0));
+				}
+				if (!xCuts.contains(new Integer(x1)))
+				{
+					xCuts.add(new Integer(x1));
+				}
+*/				
 				int elementY = alterY == null ? element.getY() : alterY.intValue();
 				int y0 = elementY + elementOffsetY;
 				int y1 = y0 + element.getHeight();
 				yCuts.add(new Integer(y0));
 				yCuts.add(new Integer(y1));
 				
+/*				if (!yCuts.contains(new Integer(y0)))
+				{
+					yCuts.add(new Integer(y0));
+				}
+				if (!yCuts.contains(new Integer(y1)))
+				{
+					yCuts.add(new Integer(y1));
+				}
+*/				
 				if (deep && element instanceof JRPrintFrame)
 				{
 					JRPrintFrame frame = (JRPrintFrame) element;
@@ -245,11 +267,12 @@ public class JRGridLayout
 
 					setGridElements(frame.getElements(), null, x0 + leftPadding, y0 + topPadding);
 				}
-								
+
 				int x1 = xCuts.indexOf(new Integer(x0));
 				int y1 = yCuts.indexOf(new Integer(y0));
 				int x2 = xCuts.indexOf(new Integer(x0 + element.getWidth()));
 				int y2 = yCuts.indexOf(new Integer(y0 + element.getHeight()));
+				
 				
 				boolean isOverlap = false;
 				
