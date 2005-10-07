@@ -2026,11 +2026,11 @@ public class JRPdfExporter extends JRAbstractExporter
 
 	protected void exportFrame(JRPrintFrame frame) throws DocumentException, IOException, JRException
 	{
-		int x = frame.getX() + getOffsetX();
-		int y = frame.getY() + getOffsetY();
-		
 		if (frame.getMode() == JRElement.MODE_OPAQUE)
 		{
+			int x = frame.getX() + getOffsetX();
+			int y = frame.getY() + getOffsetY();
+			
 			Color backcolor = frame.getBackcolor();
 			pdfContentByte.setRGBColorStroke(
 					backcolor.getRed(),
@@ -2053,26 +2053,14 @@ public class JRPdfExporter extends JRAbstractExporter
 				pdfContentByte.fillStroke();
 		}
 		
-		int topPadding;
-		int leftPadding;
-		if (frame.getBox() == null)
-		{
-			topPadding = leftPadding = 0;
-		}
-		else
-		{
-			topPadding = frame.getBox().getTopPadding();
-			leftPadding = frame.getBox().getLeftPadding();
-		}
-		
-		pushElementOffsets(x + leftPadding, y + topPadding);
+		setFrameElementsOffset(frame, false);
 		try
 		{
 			exportElements(frame.getElements());
 		}
 		finally
 		{
-			popElementOffsets();
+			restoreElementOffsets();
 		}
 		
 		if (frame.getBox() != null)

@@ -89,11 +89,13 @@ public class JRGridLayout
 	private final int offsetY;
 	private final ExporterElements elementsExporter;
 	private final boolean deep;
+	private final boolean spanCells;
 	
 	private List xCuts;
 	private List yCuts;
 	private JRExporterGridCell[][] grid;
 	private boolean[] isRowNotEmpty;
+	private boolean[] isColNotEmpty;
 	
 	private Map boxesCache;
 	
@@ -108,9 +110,13 @@ public class JRGridLayout
 	 * @param offsetY vertical element position offset
 	 * @param elementsExporter implementation of {@link ExporterElements ExporterElements} used to decide which
 	 * elements to skip during grid creation
-	 * @param deep whether to include frame subelements in the grid
+	 * @param deep whether to include in the grid sub elements of {@link JRPrintFrame frame} elements
+	 * @param spanCells whether the exporter handles cells span
 	 */
-	public JRGridLayout(List elements, List alterYs, int width, int height, int offsetX, int offsetY, ExporterElements elementsExporter, boolean deep)
+	public JRGridLayout(List elements, List alterYs, 
+			int width, int height, int offsetX, int offsetY, 
+			ExporterElements elementsExporter, 
+			boolean deep, boolean spanCells)
 	{
 		this.elements = elements;
 		this.alterYs = alterYs;
@@ -120,6 +126,7 @@ public class JRGridLayout
 		this.width = width;
 		this.elementsExporter = elementsExporter;
 		this.deep = deep;
+		this.spanCells = spanCells;
 		
 		boxesCache = new HashMap();
 
@@ -134,7 +141,6 @@ public class JRGridLayout
 	{
 		xCuts = new SortedList();
 		yCuts = new SortedList();
-		//TODO luci almost sorted optimization?
 		
 		xCuts.add(new Integer(0));
 		yCuts.add(new Integer(0));
@@ -153,6 +159,7 @@ public class JRGridLayout
 
 		grid = new JRExporterGridCell[yCellCount][xCellCount];
 		isRowNotEmpty = new boolean[yCellCount];
+		isColNotEmpty = new boolean[xCellCount];
 				
 		for(int j = 0; j < yCellCount; j++)
 		{ 
@@ -181,58 +188,43 @@ public class JRGridLayout
 			JRPrintElement element = ((JRPrintElement)it.next());
 			Integer alterY = alterYIt == null ? null : (Integer) alterYIt.next();
 			
+			int x0 = element.getX() + elementOffsetX;
+			int elementY = alterY == null ? element.getY() : alterY.intValue();
+			int y0 = elementY + elementOffsetY;
+			
 			if (elementsExporter.isToExport(element))
 			{
-				int x0 = element.getX() + elementOffsetX;
-				int x1 = x0 + element.getWidth();
 				xCuts.add(new Integer(x0));
-				xCuts.add(new Integer(x1));
+				xCuts.add(new Integer((x0 + element.getWidth())));
 				
-/*				if (!xCuts.contains(new Integer(x0)))
-				{
-					xCuts.add(new Integer(x0));
-				}
-				if (!xCuts.contains(new Integer(x1)))
-				{
-					xCuts.add(new Integer(x1));
-				}
-*/				
-				int elementY = alterY == null ? element.getY() : alterY.intValue();
-				int y0 = elementY + elementOffsetY;
-				int y1 = y0 + element.getHeight();
 				yCuts.add(new Integer(y0));
-				yCuts.add(new Integer(y1));
-				
-/*				if (!yCuts.contains(new Integer(y0)))
-				{
-					yCuts.add(new Integer(y0));
-				}
-				if (!yCuts.contains(new Integer(y1)))
-				{
-					yCuts.add(new Integer(y1));
-				}
-*/				
-				if (deep && element instanceof JRPrintFrame)
-				{
-					JRPrintFrame frame = (JRPrintFrame) element;
-					
-					int topPadding;
-					int leftPadding;
-					JRBox frameBox = frame.getBox();
-					if (frameBox == null)
-					{
-						topPadding = leftPadding = 0;
-					}
-					else
-					{
-						topPadding = frameBox.getTopPadding();
-						leftPadding = frameBox.getLeftPadding();
-					}
-
-					createCuts(frame.getElements(), null, x0 + leftPadding, y0 + topPadding);
-				}
+				yCuts.add(new Integer((y0 + element.getHeight())));	
+			}
+			
+			if (deep && element instanceof JRPrintFrame)
+			{
+				createFrameCuts((JRPrintFrame) element, x0, y0);
 			}
 		}
+	}
+
+
+	protected void createFrameCuts(JRPrintFrame frame, int x0, int y0)
+	{
+		int topPadding;
+		int leftPadding;
+		JRBox frameBox = frame.getBox();
+		if (frameBox == null)
+		{
+			topPadding = leftPadding = 0;
+		}
+		else
+		{
+			topPadding = frameBox.getTopPadding();
+			leftPadding = frameBox.getLeftPadding();
+		}
+
+		createCuts(frame.getElements(), null, x0 + leftPadding, y0 + topPadding);
 	}
 
 
@@ -242,85 +234,119 @@ public class JRGridLayout
 		{
 			JRPrintElement element = (JRPrintElement)elementsList.get(i);
 
-			if (elementsExporter.isToExport(element))
+			boolean toExport = elementsExporter.isToExport(element);
+			JRPrintFrame frame = deep && element instanceof JRPrintFrame ? (JRPrintFrame) element : null;
+			
+			if (toExport || frame != null)
 			{
 				int elementY = alterYList == null ? element.getY() : ((Integer) alterYList.get(i)).intValue();
 				int x0 = element.getX() + elementOffsetX;
 				int y0 = elementY + elementOffsetY;
 				
-				if (deep && element instanceof JRPrintFrame)
+				if (frame != null)
 				{
-					JRPrintFrame frame = (JRPrintFrame) element;
-					
-					int topPadding;
-					int leftPadding;
-					JRBox frameBox = frame.getBox();
-					if (frameBox == null)
-					{
-						topPadding = leftPadding = 0;
-					}
-					else
-					{
-						topPadding = frameBox.getTopPadding();
-						leftPadding = frameBox.getLeftPadding();
-					}
-
-					setGridElements(frame.getElements(), null, x0 + leftPadding, y0 + topPadding);
+					setFrameGridElements(frame, x0, y0);
 				}
 
-				int x1 = xCuts.indexOf(new Integer(x0));
-				int y1 = yCuts.indexOf(new Integer(y0));
-				int x2 = xCuts.indexOf(new Integer(x0 + element.getWidth()));
-				int y2 = yCuts.indexOf(new Integer(y0 + element.getHeight()));
-				
-				
-				boolean isOverlap = false;
-				
-				for (int yi = y1; yi < y2 && !isOverlap; ++yi)
+				if (toExport)
 				{
-					for (int xi = x1; xi < x2 && !isOverlap; ++xi)
-					{
-						if(grid[yi][xi].element != null)
-						{
-							isOverlap = true;
-						}
-					}
-				}
+					int x1 = xCuts.indexOf(new Integer(x0));
+					int y1 = yCuts.indexOf(new Integer(y0));
+					int x2 = xCuts.indexOf(new Integer(x0 + element.getWidth()));
+					int y2 = yCuts.indexOf(new Integer(y0 + element.getHeight()));
 
-				if (!isOverlap)
-				{
-					for (int yi = y1; yi < y2; ++yi)
-					{	
-						for (int xi = x1; xi < x2; ++xi)
-						{
-							grid[yi][xi] = JRExporterGridCell.OCCUPIED_CELL;
-						}
-						isRowNotEmpty[yi] = true;
+					if (!isOverlap(x1, y1, x2, y2))
+					{
+						setGridElement(element, x1, y1, x2, y2);
 					}
 
-					if (x2 - x1 != 0 && y2 - y1 != 0)
+					if (frame != null)
 					{
-						grid[y1][x1] = 
-							new JRExporterGridCell(
-								element,
-								element.getWidth(),
-								element.getHeight(),
-								x2 - x1,
-								y2 - y1
-								);
+						setFrameCellsStyle(frame, x1, x2, y1, y2);
 					}
-				}
-				
-				if (deep && element instanceof JRPrintFrame)
-				{
-					setFrameCells((JRPrintFrame) element, x1, x2, y1, y2);
 				}
 			}
 		}
 	}
 
 
-	protected void setFrameCells(JRPrintFrame frame, int x1, int x2, int y1, int y2)
+	protected boolean isOverlap(int x1, int y1, int x2, int y2)
+	{
+		boolean isOverlap;
+		if (spanCells)
+		{
+			isOverlap = false;
+
+			for (int yi = y1; yi < y2 && !isOverlap; ++yi)
+			{
+				for (int xi = x1; xi < x2 && !isOverlap; ++xi)
+				{
+					if (grid[yi][xi].element != null)
+					{
+						isOverlap = true;
+					}
+				}
+			}
+		}
+		else
+		{
+			isOverlap = grid[y1][x1].element != null;
+		}
+		return isOverlap;
+	}
+
+
+	protected void setGridElement(JRPrintElement element, int x1, int y1, int x2, int y2)
+	{
+		if (spanCells)
+		{
+			for (int yi = y1; yi < y2; ++yi)
+			{
+				for (int xi = x1; xi < x2; ++xi)
+				{
+					grid[yi][xi] = JRExporterGridCell.OCCUPIED_CELL;
+				}
+				isRowNotEmpty[yi] = true;
+			}
+
+			for (int xi = x1; xi < x2; ++xi)
+			{
+				isColNotEmpty[xi] = true;
+			}
+		}
+		else
+		{
+			isRowNotEmpty[y1] = true;
+			isColNotEmpty[x1] = true;
+		}
+
+		if (x2 - x1 != 0 && y2 - y1 != 0)
+		{
+			grid[y1][x1] = new JRExporterGridCell(element, element.getWidth(), element.getHeight(), x2 - x1, y2 - y1);
+		}
+	}
+
+
+	protected void setFrameGridElements(JRPrintFrame frame, int x0, int y0)
+	{
+		int topPadding;
+		int leftPadding;
+		JRBox frameBox = frame.getBox();
+		if (frameBox == null)
+		{
+			topPadding = leftPadding = 0;
+		}
+		else
+		{
+			topPadding = frameBox.getTopPadding();
+			leftPadding = frameBox.getLeftPadding();
+		}
+
+		setGridElements(frame.getElements(), null, x0 + leftPadding, y0 + topPadding);
+	}
+
+
+	protected void setFrameCellsStyle(JRPrintFrame frame, int x1, int x2, int y1, int y2)
 	{
 		Color backcolor = frame.getMode() == JRElement.MODE_OPAQUE ? frame.getBackcolor() : null;
 		JRBox box = frame.getBox();
@@ -382,6 +408,17 @@ public class JRGridLayout
 	public boolean[] getIsRowNotEmpty()
 	{
 		return isRowNotEmpty;
+	}
+
+
+	/**
+	 * Returns an array containing for each grid column a flag set to true if the column is not empty.
+	 * 
+	 * @return array of non empty flags for grid columns
+	 */
+	public boolean[] getIsColumnNotEmpty()
+	{
+		return isColNotEmpty;
 	}
 
 

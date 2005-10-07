@@ -46,9 +46,14 @@ public class JasperReport extends JRBaseReport
 	private static final long serialVersionUID = 10000;
 
 	/**
-	 *
+	 * The name of the compiler class used to compile this report.
+	 * The compiler is used to instantiate expression evaluators.
 	 */
 	private String compilerClass = null;
+	
+	/**
+	 * Expression evaluators compiled data.
+	 */
 	private Serializable compileData = null;
 
 
@@ -76,7 +81,11 @@ public class JasperReport extends JRBaseReport
 	}
 
 	/**
-	 *
+	 * Returns the name of the compiler class used to compile this report.
+	 * <p>
+	 * The compiler is used to instantiate expression evaluators.
+	 * 
+	 * @return the name of the compiler class used to compile this report
 	 */
 	public String getCompilerClass()
 	{
@@ -85,9 +94,13 @@ public class JasperReport extends JRBaseReport
 
 
 	/**
-	 *
+	 * Returns data resulted from the expression evaluators compilation.
+	 * <p>
+	 * This data is used to create expression evaluators for report filling.
+	 * 
+	 * @return expression evaluators compiled data
 	 */
-	public Object getCompileData()
+	public Serializable getCompileData()
 	{
 		return this.compileData;
 	}

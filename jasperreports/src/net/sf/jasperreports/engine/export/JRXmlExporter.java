@@ -762,8 +762,7 @@ public class JRXmlExporter extends JRAbstractExporter
 	{
 		xmlWriter.startElement("frame");
 		
-		pushRelativeElementOffsets();
-		
+		setFrameElementsOffset(frame, true);
 		try
 		{
 			exportReportElement(frame);
@@ -774,7 +773,7 @@ public class JRXmlExporter extends JRAbstractExporter
 		}
 		finally
 		{
-			popElementOffsets();
+			restoreElementOffsets();
 		}
 	}
 }

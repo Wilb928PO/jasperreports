@@ -282,7 +282,7 @@ public abstract class JRXlsAbstractExporter extends JRAbstractExporter
 	{
 		JRGridLayout layout = new JRGridLayout(page.getElements(), alterYs,
 				jasperPrint.getPageWidth(), pageHeight,
-				globalOffsetX, globalOffsetY, getExporterElements(), true);
+				globalOffsetX, globalOffsetY, getExporterElements(), true, true);
 
 		JRExporterGridCell grid[][] = layout.getGrid();
 		boolean isRowNotEmpty[] = layout.getIsRowNotEmpty();

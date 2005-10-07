@@ -940,35 +940,23 @@ public class JRGraphics2DExporter extends JRAbstractExporter
 	
 	protected void exportFrame(JRPrintFrame frame) throws JRException
 	{		
-		int x = frame.getX() + getOffsetX();
-		int y = frame.getY() + getOffsetY();
-		
 		if (frame.getMode() == JRElement.MODE_OPAQUE)
 		{
+			int x = frame.getX() + getOffsetX();
+			int y = frame.getY() + getOffsetY();
+			
 			grx.setColor(frame.getBackcolor());
 			grx.fillRect(x, y, frame.getWidth(), frame.getHeight()); 
 		}
 		
-		int topPadding;
-		int leftPadding;
-		if (frame.getBox() == null)
-		{
-			topPadding = leftPadding = 0;
-		}
-		else
-		{
-			topPadding = frame.getBox().getTopPadding();
-			leftPadding = frame.getBox().getLeftPadding();
-		}
-		
-		pushElementOffsets(x + leftPadding, y + topPadding);
+		setFrameElementsOffset(frame, false);
 		try
 		{
 			exportElements(frame.getElements());
 		}
 		finally
 		{
-			popElementOffsets();
+			restoreElementOffsets();
 		}
 		
 		exportBox(frame.getBox(), frame);
