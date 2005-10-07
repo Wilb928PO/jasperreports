@@ -365,6 +365,8 @@ public class JRXmlDigesterFactory
 		addDatasetRules(digester);
 		
 		addCrosstabRules(digester);
+		
+		addFrameRules(digester);
 	}
 
 
@@ -744,6 +746,14 @@ public class JRXmlDigesterFactory
 		
 		digester.addFactoryCreate("*/crosstab/whenNoDataCell/cellContents", JRCellContentsFactory.class.getName());
 		digester.addSetNext("*/crosstab/whenNoDataCell/cellContents", "setWhenNoDataCell", JRDesignCellContents.class.getName());
+	}
+
+
+	private static void addFrameRules(Digester digester)
+	{
+		String framePattern = "*/" + JRFrameFactory.TAG_FRAME;
+		digester.addFactoryCreate(framePattern, JRFrameFactory.class.getName());
+		digester.addSetNext(framePattern, "addElement", JRDesignElement.class.getName());
 	}
 	
 	

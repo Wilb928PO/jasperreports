@@ -79,6 +79,7 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.JRFont;
+import net.sf.jasperreports.engine.JRFrame;
 import net.sf.jasperreports.engine.JRGraphicElement;
 import net.sf.jasperreports.engine.JRGroup;
 import net.sf.jasperreports.engine.JRHyperlink;
@@ -592,7 +593,8 @@ public class JRXmlWriter
 			(element instanceof JRImage && element.getMode() != JRElement.MODE_TRANSPARENT) ||
 			(element instanceof JRTextElement && element.getMode() != JRElement.MODE_TRANSPARENT) ||
 			(element instanceof JRSubreport && element.getMode() != JRElement.MODE_TRANSPARENT) ||
-			(element instanceof JRCrosstab && element.getMode() != JRElement.MODE_TRANSPARENT)
+			(element instanceof JRCrosstab && element.getMode() != JRElement.MODE_TRANSPARENT) ||
+			(element instanceof JRFrame && element.getMode() != JRElement.MODE_TRANSPARENT)
 			)
 		{
 			writer.addAttribute("mode", element.getMode(), JRXmlConstants.getModeMap());
@@ -1950,6 +1952,28 @@ public class JRXmlWriter
 		writer.writeExpression("connectionExpression", datasetRun.getConnectionExpression(), false);
 		writer.writeExpression("dataSourceExpression", datasetRun.getDataSourceExpression(), false);
 
+		writer.closeElement();
+	}
+	
+	
+	public void writeFrame(JRFrame frame) throws IOException
+	{
+		writer.startElement(JRFrameFactory.TAG_FRAME);
+		writer.addAttribute(JRFrameFactory.ATTRIBUTE_isStretchWithOverflow, frame.isStretchWithOverflow(), true);
+		
+		writeReportElement(frame);
+		writeBox(frame.getBox());
+		
+		List children = frame.getChildren();
+		if (children != null)
+		{
+			for (Iterator it = children.iterator(); it.hasNext();)
+			{
+				JRChild element = (JRChild) it.next();
+				element.writeXml(this);
+			}
+		}
+		
 		writer.closeElement();
 	}
 }

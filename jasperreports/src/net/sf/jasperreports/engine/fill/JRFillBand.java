@@ -27,11 +27,8 @@
  */
 package net.sf.jasperreports.engine.fill;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -39,8 +36,6 @@ import net.sf.jasperreports.engine.JRBand;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRGroup;
-import net.sf.jasperreports.engine.JRPrintElement;
-import net.sf.jasperreports.engine.JRReportFont;
 import net.sf.jasperreports.engine.base.JRVirtualPrintPage;
 import net.sf.jasperreports.engine.base.JRVirtualPrintPage.ObjectIDPair;
 import net.sf.jasperreports.engine.fill.JRBaseFiller.BoundElementMap;
@@ -58,11 +53,6 @@ public class JRFillBand extends JRFillElementContainer implements JRBand, JRVirt
 	 *
 	 */
 	private JRBand parent = null;
-
-	/**
-	 *
-	 */
-	protected JRBaseFiller filler = null;
 
 	private boolean isPrintWhenTrue = true;
 
@@ -91,10 +81,9 @@ public class JRFillBand extends JRFillElementContainer implements JRBand, JRVirt
 		JRFillObjectFactory factory
 		)
 	{
-		super(band, factory);
+		super(filler, band, factory);
 
 		this.parent = band;
-		this.filler = filler;
 		
 		if (this.elements != null && this.elements.length > 0)
 		{
@@ -317,55 +306,6 @@ public class JRFillBand extends JRFillElementContainer implements JRBand, JRVirt
 		this.fillElements(printBand);
 		
 		return printBand;
-	}
-
-
-	protected void printElementAdded(JRFillElement element, JRPrintElement printElement, JRPrintElementContainer printContainer)
-	{
-		if (element instanceof JRFillSubreport)
-		{
-			JRFillSubreport subreport = (JRFillSubreport)element;
-			
-			JRReportFont[] fonts = subreport.getFonts();
-			if (fonts != null)
-			{
-				for(int j = 0; j < fonts.length; j++)
-				{
-					try
-					{
-						filler.getJasperPrint().addFont(fonts[j]);
-					}
-					catch(JRException e)
-					{
-						//ignore font duplication exception
-					}
-				}
-			}
-			
-			Collection printElements = subreport.getPrintElements();
-			addSubElements(printContainer, element, printElements);
-		}
-		else if (element instanceof JRFillCrosstab)
-		{
-			List printElements = ((JRFillCrosstab) element).getPrintElements();
-			addSubElements(printContainer, element, printElements);
-		}
-	}
-
-
-	private void addSubElements(JRPrintElementContainer printContainer, JRFillElement element, Collection printElements)
-	{
-		JRPrintElement printElement;
-		if (printElements != null && printElements.size() > 0)
-		{
-			for(Iterator it = printElements.iterator(); it.hasNext();)
-			{
-				printElement = (JRPrintElement)it.next();
-				printElement.setX(element.getX() + printElement.getX());
-				printElement.setY(element.getRelativeY() + printElement.getY());
-				printContainer.addElement(printElement);
-			}
-		}
 	}
 
 

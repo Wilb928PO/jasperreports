@@ -25,47 +25,21 @@
  * San Francisco CA 94107
  * http://www.jaspersoft.com
  */
-package net.sf.jasperreports.engine.fill;
+package net.sf.jasperreports.engine;
 
-import net.sf.jasperreports.engine.JRBox;
-import net.sf.jasperreports.engine.util.JRProperties;
+import java.util.List;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
-public class JRTemplateFrame extends JRTemplateElement
+public interface JRFrame extends JRElement
 {
-	private static final long serialVersionUID = JRProperties.VERSION_SERIAL_UID;
+	public boolean isStretchWithOverflow();
 
-	private JRBox box;
-
-	protected JRTemplateFrame(JRFillCrosstab crosstab, JRFillCellContents cell)
-	{
-		super(crosstab);
-		
-		if (cell.getBackcolor() != null)
-		{
-			setBackcolor(cell.getBackcolor());
-		}
-		
-		setBox(cell.getBox());
-	}
+	public JRBox getBox();
 	
-	protected JRTemplateFrame(JRFillFrame frame)
-	{
-		super(frame);
-		
-		setBox(frame.getBox());
-	}
-
-	public JRBox getBox()
-	{
-		return box;
-	}
-
-	protected void setBox(JRBox box)
-	{
-		this.box = box;
-	}
+	public List getChildren();
+	
+	public JRElement[] getElements();
 }

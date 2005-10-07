@@ -112,7 +112,7 @@
 <!ELEMENT lastPageFooter (band?)>
 <!ELEMENT summary (band?)>
 
-<!ELEMENT band (printWhenExpression?, (line | rectangle | ellipse | image | staticText | textField | subreport | pieChart | pie3DChart | barChart | bar3DChart | xyBarChart | stackedBarChart | stackedBar3DChart| lineChart | xyLineChart | areaChart | xyAreaChart | scatterChart | bubbleChart | timeSeriesChart | highLowChart | candlestickChart | elementGroup | crosstab)*)>
+<!ELEMENT band (printWhenExpression?, (line | rectangle | ellipse | image | staticText | textField | subreport | pieChart | pie3DChart | barChart | bar3DChart | xyBarChart | stackedBarChart | stackedBar3DChart| lineChart | xyLineChart | areaChart | xyAreaChart | scatterChart | bubbleChart | timeSeriesChart | highLowChart | candlestickChart | elementGroup | crosstab | frame)*)>
 <!ATTLIST band
 	height NMTOKEN "0"
 	isSplitAllowed (true | false) "true"
@@ -266,7 +266,7 @@
 	class (java.lang.String | java.io.File | java.net.URL | java.io.InputStream | net.sf.jasperreports.engine.JasperReport | dori.jasper.engine.JasperReport) "java.lang.String"
 >
 
-<!ELEMENT elementGroup (line | rectangle | ellipse | image | staticText | textField | subreport | pieChart | pie3DChart | barChart | bar3DChart | xyBarChart | stackedBarChart | stackedBar3DChart| lineChart | xyLineChart | areaChart | xyAreaChart | scatterChart | bubbleChart | timeSeriesChart | highLowChart | candlestickChart | elementGroup | crosstab)*>
+<!ELEMENT elementGroup (line | rectangle | ellipse | image | staticText | textField | subreport | pieChart | pie3DChart | barChart | bar3DChart | xyBarChart | stackedBarChart | stackedBar3DChart| lineChart | xyLineChart | areaChart | xyAreaChart | scatterChart | bubbleChart | timeSeriesChart | highLowChart | candlestickChart | elementGroup | crosstab | frame)*>
 
 <!ELEMENT chart (reportElement, box?, chartTitle?, chartSubtitle?)>
 <!ATTLIST chart
@@ -500,9 +500,14 @@
 	columnTotalGroup NMTOKEN #IMPLIED
 >
 
-<!ELEMENT cellContents (box?, (line | rectangle | ellipse | image | staticText | textField | elementGroup)*)>
+<!ELEMENT cellContents (box?, (line | rectangle | ellipse | image | staticText | textField | elementGroup | frame)*)>
 <!ATTLIST cellContents
 	backcolor CDATA #IMPLIED
 >
 
 <!ELEMENT whenNoDataCell (cellContents)>
+
+<!ELEMENT frame (reportElement, box?, (line | rectangle | ellipse | image | staticText | textField | subreport | pieChart | pie3DChart | barChart | bar3DChart | xyBarChart | stackedBarChart | stackedBar3DChart| lineChart | xyLineChart | areaChart | xyAreaChart | scatterChart | bubbleChart | timeSeriesChart | highLowChart | candlestickChart | elementGroup | crosstab | frame)*)>
+<!ATTLIST frame
+	isStretchWithOverflow (true | false) "true"
+>

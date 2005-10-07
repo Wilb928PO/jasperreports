@@ -87,6 +87,7 @@ import net.sf.jasperreports.engine.JRElementGroup;
 import net.sf.jasperreports.engine.JREllipse;
 import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.JRFont;
+import net.sf.jasperreports.engine.JRFrame;
 import net.sf.jasperreports.engine.JRGroup;
 import net.sf.jasperreports.engine.JRImage;
 import net.sf.jasperreports.engine.JRLine;
@@ -1092,7 +1093,7 @@ public class JRFillObjectFactory extends JRAbstractObjectFactory
 			fillCell = (JRFillCellContents) get(cell);
 			if (fillCell == null)
 			{
-				fillCell = new JRFillCellContents(cell, this);
+				fillCell = new JRFillCellContents(filler, cell, this);
 			}
 		}
 
@@ -1165,5 +1166,22 @@ public class JRFillObjectFactory extends JRAbstractObjectFactory
 		}
 
 		return fillMeasure;
+	}
+
+
+	public JRFrame getFrame(JRFrame frame)
+	{
+		JRFillFrame fillFrame = null;
+		
+		if (frame != null)
+		{
+			fillFrame = (JRFillFrame) get(frame);
+			if (fillFrame == null)
+			{
+				fillFrame = new JRFillFrame(filler, frame, this);
+			}
+		}
+		
+		return fillFrame;
 	}
 }

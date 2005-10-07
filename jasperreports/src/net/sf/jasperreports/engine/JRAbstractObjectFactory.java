@@ -228,4 +228,6 @@ public abstract class JRAbstractObjectFactory
 
 	
 	public abstract JRCrosstab getCrosstab(JRCrosstab crosstab);
+	
+	public abstract JRFrame getFrame(JRFrame frame);
 }

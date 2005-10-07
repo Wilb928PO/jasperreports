@@ -469,7 +469,8 @@ public class JRXmlExporter extends JRAbstractExporter
 			(element instanceof JRPrintRectangle && element.getMode() != JRElement.MODE_OPAQUE) ||
 			(element instanceof JRPrintEllipse && element.getMode() != JRElement.MODE_OPAQUE) ||
 			(element instanceof JRPrintImage && element.getMode() != JRElement.MODE_TRANSPARENT) ||
-			(element instanceof JRPrintText && element.getMode() != JRElement.MODE_TRANSPARENT)
+			(element instanceof JRPrintText && element.getMode() != JRElement.MODE_TRANSPARENT) ||
+			(element instanceof JRPrintFrame && element.getMode() != JRElement.MODE_TRANSPARENT)
 			)
 		{
 			xmlWriter.addAttribute("mode", element.getMode(), JRXmlConstants.getModeMap());

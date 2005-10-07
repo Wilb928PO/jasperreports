@@ -34,7 +34,6 @@ import net.sf.jasperreports.engine.JRBox;
 import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRGraphicElement;
-import net.sf.jasperreports.engine.JRPrintElement;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.base.JRBaseBox;
 import net.sf.jasperreports.engine.crosstab.JRCellContents;
@@ -62,9 +61,9 @@ public class JRFillCellContents extends JRFillElementContainer implements JRCell
 	
 	private JRTemplateFrame template;
 
-	public JRFillCellContents(JRCellContents cell, JRFillObjectFactory factory)
+	public JRFillCellContents(JRBaseFiller filler, JRCellContents cell, JRFillObjectFactory factory)
 	{
-		super(cell, factory);
+		super(filler, cell, factory);
 		
 		crosstab = factory.getCrosstab();
 		parentCell = cell;
@@ -332,10 +331,6 @@ public class JRFillCellContents extends JRFillElementContainer implements JRCell
 		fillElements(printCell);
 		
 		return printCell;
-	}
-
-	protected void printElementAdded(JRFillElement element, JRPrintElement printElement, JRPrintElementContainer printContainer)
-	{
 	}
 
 	

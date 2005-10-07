@@ -112,18 +112,18 @@ public class JRBaseElementGroup implements JRElementGroup, Serializable
 	/**
 	 *
 	 */
-	public JRElement[] getElements()
+	public static JRElement[] getElements(List children)
 	{
 		JRElement[] elements = null;
 		
-		if (this.children != null)
+		if (children != null)
 		{
 			List allElements = new ArrayList();
 			Object child = null;
 			JRElement[] childElementArray = null;
-			for(int i = 0; i < this.children.size(); i++)
+			for(int i = 0; i < children.size(); i++)
 			{
-				child = this.children.get(i);
+				child = children.get(i);
 				if (child instanceof JRElement)
 				{
 					allElements.add(child);
@@ -145,6 +145,12 @@ public class JRBaseElementGroup implements JRElementGroup, Serializable
 		return elements;
 	}
 
+	
+	public JRElement[] getElements()
+	{
+		return getElements(children);
+	}
+	
 
 	/**
 	 *

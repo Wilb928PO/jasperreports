@@ -25,47 +25,32 @@
  * San Francisco CA 94107
  * http://www.jaspersoft.com
  */
-package net.sf.jasperreports.engine.fill;
+package net.sf.jasperreports.engine.xml;
 
-import net.sf.jasperreports.engine.JRBox;
-import net.sf.jasperreports.engine.util.JRProperties;
+import net.sf.jasperreports.engine.design.JRDesignFrame;
+
+import org.xml.sax.Attributes;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
-public class JRTemplateFrame extends JRTemplateElement
+public class JRFrameFactory extends JRBaseFactory
 {
-	private static final long serialVersionUID = JRProperties.VERSION_SERIAL_UID;
-
-	private JRBox box;
-
-	protected JRTemplateFrame(JRFillCrosstab crosstab, JRFillCellContents cell)
-	{
-		super(crosstab);
-		
-		if (cell.getBackcolor() != null)
-		{
-			setBackcolor(cell.getBackcolor());
-		}
-		
-		setBox(cell.getBox());
-	}
+	public static final String TAG_FRAME = "frame";
+	public static final String ATTRIBUTE_isStretchWithOverflow = "isStretchWithOverflow";
 	
-	protected JRTemplateFrame(JRFillFrame frame)
+	
+	public Object createObject(Attributes attributes)
 	{
-		super(frame);
+		JRDesignFrame frame = new JRDesignFrame();
 		
-		setBox(frame.getBox());
-	}
+		String isStretchWithOverflow = attributes.getValue(ATTRIBUTE_isStretchWithOverflow);
+		if (isStretchWithOverflow != null && isStretchWithOverflow.length() > 0)
+		{
+			frame.setStretchWithOverflow(Boolean.valueOf(isStretchWithOverflow).booleanValue());
+		}
 
-	public JRBox getBox()
-	{
-		return box;
-	}
-
-	protected void setBox(JRBox box)
-	{
-		this.box = box;
+		return frame;
 	}
 }

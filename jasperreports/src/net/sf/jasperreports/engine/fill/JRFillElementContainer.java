@@ -28,13 +28,16 @@
 package net.sf.jasperreports.engine.fill;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRElementGroup;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRPrintElement;
+import net.sf.jasperreports.engine.JRReportFont;
 
 /**
  * 
@@ -43,6 +46,8 @@ import net.sf.jasperreports.engine.JRPrintElement;
  */
 public abstract class JRFillElementContainer extends JRFillElementGroup
 {
+	protected JRBaseFiller filler;
+	
 	private JRFillElement[] ySortedElements = null;
 	private JRFillElement[] stretchElements = null;
 	private JRFillElement[] bandBottomElements = null;
@@ -55,9 +60,11 @@ public abstract class JRFillElementContainer extends JRFillElementGroup
 	private int firstY = 0;
 	private boolean isFirstYFound = false;
 	
-	protected JRFillElementContainer(JRElementGroup elementGrp, JRFillObjectFactory factory)
+	protected JRFillElementContainer(JRBaseFiller filler, JRElementGroup elementGrp, JRFillObjectFactory factory)
 	{
 		super(elementGrp, factory);
+		
+		this.filler = filler;
 	}
 
 
@@ -321,7 +328,13 @@ public abstract class JRFillElementContainer extends JRFillElementGroup
 		}
 	}
 
+	
+	protected int getStretchHeight()
+	{
+		return stretchHeight;
+	}
 
+	
 	/**
 	 *
 	 */
@@ -456,7 +469,34 @@ public abstract class JRFillElementContainer extends JRFillElementGroup
 						//}
 						printContainer.addElement(printElement);
 						
-						printElementAdded(element, printElement, printContainer);
+						if (element instanceof JRFillSubreport)
+						{
+							JRFillSubreport subreport = (JRFillSubreport)element;
+							
+							JRReportFont[] fonts = subreport.getFonts();
+							if (fonts != null)
+							{
+								for(int j = 0; j < fonts.length; j++)
+								{
+									try
+									{
+										filler.getJasperPrint().addFont(fonts[j]);
+									}
+									catch(JRException e)
+									{
+										//ignore font duplication exception
+									}
+								}
+							}
+							
+							Collection printElements = subreport.getPrintElements();
+							addSubElements(printContainer, element, printElements);
+						}
+						else if (element instanceof JRFillCrosstab)
+						{
+							List printElements = ((JRFillCrosstab) element).getPrintElements();
+							addSubElements(printContainer, element, printElements);
+						}
 					}
 				}
 			}
@@ -465,7 +505,23 @@ public abstract class JRFillElementContainer extends JRFillElementGroup
 		//printBand.setHeight(this.getHeight() + maxStretch - this.firstY);
 		printContainer.setHeight(this.stretchHeight - this.firstY);
 	}
-	
+
+
+	protected void addSubElements(JRPrintElementContainer printContainer, JRFillElement element, Collection printElements)
+	{
+		JRPrintElement printElement;
+		if (printElements != null && printElements.size() > 0)
+		{
+			for(Iterator it = printElements.iterator(); it.hasNext();)
+			{
+				printElement = (JRPrintElement)it.next();
+				printElement.setX(element.getX() + printElement.getX());
+				printElement.setY(element.getRelativeY() + printElement.getY());
+				printContainer.addElement(printElement);
+			}
+		}
+	}
+
 	
 	/**
 	 *
@@ -487,9 +543,5 @@ public abstract class JRFillElementContainer extends JRFillElementGroup
 		this.willOverflow = false;
 	}
 
-
-	protected abstract void printElementAdded(JRFillElement element, JRPrintElement printElement, JRPrintElementContainer printContainer);
-
-	
 	protected abstract int getHeight();
 }

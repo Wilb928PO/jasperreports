@@ -863,4 +863,17 @@ public class JRExpressionCollector
 			}
 		}
 	}
+	
+	
+	public void collect(JRFrame frame)
+	{
+		JRElement[] elements = frame.getElements();
+		if (elements != null)
+		{
+			for (int i = 0; i < elements.length; i++)
+			{
+				elements[i].collectExpressions(this);
+			}
+		}
+	}
 }

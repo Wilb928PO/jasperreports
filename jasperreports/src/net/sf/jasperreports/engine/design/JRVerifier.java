@@ -49,6 +49,7 @@ import net.sf.jasperreports.engine.JRExpressionChunk;
 import net.sf.jasperreports.engine.JRExpressionCollector;
 import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.JRFont;
+import net.sf.jasperreports.engine.JRFrame;
 import net.sf.jasperreports.engine.JRGroup;
 import net.sf.jasperreports.engine.JRHyperlink;
 import net.sf.jasperreports.engine.JRImage;
@@ -835,6 +836,10 @@ public class JRVerifier
 					else if (element instanceof JRChart)
 					{
 						verifyChart((JRChart) element);
+					}
+					else if (element instanceof JRFrame)
+					{
+						verifyFrame((JRFrame) element);
 					}
 				}
 			}
@@ -1715,6 +1720,10 @@ public class JRVerifier
 						
 						verifyImage(image);
 					}
+					else if (element instanceof JRFrame)
+					{
+						verifyFrame((JRFrame) element);
+					}
 					else if (element instanceof JRSubreport)
 					{
 						brokenRules.add("Subreports are not allowed inside crosstab cells.");
@@ -1908,5 +1917,12 @@ public class JRVerifier
 		verifyVariables(dataset);
 
 		verifyGroups(dataset);
+	}
+
+
+	private void verifyFrame(JRFrame frame)
+	{
+		// TODO luci Auto-generated method stub
+		
 	}
 }

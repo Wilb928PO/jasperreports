@@ -85,6 +85,7 @@ import net.sf.jasperreports.engine.JRExpressionChunk;
 import net.sf.jasperreports.engine.JRExpressionCollector;
 import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.JRFont;
+import net.sf.jasperreports.engine.JRFrame;
 import net.sf.jasperreports.engine.JRGroup;
 import net.sf.jasperreports.engine.JRImage;
 import net.sf.jasperreports.engine.JRLine;
@@ -1229,5 +1230,22 @@ public class JRBaseObjectFactory extends JRAbstractObjectFactory
 		}
 
 		return baseParameter;
+	}
+
+
+	public JRFrame getFrame(JRFrame frame)
+	{
+		JRBaseFrame baseFrame = null;
+		
+		if (frame != null)
+		{
+			baseFrame = (JRBaseFrame) get(frame);
+			if (baseFrame == null)
+			{
+				baseFrame = new JRBaseFrame(frame, this);
+			}
+		}
+		
+		return baseFrame;
 	}
 }
