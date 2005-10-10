@@ -1959,7 +1959,6 @@ public class JRXmlWriter
 	public void writeFrame(JRFrame frame) throws IOException
 	{
 		writer.startElement(JRFrameFactory.TAG_FRAME);
-		writer.addAttribute(JRFrameFactory.ATTRIBUTE_isStretchWithOverflow, frame.isStretchWithOverflow(), true);
 		
 		writeReportElement(frame);
 		writeBox(frame.getBox());

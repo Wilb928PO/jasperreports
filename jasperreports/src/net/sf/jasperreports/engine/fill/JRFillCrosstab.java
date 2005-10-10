@@ -522,12 +522,20 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 		printCells.clear();
 
 		boolean fillEnded = !hasData || (rowIndex >= rowHeadersData[0].length && columnIndex >= columnHeadersData[0].length);
-		if (isOverflow && fillEnded && !isPrintWhenDetailOverflows() && isAlreadyPrinted())
+		if (isOverflow && fillEnded && isAlreadyPrinted())
 		{
-			setStretchHeight(getHeight());
-			setToPrint(false);
+			if (isPrintWhenDetailOverflows())
+			{
+				rewind();
+				setReprinted(true);
+			}
+			else
+			{
+				setStretchHeight(getHeight());
+				setToPrint(false);
 
-			return false;
+				return false;
+			}
 		}
 
 		if (isOverflow && isPrintWhenDetailOverflows())

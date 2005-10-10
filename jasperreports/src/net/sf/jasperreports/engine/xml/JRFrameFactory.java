@@ -38,19 +38,11 @@ import org.xml.sax.Attributes;
 public class JRFrameFactory extends JRBaseFactory
 {
 	public static final String TAG_FRAME = "frame";
-	public static final String ATTRIBUTE_isStretchWithOverflow = "isStretchWithOverflow";
 	
 	
 	public Object createObject(Attributes attributes)
 	{
 		JRDesignFrame frame = new JRDesignFrame();
-		
-		String isStretchWithOverflow = attributes.getValue(ATTRIBUTE_isStretchWithOverflow);
-		if (isStretchWithOverflow != null && isStretchWithOverflow.length() > 0)
-		{
-			frame.setStretchWithOverflow(Boolean.valueOf(isStretchWithOverflow).booleanValue());
-		}
-
 		return frame;
 	}
 }

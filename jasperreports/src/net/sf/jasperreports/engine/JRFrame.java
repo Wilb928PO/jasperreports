@@ -35,8 +35,6 @@ import java.util.List;
  */
 public interface JRFrame extends JRElement
 {
-	public boolean isStretchWithOverflow();
-
 	public JRBox getBox();
 	
 	public List getChildren();

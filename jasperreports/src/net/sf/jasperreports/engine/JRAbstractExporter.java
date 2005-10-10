@@ -328,7 +328,7 @@ public abstract class JRAbstractExporter implements JRExporter
 				leftPadding = frame.getBox().getLeftPadding();
 			}
 
-			setElementOffsets(globalOffsetX + frame.getX() + leftPadding, globalOffsetY + frame.getY() + topPadding);
+			setElementOffsets(getOffsetX() + frame.getX() + leftPadding, getOffsetY() + frame.getY() + topPadding);
 		}
 	}
 	

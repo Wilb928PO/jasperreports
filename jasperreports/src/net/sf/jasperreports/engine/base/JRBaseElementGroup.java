@@ -157,6 +157,8 @@ public class JRBaseElementGroup implements JRElementGroup, Serializable
 	 */
 	public JRElement getElementByKey(String key)
 	{
+		// TODO luci frames, crosstabs
+		
 		JRElement element = null;
 		
 		if (key != null)

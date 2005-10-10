@@ -508,6 +508,3 @@
 <!ELEMENT whenNoDataCell (cellContents)>
 
 <!ELEMENT frame (reportElement, box?, (line | rectangle | ellipse | image | staticText | textField | subreport | pieChart | pie3DChart | barChart | bar3DChart | xyBarChart | stackedBarChart | stackedBar3DChart| lineChart | xyLineChart | areaChart | xyAreaChart | scatterChart | bubbleChart | timeSeriesChart | highLowChart | candlestickChart | elementGroup | crosstab | frame)*)>
-<!ATTLIST frame
-	isStretchWithOverflow (true | false) "true"
->

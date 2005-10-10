@@ -46,15 +46,12 @@ import net.sf.jasperreports.engine.xml.JRXmlWriter;
  */
 public class JRBaseFrame extends JRBaseElement implements JRFrame
 {
-	protected boolean isStretchWithOverflow;
 	protected JRBox box;
 	protected List children;
 
 	public JRBaseFrame(JRFrame frame, JRBaseObjectFactory factory)
 	{
 		super(frame, factory);
-		
-		isStretchWithOverflow = frame.isStretchWithOverflow();
 		box = frame.getBox();
 
 		List frameChildren = frame.getChildren();
@@ -67,11 +64,6 @@ public class JRBaseFrame extends JRBaseElement implements JRFrame
 				children.add(child.getCopy(factory));
 			}
 		}
-	}
-
-	public boolean isStretchWithOverflow()
-	{
-		return isStretchWithOverflow;
 	}
 
 	public JRBox getBox()

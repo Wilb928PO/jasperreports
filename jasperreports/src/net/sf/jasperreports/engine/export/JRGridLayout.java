@@ -357,12 +357,18 @@ public class JRGridLayout
 			{
 				JRExporterGridCell cell = grid[yi][xi];
 				
-				if (frame.getMode() == JRElement.MODE_OPAQUE)
+				if (cell.getBackcolor() == null)
 				{
-					cell.setBackcolor(backcolor);
+					if (frame.getMode() == JRElement.MODE_OPAQUE)
+					{
+						cell.setBackcolor(backcolor);
+					}
 				}
 				
-				cell.setForecolor(frame.getForecolor());
+				if (cell.getForecolor() == null)
+				{
+					cell.setForecolor(frame.getForecolor());
+				}
 				
 				if (box != null)
 				{
@@ -373,11 +379,12 @@ public class JRGridLayout
 					
 					if (left || right || top || bottom)
 					{
-						Object key = new BoxKey(box, left, right, top, bottom);
+						JRBox cellBox = cell.getBox();
+						Object key = new BoxKey(box, cellBox, left, right, top, bottom);
 						JRBox modBox = (JRBox) boxesCache.get(key);
 						if (modBox == null)
 						{
-							modBox = new JRBaseBox(box, left, right, top, bottom);
+							modBox = new JRBaseBox(box, left, right, top, bottom, cellBox);
 							boxesCache.put(key, modBox);
 						}
 						
@@ -486,21 +493,27 @@ public class JRGridLayout
 	protected static class BoxKey
 	{
 		final JRBox box;
+		final JRBox cellBox;
 		final boolean left;
 		final boolean right;
 		final boolean top;
 		final boolean bottom;
 		final int hashCode;
 		
-		BoxKey(JRBox box, boolean left, boolean right, boolean top, boolean bottom)
+		BoxKey(JRBox box, JRBox cellBox, boolean left, boolean right, boolean top, boolean bottom)
 		{
 			this.box = box;
+			this.cellBox = cellBox;
 			this.left = left;
 			this.right = right;
 			this.top = top;
 			this.bottom = bottom;
 			
 			int hash = box.hashCode();
+			if (cellBox != null)
+			{
+				hash = 31*hash + cellBox.hashCode();
+			}
 			hash = 31*hash + (left ? 1231 : 1237);
 			hash = 31*hash + (right ? 1231 : 1237);
 			hash = 31*hash + (top ? 1231 : 1237);
@@ -517,8 +530,9 @@ public class JRGridLayout
 			
 			BoxKey b = (BoxKey) obj;
 			
-			return b.box.equals(box) && 
-			b.left == left && b.right == right && b.top == top && b.bottom == bottom;
+			return b.box.equals(box) &&
+				(b.cellBox == null ? cellBox == null : (cellBox != null && b.cellBox.equals(cellBox))) &&
+				b.left == left && b.right == right && b.top == top && b.bottom == bottom;
 		}
 
 		public int hashCode()

@@ -47,7 +47,6 @@ import net.sf.jasperreports.engine.xml.JRXmlWriter;
  */
 public class JRDesignFrame extends JRDesignElement implements JRFrame
 {
-	protected boolean isStretchWithOverflow = true;
 	protected JRBox box;
 	protected List children;
 
@@ -83,16 +82,6 @@ public class JRDesignFrame extends JRDesignElement implements JRFrame
 	public void setBox(JRBox box)
 	{
 		this.box = box;
-	}
-
-	public boolean isStretchWithOverflow()
-	{
-		return isStretchWithOverflow;
-	}
-
-	public void setStretchWithOverflow(boolean isStretchWithOverflow)
-	{
-		this.isStretchWithOverflow = isStretchWithOverflow;
 	}
 
 	public JRElement[] getElements()

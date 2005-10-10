@@ -39,6 +39,7 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExpressionCollector;
 import net.sf.jasperreports.engine.JRFrame;
 import net.sf.jasperreports.engine.JRPrintElement;
+import net.sf.jasperreports.engine.base.JRBaseBox;
 import net.sf.jasperreports.engine.base.JRBaseElementGroup;
 import net.sf.jasperreports.engine.xml.JRXmlWriter;
 
@@ -49,16 +50,24 @@ import net.sf.jasperreports.engine.xml.JRXmlWriter;
 public class JRFillFrame extends JRFillElement implements JRFrame
 {
 	protected final JRFrame parentFrame;
+	protected final JRBox box;
 	
 	private JRFillFrameElements container;
 	
 	private JRTemplateFrame templateFrame;
+	private JRTemplateFrame bottomTemplateFrame;
+	private JRTemplateFrame topTemplateFrame;
+	private JRTemplateFrame topBottomTemplateFrame;
+	
+	private boolean first;
+	private boolean last;
 
 	public JRFillFrame(JRBaseFiller filler, JRFrame frame, JRFillObjectFactory factory)
 	{
 		super(filler, frame, factory);
 		
 		parentFrame = frame;
+		box = frame.getBox();
 		
 		container = new JRFillFrameElements(factory);
 		
@@ -77,13 +86,67 @@ public class JRFillFrame extends JRFillElement implements JRFrame
 
 	protected boolean prepare(int availableStretchHeight, boolean isOverflow) throws JRException
 	{
-		//TODO luci overflow, etc
+		super.prepare(availableStretchHeight, isOverflow);
+
+		if (!isToPrint())
+		{
+			return false;
+		}
+
+		if (availableStretchHeight < getRelativeY() - getY() - getBandBottomY())
+		{
+			setToPrint(false);
+			return true;
+		}
+
+		boolean finished = !container.willOverflow();
+		if (isOverflow && finished && isAlreadyPrinted())
+		{
+			if (isPrintWhenDetailOverflows())
+			{
+				rewind();
+				setReprinted(true);
+			}
+			else
+			{
+				setStretchHeight(getHeight());
+				setToPrint(false);
+
+				return false;
+			}
+		}
+		
+		first = !isOverflow || finished;
+				
+		int topPadding = 0;
+		int bottomPadding = 0;
+		if (box != null)
+		{
+			if (first)
+			{
+				topPadding = box.getTopPadding();
+			}
+			
+			bottomPadding = box.getBottomPadding();
+		}
 		
 		container.initFill();
 		container.resetElements();
-		container.prepareElements(isStretchWithOverflow() ? 0 : availableStretchHeight, true);
+		container.prepareElements(availableStretchHeight - topPadding - bottomPadding, true);
 		
-		return container.willOverflow();
+		boolean willOverflow = container.willOverflow();
+		if (willOverflow)
+		{
+			setStretchHeight(getHeight() + availableStretchHeight - getRelativeY() + getY() + getBandBottomY());
+		}
+		else
+		{
+			setStretchHeight(container.getStretchHeight());
+		}
+				
+		last = !willOverflow;
+		
+		return willOverflow;
 	}
 
 	protected JRPrintElement fill() throws JRException
@@ -92,7 +155,7 @@ public class JRFillFrame extends JRFillElement implements JRFrame
 		container.moveBandBottomElements();
 		container.removeBlankElements();
 		
-		JRTemplatePrintFrame printFrame = new JRTemplatePrintFrame(templateFrame);
+		JRTemplatePrintFrame printFrame = new JRTemplatePrintFrame(getTemplate());
 		printFrame.setX(getX());
 		printFrame.setY(getRelativeY());
 		printFrame.setWidth(getWidth());
@@ -103,19 +166,68 @@ public class JRFillFrame extends JRFillElement implements JRFrame
 		return printFrame;
 	}
 
+	protected JRTemplateFrame getTemplate()
+	{
+		JRTemplateFrame boxTemplate;
+		
+		if (first)
+		{
+			if (last)
+			{
+				boxTemplate = templateFrame;
+			}
+			else
+			{
+				if (bottomTemplateFrame == null)
+				{
+					JRBox bottomBox = new JRBaseBox(box, true, true, true, false, null);
+					
+					bottomTemplateFrame = new JRTemplateFrame(this);
+					bottomTemplateFrame.setBox(bottomBox);
+				}
+				
+				boxTemplate = bottomTemplateFrame;
+			}
+		}
+		else
+		{
+			if (last)
+			{
+				if (topTemplateFrame == null)
+				{
+					JRBox topBox = new JRBaseBox(box, true, true, false, true, null);
+					
+					topTemplateFrame = new JRTemplateFrame(this);
+					topTemplateFrame.setBox(topBox);
+				}
+				
+				boxTemplate = topTemplateFrame;
+			}
+			else
+			{
+				if (topBottomTemplateFrame == null)
+				{
+					JRBox topBottomBox = new JRBaseBox(box, true, true, false, false, null);
+					
+					topBottomTemplateFrame = new JRTemplateFrame(this);
+					topBottomTemplateFrame.setBox(topBottomBox);
+				}
+				
+				boxTemplate = topBottomTemplateFrame;
+			}
+		}
+		
+		return boxTemplate;
+	}
+
 	protected void resolveElement(JRPrintElement element, byte evaluation) throws JRException
 	{
 		// nothing
 	}
 
-	public boolean isStretchWithOverflow()
-	{
-		return parentFrame.isStretchWithOverflow();
-	}
-
 	public JRBox getBox()
 	{
-		return parentFrame.getBox();
+		return box;
 	}
 
 	public JRElement[] getElements()
@@ -178,7 +290,7 @@ public class JRFillFrame extends JRFillElement implements JRFrame
 
 		public JRElement getElementByKey(String key)
 		{
-			// TODO luci Auto-generated method stub
+			// not used
 			return null;
 		}
 

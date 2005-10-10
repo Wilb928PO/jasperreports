@@ -817,32 +817,38 @@ public class JRVerifier
 							);
 					}
 
-					if (element instanceof JRTextField)
-					{
-						verifyTextField((JRTextField)element);
-					}
-					else if (element instanceof JRImage)
-					{
-						verifyImage((JRImage)element);
-					}
-					else if (element instanceof JRSubreport)
-					{
-						verifySubreport((JRSubreport)element);
-					}
-					else if (element instanceof JRCrosstab)
-					{
-						verifyCrosstab((JRDesignCrosstab) element);
-					}
-					else if (element instanceof JRChart)
-					{
-						verifyChart((JRChart) element);
-					}
-					else if (element instanceof JRFrame)
-					{
-						verifyFrame((JRFrame) element);
-					}
+					verifyElement(element);
 				}
 			}
+		}
+	}
+
+
+	protected void verifyElement(JRElement element)
+	{
+		if (element instanceof JRTextField)
+		{
+			verifyTextField((JRTextField)element);
+		}
+		else if (element instanceof JRImage)
+		{
+			verifyImage((JRImage)element);
+		}
+		else if (element instanceof JRSubreport)
+		{
+			verifySubreport((JRSubreport)element);
+		}
+		else if (element instanceof JRCrosstab)
+		{
+			verifyCrosstab((JRDesignCrosstab) element);
+		}
+		else if (element instanceof JRChart)
+		{
+			verifyChart((JRChart) element);
+		}
+		else if (element instanceof JRFrame)
+		{
+			verifyFrame((JRFrame) element);
 		}
 	}
 
@@ -1922,7 +1928,44 @@ public class JRVerifier
 
 	private void verifyFrame(JRFrame frame)
 	{
-		// TODO luci Auto-generated method stub
-		
+		JRElement[] elements = frame.getElements();
+		if (elements != null && elements.length > 0)
+		{
+			int topPadding = 0;
+			int leftPadding = 0;
+			int bottomPadding = 0;
+			int rightPadding = 0;
+			
+			JRBox box = frame.getBox();
+			if (box != null)
+			{
+				topPadding = box.getTopPadding();
+				leftPadding = box.getLeftPadding();
+				bottomPadding = box.getBottomPadding();
+				rightPadding = box.getRightPadding();
+			}
+			
+			int avlblWidth = frame.getWidth() - leftPadding - rightPadding;
+			int avlblHeight = frame.getHeight() - topPadding - bottomPadding;
+			
+			for (int i = 0; i < elements.length; i++)
+			{
+				JRElement element = elements[i];
+				
+				if (element.getX() + element.getWidth() > avlblWidth)
+				{
+					brokenRules.add("Element reaches outside frame width: x=" + element.getX() + ", width="
+							+ element.getWidth() + ", available width=" + avlblWidth + ".");
+				}
+				
+				if (element.getY() + element.getHeight() > avlblHeight)
+				{
+					brokenRules.add("Element reaches outside frame height: y=" + element.getY() + ", height="
+							+ element.getHeight() + ", available height=" + avlblHeight + ".");
+				}
+				
+				verifyElement(element);
+			}
+		}
 	}
 }
