@@ -271,7 +271,7 @@ public abstract class JRAbstractExporter implements JRExporter
 	/**
 	 * Returns the X axis offset used for element export.
 	 * <p>
-	 * This method should be used istead of {@link globalOffsetX globalOffsetX} when
+	 * This method should be used istead of {@link #globalOffsetX globalOffsetX} when
 	 * exporting elements.
 	 * 
 	 * @return the X axis offset
@@ -285,7 +285,7 @@ public abstract class JRAbstractExporter implements JRExporter
 	/**
 	 * Returns the Y axis offset used for element export.
 	 * <p>
-	 * This method should be used istead of {@link globalOffsetY globalOffsetY} when
+	 * This method should be used istead of {@link #globalOffsetY globalOffsetY} when
 	 * exporting elements.
 	 * 
 	 * @return the Y axis offset

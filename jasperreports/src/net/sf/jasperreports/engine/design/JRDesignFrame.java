@@ -42,14 +42,19 @@ import net.sf.jasperreports.engine.base.JRBaseElementGroup;
 import net.sf.jasperreports.engine.xml.JRXmlWriter;
 
 /**
+ * Implementation of {@link net.sf.jasperreports.engine.JRFrame JRFrame} to be used at design time.
+ * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
 public class JRDesignFrame extends JRDesignElement implements JRFrame
 {
-	protected JRBox box;
-	protected List children;
+	private JRBox box;
+	private List children;
 
+	/**
+	 * Creates a new frame object.
+	 */
 	public JRDesignFrame()
 	{
 		super();
@@ -79,6 +84,12 @@ public class JRDesignFrame extends JRDesignElement implements JRFrame
 		return box;
 	}
 
+	
+	/**
+	 * Sets the frame border.
+	 * 
+	 * @param box the border
+	 */
 	public void setBox(JRBox box)
 	{
 		this.box = box;
@@ -89,26 +100,53 @@ public class JRDesignFrame extends JRDesignElement implements JRFrame
 		return JRBaseElementGroup.getElements(children);
 	}
 
+	
+	/**
+	 * Adds a sub element to the frame.
+	 * 
+	 * @param element the element to add
+	 */
 	public void addElement(JRElement element)
 	{
 		children.add(element);
 	}
 	
-	public void removeElement(JRElement element)
+	
+	/**
+	 * Removes a sub element from the frame.
+	 * 
+	 * @param element the element to remove
+	 * @return <tt>true</tt> if this frame contained the specified element
+	 */
+	public boolean removeElement(JRElement element)
 	{
-		children.remove(element);
+		return children.remove(element);
 	}
 
+	
+	/**
+	 * Adds an element group to the frame.
+	 * 
+	 * @param group the element group to add
+	 */
 	public void addElementGroup(JRElementGroup group)
 	{
 		children.add(group);
 	}
 	
-	public void removeElementGroup(JRElementGroup group)
+	
+	/**
+	 * Removes a group element from the frame.
+	 * 
+	 * @param group the group to remove
+	 * @return <tt>true</tt> if this frame contained the specified group
+	 */
+	public boolean removeElementGroup(JRElementGroup group)
 	{
-		children.remove(group);
+		return children.remove(group);
 	}
 
+	
 	public List getChildren()
 	{
 		return children;

@@ -103,6 +103,7 @@ import net.sf.jasperreports.engine.crosstab.JRCrosstab;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabBucket;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabCell;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabColumnGroup;
+import net.sf.jasperreports.engine.crosstab.JRCrosstabDataset;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabMeasure;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabParameter;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabRowGroup;
@@ -113,6 +114,7 @@ import net.sf.jasperreports.engine.xml.crosstab.JRCellContentsFactory;
 import net.sf.jasperreports.engine.xml.crosstab.JRCrosstabBucketFactory;
 import net.sf.jasperreports.engine.xml.crosstab.JRCrosstabCellFactory;
 import net.sf.jasperreports.engine.xml.crosstab.JRCrosstabColumnGroupFactory;
+import net.sf.jasperreports.engine.xml.crosstab.JRCrosstabDatasetFactory;
 import net.sf.jasperreports.engine.xml.crosstab.JRCrosstabFactory;
 import net.sf.jasperreports.engine.xml.crosstab.JRCrosstabGroupFactory;
 import net.sf.jasperreports.engine.xml.crosstab.JRCrosstabMeasureFactory;
@@ -1662,7 +1664,6 @@ public class JRXmlWriter
 	{
 		writer.startElement("crosstab");
 		writer.addAttribute(JRCrosstabFactory.ATTRIBUTE_name, crosstab.getName());
-		writer.addAttribute(JRCrosstabFactory.ATTRIBUTE_isDataPreSorted, crosstab.isDataPreSorted(), false);
 		writer.addAttribute(JRCrosstabFactory.ATTRIBUTE_isRepeatColumnHeaders, crosstab.isRepeatColumnHeaders(), true);
 		writer.addAttribute(JRCrosstabFactory.ATTRIBUTE_isRepeatRowHeaders, crosstab.isRepeatRowHeaders(), true);
 		writer.addAttribute(JRCrosstabFactory.ATTRIBUTE_columnBreakOffset, crosstab.getColumnBreakOffset(), JRCrosstab.DEFAULT_COLUMN_BREAK_OFFSET);
@@ -1680,7 +1681,7 @@ public class JRXmlWriter
 		
 		writer.writeExpression("parametersMapExpression", crosstab.getParametersMapExpression(), false);
 		
-		writeChartDataset(crosstab.getDataset());
+		writeCrosstabDataset(crosstab);
 		
 		JRCrosstabRowGroup[] rowGroups = crosstab.getRowGroups();
 		for (int i = 0; i < rowGroups.length; i++)
@@ -1726,7 +1727,31 @@ public class JRXmlWriter
 			}
 		}
 		
+		writeCrosstabWhenNoDataCell(crosstab);
+		
 		writer.closeElement();
+	}
+
+
+	private void writeCrosstabDataset(JRCrosstab crosstab) throws IOException
+	{
+		JRCrosstabDataset dataset = crosstab.getDataset();
+		writer.startElement("crosstabDataset");
+		writer.addAttribute(JRCrosstabDatasetFactory.ATTRIBUTE_isDataPreSorted, dataset.isDataPreSorted(), false);		
+		writeChartDataset(dataset);
+		writer.closeElement();
+	}
+
+
+	private void writeCrosstabWhenNoDataCell(JRCrosstab crosstab) throws IOException
+	{
+		JRCellContents whenNoDataCell = crosstab.getWhenNoDataCell();
+		if (whenNoDataCell != null)
+		{
+			writer.startElement("whenNoDataCell");
+			writeCellContents(whenNoDataCell);
+			writer.closeElement();
+		}
 	}
 	
 	

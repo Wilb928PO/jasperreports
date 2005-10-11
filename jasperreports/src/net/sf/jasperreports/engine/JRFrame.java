@@ -30,14 +30,42 @@ package net.sf.jasperreports.engine;
 import java.util.List;
 
 /**
+ * An abstract representation of a report elements container.
+ * <p>
+ * A frame is a report element that contains sub elements.
+ * It has a backgroud, a border and it stretches to accommodate its content.
+ * <p>
+ * For the Graphics2D and PDF exporters, a frame is equivalent to a rectangle
+ * placed behind a group of elements.  The HTML exporter creates sub-tables for frames
+ * and the XLS exporter includes the frame sub elements into the grid.
+ * <p>
+ * For elements inside a frame, the coordinates, positionType and stretchType
+ * properties and relative to the frame instead of the band. 
+ * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
 public interface JRFrame extends JRElement
 {
+	/**
+	 * Returns the border of the frame.
+	 * 
+	 * @return the border of the frame
+	 */
 	public JRBox getBox();
 	
+	/**
+	 * Returns the list of direct children of the frame, containing elements and element groups.
+	 * 
+	 * @return list of direct children of the frame
+	 */
 	public List getChildren();
 	
+	
+	/**
+	 * Returns all the sub elements of the frame.
+	 * 
+	 * @return all the sub elements of the frame
+	 */
 	public JRElement[] getElements();
 }

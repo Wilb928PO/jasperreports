@@ -31,8 +31,11 @@ import net.sf.jasperreports.engine.JRBox;
 import net.sf.jasperreports.engine.util.JRProperties;
 
 /**
+ * Frame information shared by multiple print frame objects.
+ * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
+ * @see net.sf.jasperreports.engine.fill.JRTemplatePrintFrame
  */
 public class JRTemplateFrame extends JRTemplateElement
 {
@@ -40,7 +43,14 @@ public class JRTemplateFrame extends JRTemplateElement
 
 	private JRBox box;
 
-	protected JRTemplateFrame(JRFillCrosstab crosstab, JRFillCellContents cell)
+	
+	/**
+	 * Creates a template frame for a crosstab cell.
+	 * 
+	 * @param crosstab the crosstab
+	 * @param cell the cell
+	 */
+	public JRTemplateFrame(JRFillCrosstab crosstab, JRFillCellContents cell)
 	{
 		super(crosstab);
 		
@@ -52,19 +62,37 @@ public class JRTemplateFrame extends JRTemplateElement
 		setBox(cell.getBox());
 	}
 	
-	protected JRTemplateFrame(JRFillFrame frame)
+	
+	/**
+	 * Creates a template frame for a frame.
+	 * 
+	 * @param frame the frame
+	 */
+	public JRTemplateFrame(JRFillFrame frame)
 	{
 		super(frame);
 		
 		setBox(frame.getBox());
 	}
 
+	
+	/**
+	 * Returns the border of this template frame.
+	 * 
+	 * @return the border of this template frame
+	 */
 	public JRBox getBox()
 	{
 		return box;
 	}
 
-	protected void setBox(JRBox box)
+	
+	/**
+	 * Sets the border of this template frame.
+	 * 
+	 * @param box the border
+	 */
+	public void setBox(JRBox box)
 	{
 		this.box = box;
 	}

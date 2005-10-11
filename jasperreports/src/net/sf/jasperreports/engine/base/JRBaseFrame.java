@@ -41,6 +41,8 @@ import net.sf.jasperreports.engine.JRFrame;
 import net.sf.jasperreports.engine.xml.JRXmlWriter;
 
 /**
+ * Base read-only implementation of {@link net.sf.jasperreports.engine.JRFrame JRFrame}.
+ * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
@@ -95,5 +97,4 @@ public class JRBaseFrame extends JRBaseElement implements JRFrame
 	{
 		return children;
 	}
-
 }

@@ -104,6 +104,7 @@ import net.sf.jasperreports.engine.xml.crosstab.JRCellContentsFactory;
 import net.sf.jasperreports.engine.xml.crosstab.JRCrosstabBucketExpressionFactory;
 import net.sf.jasperreports.engine.xml.crosstab.JRCrosstabBucketFactory;
 import net.sf.jasperreports.engine.xml.crosstab.JRCrosstabCellFactory;
+import net.sf.jasperreports.engine.xml.crosstab.JRCrosstabChartDatasetFactory;
 import net.sf.jasperreports.engine.xml.crosstab.JRCrosstabColumnGroupFactory;
 import net.sf.jasperreports.engine.xml.crosstab.JRCrosstabDatasetFactory;
 import net.sf.jasperreports.engine.xml.crosstab.JRCrosstabFactory;
@@ -700,8 +701,9 @@ public class JRXmlDigesterFactory
 		digester.addSetNext("*/crosstab/crosstabParameter/parameterValueExpression", "setExpression", JRExpression.class.getName());
 		digester.addCallMethod("*/crosstab/crosstabParameter/parameterValueExpression", "setText", 0);
 
-		digester.addFactoryCreate("*/crosstab/dataset", JRCrosstabDatasetFactory.class.getName());
-		digester.addSetNext("*/crosstab/dataset", "setDataset", JRCrosstabDataset.class.getName());
+		digester.addFactoryCreate("*/crosstab/crosstabDataset", JRCrosstabDatasetFactory.class.getName());
+		digester.addSetNext("*/crosstab/crosstabDataset", "setDataset", JRCrosstabDataset.class.getName());
+		digester.addFactoryCreate("*/crosstab/crosstabDataset/dataset", JRCrosstabChartDatasetFactory.class.getName());
 		
 		digester.addFactoryCreate("*/crosstab/rowGroup", JRCrosstabRowGroupFactory.class.getName());		
 		digester.addSetNext("*/crosstab/rowGroup", "addRowGroup", JRDesignCrosstabRowGroup.class.getName());		

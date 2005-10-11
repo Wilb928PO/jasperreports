@@ -44,6 +44,8 @@ import net.sf.jasperreports.engine.base.JRBaseElementGroup;
 import net.sf.jasperreports.engine.xml.JRXmlWriter;
 
 /**
+ * Fill time implementation of a frame element.
+ * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
@@ -52,14 +54,39 @@ public class JRFillFrame extends JRFillElement implements JRFrame
 	protected final JRFrame parentFrame;
 	protected final JRBox box;
 	
+	/**
+	 * Element container used for filling.
+	 */
 	private JRFillFrameElements container;
 	
+	/**
+	 * Template frame.
+	 */
 	private JRTemplateFrame templateFrame;
+	
+	/**
+	 * Template frame without the bottom border.
+	 */
 	private JRTemplateFrame bottomTemplateFrame;
+	
+	/**
+	 * Template frame without the top border
+	 */
 	private JRTemplateFrame topTemplateFrame;
+	
+	/**
+	 * Template frame without the top and bottom borders
+	 */
 	private JRTemplateFrame topBottomTemplateFrame;
 	
+	/**
+	 * Whether the current frame chunk is the first one.
+	 */
 	private boolean first;
+	
+	/**
+	 * Whether the current frame chunk is the last one.
+	 */
 	private boolean last;
 
 	public JRFillFrame(JRBaseFiller filler, JRFrame frame, JRFillObjectFactory factory)
@@ -92,7 +119,9 @@ public class JRFillFrame extends JRFillElement implements JRFrame
 		{
 			return false;
 		}
-
+		
+		//TODO luci repeated values, printInFirstWholeBand, printWhenGroupChanges
+		
 		if (availableStretchHeight < getRelativeY() - getY() - getBandBottomY())
 		{
 			setToPrint(false);
@@ -176,8 +205,9 @@ public class JRFillFrame extends JRFillElement implements JRFrame
 			{
 				boxTemplate = templateFrame;
 			}
-			else
+			else //remove the bottom border
 			{
+				
 				if (bottomTemplateFrame == null)
 				{
 					JRBox bottomBox = new JRBaseBox(box, true, true, true, false, null);
@@ -191,7 +221,7 @@ public class JRFillFrame extends JRFillElement implements JRFrame
 		}
 		else
 		{
-			if (last)
+			if (last) //remove the top border
 			{
 				if (topTemplateFrame == null)
 				{
@@ -203,7 +233,7 @@ public class JRFillFrame extends JRFillElement implements JRFrame
 				
 				boxTemplate = topTemplateFrame;
 			}
-			else
+			else //remove the top and bottom borders
 			{
 				if (topBottomTemplateFrame == null)
 				{
@@ -255,7 +285,10 @@ public class JRFillFrame extends JRFillElement implements JRFrame
 		writer.writeFrame(this);
 	}
 	
-	
+
+	/**
+	 * Frame element container filler.
+	 */
 	protected class JRFillFrameElements extends JRFillElementContainer
 	{
 		JRFillFrameElements(JRFillObjectFactory factory)
@@ -271,6 +304,9 @@ public class JRFillFrame extends JRFillElement implements JRFrame
 	}
 	
 	
+	/**
+	 * Frame as element group implementation used for the element container filler.
+	 */
 	protected class JRFrameElementGroup implements JRElementGroup
 	{
 		public List getChildren()

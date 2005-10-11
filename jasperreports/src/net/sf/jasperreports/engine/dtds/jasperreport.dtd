@@ -427,10 +427,9 @@
 >
 
 
-<!ELEMENT crosstab (reportElement, crosstabParameter*, parametersMapExpression?, dataset, rowGroup*, columnGroup*, measure*, crosstabCell*, whenNoDataCell?)>
+<!ELEMENT crosstab (reportElement, crosstabParameter*, parametersMapExpression?, crosstabDataset, rowGroup*, columnGroup*, measure*, crosstabCell*, whenNoDataCell?)>
 <!ATTLIST crosstab
 	name NMTOKEN #REQUIRED
-	isDataPreSorted (true | false) "false"
 	isRepeatColumnHeaders (true | false) "true"
 	isRepeatRowHeaders (true | false) "true"
 	columnBreakOffset NMTOKEN "10"
@@ -443,6 +442,11 @@
 >
 
 <!ELEMENT parameterValueExpression (#PCDATA)>
+
+<!ELEMENT crosstabDataset (dataset)>
+<!ATTLIST crosstabDataset
+	isDataPreSorted (true | false) "false"
+>
 
 <!ELEMENT rowGroup (bucket, crosstabRowHeader?, crosstabTotalRowHeader?)>
 <!ATTLIST rowGroup

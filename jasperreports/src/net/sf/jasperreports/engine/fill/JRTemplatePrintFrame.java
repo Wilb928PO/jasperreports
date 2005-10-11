@@ -35,6 +35,9 @@ import net.sf.jasperreports.engine.JRPrintElement;
 import net.sf.jasperreports.engine.util.JRProperties;
 
 /**
+ * Implementation of {@link net.sf.jasperreports.engine.fill.JRPrintFrame JRPrintFrame} that uses
+ * {@link net.sf.jasperreports.engine.fill.JRTemplateFrame template frames} for keeping common data. 
+ * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */

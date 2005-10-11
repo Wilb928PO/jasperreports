@@ -77,6 +77,8 @@ import net.sf.jasperreports.engine.xml.JRXmlWriter;
 import org.jfree.data.general.Dataset;
 
 /**
+ * Fill-time implementation of a {@link net.sf.jasperreports.engine.crosstab.JRCrosstab crosstab}.
+ * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
@@ -319,7 +321,7 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 			percentage |= measures[i].getPercentageOfType() == JRCrosstabMeasure.PERCENTAGE_TYPE_GRAND_TOTAL;
 		}
 
-		return new BucketingService(rowBuckets, colBuckets, measureList, isDataPreSorted(), percentage);
+		return new BucketingService(rowBuckets, colBuckets, measureList, dataset.isDataPreSorted(), percentage);
 	}
 
 	private Bucket createServiceBucket(JRCrosstabGroup group, byte evaluation) throws JRException
@@ -1094,11 +1096,11 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 		public void collectExpressions(JRExpressionCollector collector)
 		{
 		}
-	}
 
-	public boolean isDataPreSorted()
-	{
-		return parentCrosstab.isDataPreSorted();
+		public boolean isDataPreSorted()
+		{
+			return ((JRCrosstabDataset) parent).isDataPreSorted();
+		}
 	}
 
 	public int getColumnBreakOffset()

@@ -36,6 +36,8 @@ import net.sf.jasperreports.engine.fill.JRPrintFrame;
 import net.sf.jasperreports.engine.util.JRProperties;
 
 /**
+ * Base implementation of {@link net.sf.jasperreports.engine.fill.JRPrintFrame JRPrintFrame}.
+ * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
