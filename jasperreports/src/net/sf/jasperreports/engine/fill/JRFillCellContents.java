@@ -33,6 +33,7 @@ import java.util.Map;
 import net.sf.jasperreports.engine.JRBox;
 import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRFrame;
 import net.sf.jasperreports.engine.JRGraphicElement;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.base.JRBaseBox;
@@ -41,6 +42,7 @@ import net.sf.jasperreports.engine.crosstab.JRCellContents;
 import org.apache.commons.collections.ReferenceMap;
 
 /**
+ * Crosstab cell contents filler.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
@@ -275,12 +277,16 @@ public class JRFillCellContents extends JRFillElementContainer implements JRCell
 				break;
 		}
 		
-		JRElement[] allElements = getElements();
-		if (allElements != null)
+		transformElements(getElements(), scaleX, offsetX, scaleY, offsetY);
+	}
+
+	private static void transformElements(JRElement[] elements, double scaleX, int offsetX, double scaleY, int offsetY)
+	{
+		if (elements != null)
 		{
-			for (int i = 0; i < allElements.length; i++)
+			for (int i = 0; i < elements.length; i++)
 			{
-				JRFillElement element = (JRFillElement) allElements[i];
+				JRFillElement element = (JRFillElement) elements[i];
 				
 				if (scaleX != -1d)
 				{
@@ -302,6 +308,12 @@ public class JRFillCellContents extends JRFillElementContainer implements JRCell
 				if (offsetY != 0)
 				{
 					element.setY(element.getY() + offsetY);
+				}
+				
+				if (element instanceof JRFrame)
+				{
+					JRElement[] frameElements = ((JRFrame) element).getElements();
+					transformElements(frameElements, scaleX, offsetX, scaleY, offsetY);
 				}
 			}
 		}

@@ -37,6 +37,7 @@ import java.util.Map;
 import net.sf.jasperreports.engine.JRAbstractObjectFactory;
 import net.sf.jasperreports.engine.JRChartDataset;
 import net.sf.jasperreports.engine.JRChild;
+import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRExpressionCollector;
@@ -46,6 +47,7 @@ import net.sf.jasperreports.engine.JRPrintElement;
 import net.sf.jasperreports.engine.JRPrintRectangle;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.base.crosstab.JRBaseCrosstab;
 import net.sf.jasperreports.engine.crosstab.JRCellContents;
 import net.sf.jasperreports.engine.crosstab.JRCrosstab;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabBucket;
@@ -65,13 +67,13 @@ import net.sf.jasperreports.engine.fill.crosstab.JRFillCrosstabGroup;
 import net.sf.jasperreports.engine.fill.crosstab.JRFillCrosstabMeasure;
 import net.sf.jasperreports.engine.fill.crosstab.JRFillCrosstabParameter;
 import net.sf.jasperreports.engine.fill.crosstab.JRFillCrosstabRowGroup;
-import net.sf.jasperreports.engine.fill.crosstab.calculation.Bucket;
+import net.sf.jasperreports.engine.fill.crosstab.calculation.BucketDefinition;
 import net.sf.jasperreports.engine.fill.crosstab.calculation.BucketingService;
 import net.sf.jasperreports.engine.fill.crosstab.calculation.CrosstabCell;
 import net.sf.jasperreports.engine.fill.crosstab.calculation.HeaderCell;
-import net.sf.jasperreports.engine.fill.crosstab.calculation.Measure;
-import net.sf.jasperreports.engine.fill.crosstab.calculation.Bucket.BucketValue;
-import net.sf.jasperreports.engine.fill.crosstab.calculation.Measure.MeasureValue;
+import net.sf.jasperreports.engine.fill.crosstab.calculation.MeasureDefinition;
+import net.sf.jasperreports.engine.fill.crosstab.calculation.BucketDefinition.Bucket;
+import net.sf.jasperreports.engine.fill.crosstab.calculation.MeasureDefinition.MeasureValue;
 import net.sf.jasperreports.engine.xml.JRXmlWriter;
 
 import org.jfree.data.general.Dataset;
@@ -324,7 +326,7 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 		return new BucketingService(rowBuckets, colBuckets, measureList, dataset.isDataPreSorted(), percentage);
 	}
 
-	private Bucket createServiceBucket(JRCrosstabGroup group, byte evaluation) throws JRException
+	private BucketDefinition createServiceBucket(JRCrosstabGroup group, byte evaluation) throws JRException
 	{
 		JRCrosstabBucket bucket = group.getBucket();
 
@@ -335,12 +337,12 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 			comparator = (Comparator) evaluateExpression(comparatorExpression, evaluation);
 		}
 
-		return new Bucket(bucket.getExpression().getValueClass(), null, comparator, bucket.getOrder(), group.getTotalPosition());
+		return new BucketDefinition(bucket.getExpression().getValueClass(), comparator, bucket.getOrder(), group.getTotalPosition());
 	}
 
-	private Measure createServiceMeasure(JRFillCrosstabMeasure measure)
+	private MeasureDefinition createServiceMeasure(JRFillCrosstabMeasure measure)
 	{
-		return new Measure(
+		return new MeasureDefinition(
 				measure.getValueClass(), 
 				measure.getCalculation(), 
 				measure.getIncrementerFactory()); 
@@ -368,7 +370,7 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 
 		evaluatePrintWhenExpression(evaluation);
 
-		if ((isPrintWhenExpressionNull() || (!isPrintWhenExpressionNull() && isPrintWhenTrue())))
+		if (isPrintWhenExpressionNull() || isPrintWhenTrue())
 		{
 			dataset.evaluateDatasetRun(evaluation);
 
@@ -879,7 +881,7 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 		setGroupVariablesNull(rowGroups);
 	}
 
-	private static void setGroupVariables(JRFillCrosstabGroup[] groups, BucketValue[] bucketValues)
+	private static void setGroupVariables(JRFillCrosstabGroup[] groups, Bucket[] bucketValues)
 	{
 		for (int i = 0; i < groups.length; i++)
 		{
@@ -1136,5 +1138,11 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab
 	public JRExpression getParametersMapExpression()
 	{
 		return parentCrosstab.getParametersMapExpression();
+	}
+
+	
+	public JRElement getElementByKey(String elementKey)
+	{
+		return JRBaseCrosstab.getElementByKey(this, elementKey);
 	}
 }

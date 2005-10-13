@@ -37,6 +37,8 @@ import net.sf.jasperreports.engine.JRAbstractObjectFactory;
 import net.sf.jasperreports.engine.JRChild;
 import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRElementGroup;
+import net.sf.jasperreports.engine.JRFrame;
+import net.sf.jasperreports.engine.crosstab.JRCrosstab;
 import net.sf.jasperreports.engine.xml.JRXmlWriter;
 
 
@@ -155,24 +157,29 @@ public class JRBaseElementGroup implements JRElementGroup, Serializable
 	/**
 	 *
 	 */
-	public JRElement getElementByKey(String key)
+	public static JRElement getElementByKey(JRElement[] elements, String key)
 	{
-		// TODO luci frames, crosstabs
-		
 		JRElement element = null;
 		
 		if (key != null)
 		{
-			JRElement[] elements = this.getElements();
-			
 			if (elements != null)
 			{
 				int i = 0;
 				while (element == null && i < elements.length)
 				{
-					if (key.equals(elements[i].getKey()))
+					JRElement elem = elements[i];
+					if (key.equals(elem.getKey()))
 					{
-						element = elements[i];
+						element = elem;
+					}
+					else if (elem instanceof JRFrame)
+					{
+						element = ((JRFrame) elem).getElementByKey(key);
+					}
+					else if (elem instanceof JRCrosstab)
+					{
+						element = ((JRCrosstab) elem).getElementByKey(key);
 					}
 					i++;
 				}
@@ -182,7 +189,13 @@ public class JRBaseElementGroup implements JRElementGroup, Serializable
 		return element;
 	}
 
+	
+	public JRElement getElementByKey(String key)
+	{
+		return getElementByKey(getElements(), key);
+	}
 
+	
 	/**
 	 *
 	 */

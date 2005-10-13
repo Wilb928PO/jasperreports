@@ -67,7 +67,6 @@ public class JRFillImage extends JRFillGraphicElement implements JRImage
 	 *
 	 */
 	private JRRenderable renderer = null;
-	private boolean isValueRepeating = false;
 	private String anchorName = null;
 	private String hyperlinkReference = null;
 	private String hyperlinkAnchor = null;
@@ -404,7 +403,7 @@ public class JRFillImage extends JRFillGraphicElement implements JRImage
 			}
 		}
 
-		this.isValueRepeating = (this.renderer == newRenderer);
+		setValueRepeating(this.renderer == newRenderer);
 	
 		this.renderer = newRenderer;
 		
@@ -457,7 +456,7 @@ public class JRFillImage extends JRFillGraphicElement implements JRImage
 				isToPrint && 
 				this.isPrintWhenExpressionNull() &&
 				!this.isPrintRepeatedValues() &&
-				this.isValueRepeating
+				isValueRepeating()
 				)
 			{
 				if (

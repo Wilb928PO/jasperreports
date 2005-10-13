@@ -108,7 +108,7 @@ import net.sf.jasperreports.engine.crosstab.JRCrosstabMeasure;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabParameter;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabRowGroup;
 import net.sf.jasperreports.engine.design.crosstab.JRDesignCrosstab;
-import net.sf.jasperreports.engine.fill.crosstab.calculation.Bucket;
+import net.sf.jasperreports.engine.fill.crosstab.calculation.BucketDefinition;
 import net.sf.jasperreports.engine.util.XmlWriter;
 import net.sf.jasperreports.engine.xml.crosstab.JRCellContentsFactory;
 import net.sf.jasperreports.engine.xml.crosstab.JRCrosstabBucketFactory;
@@ -1760,7 +1760,7 @@ public class JRXmlWriter
 		writer.startElement("rowGroup");
 		writer.addAttribute(JRCrosstabGroupFactory.ATTRIBUTE_name, group.getName());
 		writer.addAttribute(JRCrosstabRowGroupFactory.ATTRIBUTE_width, group.getWidth());
-		writer.addAttribute(JRCrosstabGroupFactory.ATTRIBUTE_totalPosition, group.getTotalPosition(), JRXmlConstants.getCrosstabTotalPositionMap(), Bucket.TOTAL_POSITION_NONE);
+		writer.addAttribute(JRCrosstabGroupFactory.ATTRIBUTE_totalPosition, group.getTotalPosition(), JRXmlConstants.getCrosstabTotalPositionMap(), BucketDefinition.TOTAL_POSITION_NONE);
 		writer.addAttribute(JRCrosstabRowGroupFactory.ATTRIBUTE_headerPosition, group.getPosition(), JRXmlConstants.getCrosstabRowPositionMap(), JRCellContents.POSITION_Y_TOP);
 
 		writeBucket(group.getBucket());
@@ -1791,7 +1791,7 @@ public class JRXmlWriter
 		writer.startElement("columnGroup");
 		writer.addAttribute(JRCrosstabGroupFactory.ATTRIBUTE_name, group.getName());
 		writer.addAttribute(JRCrosstabColumnGroupFactory.ATTRIBUTE_height, group.getHeight());
-		writer.addAttribute(JRCrosstabGroupFactory.ATTRIBUTE_totalPosition, group.getTotalPosition(), JRXmlConstants.getCrosstabTotalPositionMap(), Bucket.TOTAL_POSITION_NONE);
+		writer.addAttribute(JRCrosstabGroupFactory.ATTRIBUTE_totalPosition, group.getTotalPosition(), JRXmlConstants.getCrosstabTotalPositionMap(), BucketDefinition.TOTAL_POSITION_NONE);
 		writer.addAttribute(JRCrosstabColumnGroupFactory.ATTRIBUTE_headerPosition, group.getPosition(), JRXmlConstants.getCrosstabColumnPositionMap(), JRCellContents.POSITION_X_LEFT);
 
 		writeBucket(group.getBucket());
@@ -1820,7 +1820,7 @@ public class JRXmlWriter
 	protected void writeBucket(JRCrosstabBucket bucket) throws IOException
 	{
 		writer.startElement("bucket");
-		writer.addAttribute(JRCrosstabBucketFactory.ATTRIBUTE_order, bucket.getOrder(), JRXmlConstants.getCrosstabBucketOrderMap(), Bucket.ORDER_ASCENDING);
+		writer.addAttribute(JRCrosstabBucketFactory.ATTRIBUTE_order, bucket.getOrder(), JRXmlConstants.getCrosstabBucketOrderMap(), BucketDefinition.ORDER_ASCENDING);
 		writer.writeExpression("bucketExpression", bucket.getExpression(), true);
 		writer.writeExpression("comparatorExpression", bucket.getComparatorExpression(), false);		
 		writer.closeElement();

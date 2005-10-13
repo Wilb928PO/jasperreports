@@ -45,7 +45,7 @@ import net.sf.jasperreports.engine.JRTextElement;
 import net.sf.jasperreports.engine.JRVariable;
 import net.sf.jasperreports.engine.crosstab.JRCellContents;
 import net.sf.jasperreports.engine.crosstab.JRCrosstabMeasure;
-import net.sf.jasperreports.engine.fill.crosstab.calculation.Bucket;
+import net.sf.jasperreports.engine.fill.crosstab.calculation.BucketDefinition;
 
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.xy.XYBubbleRenderer;
@@ -879,10 +879,10 @@ public class JRXmlConstants
 		if (crosstabBucketOrderMap == null)
 		{
 			crosstabBucketOrderMap = new HashMap();
-			crosstabBucketOrderMap.put(CROSSTAB_BUCKET_ORDER_ASCENDING, new Byte(Bucket.ORDER_ASCENDING));
-			crosstabBucketOrderMap.put(CROSSTAB_BUCKET_ORDER_DESCENDING, new Byte(Bucket.ORDER_DESCENDING));
-			crosstabBucketOrderMap.put(new Byte(Bucket.ORDER_ASCENDING), CROSSTAB_BUCKET_ORDER_ASCENDING);
-			crosstabBucketOrderMap.put(new Byte(Bucket.ORDER_DESCENDING), CROSSTAB_BUCKET_ORDER_DESCENDING);
+			crosstabBucketOrderMap.put(CROSSTAB_BUCKET_ORDER_ASCENDING, new Byte(BucketDefinition.ORDER_ASCENDING));
+			crosstabBucketOrderMap.put(CROSSTAB_BUCKET_ORDER_DESCENDING, new Byte(BucketDefinition.ORDER_DESCENDING));
+			crosstabBucketOrderMap.put(new Byte(BucketDefinition.ORDER_ASCENDING), CROSSTAB_BUCKET_ORDER_ASCENDING);
+			crosstabBucketOrderMap.put(new Byte(BucketDefinition.ORDER_DESCENDING), CROSSTAB_BUCKET_ORDER_DESCENDING);
 		}
 		
 		return crosstabBucketOrderMap;
@@ -922,12 +922,12 @@ public class JRXmlConstants
 		if (crosstabTotalPositionMap == null)
 		{
 			crosstabTotalPositionMap = new HashMap();
-			crosstabTotalPositionMap.put(CROSSTAB_TOTAL_POSITION_NONE, new Byte(Bucket.TOTAL_POSITION_NONE));
-			crosstabTotalPositionMap.put(CROSSTAB_TOTAL_POSITION_START, new Byte(Bucket.TOTAL_POSITION_START));
-			crosstabTotalPositionMap.put(CROSSTAB_TOTAL_POSITION_END, new Byte(Bucket.TOTAL_POSITION_END));
-			crosstabTotalPositionMap.put(new Byte(Bucket.TOTAL_POSITION_NONE), CROSSTAB_TOTAL_POSITION_NONE);
-			crosstabTotalPositionMap.put(new Byte(Bucket.TOTAL_POSITION_START), CROSSTAB_TOTAL_POSITION_START);
-			crosstabTotalPositionMap.put(new Byte(Bucket.TOTAL_POSITION_END), CROSSTAB_TOTAL_POSITION_END);
+			crosstabTotalPositionMap.put(CROSSTAB_TOTAL_POSITION_NONE, new Byte(BucketDefinition.TOTAL_POSITION_NONE));
+			crosstabTotalPositionMap.put(CROSSTAB_TOTAL_POSITION_START, new Byte(BucketDefinition.TOTAL_POSITION_START));
+			crosstabTotalPositionMap.put(CROSSTAB_TOTAL_POSITION_END, new Byte(BucketDefinition.TOTAL_POSITION_END));
+			crosstabTotalPositionMap.put(new Byte(BucketDefinition.TOTAL_POSITION_NONE), CROSSTAB_TOTAL_POSITION_NONE);
+			crosstabTotalPositionMap.put(new Byte(BucketDefinition.TOTAL_POSITION_START), CROSSTAB_TOTAL_POSITION_START);
+			crosstabTotalPositionMap.put(new Byte(BucketDefinition.TOTAL_POSITION_END), CROSSTAB_TOTAL_POSITION_END);
 		}
 		
 		return crosstabTotalPositionMap;

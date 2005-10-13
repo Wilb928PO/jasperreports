@@ -34,7 +34,6 @@ import net.sf.jasperreports.engine.JRAbstractObjectFactory;
 import net.sf.jasperreports.engine.JRBox;
 import net.sf.jasperreports.engine.JRChild;
 import net.sf.jasperreports.engine.JRElement;
-import net.sf.jasperreports.engine.JRElementGroup;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExpressionCollector;
 import net.sf.jasperreports.engine.JRFrame;
@@ -57,7 +56,7 @@ public class JRFillFrame extends JRFillElement implements JRFrame
 	/**
 	 * Element container used for filling.
 	 */
-	private JRFillFrameElements container;
+	private JRFillFrameElements frameContainer;
 	
 	/**
 	 * Template frame.
@@ -85,9 +84,9 @@ public class JRFillFrame extends JRFillElement implements JRFrame
 	private boolean first;
 	
 	/**
-	 * Whether the current frame chunk is the last one.
+	 * Whether the frame has started filling and not ended.
 	 */
-	private boolean last;
+	private boolean filling;
 
 	public JRFillFrame(JRBaseFiller filler, JRFrame frame, JRFillObjectFactory factory)
 	{
@@ -96,19 +95,38 @@ public class JRFillFrame extends JRFillElement implements JRFrame
 		parentFrame = frame;
 		box = frame.getBox();
 		
-		container = new JRFillFrameElements(factory);
+		frameContainer = new JRFillFrameElements(factory);
 		
 		templateFrame = new JRTemplateFrame(this);
 	}
 
 	protected void evaluate(byte evaluation) throws JRException
 	{
-		container.evaluate(evaluation);
+		reset();
+
+		evaluatePrintWhenExpression(evaluation);
+
+		if (isPrintWhenExpressionNull() || isPrintWhenTrue())
+		{
+			frameContainer.evaluate(evaluation);
+			
+			boolean repeating = true;
+			JRFillElement[] elements = (JRFillElement[]) getElements();
+			for (int i = 0; repeating && i < elements.length; i++)
+			{
+				repeating &= elements[i].isValueRepeating();
+			}
+			setValueRepeating(repeating);
+		}
+		
+		filling = false;
 	}
 
 	protected void rewind() throws JRException
 	{
-		container.rewind();
+		frameContainer.rewind();
+		
+		filling = false;
 	}
 
 	protected boolean prepare(int availableStretchHeight, boolean isOverflow) throws JRException
@@ -120,16 +138,25 @@ public class JRFillFrame extends JRFillElement implements JRFrame
 			return false;
 		}
 		
-		//TODO luci repeated values, printInFirstWholeBand, printWhenGroupChanges
-		
 		if (availableStretchHeight < getRelativeY() - getY() - getBandBottomY())
 		{
 			setToPrint(false);
 			return true;
 		}
+		
+		// TODO luci does isPrintInFirstWholeBand work?		
+		if (!filling && !isPrintRepeatedValues() && isValueRepeating() &&
+				(!isPrintInFirstWholeBand() || !getBand().isNewPageColumn()) &&
+				(getPrintWhenGroupChanges() == null || !getBand().isNewGroup(getPrintWhenGroupChanges())) &&
+				(!isOverflow || !isPrintWhenDetailOverflows())
+			)
+		{
+			setToPrint(false);
+			return false;
+		}
 
-		boolean finished = !container.willOverflow();
-		if (isOverflow && finished && isAlreadyPrinted())
+		// TODO reprinted when isAlreadyPrinted() || !isPrintRepeatedValues()?
+		if (!filling && isOverflow && isAlreadyPrinted())
 		{
 			if (isPrintWhenDetailOverflows())
 			{
@@ -138,14 +165,12 @@ public class JRFillFrame extends JRFillElement implements JRFrame
 			}
 			else
 			{
-				setStretchHeight(getHeight());
 				setToPrint(false);
-
 				return false;
 			}
 		}
 		
-		first = !isOverflow || finished;
+		first = !isOverflow || !filling;
 				
 		int topPadding = 0;
 		int bottomPadding = 0;
@@ -159,38 +184,40 @@ public class JRFillFrame extends JRFillElement implements JRFrame
 			bottomPadding = box.getBottomPadding();
 		}
 		
-		container.initFill();
-		container.resetElements();
-		container.prepareElements(availableStretchHeight - topPadding - bottomPadding, true);
+		int stretchHeight = availableStretchHeight - getRelativeY() + getY() + getBandBottomY();
 		
-		boolean willOverflow = container.willOverflow();
+		frameContainer.initFill();
+		frameContainer.resetElements();
+		frameContainer.prepareElements(stretchHeight - topPadding - bottomPadding, true);
+		
+		boolean willOverflow = frameContainer.willOverflow();
 		if (willOverflow)
 		{
-			setStretchHeight(getHeight() + availableStretchHeight - getRelativeY() + getY() + getBandBottomY());
+			setStretchHeight(getHeight() + stretchHeight);
 		}
 		else
 		{
-			setStretchHeight(container.getStretchHeight());
+			setStretchHeight(frameContainer.getStretchHeight() - frameContainer.getFirstY());
 		}
-				
-		last = !willOverflow;
-		
+
+		filling = willOverflow;
+
 		return willOverflow;
 	}
 
 	protected JRPrintElement fill() throws JRException
 	{
-		container.stretchElements();
-		container.moveBandBottomElements();
-		container.removeBlankElements();
+		frameContainer.stretchElements();
+		frameContainer.moveBandBottomElements();
+		frameContainer.removeBlankElements();
 		
 		JRTemplatePrintFrame printFrame = new JRTemplatePrintFrame(getTemplate());
 		printFrame.setX(getX());
 		printFrame.setY(getRelativeY());
 		printFrame.setWidth(getWidth());
-		printFrame.setHeight(container.getStretchHeight());
+		printFrame.setHeight(frameContainer.getStretchHeight());
 		
-		container.fillElements(printFrame);
+		frameContainer.fillElements(printFrame);
 		
 		return printFrame;
 	}
@@ -201,13 +228,8 @@ public class JRFillFrame extends JRFillElement implements JRFrame
 		
 		if (first)
 		{
-			if (last)
-			{
-				boxTemplate = templateFrame;
-			}
-			else //remove the bottom border
-			{
-				
+			if (filling) //remove the bottom border
+			{				
 				if (bottomTemplateFrame == null)
 				{
 					JRBox bottomBox = new JRBaseBox(box, true, true, true, false, null);
@@ -218,22 +240,14 @@ public class JRFillFrame extends JRFillElement implements JRFrame
 				
 				boxTemplate = bottomTemplateFrame;
 			}
+			else
+			{
+				boxTemplate = templateFrame;
+			}
 		}
 		else
 		{
-			if (last) //remove the top border
-			{
-				if (topTemplateFrame == null)
-				{
-					JRBox topBox = new JRBaseBox(box, true, true, false, true, null);
-					
-					topTemplateFrame = new JRTemplateFrame(this);
-					topTemplateFrame.setBox(topBox);
-				}
-				
-				boxTemplate = topTemplateFrame;
-			}
-			else //remove the top and bottom borders
+			if (filling) //remove the top and bottom borders
 			{
 				if (topBottomTemplateFrame == null)
 				{
@@ -244,6 +258,18 @@ public class JRFillFrame extends JRFillElement implements JRFrame
 				}
 				
 				boxTemplate = topBottomTemplateFrame;
+			}
+			else //remove the top border
+			{
+				if (topTemplateFrame == null)
+				{
+					JRBox topBox = new JRBaseBox(box, true, true, false, true, null);
+					
+					topTemplateFrame = new JRTemplateFrame(this);
+					topTemplateFrame.setBox(topBox);
+				}
+				
+				boxTemplate = topTemplateFrame;
 			}
 		}
 		
@@ -262,12 +288,12 @@ public class JRFillFrame extends JRFillElement implements JRFrame
 
 	public JRElement[] getElements()
 	{
-		return JRBaseElementGroup.getElements(getChildren());
+		return frameContainer.getElements();
 	}
 	
 	public List getChildren()
 	{
-		return container.children;
+		return frameContainer.getChildren();
 	}
 
 	public void collectExpressions(JRExpressionCollector collector)
@@ -284,6 +310,12 @@ public class JRFillFrame extends JRFillElement implements JRFrame
 	{
 		writer.writeFrame(this);
 	}
+
+	
+	public JRElement getElementByKey(String key)
+	{
+		return JRBaseElementGroup.getElementByKey(getElements(), key);
+	}
 	
 
 	/**
@@ -293,52 +325,13 @@ public class JRFillFrame extends JRFillElement implements JRFrame
 	{
 		JRFillFrameElements(JRFillObjectFactory factory)
 		{
-			super(JRFillFrame.this.filler, new JRFrameElementGroup(), factory);
+			super(JRFillFrame.this.filler, parentFrame, factory);
 			initElements();
 		}
 
 		protected int getHeight()
 		{
 			return JRFillFrame.this.getHeight();
-		}
-	}
-	
-	
-	/**
-	 * Frame as element group implementation used for the element container filler.
-	 */
-	protected class JRFrameElementGroup implements JRElementGroup
-	{
-		public List getChildren()
-		{
-			return parentFrame.getChildren();
-		}
-
-		public JRElementGroup getElementGroup()
-		{
-			return null;
-		}
-
-		public JRElement[] getElements()
-		{
-			return JRBaseElementGroup.getElements(getChildren());
-		}
-
-		public JRElement getElementByKey(String key)
-		{
-			// not used
-			return null;
-		}
-
-		public JRChild getCopy(JRAbstractObjectFactory factory)
-		{
-			// not used
-			return null;
-		}
-
-		public void writeXml(JRXmlWriter writer) throws IOException
-		{
-			// not used
 		}
 	}
 }

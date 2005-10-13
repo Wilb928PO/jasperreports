@@ -151,4 +151,9 @@ public class JRDesignFrame extends JRDesignElement implements JRFrame
 	{
 		return children;
 	}
+
+	public JRElement getElementByKey(String elementKey)
+	{
+		return JRBaseElementGroup.getElementByKey(getElements(), elementKey);
+	}
 }

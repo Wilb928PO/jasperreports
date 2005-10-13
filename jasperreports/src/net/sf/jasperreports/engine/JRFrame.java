@@ -27,7 +27,7 @@
  */
 package net.sf.jasperreports.engine;
 
-import java.util.List;
+
 
 /**
  * An abstract representation of a report elements container.
@@ -45,7 +45,7 @@ import java.util.List;
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
-public interface JRFrame extends JRElement
+public interface JRFrame extends JRElement, JRElementGroup
 {
 	/**
 	 * Returns the border of the frame.
@@ -53,19 +53,4 @@ public interface JRFrame extends JRElement
 	 * @return the border of the frame
 	 */
 	public JRBox getBox();
-	
-	/**
-	 * Returns the list of direct children of the frame, containing elements and element groups.
-	 * 
-	 * @return list of direct children of the frame
-	 */
-	public List getChildren();
-	
-	
-	/**
-	 * Returns all the sub elements of the frame.
-	 * 
-	 * @return all the sub elements of the frame
-	 */
-	public JRElement[] getElements();
 }

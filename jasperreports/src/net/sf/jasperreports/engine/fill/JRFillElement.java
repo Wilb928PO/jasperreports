@@ -89,6 +89,9 @@ public abstract class JRFillElement implements JRElement
 	private int width;
 	private int height;
 	
+	// default for all static elements
+	private boolean isValueRepeating = true;
+	
 	/**
 	 *
 	 *
@@ -847,4 +850,15 @@ public abstract class JRFillElement implements JRElement
 		return expressionEvaluator.evaluate(expression, evaluation);
 	}
 
+
+	protected boolean isValueRepeating()
+	{
+		return isValueRepeating;
+	}
+
+
+	protected void setValueRepeating(boolean isValueRepeating)
+	{
+		this.isValueRepeating = isValueRepeating;
+	}
 }

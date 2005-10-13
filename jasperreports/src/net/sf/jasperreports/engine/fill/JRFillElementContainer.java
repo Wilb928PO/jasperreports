@@ -542,6 +542,11 @@ public abstract class JRFillElementContainer extends JRFillElementGroup
 		
 		this.willOverflow = false;
 	}
+	
+	protected int getFirstY()
+	{
+		return firstY;
+	}
 
 	protected abstract int getHeight();
 }

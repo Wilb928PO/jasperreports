@@ -65,7 +65,6 @@ public class JRFillTextField extends JRFillTextElement implements JRTextField
 	 *
 	 */
 	private Format format = null;
-	private boolean isValueRepeating = false;
 	private String anchorName = null;
 	private String hyperlinkReference = null;
 	private String hyperlinkAnchor = null;
@@ -327,17 +326,10 @@ public class JRFillTextField extends JRFillTextElement implements JRTextField
 		setTextStart(0);
 		setTextEnd(0);
 
-		if (
-			(oldRawText == null && newRawText == null) ||
-			(oldRawText != null && oldRawText.equals(newRawText))
-			)
-		{
-			isValueRepeating = true;
-		}
-		else
-		{
-			isValueRepeating = false;
-		}
+		setValueRepeating(
+				(oldRawText == null && newRawText == null) ||
+				(oldRawText != null && oldRawText.equals(newRawText))
+			);
 
 		anchorName = (String) evaluateExpression(getAnchorNameExpression(), evaluation);
 		hyperlinkReference = (String) evaluateExpression(getHyperlinkReferenceExpression(), evaluation);
@@ -421,7 +413,7 @@ public class JRFillTextField extends JRFillTextElement implements JRTextField
 					isToPrint &&
 					isPrintWhenExpressionNull() &&
 					!isPrintRepeatedValues() &&
-					isValueRepeating
+					isValueRepeating()
 					)
 				{
 					isToPrint = false; // FIXME, shouldn't we test for the first whole band and the other exceptions to the rule?
@@ -432,7 +424,7 @@ public class JRFillTextField extends JRFillTextElement implements JRTextField
 				if (
 					isPrintWhenExpressionNull() &&
 					!isPrintRepeatedValues() &&
-					isValueRepeating
+					isValueRepeating()
 					)
 				{
 					if (
