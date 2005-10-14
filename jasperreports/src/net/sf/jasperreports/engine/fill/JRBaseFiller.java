@@ -913,7 +913,7 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider//, JRDefaul
 			jasperPrint.setPageHeight(pageHeight);
 			jasperPrint.setOrientation(orientation);
 
-			jasperPrint.setDefaultFont(defaultFont);
+			jasperPrint.setDefaultFont(defaultFont);//FIXME STYLE investigate this
 
 			/*   */
 			if (fonts != null && fonts.length > 0)
@@ -923,6 +923,24 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider//, JRDefaul
 					try
 					{
 						jasperPrint.addFont(fonts[i]);
+					}
+					catch (JRException e)
+					{
+						// ignore font duplication exception
+					}
+				}
+			}
+
+			jasperPrint.setDefaultStyle(defaultStyle);//FIXME STYLE investigate this
+
+			/*   */
+			if (styles != null && styles.length > 0)
+			{
+				for (int i = 0; i < styles.length; i++)
+				{
+					try
+					{
+						jasperPrint.addStyle(styles[i]);
 					}
 					catch (JRException e)
 					{

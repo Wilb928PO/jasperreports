@@ -263,7 +263,7 @@ public class JasperPrint implements Serializable
 	 * Adds a new font to the report fonts.
 	 * @deprecated
 	 */
-	public void addFont(JRReportFont reportFont) throws JRException
+	public synchronized void addFont(JRReportFont reportFont) throws JRException
 	{
 		if (this.fontsMap.containsKey(reportFont.getName()))
 		{
@@ -282,7 +282,7 @@ public class JasperPrint implements Serializable
 	/**
 	 * @deprecated
 	 */
-	public JRReportFont removeFont(String fontName)
+	public synchronized JRReportFont removeFont(String fontName)
 	{
 		return this.removeFont(
 			(JRReportFont)this.fontsMap.get(fontName)
@@ -292,7 +292,7 @@ public class JasperPrint implements Serializable
 	/**
 	 * @deprecated
 	 */
-	public JRReportFont removeFont(JRReportFont reportFont)
+	public synchronized JRReportFont removeFont(JRReportFont reportFont)
 	{
 		if (reportFont != null)
 		{
@@ -319,7 +319,7 @@ public class JasperPrint implements Serializable
 	/**
 	 * Sets the default report style.
 	 */
-	public void setDefaultStyle(JRStyle style)
+	public synchronized void setDefaultStyle(JRStyle style)
 	{
 		defaultStyleProvider.setDefaultStyle(style);
 	}
@@ -364,7 +364,7 @@ public class JasperPrint implements Serializable
 	/**
 	 * Adds a new style to the report styles.
 	 */
-	public void addStyle(JRStyle style) throws JRException
+	public synchronized void addStyle(JRStyle style) throws JRException
 	{
 		if (stylesMap.containsKey(style.getName()))
 		{
@@ -383,7 +383,7 @@ public class JasperPrint implements Serializable
 	/**
 	 *
 	 */
-	public JRStyle removeStyle(String styleName)
+	public synchronized JRStyle removeStyle(String styleName)
 	{
 		return removeStyle(
 			(JRStyle)stylesMap.get(styleName)
@@ -393,7 +393,7 @@ public class JasperPrint implements Serializable
 	/**
 	 *
 	 */
-	public JRStyle removeStyle(JRStyle style)
+	public synchronized JRStyle removeStyle(JRStyle style)
 	{
 		if (style != null)
 		{
@@ -420,7 +420,7 @@ public class JasperPrint implements Serializable
 	/**
 	 * Adds a new page to the document.
 	 */
-	public void addPage(JRPrintPage page)
+	public synchronized void addPage(JRPrintPage page)
 	{
 		this.anchorIndexes = null;
 		this.pages.add(page);
@@ -429,7 +429,7 @@ public class JasperPrint implements Serializable
 	/**
 	 * Adds a new page to the document, placing it at the specified index.
 	 */
-	public void addPage(int index, JRPrintPage page)
+	public synchronized void addPage(int index, JRPrintPage page)
 	{
 		this.anchorIndexes = null;
 		this.pages.add(index, page);
@@ -438,7 +438,7 @@ public class JasperPrint implements Serializable
 	/**
 	 * Removes a page from the document.
 	 */
-	public JRPrintPage removePage(int index)
+	public synchronized JRPrintPage removePage(int index)
 	{
 		this.anchorIndexes = null;
 		return (JRPrintPage)this.pages.remove(index);
@@ -447,7 +447,7 @@ public class JasperPrint implements Serializable
 	/**
 	 *
 	 */
-	public Map getAnchorIndexes()
+	public synchronized Map getAnchorIndexes()
 	{
 		if (this.anchorIndexes == null)
 		{

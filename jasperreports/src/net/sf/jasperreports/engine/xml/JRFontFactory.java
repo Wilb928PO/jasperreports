@@ -68,8 +68,6 @@ public class JRFontFactory extends JRBaseFactory
 		JRXmlLoader xmlLoader = (JRXmlLoader)digester.peek(digester.getCount() - 1);
 		JasperDesign jasperDesign = (JasperDesign)digester.peek(digester.getCount() - 2);
 
-//		JRDesignFont font = null;//FIXME STYLE
-		
 		if (atts.getValue(ATTRIBUTE_reportFont) != null)
 		{
 			Map fontsMap = jasperDesign.getFontsMap();
@@ -79,13 +77,8 @@ public class JRFontFactory extends JRBaseFactory
 				xmlLoader.addError(new Exception("Unknown report font : " + atts.getValue(ATTRIBUTE_reportFont)));
 			}
 
-//			font = new JRDesignFont();
 			element.setReportFont((JRReportFont)fontsMap.get(atts.getValue(ATTRIBUTE_reportFont)));
 		}
-//		else
-//		{
-//			font = new JRDesignFont(jasperDesign);
-//		}
 
 		if (atts.getValue(ATTRIBUTE_fontName) != null)
 			element.setFontName(atts.getValue(ATTRIBUTE_fontName));
