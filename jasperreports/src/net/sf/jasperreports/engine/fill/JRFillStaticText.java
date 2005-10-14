@@ -133,7 +133,7 @@ public class JRFillStaticText extends JRFillTextElement implements JRStaticText
 			)
 		{
 			if (
-				( !isPrintInFirstWholeBand() || !getBand().isNewPageColumn() ) &&
+				( !isPrintInFirstWholeBand() || !getBand().isFirstWholeOnPageColumn()) &&
 				( getPrintWhenGroupChanges() == null || !getBand().isNewGroup(getPrintWhenGroupChanges()) ) &&
 				( !isOverflow || !isPrintWhenDetailOverflows() )
 				)

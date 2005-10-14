@@ -144,9 +144,8 @@ public class JRFillFrame extends JRFillElement implements JRFrame
 			return true;
 		}
 		
-		// TODO luci does isPrintInFirstWholeBand work?		
 		if (!filling && !isPrintRepeatedValues() && isValueRepeating() &&
-				(!isPrintInFirstWholeBand() || !getBand().isNewPageColumn()) &&
+				(!isPrintInFirstWholeBand() || !getBand().isFirstWholeOnPageColumn()) &&
 				(getPrintWhenGroupChanges() == null || !getBand().isNewGroup(getPrintWhenGroupChanges())) &&
 				(!isOverflow || !isPrintWhenDetailOverflows())
 			)

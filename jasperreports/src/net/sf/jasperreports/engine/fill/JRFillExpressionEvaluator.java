@@ -31,6 +31,11 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExpression;
 
 /**
+ * Fill time expression evaluators interface.
+ * <p>
+ * An instance of this interface is used at fill time by elements to
+ * evaluate expressions.
+ * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */

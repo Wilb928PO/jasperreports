@@ -60,6 +60,7 @@ public class JRFillBand extends JRFillElementContainer implements JRBand, JRVirt
 	 *
 	 */
 	private boolean isNewPageColumn = false;
+	private boolean isFirstWholeOnPageColumn = false;
 	private Map isNewGroupMap = new HashMap();
 
 	/**
@@ -114,7 +115,18 @@ public class JRFillBand extends JRFillElementContainer implements JRBand, JRVirt
 		return this.isNewPageColumn;
 	}
 
+	
+	/**
+	 * Decides whether this band is the for whole band on the page/column.
+	 * 
+	 * @return whether this band is the for whole band on the page/column
+	 */
+	protected boolean isFirstWholeOnPageColumn()
+	{
+		return isFirstWholeOnPageColumn;
+	}
 
+	
 	/**
 	 *
 	 */
@@ -286,8 +298,13 @@ public class JRFillBand extends JRFillElementContainer implements JRBand, JRVirt
 
 			throw new JRFillInterruptedException();
 		}
-
+		
 		initFill();
+		
+		if (isNewPageColumn && !isOverflow)
+		{
+			isFirstWholeOnPageColumn = true;
+		}
 		
 		this.resetElements();
 
@@ -299,6 +316,7 @@ public class JRFillBand extends JRFillElementContainer implements JRBand, JRVirt
 
 		this.removeBlankElements();
 		
+		isFirstWholeOnPageColumn = isNewPageColumn && isOverflow;
 		this.isNewPageColumn = false;
 		this.isNewGroupMap = new HashMap();
 

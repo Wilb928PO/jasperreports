@@ -460,7 +460,7 @@ public class JRFillImage extends JRFillGraphicElement implements JRImage
 				)
 			{
 				if (
-					( !this.isPrintInFirstWholeBand() || !this.getBand().isNewPageColumn() ) &&
+					( !this.isPrintInFirstWholeBand() || !this.getBand().isFirstWholeOnPageColumn() ) &&
 					( this.getPrintWhenGroupChanges() == null || !this.getBand().isNewGroup(this.getPrintWhenGroupChanges()) ) &&
 					( !isOverflow || !this.isPrintWhenDetailOverflows() )
 					)

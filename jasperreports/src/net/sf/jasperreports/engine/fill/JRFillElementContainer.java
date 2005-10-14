@@ -40,6 +40,9 @@ import net.sf.jasperreports.engine.JRPrintElement;
 import net.sf.jasperreports.engine.JRReportFont;
 
 /**
+ * Abstract implementation of an element container filler.
+ * <p>
+ * This is the base for band, frame and crosstab cell fillers.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
@@ -54,7 +57,7 @@ public abstract class JRFillElementContainer extends JRFillElementGroup
 	private JRFillElement[] removableElements = null;
 	
 	private boolean willOverflow = false;
-	private boolean isOverflow = false;
+	protected boolean isOverflow = false;
 	
 	private int stretchHeight = 0;
 	private int firstY = 0;
@@ -548,5 +551,11 @@ public abstract class JRFillElementContainer extends JRFillElementGroup
 		return firstY;
 	}
 
+	
+	/**
+	 * Returns the height of the element container.
+	 * 
+	 * @return the height of the element container
+	 */
 	protected abstract int getHeight();
 }

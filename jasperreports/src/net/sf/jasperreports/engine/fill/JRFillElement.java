@@ -843,7 +843,12 @@ public abstract class JRFillElement implements JRElement
 
 
 	/**
-	 *
+	 * Evaluates an expression.
+	 * 
+	 * @param expression the expression
+	 * @param evaluation the evaluation type
+	 * @return the evaluation result
+	 * @throws JRException
 	 */
 	protected final Object evaluateExpression(JRExpression expression, byte evaluation) throws JRException
 	{
@@ -851,12 +856,30 @@ public abstract class JRFillElement implements JRElement
 	}
 
 
+	/**
+	 * Decides whether the value for this element is repeating.
+	 * <p>
+	 * Dynamic elements should call {@link #setValueRepeating(boolean) setValueRepeating(boolean)} on
+	 * {@link #evaluate(byte) evaluate(byte)}.  Static elements don't have to do anything, this method
+	 * will return <code>true</code> by default.
+	 * 
+	 * @return whether the value for this element is repeating
+	 * @see #setValueRepeating(boolean)
+	 */
 	protected boolean isValueRepeating()
 	{
 		return isValueRepeating;
 	}
 
 
+	/**
+	 * Sets the repeating flag for this element.
+	 * <p>
+	 * This method should be called by dynamic elements on {@link #evaluate(byte) evaluate(byte)}.
+	 * 
+	 * @param isValueRepeating whether the value of the element is repeating
+	 * @see #isValueRepeating()
+	 */
 	protected void setValueRepeating(boolean isValueRepeating)
 	{
 		this.isValueRepeating = isValueRepeating;

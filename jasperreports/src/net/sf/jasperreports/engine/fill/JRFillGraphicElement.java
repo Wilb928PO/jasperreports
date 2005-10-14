@@ -123,7 +123,7 @@ public abstract class JRFillGraphicElement extends JRFillElement implements JRGr
 			)
 		{
 			if (
-				( !this.isPrintInFirstWholeBand() || !this.getBand().isNewPageColumn() ) &&
+				( !this.isPrintInFirstWholeBand() || !this.getBand().isFirstWholeOnPageColumn() ) &&
 				( this.getPrintWhenGroupChanges() == null || !this.getBand().isNewGroup(this.getPrintWhenGroupChanges()) ) &&
 				( !isOverflow || !this.isPrintWhenDetailOverflows() )
 				)
