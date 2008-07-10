@@ -1031,8 +1031,6 @@ public class JRXmlDigesterFactory
 		SAXParserFactory parserFactory = SAXParserFactory.newInstance();
 		parserFactory.setNamespaceAware(true);
 		
-		System.err.println("SAX parser " + parserFactory.getClass().getName());
-		
 		boolean validating = JRProperties.getBooleanProperty(JRProperties.COMPILER_XML_VALIDATION);
 		parserFactory.setValidating(validating);
 		parserFactory.setFeature("http://xml.org/sax/features/validation", validating);
