@@ -27,7 +27,14 @@
  */
 package net.sf.jasperreports.engine.xml;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
 import net.sf.jasperreports.charts.JRChartAxis;
 import net.sf.jasperreports.charts.design.JRDesignCategorySeries;
@@ -126,6 +133,10 @@ import net.sf.jasperreports.engine.JRSortField;
 import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.JRSubreportParameter;
 import net.sf.jasperreports.engine.JRSubreportReturnValue;
+import net.sf.jasperreports.engine.component.ComponentEnvironment;
+import net.sf.jasperreports.engine.component.ComponentsMeta;
+import net.sf.jasperreports.engine.component.ComponentsXmlParser;
+import net.sf.jasperreports.engine.component.XmlDigesterConfigurer;
 import net.sf.jasperreports.engine.design.JRDesignDataset;
 import net.sf.jasperreports.engine.design.JRDesignElement;
 import net.sf.jasperreports.engine.design.JRDesignElementGroup;
@@ -169,11 +180,11 @@ public class JRXmlDigesterFactory
 	 */
 	public static void configureDigester(Digester digester) throws SAXException, ParserConfigurationException
 	{
-		boolean validating = JRProperties.getBooleanProperty(JRProperties.COMPILER_XML_VALIDATION);
-
 		digester.setErrorHandler(new ErrorHandlerImpl());
-		digester.setValidating(validating);
-		digester.setFeature("http://xml.org/sax/features/validation", validating);
+		
+		digester.setNamespaceAware(true);
+		
+		digester.setRuleNamespaceURI("http://jaspersoft.com/jasperreports");
 
 		/*   */
 		digester.addFactoryCreate("jasperReport", JasperDesignFactory.class.getName());
@@ -435,6 +446,38 @@ public class JRXmlDigesterFactory
 		addCrosstabRules(digester);
 
 		addFrameRules(digester);
+		
+		addComponentRules(digester);
+	}
+
+
+	protected static void addComponentRules(Digester digester)
+	{
+		digester.addFactoryCreate("*/componentElement", JRComponentElementFactory.class.getName());
+		digester.addSetNext("*/componentElement", "addElement", JRDesignElement.class.getName());
+		
+		Collection components = ComponentEnvironment.getInstace().getComponentsMeta();
+		for (Iterator it = components.iterator(); it.hasNext();)
+		{
+			ComponentsMeta componentMeta = (ComponentsMeta) it.next();
+			ComponentsXmlParser xmlParser = componentMeta.getXmlParser();
+			digester.setRuleNamespaceURI(xmlParser.getNamespace());
+			
+			XmlDigesterConfigurer configurer = xmlParser.getDigesterConfigurer();
+			if (configurer != null)
+			{
+				configurer.configureDigester(digester);
+			}
+			
+			componentMeta.getComponentManagers();
+			for (Iterator namesIt = componentMeta.getComponentManagers().keySet().iterator(); 
+					namesIt.hasNext();)
+			{
+				String componentName = (String) namesIt.next();
+				digester.addRule("*/componentElement/" + componentName, 
+						JRComponentRule.getInstance());
+			}
+		}
 	}
 
 
@@ -985,9 +1028,52 @@ public class JRXmlDigesterFactory
 	 */
 	public static JRXmlDigester createDigester() throws ParserConfigurationException, SAXException
 	{
-		JRXmlDigester digester = new JRXmlDigester();
+		SAXParserFactory parserFactory = SAXParserFactory.newInstance();
+		parserFactory.setNamespaceAware(true);
+		
+		System.err.println("SAX parser " + parserFactory.getClass().getName());
+		
+		boolean validating = JRProperties.getBooleanProperty(JRProperties.COMPILER_XML_VALIDATION);
+		parserFactory.setValidating(validating);
+		parserFactory.setFeature("http://xml.org/sax/features/validation", validating);
+		parserFactory.setFeature("http://apache.org/xml/features/validation/schema", true);//TODO component - Xerces specific
+		SAXParser parser = parserFactory.newSAXParser();
+		
+		JRXmlDigester digester = new JRXmlDigester(parser);
+		Map entityResources = getInternalEntityResources();
+		digester.setInternalEntityResources(entityResources);
 		configureDigester(digester);
 		return digester;
+	}
+
+
+	protected static Map getInternalEntityResources()
+	{
+		Map entityResources = new HashMap();
+		
+		entityResources.put(JRXmlConstants.JASPERREPORT_SYSTEM_ID, 
+				JRXmlConstants.JASPERREPORT_DTD);
+		entityResources.put(JRXmlConstants.JASPERPRINT_SYSTEM_ID, 
+				JRXmlConstants.JASPERPRINT_DTD);
+		entityResources.put(JRXmlConstants.JASPERTEMPLATE_SYSTEM_ID, 
+				JRXmlConstants.JASPERTEMPLATE_DTD);
+		entityResources.put(JRXmlConstants.JASPERREPORT_XSD_SYSTEM_ID, 
+				JRXmlConstants.JASPERREPORT_XSD);
+		
+		Collection components = ComponentEnvironment.getInstace().getComponentsMeta();
+		for (Iterator it = components.iterator(); it.hasNext();)
+		{
+			ComponentsMeta componentManager = (ComponentsMeta) it.next();
+			ComponentsXmlParser xmlParser = componentManager.getXmlParser();
+			String schemaResource = xmlParser.getInternalSchemaResource();
+			if (schemaResource != null)
+			{
+				entityResources.put(xmlParser.getPublicSchemaLocation(), 
+						schemaResource);
+			}
+		}
+		
+		return entityResources;
 	}
 
 

@@ -98,4 +98,6 @@ public interface JRVisitor
 	 */
 	public void visitTextField(JRTextField textField);
 	
+	public void visitComponentElement(JRComponentElement componentElement);
+	
 }

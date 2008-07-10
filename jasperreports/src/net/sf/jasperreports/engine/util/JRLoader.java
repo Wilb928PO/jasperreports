@@ -38,8 +38,12 @@ import java.io.ObjectInputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLStreamHandlerFactory;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
 
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRRuntimeException;
 
 
 /**
@@ -576,6 +580,72 @@ public class JRLoader
 		return is;
 	}
 
+	/**
+	 * TODO component
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	public static List getResources(String resource)
+	{
+		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();		
+		if (classLoader == null)
+		{
+			classLoader = JRLoader.class.getClassLoader();
+		}
+		
+		List resources = new ArrayList();
+		if (classLoader != null)
+		{
+			try
+			{
+				for (Enumeration urls = classLoader.getResources(resource);
+						urls.hasMoreElements();)
+				{
+					URL url = (URL) urls.nextElement();
+					resources.add(url);
+				}
+			}
+			catch (IOException e)
+			{
+				throw new JRRuntimeException(e);
+			}
+		}
+		return resources;
+	}
+
+	/**
+	 * TODO component
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	public static URL getResource(String resource)
+	{
+		URL location = null;
+		
+		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();		
+		if (classLoader != null)
+		{
+			location = classLoader.getResource(resource);
+		}
+		
+		if (location == null)
+		{
+			classLoader = JRLoader.class.getClassLoader();
+			if (classLoader != null)
+			{
+				location = classLoader.getResource(resource);
+			}
+			
+			if (location == null)
+			{
+				location = JRProperties.class.getResource("/" + resource);
+			}
+		}
+
+		return location;
+	}
 
 	/**
 	 * Tries to open an input stream for an URL.

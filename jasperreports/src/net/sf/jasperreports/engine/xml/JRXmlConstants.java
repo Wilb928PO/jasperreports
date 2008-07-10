@@ -1285,6 +1285,8 @@ public class JRXmlConstants
 	public static final String JASPERPRINT_PUBLIC_ID = "-//JasperReports//DTD JasperPrint//EN";
 	public static final String JASPERPRINT_SYSTEM_ID = "http://jasperreports.sourceforge.net/dtds/jasperprint.dtd";
 	public static final String JASPERPRINT_DTD = "net/sf/jasperreports/engine/dtds/jasperprint.dtd";
+	public static final String JASPERREPORT_XSD_SYSTEM_ID = "http://jasperreports.sourceforge.net/dtds/jasperreport.xsd";
+	public static final String JASPERREPORT_XSD = "net/sf/jasperreports/engine/dtds/jasperreport.xsd";
 
 	/**
 	 * Template XML public ID.

@@ -1139,6 +1139,7 @@ public class JRVerifier
 
 	protected void verifyElement(JRElement element)
 	{
+		//TODO component - collect
 		if (element instanceof JRStaticText)
 		{
 			verifyStaticText((JRStaticText)element);

@@ -34,6 +34,9 @@ package net.sf.jasperreports.engine.xml;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Map;
+
+import javax.xml.parsers.SAXParser;
 
 import org.apache.commons.digester.Digester;
 import org.xml.sax.InputSource;
@@ -53,6 +56,7 @@ public class JRXmlDigester extends Digester
 	 */
 	//private static boolean wasWarning = false;
 
+	private Map internalEntityResources;
 
 	/**
 	 *
@@ -71,6 +75,11 @@ public class JRXmlDigester extends Digester
 		super(xmlReader);
 	}
 
+	public JRXmlDigester(SAXParser parser)
+	{
+		super(parser);
+	}
+
 
 	/**
 	 *
@@ -84,21 +93,9 @@ public class JRXmlDigester extends Digester
 
 		if (systemId != null)
 		{
-			String dtd = null;
+			String resource = (String) internalEntityResources.get(systemId);
 			
-			if (JRXmlConstants.JASPERREPORT_SYSTEM_ID.equals(systemId))
-			{
-				dtd = JRXmlConstants.JASPERREPORT_DTD;
-			}
-			else if (JRXmlConstants.JASPERPRINT_SYSTEM_ID.equals(systemId))
-			{
-				dtd = JRXmlConstants.JASPERPRINT_DTD;
-			}
-			else if (JRXmlConstants.JASPERTEMPLATE_SYSTEM_ID.equals(systemId))
-			{
-				dtd = JRXmlConstants.JASPERTEMPLATE_DTD;
-			}
-			else
+			if (resource == null)
 			{
 				return new InputSource(systemId);
 			}
@@ -109,7 +106,7 @@ public class JRXmlDigester extends Digester
 			URL url = null;
 			if (clsLoader != null)
 			{
-				url = clsLoader.getResource(dtd);
+				url = clsLoader.getResource(resource);
 			}
 			if (url == null)
 			{
@@ -125,11 +122,11 @@ public class JRXmlDigester extends Digester
 			InputStream is;
 			if (clsLoader == null)
 			{
-				is = JRXmlDigester.class.getResourceAsStream("/" + dtd);
+				is = JRXmlDigester.class.getResourceAsStream("/" + resource);
 			}
 			else
 			{
-				is = clsLoader.getResourceAsStream(dtd);
+				is = clsLoader.getResourceAsStream(resource);
 			}
 			
 			if (is != null)
@@ -139,6 +136,17 @@ public class JRXmlDigester extends Digester
 		}
 
 		return inputSource;
+	}
+
+
+	/**
+	 * TODO component
+	 * 
+	 * @param internalEntityResources
+	 */
+	public void setInternalEntityResources(Map internalEntityResources)
+	{
+		this.internalEntityResources = internalEntityResources;
 	}
 
 	

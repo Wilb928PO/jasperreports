@@ -108,6 +108,7 @@ import net.sf.jasperreports.engine.JRAbstractObjectFactory;
 import net.sf.jasperreports.engine.JRBand;
 import net.sf.jasperreports.engine.JRBreak;
 import net.sf.jasperreports.engine.JRChart;
+import net.sf.jasperreports.engine.JRComponentElement;
 import net.sf.jasperreports.engine.JRConditionalStyle;
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRDatasetRun;
@@ -1614,6 +1615,23 @@ public class JRFillObjectFactory extends JRAbstractObjectFactory
 	public JRDefaultStyleProvider getDefaultStyleProvider()
 	{
 		return filler.getJasperPrint().getDefaultStyleProvider();
+	}
+
+
+	public void visitComponentElement(JRComponentElement componentElement)
+	{
+		JRFillComponentElement fill = null;
+
+		if (componentElement != null)
+		{
+			fill = (JRFillComponentElement) get(componentElement);
+			if (fill == null)
+			{
+				fill = new JRFillComponentElement(filler, componentElement, this);
+			}
+		}
+
+		setVisitResult(fill);
 	}
 
 }
