@@ -27,9 +27,14 @@
  */
 package net.sf.jasperreports.engine.component;
 
-import net.sf.jasperreports.engine.Component;
-import net.sf.jasperreports.engine.JRExpressionCollector;
-import net.sf.jasperreports.engine.base.JRBaseObjectFactory;
+import net.sf.jasperreports.engine.JRComponentElement;
+import net.sf.jasperreports.engine.JRDefaultStyleProvider;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRExpression;
+import net.sf.jasperreports.engine.JRGroup;
+import net.sf.jasperreports.engine.JROrigin;
+import net.sf.jasperreports.engine.JRPrintElement;
+import net.sf.jasperreports.engine.JRStyle;
 
 /**
  * TODO component
@@ -37,13 +42,22 @@ import net.sf.jasperreports.engine.base.JRBaseObjectFactory;
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id: JRCrosstab.java 1741 2007-06-08 10:53:33Z lucianc $
  */
-public interface ComponentCompiler
+public interface FillContext
 {
 
-	void collectExpressions(Component component, JRExpressionCollector collector);
-
-	Component toCompiledComponent(Component component, JRBaseObjectFactory baseFactory);
-
-	//TODO component JRVerifier
+	Object evaluate(JRExpression expression, byte evaluation) throws JRException;
 	
+	JRComponentElement getComponentElement();
+	
+	JROrigin getElementOrigin();
+	
+	JRDefaultStyleProvider getDefaultStyleProvider();
+
+	int getElementPrintY();
+	
+	JRStyle getElementStyle();
+	
+	void registerDelayedEvaluation(JRPrintElement printElement, 
+			byte evaluationType, JRGroup evaluationGroup);
+
 }

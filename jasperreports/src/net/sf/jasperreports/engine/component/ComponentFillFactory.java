@@ -28,8 +28,8 @@
 package net.sf.jasperreports.engine.component;
 
 import net.sf.jasperreports.engine.Component;
-import net.sf.jasperreports.engine.JRExpressionCollector;
-import net.sf.jasperreports.engine.base.JRBaseObjectFactory;
+import net.sf.jasperreports.engine.fill.JRFillCloneFactory;
+import net.sf.jasperreports.engine.fill.JRFillObjectFactory;
 
 /**
  * TODO component
@@ -37,13 +37,11 @@ import net.sf.jasperreports.engine.base.JRBaseObjectFactory;
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id: JRCrosstab.java 1741 2007-06-08 10:53:33Z lucianc $
  */
-public interface ComponentCompiler
+public interface ComponentFillFactory
 {
 
-	void collectExpressions(Component component, JRExpressionCollector collector);
+	FillComponent toFillComponent(Component component, JRFillObjectFactory factory);
 
-	Component toCompiledComponent(Component component, JRBaseObjectFactory baseFactory);
-
-	//TODO component JRVerifier
+	FillComponent cloneFillComponent(FillComponent component, JRFillCloneFactory factory);
 	
 }

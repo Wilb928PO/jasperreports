@@ -734,7 +734,7 @@ public class JRFillObjectFactory extends JRAbstractObjectFactory
 			if (fillPieDataset == null)
 			{
 				fillPieDataset = new JRFillPieDataset(pieDataset, this);
-				addChartDataset(fillPieDataset);
+				registerElementDataset(fillPieDataset);
 			}
 		}
 
@@ -795,7 +795,7 @@ public class JRFillObjectFactory extends JRAbstractObjectFactory
 			if (fillCategoryDataset == null)
 			{
 				fillCategoryDataset = new JRFillCategoryDataset(categoryDataset, this);
-				addChartDataset(fillCategoryDataset);
+				registerElementDataset(fillCategoryDataset);
 			}
 		}
 
@@ -808,7 +808,7 @@ public class JRFillObjectFactory extends JRAbstractObjectFactory
 			fillXyzDataset = (JRFillXyzDataset)get( xyzDataset );
 			if( fillXyzDataset == null ){
 				fillXyzDataset = new JRFillXyzDataset( xyzDataset, this );
-				addChartDataset(fillXyzDataset);
+				registerElementDataset(fillXyzDataset);
 			}
 		}
 
@@ -830,7 +830,7 @@ public class JRFillObjectFactory extends JRAbstractObjectFactory
 			if (fillXyDataset == null)
 			{
 				fillXyDataset = new JRFillXyDataset(xyDataset, this);
-				addChartDataset(fillXyDataset);
+				registerElementDataset(fillXyDataset);
 			}
 		}
 
@@ -850,7 +850,7 @@ public class JRFillObjectFactory extends JRAbstractObjectFactory
 
 			if( fillTimeSeriesDataset == null ){
 				fillTimeSeriesDataset = new JRFillTimeSeriesDataset( timeSeriesDataset, this );
-				addChartDataset(fillTimeSeriesDataset);
+				registerElementDataset(fillTimeSeriesDataset);
 			}
 		}
 
@@ -863,7 +863,7 @@ public class JRFillObjectFactory extends JRAbstractObjectFactory
 			fillTimePeriodDataset = (JRFillTimePeriodDataset)get( timePeriodDataset );
 			if( fillTimePeriodDataset == null ){
 				fillTimePeriodDataset = new JRFillTimePeriodDataset( timePeriodDataset, this );
-				addChartDataset(fillTimePeriodDataset);
+				registerElementDataset(fillTimePeriodDataset);
 			}
 		}
 		return fillTimePeriodDataset;
@@ -1078,7 +1078,7 @@ public class JRFillObjectFactory extends JRAbstractObjectFactory
 			if (fillHighLowDataset == null)
 			{
 				fillHighLowDataset = new JRFillHighLowDataset(highLowDataset, this);
-				addChartDataset(fillHighLowDataset);
+				registerElementDataset(fillHighLowDataset);
 			}
 		}
 
@@ -1145,7 +1145,7 @@ public class JRFillObjectFactory extends JRAbstractObjectFactory
 			if (fillValueDataset == null)
 			{
 				fillValueDataset = new JRFillValueDataset(valueDataset, this);
-				addChartDataset(fillValueDataset);
+				registerElementDataset(fillValueDataset);
 			}
 		}
 
@@ -1255,7 +1255,7 @@ public class JRFillObjectFactory extends JRAbstractObjectFactory
 			if (fillDataset == null)
 			{
 				fillDataset = fillCrosstab.new JRFillCrosstabDataset(dataset, this);
-				addChartDataset(fillDataset);
+				registerElementDataset(fillDataset);
 			}
 		}
 
@@ -1280,7 +1280,12 @@ public class JRFillObjectFactory extends JRAbstractObjectFactory
 	}
 
 
-	private void addChartDataset(JRFillElementDataset elementDataset)
+	/**
+	 * TODO component
+	 * 
+	 * @param elementDataset
+	 */
+	public void registerElementDataset(JRFillElementDataset elementDataset)
 	{
 		List elementDatasetsList;
 		JRDatasetRun datasetRun = elementDataset.getDatasetRun();

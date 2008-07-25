@@ -1665,18 +1665,7 @@
      </restriction>
     </simpleType>
    </attribute>
-   <attribute name="evaluationTime" use="optional" default="Now">
-    <simpleType>
-     <restriction base="string">
-      <enumeration value="Now"/>
-      <enumeration value="Report"/>
-      <enumeration value="Page"/>
-      <enumeration value="Column"/>
-      <enumeration value="Group"/>
-      <enumeration value="Band"/>
-     </restriction>
-    </simpleType>
-   </attribute>
+   <attribute name="evaluationTime" use="optional" default="Now" type="jr:basicEvaluationTime"/>
    <attribute name="evaluationGroup" type="string" use="optional"/>
    <attribute name="hyperlinkType" type="string" use="optional" default="None"/>
    <attribute name="hyperlinkTarget" use="optional" default="Self">
@@ -3189,5 +3178,16 @@
  <element name="component" type="jr:componentType" abstract="true"/>
  
  <complexType name="componentType" abstract="true"/>
- 
+
+ <simpleType name="basicEvaluationTime">
+  <restriction base="string">
+   <enumeration value="Now"/>
+   <enumeration value="Report"/>
+   <enumeration value="Page"/>
+   <enumeration value="Column"/>
+   <enumeration value="Group"/>
+   <enumeration value="Band"/>
+  </restriction>
+ </simpleType>
+
 </schema>

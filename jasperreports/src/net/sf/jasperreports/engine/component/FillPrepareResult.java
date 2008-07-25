@@ -27,23 +27,54 @@
  */
 package net.sf.jasperreports.engine.component;
 
-import net.sf.jasperreports.engine.Component;
-import net.sf.jasperreports.engine.JRExpressionCollector;
-import net.sf.jasperreports.engine.base.JRBaseObjectFactory;
-
 /**
  * TODO component
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id: JRCrosstab.java 1741 2007-06-08 10:53:33Z lucianc $
  */
-public interface ComponentCompiler
+public class FillPrepareResult
 {
 
-	void collectExpressions(Component component, JRExpressionCollector collector);
+	public static final FillPrepareResult NO_PRINT_NO_OVERFLOW = new FillPrepareResult(false, 0, false);
 
-	Component toCompiledComponent(Component component, JRBaseObjectFactory baseFactory);
+	public static final FillPrepareResult PRINT_NO_STRETCH = new FillPrepareResult(true, 0, false);
 
-	//TODO component JRVerifier
+	public static FillPrepareResult noPrintOverflow(int stretchHeight)
+	{
+		return new FillPrepareResult(false, stretchHeight, true);
+	}
+
+	public static FillPrepareResult printStretch(int stretchHeight, boolean overflow)
+	{
+		return new FillPrepareResult(true, stretchHeight, overflow);
+	}
 	
+	private final boolean toPrint;
+	private final boolean overflow;
+	private final int stretchHeight;
+
+	public FillPrepareResult(boolean toPrint,
+			int stretchHeight, boolean overflow)
+	{
+		this.stretchHeight = stretchHeight;
+		this.toPrint = toPrint;
+		this.overflow = overflow;
+	}
+	
+	public boolean isToPrint()
+	{
+		return toPrint;
+	}
+
+	public boolean willOverflow()
+	{
+		return overflow;
+	}
+
+	public int getStretchHeight()
+	{
+		return stretchHeight;
+	}
+
 }

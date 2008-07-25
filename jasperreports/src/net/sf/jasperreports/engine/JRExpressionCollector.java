@@ -233,7 +233,13 @@ public class JRExpressionCollector
 	}
 
 
-	private JRExpressionCollector getCollector(JRElementDataset elementDataset)
+	/**
+	 * TODO component
+	 * 
+	 * @param elementDataset
+	 * @return
+	 */
+	public JRExpressionCollector getCollector(JRElementDataset elementDataset)
 	{
 		JRExpressionCollector collector;
 
@@ -1116,7 +1122,7 @@ public class JRExpressionCollector
 	 *
 	 * @param dataset the element dataset
 	 */
-	protected void collect(JRElementDataset dataset)
+	public void collect(JRElementDataset dataset)
 	{
 		collect(dataset.getDatasetRun());
 

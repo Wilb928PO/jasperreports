@@ -37,6 +37,17 @@ public class DefaultComponentManager implements ComponentManager
 {
 
 	private ComponentCompiler componentCompiler;
+	private ComponentFillFactory componentFillFactory;
+
+	public ComponentFillFactory getComponentFillFactory()
+	{
+		return componentFillFactory;
+	}
+
+	public void setComponentFillFactory(ComponentFillFactory fillFactory)
+	{
+		this.componentFillFactory = fillFactory;
+	}
 
 	public ComponentCompiler getComponentCompiler()
 	{

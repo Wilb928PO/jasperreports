@@ -27,9 +27,9 @@
  */
 package net.sf.jasperreports.engine.component;
 
-import net.sf.jasperreports.engine.Component;
-import net.sf.jasperreports.engine.JRExpressionCollector;
-import net.sf.jasperreports.engine.base.JRBaseObjectFactory;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRExpression;
+
 
 /**
  * TODO component
@@ -37,13 +37,19 @@ import net.sf.jasperreports.engine.base.JRBaseObjectFactory;
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id: JRCrosstab.java 1741 2007-06-08 10:53:33Z lucianc $
  */
-public interface ComponentCompiler
+public abstract class BaseFillComponent implements FillComponent
 {
 
-	void collectExpressions(Component component, JRExpressionCollector collector);
+	protected FillContext fillContext;
+	
+	public void initialize(FillContext fillContext)
+	{
+		this.fillContext = fillContext;
+	}
 
-	Component toCompiledComponent(Component component, JRBaseObjectFactory baseFactory);
-
-	//TODO component JRVerifier
+	protected final Object evaluateExpression(JRExpression expression, byte evaluation) throws JRException
+	{
+		return fillContext.evaluate(expression, evaluation);
+	}
 	
 }

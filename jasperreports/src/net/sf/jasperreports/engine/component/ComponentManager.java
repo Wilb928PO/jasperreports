@@ -38,4 +38,6 @@ public interface ComponentManager
 
 	ComponentCompiler getComponentCompiler();
 
+	ComponentFillFactory getComponentFillFactory();
+	
 }

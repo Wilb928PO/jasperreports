@@ -106,6 +106,16 @@ public class JRTemplateImage extends JRTemplateGraphicElement implements JRAlign
 		setChart(chart);
 	}
 
+	public JRTemplateImage(JROrigin origin, JRDefaultStyleProvider defaultStyleProvider, JRElement element)
+	{
+		super(origin, defaultStyleProvider);
+		
+		setElement(element);
+		
+		this.lineBox = new JRBaseLineBox(this);
+		this.linePen = new JRBasePen(this);
+	}
+
 	/**
 	 *
 	 */
@@ -143,6 +153,27 @@ public class JRTemplateImage extends JRTemplateGraphicElement implements JRAlign
 		setHyperlinkTarget(chart.getHyperlinkTarget());
 	}
 
+	
+	/**
+	 * TODO component
+	 * 
+	 * @param lineBox
+	 */
+	public void setLineBox(JRLineBox lineBox)
+	{
+		this.lineBox = lineBox;
+	}
+
+	/**
+	 * TODO component
+	 * 
+	 * @param linePen
+	 */
+	public void setLinePen(JRPen linePen)
+	{
+		this.linePen = linePen;
+	}
+	
 	/**
 	 * @deprecated Replaced by {@link #getLineBox()}
 	 */

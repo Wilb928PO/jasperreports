@@ -469,13 +469,12 @@ public class JRXmlDigesterFactory
 				configurer.configureDigester(digester);
 			}
 			
-			componentMeta.getComponentManagers();
 			for (Iterator namesIt = componentMeta.getComponentManagers().keySet().iterator(); 
 					namesIt.hasNext();)
 			{
 				String componentName = (String) namesIt.next();
 				digester.addRule("*/componentElement/" + componentName, 
-						JRComponentRule.getInstance());
+						JRComponentRule.newInstance());
 			}
 		}
 	}

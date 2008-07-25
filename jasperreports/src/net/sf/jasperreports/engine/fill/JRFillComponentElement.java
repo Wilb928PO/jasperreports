@@ -30,10 +30,19 @@ package net.sf.jasperreports.engine.fill;
 import net.sf.jasperreports.engine.Component;
 import net.sf.jasperreports.engine.JRComponentElement;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRExpressionCollector;
+import net.sf.jasperreports.engine.JRGroup;
+import net.sf.jasperreports.engine.JROrigin;
 import net.sf.jasperreports.engine.JRPrintElement;
+import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.JRVisitor;
+import net.sf.jasperreports.engine.component.ComponentEnvironment;
 import net.sf.jasperreports.engine.component.ComponentKey;
+import net.sf.jasperreports.engine.component.ComponentManager;
+import net.sf.jasperreports.engine.component.FillComponent;
+import net.sf.jasperreports.engine.component.FillContext;
+import net.sf.jasperreports.engine.component.FillPrepareResult;
 
 /**
  * TODO component
@@ -41,75 +50,164 @@ import net.sf.jasperreports.engine.component.ComponentKey;
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id: JRCrosstab.java 1741 2007-06-08 10:53:33Z lucianc $
  */
-public class JRFillComponentElement extends JRFillElement implements JRComponentElement
+public class JRFillComponentElement extends JRFillElement implements JRComponentElement, FillContext
 {
 
+	private FillComponent fillComponent;
+	
 	public JRFillComponentElement(JRBaseFiller filler, JRComponentElement element,
 			JRFillObjectFactory factory)
 	{
 		super(filler, element, factory);
-		// TODO Auto-generated constructor stub
+		
+		ComponentKey componentKey = element.getComponentKey();
+		ComponentManager manager = ComponentEnvironment.getInstace().getComponentManager(componentKey);
+		fillComponent = manager.getComponentFillFactory().toFillComponent(element.getComponent(), factory);
+		fillComponent.initialize(this);
 	}
 
 	public JRFillComponentElement(JRFillComponentElement element,
 			JRFillCloneFactory factory)
 	{
 		super(element, factory);
-		// TODO Auto-generated constructor stub
+		
+		ComponentKey componentKey = element.getComponentKey();
+		ComponentManager manager = ComponentEnvironment.getInstace().getComponentManager(componentKey);
+		fillComponent = manager.getComponentFillFactory().cloneFillComponent(element.fillComponent, factory);
+		fillComponent.initialize(this);
 	}
 
 	protected void evaluate(byte evaluation) throws JRException
 	{
-		// TODO Auto-generated method stub
+		reset();
+		evaluatePrintWhenExpression(evaluation);
 
+		if (isPrintWhenExpressionNull() || isPrintWhenTrue())
+		{
+			fillComponent.evaluate(evaluation);
+		}
+	}
+	
+	protected boolean prepare(int availableStretchHeight, boolean isOverflow)
+			throws JRException
+	{
+		boolean willOverflow = false;
+
+		super.prepare(availableStretchHeight, isOverflow);
+		
+		if (!isToPrint())
+		{
+			return willOverflow;
+		}
+		
+		boolean isToPrint = true;
+		boolean isReprinted = false;
+
+		if (isOverflow && isAlreadyPrinted() && !isPrintWhenDetailOverflows())
+		{
+			isToPrint = false;
+		}
+
+		int stretchHeight = availableStretchHeight - getRelativeY() + getY() + getBandBottomY();
+		if (isToPrint && stretchHeight < 0)
+		{
+			isToPrint = false;
+			willOverflow = true;
+		}
+
+		if (isToPrint && isOverflow && isPrintWhenDetailOverflows()
+				&& (isAlreadyPrinted() || !isPrintRepeatedValues()))
+		{
+			isReprinted = true;
+		}
+
+		if (isToPrint)
+		{
+			FillPrepareResult result = fillComponent.prepare(getHeight() + stretchHeight);
+			
+			isToPrint = result.isToPrint();
+			willOverflow = result.willOverflow();
+			setStretchHeight(result.getStretchHeight());
+		}
+		
+		setToPrint(isToPrint);
+		setReprinted(isReprinted);
+		
+		return willOverflow;
 	}
 
 	protected JRPrintElement fill() throws JRException
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return fillComponent.fill();
 	}
 
 	protected void resolveElement(JRPrintElement element, byte evaluation)
 			throws JRException
 	{
-		// TODO Auto-generated method stub
-
+		fillComponent.evaluateDelayedElement(element, evaluation);
 	}
 
 	protected void rewind() throws JRException
 	{
-		// TODO Auto-generated method stub
-
+		fillComponent.rewind();
 	}
 
 	public void collectExpressions(JRExpressionCollector collector)
 	{
-		// TODO Auto-generated method stub
-
+		collector.collect(this);
 	}
 
 	public void visit(JRVisitor visitor)
 	{
-		// TODO Auto-generated method stub
-
+		visitor.visitComponentElement(this);
 	}
 
 	public JRFillCloneable createClone(JRFillCloneFactory factory)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return new JRFillComponentElement(this, factory);
 	}
 
 	public Component getComponent()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return ((JRComponentElement) parent).getComponent();
 	}
 
 	public ComponentKey getComponentKey()
 	{
 		return ((JRComponentElement) parent).getComponentKey();
+	}
+	
+	public Object evaluate(JRExpression expression, byte evaluation)
+			throws JRException
+	{
+		return super.evaluateExpression(expression, evaluation);
+	}
+
+	public JRComponentElement getComponentElement()
+	{
+		return (JRComponentElement) parent;
+	}
+
+	public JROrigin getElementOrigin()
+	{
+		return band.getOrigin();
+	}
+
+	public int getElementPrintY()
+	{
+		return getRelativeY();
+	}
+
+	public JRStyle getElementStyle()
+	{
+		return getStyle();
+	}
+
+	public void registerDelayedEvaluation(JRPrintElement printElement, 
+			byte evaluationType, JRGroup evaluationGroup)
+	{
+		filler.addBoundElement(this, printElement, 
+				evaluationType, evaluationGroup, band);
 	}
 
 }

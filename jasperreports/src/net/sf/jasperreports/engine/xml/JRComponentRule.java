@@ -42,12 +42,10 @@ import org.apache.commons.digester.Rule;
  */
 public class JRComponentRule extends Rule
 {
-
-	private static final JRComponentRule instance = new JRComponentRule();
 	
-	public static JRComponentRule getInstance()
+	public static JRComponentRule newInstance()
 	{
-		return instance;
+		return new JRComponentRule();
 	}
 	
 	public void end(String namespace, String name) throws JRException
