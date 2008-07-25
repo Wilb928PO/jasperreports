@@ -31,7 +31,6 @@ import net.sf.jasperreports.engine.JRComponentElement;
 import net.sf.jasperreports.engine.JRDefaultStyleProvider;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExpression;
-import net.sf.jasperreports.engine.JRGroup;
 import net.sf.jasperreports.engine.JROrigin;
 import net.sf.jasperreports.engine.JRPrintElement;
 import net.sf.jasperreports.engine.JRStyle;
@@ -58,6 +57,6 @@ public interface FillContext
 	JRStyle getElementStyle();
 	
 	void registerDelayedEvaluation(JRPrintElement printElement, 
-			byte evaluationType, JRGroup evaluationGroup);
+			byte evaluationTime, String evaluationGroup);
 
 }

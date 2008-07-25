@@ -49,6 +49,6 @@ public interface FillComponent
 
 	void rewind();
 
-	void evaluateDelayedElement(JRPrintElement element, byte evaluation);
+	void evaluateDelayedElement(JRPrintElement element, byte evaluation) throws JRException;
 
 }

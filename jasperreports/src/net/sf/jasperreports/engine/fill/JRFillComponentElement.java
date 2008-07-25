@@ -32,7 +32,6 @@ import net.sf.jasperreports.engine.JRComponentElement;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRExpressionCollector;
-import net.sf.jasperreports.engine.JRGroup;
 import net.sf.jasperreports.engine.JROrigin;
 import net.sf.jasperreports.engine.JRPrintElement;
 import net.sf.jasperreports.engine.JRStyle;
@@ -141,6 +140,12 @@ public class JRFillComponentElement extends JRFillElement implements JRComponent
 		return fillComponent.fill();
 	}
 
+	protected void resolveElement (JRPrintElement element, byte evaluation, 
+			JREvaluationTime evaluationTime) throws JRException
+	{
+		resolveElement(element, evaluation);
+	}
+	
 	protected void resolveElement(JRPrintElement element, byte evaluation)
 			throws JRException
 	{
@@ -204,10 +209,10 @@ public class JRFillComponentElement extends JRFillElement implements JRComponent
 	}
 
 	public void registerDelayedEvaluation(JRPrintElement printElement, 
-			byte evaluationType, JRGroup evaluationGroup)
+			byte evaluationTime, String evaluationGroup)
 	{
 		filler.addBoundElement(this, printElement, 
-				evaluationType, evaluationGroup, band);
+				evaluationTime, evaluationGroup, band);
 	}
 
 }
