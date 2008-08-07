@@ -27,7 +27,10 @@
  */
 package net.sf.jasperreports.engine.component;
 
-import net.sf.jasperreports.engine.JRPropertiesMap;
+import java.util.Map;
+import java.util.Set;
+
+import net.sf.jasperreports.engine.JRRuntimeException;
 
 /**
  * TODO component
@@ -35,9 +38,46 @@ import net.sf.jasperreports.engine.JRPropertiesMap;
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id: JRCrosstab.java 1741 2007-06-08 10:53:33Z lucianc $
  */
-public interface ComponentsMetaFactory
+public class DefaultComponentsBundle implements ComponentsBundle
 {
 
-	ComponentsMeta createComponentsMeta(String metaId, JRPropertiesMap properties);
+	private ComponentsXmlParser xmlParser;
+	private Map componentManagers;
+
+	public ComponentsXmlParser getXmlParser()
+	{
+		return xmlParser;
+	}
+
+	public void setXmlParser(ComponentsXmlParser xmlParser)
+	{
+		this.xmlParser = xmlParser;
+	}
+
+	public Set getComponentNames()
+	{
+		return componentManagers.keySet();
+	}
+	
+	public ComponentManager getComponentManager(String componentName)
+	{
+		ComponentManager manager = (ComponentManager) componentManagers.get(componentName);
+		if (manager == null)
+		{
+			throw new JRRuntimeException("No component manager found for name " + componentName 
+					+ ", namespace " + xmlParser.getNamespace());
+		}
+		return manager;
+	}
+	
+	public Map getComponentManagers()
+	{
+		return componentManagers;
+	}
+
+	public void setComponentManagers(Map componentManagers)
+	{
+		this.componentManagers = componentManagers;
+	}
 	
 }

@@ -27,7 +27,7 @@
  */
 package net.sf.jasperreports.engine.component;
 
-import java.util.Map;
+import net.sf.jasperreports.engine.JRPropertiesMap;
 
 /**
  * TODO component
@@ -35,30 +35,9 @@ import java.util.Map;
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id: JRCrosstab.java 1741 2007-06-08 10:53:33Z lucianc $
  */
-public class ComponentsMeta
+public interface ComponentsBundleFactory
 {
 
-	private ComponentsXmlParser xmlParser;
-	private Map componentManagers;
-
-	public ComponentsXmlParser getXmlParser()
-	{
-		return xmlParser;
-	}
-
-	public void setXmlParser(ComponentsXmlParser xmlParser)
-	{
-		this.xmlParser = xmlParser;
-	}
-
-	public Map getComponentManagers()
-	{
-		return componentManagers;
-	}
-
-	public void setComponentManagers(Map componentManagers)
-	{
-		this.componentManagers = componentManagers;
-	}
+	ComponentsBundle createComponentsBundle(String bundleId, JRPropertiesMap properties);
 	
 }

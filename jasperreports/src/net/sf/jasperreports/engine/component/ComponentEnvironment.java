@@ -122,7 +122,7 @@ public class ComponentEnvironment
 			List resourceComponents = loadResourceComponents(resource);
 			for (Iterator cit = resourceComponents.iterator(); cit.hasNext();)
 			{
-				ComponentsMeta component = (ComponentsMeta) cit.next();
+				ComponentsBundle component = (ComponentsBundle) cit.next();
 				String namespace = component.getXmlParser().getNamespace();
 				if (components.put(namespace, component) != null)
 				{
@@ -141,18 +141,18 @@ public class ComponentEnvironment
 		for (Iterator it = factoryProps.iterator(); it.hasNext();)
 		{
 			JRProperties.PropertySuffix factoryProp = (JRProperties.PropertySuffix) it.next();
-			String metaId = factoryProp.getSuffix();
+			String bundleId = factoryProp.getSuffix();
 			String factoryClass = factoryProp.getValue();
 			
 			if (log.isDebugEnabled())
 			{
-				log.debug("Instantiating components meta for " + metaId
+				log.debug("Instantiating components bundle for " + bundleId
 						+ " using factory class " + factoryClass);
 			}
 			
-			ComponentsMetaFactory factory = (ComponentsMetaFactory) 
-					ClassUtils.instantiateClass(factoryClass, ComponentsMetaFactory.class);
-			ComponentsMeta componentsMeta = factory.createComponentsMeta(metaId, props);
+			ComponentsBundleFactory factory = (ComponentsBundleFactory) 
+					ClassUtils.instantiateClass(factoryClass, ComponentsBundleFactory.class);
+			ComponentsBundle componentsMeta = factory.createComponentsBundle(bundleId, props);
 			components.add(componentsMeta);
 		}
 		return components;
@@ -162,21 +162,14 @@ public class ComponentEnvironment
 	{
 		Map components = getCachedComponents();
 		String namespace = componentKey.getNamespace();
-		ComponentsMeta component = (ComponentsMeta) components.get(namespace);
-		if (component == null)
+		ComponentsBundle componentsBundle = (ComponentsBundle) components.get(namespace);
+		if (componentsBundle == null)
 		{
 			throw new JRRuntimeException("No components registered for namespace " + namespace);
 		}
 		
-		Map managers = component.getComponentManagers();
 		String name = componentKey.getName();
-		ComponentManager manager = (ComponentManager) managers.get(name);
-		if (manager == null)
-		{
-			throw new JRRuntimeException("No component manager found for name " + name 
-					+ ", namespace " + namespace);
-		}
-		
+		ComponentManager manager = componentsBundle.getComponentManager(name);
 		return manager;
 	}
 }

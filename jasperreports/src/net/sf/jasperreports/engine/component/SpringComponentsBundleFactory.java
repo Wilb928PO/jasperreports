@@ -45,29 +45,29 @@ import org.springframework.core.io.UrlResource;
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id: JRCrosstab.java 1741 2007-06-08 10:53:33Z lucianc $
  */
-public class SpringComponentsMetaFactory implements ComponentsMetaFactory
+public class SpringComponentsBundleFactory implements ComponentsBundleFactory
 {
 
-	private final static Log log = LogFactory.getLog(SpringComponentsMetaFactory.class);
+	private final static Log log = LogFactory.getLog(SpringComponentsBundleFactory.class);
 	
 	public static final String PROPERTY_SUFFIX_SPRING_BEANS_RESOURCE = ".spring.beans.resource";
 
-	public static final String PROPERTY_SUFFIX_SPRING_META_BEAN = ".spring.meta.bean";
+	public static final String PROPERTY_SUFFIX_SPRING_BUNDLE_BEAN = ".spring.bundle.bean";
 
-	public static final String DEFAULT_COMPONENT_MANAGER_BEAN = "componentsMeta";
+	public static final String DEFAULT_COMPONENTS_BUNDLE_BEAN = "componentsBundle";
 	
-	public ComponentsMeta createComponentsMeta(String componentId,
+	public ComponentsBundle createComponentsBundle(String bundleId,
 			JRPropertiesMap properties)
 	{
-		BeanFactory beanFactory = getBeanFactory(componentId, properties);
-		String beanName = getComponentManagerBeanName(componentId, properties);
+		BeanFactory beanFactory = getBeanFactory(bundleId, properties);
+		String beanName = getComponentsBundleBeanName(bundleId, properties);
 		if (log.isDebugEnabled())
 		{
-			log.debug("Retrieving component manager for " + componentId 
+			log.debug("Retrieving components bundle for " + bundleId 
 					+ " using bean " + beanName);
 		}
-		ComponentsMeta component = (ComponentsMeta) beanFactory.getBean(
-				beanName, ComponentsMeta.class);
+		ComponentsBundle component = (ComponentsBundle) beanFactory.getBean(
+				beanName, ComponentsBundle.class);
 		return component;
 	}
 
@@ -99,15 +99,15 @@ public class SpringComponentsMetaFactory implements ComponentsMetaFactory
 		return beanFactory;
 	}
 	
-	protected String getComponentManagerBeanName(String componentId,
+	protected String getComponentsBundleBeanName(String componentId,
 			JRPropertiesMap properties)
 	{
 		String nameProp = ComponentEnvironment.PROPERTY_COMPONENT_PREFIX
-				+ componentId + PROPERTY_SUFFIX_SPRING_META_BEAN;
+				+ componentId + PROPERTY_SUFFIX_SPRING_BUNDLE_BEAN;
 		String name = properties.getProperty(nameProp);
 		if (name == null)
 		{
-			name = DEFAULT_COMPONENT_MANAGER_BEAN;
+			name = DEFAULT_COMPONENTS_BUNDLE_BEAN;
 		}
 		return name;
 	}
