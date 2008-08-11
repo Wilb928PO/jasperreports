@@ -28,9 +28,7 @@
 package net.sf.jasperreports.engine.xml;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -1019,8 +1017,7 @@ public class JRXmlDigesterFactory
 		digester.addCallMethod(hyperlinkParameterExpressionPattern, "setText", 0);
 
 	}
-
-
+	
 	/**
 	 * Creates a new instance of digester. The created digester is ready for
 	 * parsing report definition files.
@@ -1029,7 +1026,7 @@ public class JRXmlDigesterFactory
 	{
 		SAXParserFactory parserFactory = SAXParserFactory.newInstance();
 		parserFactory.setNamespaceAware(true);
-		
+
 		boolean validating = JRProperties.getBooleanProperty(JRProperties.COMPILER_XML_VALIDATION);
 		parserFactory.setValidating(validating);
 		parserFactory.setFeature("http://xml.org/sax/features/validation", validating);
@@ -1037,26 +1034,14 @@ public class JRXmlDigesterFactory
 		SAXParser parser = parserFactory.newSAXParser();
 		
 		JRXmlDigester digester = new JRXmlDigester(parser);
-		Map entityResources = getInternalEntityResources();
-		digester.setInternalEntityResources(entityResources);
+		setComponentsInternalEntityResources(digester);
 		configureDigester(digester);
 		return digester;
 	}
 
 
-	protected static Map getInternalEntityResources()
+	protected static void setComponentsInternalEntityResources(JRXmlDigester digester)
 	{
-		Map entityResources = new HashMap();
-		
-		entityResources.put(JRXmlConstants.JASPERREPORT_SYSTEM_ID, 
-				JRXmlConstants.JASPERREPORT_DTD);
-		entityResources.put(JRXmlConstants.JASPERPRINT_SYSTEM_ID, 
-				JRXmlConstants.JASPERPRINT_DTD);
-		entityResources.put(JRXmlConstants.JASPERTEMPLATE_SYSTEM_ID, 
-				JRXmlConstants.JASPERTEMPLATE_DTD);
-		entityResources.put(JRXmlConstants.JASPERREPORT_XSD_SYSTEM_ID, 
-				JRXmlConstants.JASPERREPORT_XSD);
-		
 		Collection components = ComponentEnvironment.getInstace().getComponentsMeta();
 		for (Iterator it = components.iterator(); it.hasNext();)
 		{
@@ -1065,12 +1050,10 @@ public class JRXmlDigesterFactory
 			String schemaResource = xmlParser.getInternalSchemaResource();
 			if (schemaResource != null)
 			{
-				entityResources.put(xmlParser.getPublicSchemaLocation(), 
+				digester.addInternalEntityResource(xmlParser.getPublicSchemaLocation(), 
 						schemaResource);
 			}
 		}
-		
-		return entityResources;
 	}
 
 

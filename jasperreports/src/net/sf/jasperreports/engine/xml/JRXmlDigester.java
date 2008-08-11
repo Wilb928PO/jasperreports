@@ -34,6 +34,7 @@ package net.sf.jasperreports.engine.xml;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.parsers.SAXParser;
@@ -64,6 +65,8 @@ public class JRXmlDigester extends Digester
 	public JRXmlDigester()
 	{
 		super();
+		
+		initInternalResources();
 	}
 
 
@@ -73,11 +76,39 @@ public class JRXmlDigester extends Digester
 	public JRXmlDigester(XMLReader xmlReader)
 	{
 		super(xmlReader);
+		
+		initInternalResources();
 	}
 
 	public JRXmlDigester(SAXParser parser)
 	{
 		super(parser);
+		
+		initInternalResources();
+	}
+
+	private void initInternalResources()
+	{
+		internalEntityResources = new HashMap();
+		
+		internalEntityResources.put(JRXmlConstants.JASPERREPORT_SYSTEM_ID, 
+				JRXmlConstants.JASPERREPORT_DTD);
+		internalEntityResources.put(JRXmlConstants.JASPERPRINT_SYSTEM_ID, 
+				JRXmlConstants.JASPERPRINT_DTD);
+		internalEntityResources.put(JRXmlConstants.JASPERTEMPLATE_SYSTEM_ID, 
+				JRXmlConstants.JASPERTEMPLATE_DTD);
+		internalEntityResources.put(JRXmlConstants.JASPERREPORT_XSD_SYSTEM_ID, 
+				JRXmlConstants.JASPERREPORT_XSD);
+	}
+
+
+	/**
+	 * TODO component
+	 * 
+	 */
+	public void addInternalEntityResource(String systemId, String resource)
+	{
+		internalEntityResources.put(systemId, resource);
 	}
 
 
@@ -136,17 +167,6 @@ public class JRXmlDigester extends Digester
 		}
 
 		return inputSource;
-	}
-
-
-	/**
-	 * TODO component
-	 * 
-	 * @param internalEntityResources
-	 */
-	public void setInternalEntityResources(Map internalEntityResources)
-	{
-		this.internalEntityResources = internalEntityResources;
 	}
 
 	
