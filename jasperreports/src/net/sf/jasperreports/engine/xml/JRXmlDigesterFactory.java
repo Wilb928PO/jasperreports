@@ -27,8 +27,11 @@
  */
 package net.sf.jasperreports.engine.xml;
 
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -127,6 +130,7 @@ import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JRPropertyExpression;
 import net.sf.jasperreports.engine.JRReportFont;
 import net.sf.jasperreports.engine.JRReportTemplate;
+import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JRSortField;
 import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.JRSubreportParameter;
@@ -144,6 +148,7 @@ import net.sf.jasperreports.engine.design.JRDesignQuery;
 import net.sf.jasperreports.engine.design.JRDesignReportTemplate;
 import net.sf.jasperreports.engine.design.JRDesignVariable;
 import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.engine.util.JRProperties;
 
 import org.apache.commons.digester.Digester;
@@ -1030,16 +1035,58 @@ public class JRXmlDigesterFactory
 		boolean validating = JRProperties.getBooleanProperty(JRProperties.COMPILER_XML_VALIDATION);
 		parserFactory.setValidating(validating);
 		parserFactory.setFeature("http://xml.org/sax/features/validation", validating);
-		parserFactory.setFeature("http://apache.org/xml/features/validation/schema", true);//TODO component - Xerces specific
+		
 		SAXParser parser = parserFactory.newSAXParser();
 		
+		List schemaLocations = getSchemaLocations();
+		parser.setProperty("http://java.sun.com/xml/jaxp/properties/schemaLanguage", 
+			"http://www.w3.org/2001/XMLSchema");
+		parser.setProperty("http://java.sun.com/xml/jaxp/properties/schemaSource",
+			schemaLocations.toArray(new String[schemaLocations.size()]));
+		
 		JRXmlDigester digester = new JRXmlDigester(parser);
+		
+		//normally not required because schemaSource is set, but keeping to be safe
 		setComponentsInternalEntityResources(digester);
+		
 		configureDigester(digester);
 		return digester;
 	}
 
+	protected static List getSchemaLocations()
+	{
+		List schemas = new ArrayList();
+		schemas.add(getResourceURI(JRXmlConstants.JASPERREPORT_XSD_RESOURCE));
+		schemas.add(getResourceURI(JRXmlConstants.JASPERREPORT_XSD_DTD_COMPAT_RESOURCE));
+		
+		Collection components = ComponentEnvironment.getInstace().getComponentsMeta();
+		for (Iterator it = components.iterator(); it.hasNext();)
+		{
+			ComponentsBundle componentManager = (ComponentsBundle) it.next();
+			ComponentsXmlParser xmlParser = componentManager.getXmlParser();
+			String schemaResource = xmlParser.getInternalSchemaResource();
+			if (schemaResource != null)
+			{
+				schemas.add(getResourceURI(schemaResource));
+			}
+			else
+			{
+				schemas.add(xmlParser.getPublicSchemaLocation());
+			}
+		}
+		return schemas;
+	}
 
+	protected static String getResourceURI(String resource)
+	{
+		URL location = JRLoader.getResource(resource);
+		if (location == null)
+		{
+			throw new JRRuntimeException("Could not find resource " + resource);
+		}
+		return location.toExternalForm();
+	}
+	
 	protected static void setComponentsInternalEntityResources(JRXmlDigester digester)
 	{
 		Collection components = ComponentEnvironment.getInstace().getComponentsMeta();

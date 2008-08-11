@@ -98,7 +98,7 @@ public class JRXmlDigester extends Digester
 		internalEntityResources.put(JRXmlConstants.JASPERTEMPLATE_SYSTEM_ID, 
 				JRXmlConstants.JASPERTEMPLATE_DTD);
 		internalEntityResources.put(JRXmlConstants.JASPERREPORT_XSD_SYSTEM_ID, 
-				JRXmlConstants.JASPERREPORT_XSD);
+				JRXmlConstants.JASPERREPORT_XSD_RESOURCE);
 	}
 
 
@@ -130,7 +130,6 @@ public class JRXmlDigester extends Digester
 			{
 				return new InputSource(systemId);
 			}
-			
 
 			ClassLoader clsLoader = Thread.currentThread().getContextClassLoader();
 

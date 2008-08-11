@@ -1288,7 +1288,8 @@ public class JRXmlConstants
 	
 	public static final String JASPERREPORTS_NAMESPACE = "http://jasperreports.sourceforge.net/jasperreports";
 	public static final String JASPERREPORT_XSD_SYSTEM_ID = "http://jasperreports.sourceforge.net/xsd/jasperreport.xsd";
-	public static final String JASPERREPORT_XSD = "net/sf/jasperreports/engine/dtds/jasperreport.xsd";
+	public static final String JASPERREPORT_XSD_RESOURCE = "net/sf/jasperreports/engine/dtds/jasperreport.xsd";
+	public static final String JASPERREPORT_XSD_DTD_COMPAT_RESOURCE = "net/sf/jasperreports/engine/dtds/jasperreport-dtd-compat.xsd";
 
 	/**
 	 * Template XML public ID.
