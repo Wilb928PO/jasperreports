@@ -2,8 +2,8 @@
 
 <schema
   xmlns="http://www.w3.org/2001/XMLSchema"
-  targetNamespace="http://jaspersoft.com/jasperreports"
-  xmlns:jr="http://jaspersoft.com/jasperreports">
+  targetNamespace="http://jasperreports.sourceforge.net/jasperreports"
+  xmlns:jr="http://jasperreports.sourceforge.net/jasperreports">
 
  <element name="jasperReport">
   <complexType>

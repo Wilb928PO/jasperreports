@@ -182,7 +182,7 @@ public class JRXmlDigesterFactory
 		
 		digester.setNamespaceAware(true);
 		
-		digester.setRuleNamespaceURI("http://jaspersoft.com/jasperreports");
+		digester.setRuleNamespaceURI(JRXmlConstants.JASPERREPORTS_NAMESPACE);
 
 		/*   */
 		digester.addFactoryCreate("jasperReport", JasperDesignFactory.class.getName());
