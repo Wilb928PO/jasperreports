@@ -27,15 +27,11 @@
  */
 package net.sf.jasperreports.engine.xml;
 
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 
 import net.sf.jasperreports.charts.JRChartAxis;
 import net.sf.jasperreports.charts.design.JRDesignCategorySeries;
@@ -121,6 +117,7 @@ import net.sf.jasperreports.engine.JRBand;
 import net.sf.jasperreports.engine.JRChartPlot;
 import net.sf.jasperreports.engine.JRDatasetParameter;
 import net.sf.jasperreports.engine.JRDatasetRun;
+import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.JRFont;
@@ -148,11 +145,13 @@ import net.sf.jasperreports.engine.design.JRDesignQuery;
 import net.sf.jasperreports.engine.design.JRDesignReportTemplate;
 import net.sf.jasperreports.engine.design.JRDesignVariable;
 import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.engine.util.JRProperties;
+import net.sf.jasperreports.engine.util.JRSingletonCache;
 
 import org.apache.commons.digester.Digester;
 import org.apache.commons.digester.SetNestedPropertiesRule;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -168,6 +167,10 @@ import org.xml.sax.SAXParseException;
 public class JRXmlDigesterFactory
 {
 
+	private static final Log log = LogFactory.getLog(JRXmlDigesterFactory.class);
+	
+	protected static final JRSingletonCache reportParserFactories = 
+		new JRSingletonCache(JRSaxParserFactory.class);
 
 	/**
 	 *
@@ -1029,21 +1032,7 @@ public class JRXmlDigesterFactory
 	 */
 	public static JRXmlDigester createDigester() throws ParserConfigurationException, SAXException
 	{
-		SAXParserFactory parserFactory = SAXParserFactory.newInstance();
-		parserFactory.setNamespaceAware(true);
-
-		boolean validating = JRProperties.getBooleanProperty(JRProperties.COMPILER_XML_VALIDATION);
-		parserFactory.setValidating(validating);
-		parserFactory.setFeature("http://xml.org/sax/features/validation", validating);
-		
-		SAXParser parser = parserFactory.newSAXParser();
-		
-		List schemaLocations = getSchemaLocations();
-		parser.setProperty("http://java.sun.com/xml/jaxp/properties/schemaLanguage", 
-			"http://www.w3.org/2001/XMLSchema");
-		parser.setProperty("http://java.sun.com/xml/jaxp/properties/schemaSource",
-			schemaLocations.toArray(new String[schemaLocations.size()]));
-		
+		SAXParser parser = createParser();
 		JRXmlDigester digester = new JRXmlDigester(parser);
 		
 		//normally not required because schemaSource is set, but keeping to be safe
@@ -1053,38 +1042,28 @@ public class JRXmlDigesterFactory
 		return digester;
 	}
 
-	protected static List getSchemaLocations()
-	{
-		List schemas = new ArrayList();
-		schemas.add(getResourceURI(JRXmlConstants.JASPERREPORT_XSD_RESOURCE));
-		schemas.add(getResourceURI(JRXmlConstants.JASPERREPORT_XSD_DTD_COMPAT_RESOURCE));
-		
-		Collection components = ComponentEnvironment.getInstace().getComponentsMeta();
-		for (Iterator it = components.iterator(); it.hasNext();)
-		{
-			ComponentsBundle componentManager = (ComponentsBundle) it.next();
-			ComponentsXmlParser xmlParser = componentManager.getXmlParser();
-			String schemaResource = xmlParser.getInternalSchemaResource();
-			if (schemaResource != null)
-			{
-				schemas.add(getResourceURI(schemaResource));
-			}
-			else
-			{
-				schemas.add(xmlParser.getPublicSchemaLocation());
-			}
-		}
-		return schemas;
-	}
 
-	protected static String getResourceURI(String resource)
+	protected static SAXParser createParser()
 	{
-		URL location = JRLoader.getResource(resource);
-		if (location == null)
+		try
 		{
-			throw new JRRuntimeException("Could not find resource " + resource);
+			String parserFactoryClass = JRProperties.getProperty(
+					JRSaxParserFactory.PROPERTY_REPORT_PARSER_FACTORY);
+			
+			if (log.isDebugEnabled())
+			{
+				log.debug("Using SAX parser factory class " + parserFactoryClass);
+			}
+			
+			JRSaxParserFactory factory = (JRSaxParserFactory) reportParserFactories
+					.getCachedInstance(parserFactoryClass);
+			SAXParser parser = factory.createParser();
+			return parser;
 		}
-		return location.toExternalForm();
+		catch (JRException e)
+		{
+			throw new JRRuntimeException(e);
+		}
 	}
 	
 	protected static void setComponentsInternalEntityResources(JRXmlDigester digester)
