@@ -74,7 +74,7 @@ public class SpringComponentsBundleFactory implements ComponentsBundleFactory
 	protected BeanFactory getBeanFactory(String componentId,
 			JRPropertiesMap properties)
 	{
-		String resourceProp = ComponentEnvironment.PROPERTY_COMPONENT_PREFIX
+		String resourceProp = ComponentsEnvironment.PROPERTY_COMPONENT_PREFIX
 				+ componentId + PROPERTY_SUFFIX_SPRING_BEANS_RESOURCE;
 		String resource = properties.getProperty(resourceProp);
 		if (resource == null)
@@ -102,7 +102,7 @@ public class SpringComponentsBundleFactory implements ComponentsBundleFactory
 	protected String getComponentsBundleBeanName(String componentId,
 			JRPropertiesMap properties)
 	{
-		String nameProp = ComponentEnvironment.PROPERTY_COMPONENT_PREFIX
+		String nameProp = ComponentsEnvironment.PROPERTY_COMPONENT_PREFIX
 				+ componentId + PROPERTY_SUFFIX_SPRING_BUNDLE_BEAN;
 		String name = properties.getProperty(nameProp);
 		if (name == null)

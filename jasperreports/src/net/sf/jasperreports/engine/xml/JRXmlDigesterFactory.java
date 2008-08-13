@@ -132,7 +132,7 @@ import net.sf.jasperreports.engine.JRSortField;
 import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.JRSubreportParameter;
 import net.sf.jasperreports.engine.JRSubreportReturnValue;
-import net.sf.jasperreports.engine.component.ComponentEnvironment;
+import net.sf.jasperreports.engine.component.ComponentsEnvironment;
 import net.sf.jasperreports.engine.component.ComponentsBundle;
 import net.sf.jasperreports.engine.component.ComponentsXmlParser;
 import net.sf.jasperreports.engine.component.XmlDigesterConfigurer;
@@ -462,7 +462,7 @@ public class JRXmlDigesterFactory
 		digester.addFactoryCreate("*/componentElement", JRComponentElementFactory.class.getName());
 		digester.addSetNext("*/componentElement", "addElement", JRDesignElement.class.getName());
 		
-		Collection components = ComponentEnvironment.getInstace().getComponentsMeta();
+		Collection components = ComponentsEnvironment.getInstace().getComponentsMeta();
 		for (Iterator it = components.iterator(); it.hasNext();)
 		{
 			ComponentsBundle componentsBundle = (ComponentsBundle) it.next();
@@ -1068,7 +1068,7 @@ public class JRXmlDigesterFactory
 	
 	protected static void setComponentsInternalEntityResources(JRXmlDigester digester)
 	{
-		Collection components = ComponentEnvironment.getInstace().getComponentsMeta();
+		Collection components = ComponentsEnvironment.getInstace().getComponentsMeta();
 		for (Iterator it = components.iterator(); it.hasNext();)
 		{
 			ComponentsBundle componentManager = (ComponentsBundle) it.next();

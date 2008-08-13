@@ -38,7 +38,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import net.sf.jasperreports.engine.JRRuntimeException;
-import net.sf.jasperreports.engine.component.ComponentEnvironment;
+import net.sf.jasperreports.engine.component.ComponentsEnvironment;
 import net.sf.jasperreports.engine.component.ComponentsBundle;
 import net.sf.jasperreports.engine.component.ComponentsXmlParser;
 import net.sf.jasperreports.engine.util.ClassUtils;
@@ -137,7 +137,7 @@ public class JRReportSaxParserFactory implements JRSaxParserFactory
 		schemas.add(getResourceURI(JRXmlConstants.JASPERREPORT_XSD_RESOURCE));
 		schemas.add(getResourceURI(JRXmlConstants.JASPERREPORT_XSD_DTD_COMPAT_RESOURCE));
 		
-		Collection components = ComponentEnvironment.getInstace().getComponentsMeta();
+		Collection components = ComponentsEnvironment.getInstace().getComponentsMeta();
 		for (Iterator it = components.iterator(); it.hasNext();)
 		{
 			ComponentsBundle componentManager = (ComponentsBundle) it.next();

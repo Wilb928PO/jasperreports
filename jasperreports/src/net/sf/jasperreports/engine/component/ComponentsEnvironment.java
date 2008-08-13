@@ -51,10 +51,10 @@ import org.apache.commons.logging.LogFactory;
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id: JRCrosstab.java 1741 2007-06-08 10:53:33Z lucianc $
  */
-public class ComponentEnvironment
+public class ComponentsEnvironment
 {
 
-	private static final Log log = LogFactory.getLog(ComponentEnvironment.class);
+	private static final Log log = LogFactory.getLog(ComponentsEnvironment.class);
 	
 	public final static String COMPONENT_RESOURCE_NAME = "jasperreports_component.properties";
 	
@@ -64,11 +64,11 @@ public class ComponentEnvironment
 	public static final String PROPERTY_COMPONENT_PREFIX = 
 			JRProperties.PROPERTY_PREFIX + "component.";
 	
-	private final static ComponentEnvironment instance = new ComponentEnvironment();
+	private final static ComponentsEnvironment instance = new ComponentsEnvironment();
 	
 	private final static Object NULL_CACHE_KEY = new Object();
 	
-	public static ComponentEnvironment getInstace()
+	public static ComponentsEnvironment getInstace()
 	{
 		return instance;
 	}
