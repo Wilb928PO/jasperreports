@@ -135,27 +135,50 @@ public class ComponentsEnvironment
 	
 	protected List loadResourceComponents(URL resource)
 	{
+		if (log.isDebugEnabled())
+		{
+			log.debug("Scanning resource " + resource + " for component bundles");
+		}
+		
 		List components = new ArrayList();
 		JRPropertiesMap props = JRPropertiesMap.loadProperties(resource);
 		List factoryProps = JRProperties.getProperties(props, PROPERTY_COMPONENT_FACTORY_PREFIX);
 		for (Iterator it = factoryProps.iterator(); it.hasNext();)
 		{
-			JRProperties.PropertySuffix factoryProp = (JRProperties.PropertySuffix) it.next();
+			JRProperties.PropertySuffix factoryProp = 
+				(JRProperties.PropertySuffix) it.next();
 			String bundleId = factoryProp.getSuffix();
 			String factoryClass = factoryProp.getValue();
 			
-			if (log.isDebugEnabled())
+			try
 			{
-				log.debug("Instantiating components bundle for " + bundleId
-						+ " using factory class " + factoryClass);
+				ComponentsBundle componentsBundle = instantiateComponentsBundle(
+						props, bundleId, factoryClass);
+				components.add(componentsBundle);
 			}
-			
-			ComponentsBundleFactory factory = (ComponentsBundleFactory) 
-					ClassUtils.instantiateClass(factoryClass, ComponentsBundleFactory.class);
-			ComponentsBundle componentsMeta = factory.createComponentsBundle(bundleId, props);
-			components.add(componentsMeta);
+			catch (Exception e)
+			{
+				//skip this bundle
+				log.error("Error instantiating components bundle for " + bundleId
+						+ " from resource " + resource, e);
+			}
 		}
 		return components;
+	}
+
+	protected ComponentsBundle instantiateComponentsBundle(
+			JRPropertiesMap props, String bundleId, String factoryClass)
+	{
+		if (log.isDebugEnabled())
+		{
+			log.debug("Instantiating components bundle for " + bundleId
+					+ " using factory class " + factoryClass);
+		}
+		
+		ComponentsBundleFactory factory = (ComponentsBundleFactory) 
+				ClassUtils.instantiateClass(factoryClass, ComponentsBundleFactory.class);
+		ComponentsBundle componentsBundle = factory.createComponentsBundle(bundleId, props);
+		return componentsBundle;
 	}
 
 	public ComponentManager getComponentManager(ComponentKey componentKey)
