@@ -81,34 +81,9 @@ public class JRReportSaxParserFactory implements JRSaxParserFactory
 	{
 		try
 		{
-			SAXParserFactory parserFactory = SAXParserFactory.newInstance();
-			
-			if (log.isDebugEnabled())
-			{
-				log.debug("Instantiated SAX parser factory of type " 
-						+ parserFactory.getClass().getName());
-			}
-			
-			parserFactory.setNamespaceAware(true);
-
-			boolean validating = JRProperties.getBooleanProperty(JRProperties.COMPILER_XML_VALIDATION);
-			parserFactory.setValidating(validating);
-			parserFactory.setFeature("http://xml.org/sax/features/validation", validating);
-			
+			SAXParserFactory parserFactory = createSAXParserFactory();
 			SAXParser parser = parserFactory.newSAXParser();
-			
-			List schemaLocations = getSchemaLocations();
-			parser.setProperty("http://java.sun.com/xml/jaxp/properties/schemaLanguage", 
-				"http://www.w3.org/2001/XMLSchema");
-			parser.setProperty("http://java.sun.com/xml/jaxp/properties/schemaSource",
-				schemaLocations.toArray(new String[schemaLocations.size()]));
-			
-			boolean cache = JRProperties.getBooleanProperty(PROPERTY_CACHE_SCHEMAS);
-			if (cache)
-			{
-				enableSchemaCaching(parser);
-			}
-			
+			configureParser(parser);
 			return parser;
 		}
 		catch (SAXException e)
@@ -118,6 +93,41 @@ public class JRReportSaxParserFactory implements JRSaxParserFactory
 		catch (ParserConfigurationException e)
 		{
 			throw new JRRuntimeException("Error creating SAX parser", e);
+		}
+	}
+
+	protected SAXParserFactory createSAXParserFactory()
+			throws ParserConfigurationException, SAXException
+	{
+		SAXParserFactory parserFactory = SAXParserFactory.newInstance();
+		
+		if (log.isDebugEnabled())
+		{
+			log.debug("Instantiated SAX parser factory of type " 
+					+ parserFactory.getClass().getName());
+		}
+		
+		parserFactory.setNamespaceAware(true);
+
+		boolean validating = JRProperties.getBooleanProperty(JRProperties.COMPILER_XML_VALIDATION);
+		parserFactory.setValidating(validating);
+		parserFactory.setFeature("http://xml.org/sax/features/validation", validating);
+		return parserFactory;
+	}
+
+	protected void configureParser(SAXParser parser)
+			throws SAXException
+	{
+		List schemaLocations = getSchemaLocations();
+		parser.setProperty("http://java.sun.com/xml/jaxp/properties/schemaLanguage", 
+			"http://www.w3.org/2001/XMLSchema");
+		parser.setProperty("http://java.sun.com/xml/jaxp/properties/schemaSource",
+			schemaLocations.toArray(new String[schemaLocations.size()]));
+		
+		boolean cache = JRProperties.getBooleanProperty(PROPERTY_CACHE_SCHEMAS);
+		if (cache)
+		{
+			enableSchemaCaching(parser);
 		}
 	}
 
