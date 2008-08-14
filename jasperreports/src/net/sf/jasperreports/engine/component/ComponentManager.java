@@ -38,6 +38,8 @@ public interface ComponentManager
 
 	ComponentCompiler getComponentCompiler();
 
+	ComponentXmlWriter getComponentXmlWriter();
+	
 	ComponentFillFactory getComponentFillFactory();
 	
 }

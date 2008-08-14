@@ -97,6 +97,7 @@ import net.sf.jasperreports.crosstabs.xml.JRCrosstabGroupFactory;
 import net.sf.jasperreports.crosstabs.xml.JRCrosstabMeasureFactory;
 import net.sf.jasperreports.crosstabs.xml.JRCrosstabParameterFactory;
 import net.sf.jasperreports.crosstabs.xml.JRCrosstabRowGroupFactory;
+import net.sf.jasperreports.engine.Component;
 import net.sf.jasperreports.engine.JRAnchor;
 import net.sf.jasperreports.engine.JRBand;
 import net.sf.jasperreports.engine.JRBreak;
@@ -104,6 +105,7 @@ import net.sf.jasperreports.engine.JRChart;
 import net.sf.jasperreports.engine.JRChartDataset;
 import net.sf.jasperreports.engine.JRChartPlot;
 import net.sf.jasperreports.engine.JRChild;
+import net.sf.jasperreports.engine.JRComponentElement;
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRDatasetParameter;
 import net.sf.jasperreports.engine.JRDatasetRun;
@@ -142,8 +144,12 @@ import net.sf.jasperreports.engine.JRTextElement;
 import net.sf.jasperreports.engine.JRTextField;
 import net.sf.jasperreports.engine.JRVariable;
 import net.sf.jasperreports.engine.JRChartPlot.JRSeriesColor;
+import net.sf.jasperreports.engine.component.ComponentKey;
+import net.sf.jasperreports.engine.component.ComponentXmlWriter;
+import net.sf.jasperreports.engine.component.ComponentsEnvironment;
 import net.sf.jasperreports.engine.query.JRJdbcQueryExecuterFactory;
 import net.sf.jasperreports.engine.util.JRXmlWriteHelper;
+import net.sf.jasperreports.engine.util.XmlNamespace;
 
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.BarRenderer3D;
@@ -158,6 +164,8 @@ import org.jfree.data.time.Day;
 public class JRXmlWriter extends JRXmlBaseWriter
 {
 
+	public static final XmlNamespace JASPERREPORTS_NAMESPACE = 
+		new XmlNamespace(JRXmlConstants.JASPERREPORTS_NAMESPACE, null, JRXmlConstants.JASPERREPORT_XSD_SYSTEM_ID);
 
 	/**
 	 *
@@ -271,9 +279,8 @@ public class JRXmlWriter extends JRXmlBaseWriter
 		useWriter(new JRXmlWriteHelper(out));
 
 		writer.writeProlog(encoding);
-		writer.writePublicDoctype(JRXmlConstants.ELEMENT_jasperReport, JRXmlConstants.JASPERREPORT_PUBLIC_ID, JRXmlConstants.JASPERREPORT_SYSTEM_ID);
 
-		writer.startElement(JRXmlConstants.ELEMENT_jasperReport);
+		writer.startElement(JRXmlConstants.ELEMENT_jasperReport, JASPERREPORTS_NAMESPACE);
 		writer.addEncodedAttribute(JRXmlConstants.ATTRIBUTE_name, report.getName());
 		writer.addEncodedAttribute(JRXmlConstants.ATTRIBUTE_language, report.getLanguage(), JRReport.LANGUAGE_JAVA);
 		writer.addAttribute(JRXmlConstants.ATTRIBUTE_columnCount, report.getColumnCount(), 1);
@@ -1074,7 +1081,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 	/**
 	 *
 	 */
-	private void writeElementDataset(JRElementDataset dataset) throws IOException
+	public void writeElementDataset(JRElementDataset dataset) throws IOException
 	{
 		writer.startElement(JRXmlConstants.ELEMENT_dataset);
 		writer.addAttribute(JRXmlConstants.ATTRIBUTE_resetType, dataset.getResetType(), JRXmlConstants.getResetTypeMap(), JRVariable.RESET_TYPE_REPORT);
@@ -2580,4 +2587,27 @@ public class JRXmlWriter extends JRXmlBaseWriter
 		return true;
 	}
 
+	public JRXmlWriteHelper getXmlWriteHelper()
+	{
+		return writer;
+	}
+
+	public Writer getUnderlyingWriter()
+	{
+		return writer.getUnderlyingWriter();
+	}
+
+	public void writeComponentElement(JRComponentElement componentElement) throws IOException
+	{
+		writer.startElement(JRXmlConstants.ELEMENT_componentElement);
+		writeReportElement(componentElement);
+		
+		ComponentKey componentKey = componentElement.getComponentKey();
+		Component component = componentElement.getComponent();
+		ComponentXmlWriter componentXmlWriter = ComponentsEnvironment.getInstace()
+			.getComponentManager(componentKey).getComponentXmlWriter();
+		componentXmlWriter.writeToXml(componentKey, component, this);
+		
+		writer.closeElement();
+	}
 }

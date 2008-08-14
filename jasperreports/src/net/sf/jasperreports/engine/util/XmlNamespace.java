@@ -25,44 +25,41 @@
  * San Francisco, CA 94107
  * http://www.jaspersoft.com
  */
-package net.sf.jasperreports.engine.xml;
-
-import net.sf.jasperreports.engine.Component;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.component.ComponentKey;
-import net.sf.jasperreports.engine.design.JRDesignComponentElement;
-
-import org.apache.commons.digester.Rule;
+package net.sf.jasperreports.engine.util;
 
 /**
  * TODO component
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id: JRCrosstab.java 1741 2007-06-08 10:53:33Z lucianc $
+ * @version $Id$
  */
-public class JRComponentRule extends Rule
+public class XmlNamespace
 {
+
+	private final String nsURI;
+	private final String prefix;
+	private final String schemaURI;
 	
-	public static JRComponentRule newInstance()
+	public XmlNamespace(String uri, String prefix, String schemaURI)
 	{
-		return new JRComponentRule();
+		this.prefix = prefix;
+		this.schemaURI = schemaURI;
+		this.nsURI = uri;
 	}
 	
-	public void end(String namespace, String name) throws JRException
+	public String getNamespaceURI()
 	{
-		Object top = getDigester().peek();
-		if (!(top instanceof Component))
-		{
-			throw new JRException("Object of type " + top.getClass().getName() + " is not a "
-					+ Component.class.getName() + " instance");
-		}
+		return nsURI;
+	}
 
-		Component component = (Component) top;
-		JRDesignComponentElement componentElement = (JRDesignComponentElement) getDigester().peek(1);
-		String namespacePrefix = ((JRXmlDigester) getDigester()).getLastNamespacePrefix();
-		ComponentKey componentKey = new ComponentKey(namespace, namespacePrefix, name);
-		componentElement.setComponentKey(componentKey);
-		componentElement.setComponent(component);
+	public String getPrefix()
+	{
+		return prefix;
+	}
+
+	public String getSchemaURI()
+	{
+		return schemaURI;
 	}
 	
 }

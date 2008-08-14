@@ -181,15 +181,21 @@ public class ComponentsEnvironment
 		return componentsBundle;
 	}
 
-	public ComponentManager getComponentManager(ComponentKey componentKey)
+	public ComponentsBundle getComponentsBundle(String namespace)
 	{
 		Map components = getCachedComponents();
-		String namespace = componentKey.getNamespace();
 		ComponentsBundle componentsBundle = (ComponentsBundle) components.get(namespace);
 		if (componentsBundle == null)
 		{
-			throw new JRRuntimeException("No components registered for namespace " + namespace);
+			throw new JRRuntimeException("No components bundle registered for namespace " + namespace);
 		}
+		return componentsBundle;
+	}
+	
+	public ComponentManager getComponentManager(ComponentKey componentKey)
+	{
+		String namespace = componentKey.getNamespace();
+		ComponentsBundle componentsBundle = getComponentsBundle(namespace);
 		
 		String name = componentKey.getName();
 		ComponentManager manager = componentsBundle.getComponentManager(name);

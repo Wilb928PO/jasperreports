@@ -41,6 +41,7 @@ import javax.xml.parsers.SAXParser;
 
 import org.apache.commons.digester.Digester;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
 
@@ -59,6 +60,8 @@ public class JRXmlDigester extends Digester
 
 	private Map internalEntityResources;
 
+	private String lastNamespacePrefix;
+	
 	/**
 	 *
 	 */
@@ -168,5 +171,39 @@ public class JRXmlDigester extends Digester
 		return inputSource;
 	}
 
+
+	public void endElement(String namespaceURI, String localName, String qName)
+			throws SAXException
+	{
+		lastNamespacePrefix = getNamespacePrefix(qName);
+		
+		super.endElement(namespaceURI, localName, qName);
+	}
+
+	protected String getNamespacePrefix(String qName)
+	{
+		String prefix;
+		if (qName == null)
+		{
+			prefix = null;
+		}
+		else
+		{
+			int sepIdx = qName.indexOf(':');
+			if (sepIdx > 0)
+			{
+				prefix = qName.substring(0, sepIdx);
+			}
+			else
+			{
+				prefix = null;
+			}
+		}
+		return prefix;
+	}
 	
+	public String getLastNamespacePrefix()
+	{
+		return lastNamespacePrefix;
+	}
 }

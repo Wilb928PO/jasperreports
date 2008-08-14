@@ -253,7 +253,14 @@ public class XmlWriterVisitor implements JRVisitor
 	
 	public void visitComponentElement(JRComponentElement componentElement)
 	{
-		// TODO component
+		try
+		{
+			xmlWriter.writeComponentElement(componentElement);
+		}
+		catch (IOException e)
+		{
+			throw new JRRuntimeException(e);
+		}
 	}
 
 }

@@ -25,44 +25,23 @@
  * San Francisco, CA 94107
  * http://www.jaspersoft.com
  */
-package net.sf.jasperreports.engine.xml;
+package net.sf.jasperreports.engine.component;
+
+import java.io.IOException;
 
 import net.sf.jasperreports.engine.Component;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.component.ComponentKey;
-import net.sf.jasperreports.engine.design.JRDesignComponentElement;
-
-import org.apache.commons.digester.Rule;
+import net.sf.jasperreports.engine.xml.JRXmlWriter;
 
 /**
  * TODO component
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id: JRCrosstab.java 1741 2007-06-08 10:53:33Z lucianc $
+ * @version $Id$
  */
-public class JRComponentRule extends Rule
+public interface ComponentXmlWriter
 {
-	
-	public static JRComponentRule newInstance()
-	{
-		return new JRComponentRule();
-	}
-	
-	public void end(String namespace, String name) throws JRException
-	{
-		Object top = getDigester().peek();
-		if (!(top instanceof Component))
-		{
-			throw new JRException("Object of type " + top.getClass().getName() + " is not a "
-					+ Component.class.getName() + " instance");
-		}
 
-		Component component = (Component) top;
-		JRDesignComponentElement componentElement = (JRDesignComponentElement) getDigester().peek(1);
-		String namespacePrefix = ((JRXmlDigester) getDigester()).getLastNamespacePrefix();
-		ComponentKey componentKey = new ComponentKey(namespace, namespacePrefix, name);
-		componentElement.setComponentKey(componentKey);
-		componentElement.setComponent(component);
-	}
-	
+	void writeToXml(ComponentKey componentKey, Component component, 
+			JRXmlWriter reportWriter) throws IOException;
+
 }

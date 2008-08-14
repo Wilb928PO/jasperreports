@@ -43,34 +43,21 @@ public class ComponentKey implements Serializable
 	private static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
 	
 	private final String namespace;
+	private final String namespacePrefix;
 	private final String name;
 	
-	public ComponentKey(String namespace, String name)
+	public ComponentKey(String namespace, String namespacePrefix, String name)
 	{
 		this.namespace = namespace;
+		this.namespacePrefix = namespacePrefix;
 		this.name = name;
-	}
-
-	/**
-	 * @return the namespace
-	 */
-	public String getNamespace()
-	{
-		return namespace;
-	}
-	
-	/**
-	 * @return the name
-	 */
-	public String getName()
-	{
-		return name;
 	}
 	
 	public int hashCode()
 	{
 		int hash = 17;
 		hash = 37 * hash + namespace.hashCode();
+		hash = 37 * hash + namespacePrefix.hashCode();
 		hash = 37 * hash + name.hashCode();
 		return hash;
 	}
@@ -89,6 +76,23 @@ public class ComponentKey implements Serializable
 		
 		ComponentKey key = (ComponentKey) o;
 		return namespace.equals(key.namespace)
+				&& namespacePrefix.equals(key.namespacePrefix)
 				&& name.equals(key.name);
 	}
+
+	public String getNamespace()
+	{
+		return namespace;
+	}
+	
+	public String getName()
+	{
+		return name;
+	}
+
+	public String getNamespacePrefix()
+	{
+		return namespacePrefix;
+	}
+
 }

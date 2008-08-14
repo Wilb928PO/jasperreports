@@ -37,6 +37,7 @@ public class DefaultComponentManager implements ComponentManager
 {
 
 	private ComponentCompiler componentCompiler;
+	private ComponentXmlWriter componentXmlWriter;
 	private ComponentFillFactory componentFillFactory;
 
 	public ComponentFillFactory getComponentFillFactory()
@@ -59,4 +60,14 @@ public class DefaultComponentManager implements ComponentManager
 		this.componentCompiler = componentCompiler;
 	}
 	
+	public ComponentXmlWriter getComponentXmlWriter()
+	{
+		return componentXmlWriter;
+	}
+
+	public void setComponentXmlWriter(ComponentXmlWriter componentXmlWriter)
+	{
+		this.componentXmlWriter = componentXmlWriter;
+	}
+
 }
