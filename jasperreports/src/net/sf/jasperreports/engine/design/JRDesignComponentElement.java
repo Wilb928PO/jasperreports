@@ -36,6 +36,7 @@ import net.sf.jasperreports.engine.JRVisitor;
 import net.sf.jasperreports.engine.component.ComponentsEnvironment;
 import net.sf.jasperreports.engine.component.ComponentKey;
 import net.sf.jasperreports.engine.component.ComponentManager;
+import net.sf.jasperreports.engine.design.events.JRPropertyChangeSupport;
 
 /**
  * TODO component
@@ -48,8 +49,13 @@ public class JRDesignComponentElement extends JRDesignElement implements JRCompo
 
 	private static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
 
+	public static final String PROPERTY_COMPONENT = "component";
+	public static final String PROPERTY_COMPONENT_KEY = "componentKey";
+	
 	private ComponentKey componentKey;
 	private Component component;
+	
+	private transient JRPropertyChangeSupport eventSupport;
 
 	public JRDesignComponentElement()
 	{
@@ -59,6 +65,19 @@ public class JRDesignComponentElement extends JRDesignElement implements JRCompo
 	public JRDesignComponentElement(JRDefaultStyleProvider defaultStyleProvider)
 	{
 		super(defaultStyleProvider);
+	}
+	
+	public JRPropertyChangeSupport getEventSupport()
+	{
+		synchronized (this)
+		{
+			if (eventSupport == null)
+			{
+				eventSupport = new JRPropertyChangeSupport(this);
+			}
+		}
+		
+		return eventSupport;
 	}
 	
 	public void collectExpressions(JRExpressionCollector collector)
@@ -79,7 +98,9 @@ public class JRDesignComponentElement extends JRDesignElement implements JRCompo
 
 	public void setComponent(Component component)
 	{
+		Object old = this.component;
 		this.component = component;
+		getEventSupport().firePropertyChange(PROPERTY_COMPONENT, old, this.component);
 	}
 
 	public ComponentKey getComponentKey()
@@ -87,12 +108,11 @@ public class JRDesignComponentElement extends JRDesignElement implements JRCompo
 		return componentKey;
 	}
 
-	/**
-	 * @param componentKey the componentKey to set
-	 */
 	public void setComponentKey(ComponentKey componentKey)
 	{
+		Object old = this.componentKey;
 		this.componentKey = componentKey;
+		getEventSupport().firePropertyChange(PROPERTY_COMPONENT_KEY, old, this.componentKey);
 	}
 
 }
