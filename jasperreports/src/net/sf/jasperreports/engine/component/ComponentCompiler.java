@@ -30,6 +30,7 @@ package net.sf.jasperreports.engine.component;
 import net.sf.jasperreports.engine.Component;
 import net.sf.jasperreports.engine.JRExpressionCollector;
 import net.sf.jasperreports.engine.base.JRBaseObjectFactory;
+import net.sf.jasperreports.engine.design.JRVerifier;
 
 /**
  * TODO component
@@ -42,8 +43,8 @@ public interface ComponentCompiler
 
 	void collectExpressions(Component component, JRExpressionCollector collector);
 
+	void verify(Component component, JRVerifier verifier);
+
 	Component toCompiledComponent(Component component, JRBaseObjectFactory baseFactory);
 
-	//TODO component JRVerifier
-	
 }
