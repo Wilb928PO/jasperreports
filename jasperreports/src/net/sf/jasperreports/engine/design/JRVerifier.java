@@ -1147,7 +1147,7 @@ public class JRVerifier
 	}
 
 
-	protected void verifyElement(JRElement element)
+	public void verifyElement(JRElement element)
 	{
 		if (element instanceof JRStaticText)
 		{
