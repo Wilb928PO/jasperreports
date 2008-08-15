@@ -30,14 +30,17 @@ package net.sf.jasperreports.engine.component;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.util.ClassUtils;
 import net.sf.jasperreports.engine.util.JRProperties;
 
 /**
- * TODO component
+ * A class that provides means of setting and accessing
+ * {@link ComponentsRegistry} instances.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
+ * @see #getComponentsRegistry()
  */
 public final class ComponentsEnvironment
 {
@@ -48,19 +51,22 @@ public final class ComponentsEnvironment
 	
 	private static final Log log = LogFactory.getLog(ComponentsEnvironment.class); 
 	
+	/**
+	 * A property that provides the default {@link ComponentsRegistry} 
+	 * implementation class. 
+	 * 
+	 * This property is only read at initialization time, therefore changing
+	 * the property value at a later time will have no effect. 
+	 */
 	public static final String PROPERTY_COMPONENTS_REGISTRY_CLASS = 
 		JRProperties.PROPERTY_PREFIX + "components.registry.class";
 	
 	private static ComponentsRegistry systemRegistry;
 	private static final ThreadLocal threadRegistry = new InheritableThreadLocal();
 	
-	public static synchronized ComponentsRegistry getSystemComponentsRegistry()
+	static
 	{
-		if (systemRegistry == null)
-		{
-			systemRegistry = createDefaultRegistry();
-		}
-		return systemRegistry;
+		systemRegistry = createDefaultRegistry();
 	}
 	
 	private static ComponentsRegistry createDefaultRegistry()
@@ -76,22 +82,75 @@ public final class ComponentsEnvironment
 			instantiateClass(registryClass, ComponentsRegistry.class);
 		return registry;
 	}
-
-	public static synchronized void setSystemComponentsRegistry(ComponentsRegistry componentsRegistry)
+	
+	/**
+	 * Returns the system default components registry object.
+	 * 
+	 * This is either the one instantiated based on {@link #PROPERTY_COMPONENTS_REGISTRY_CLASS},
+	 * or the one set by {@link #setSystemComponentsRegistry(ComponentsRegistry)}.
+	 * 
+	 * @return the system default components registry object
+	 */
+	public static synchronized ComponentsRegistry getSystemComponentsRegistry()
 	{
-		ComponentsEnvironment.systemRegistry = componentsRegistry;
+		return systemRegistry;
 	}
 
+	/**
+	 * Sets the system default components registry.
+	 * 
+	 * @param componentsRegistry the components registry
+	 */
+	public static synchronized void setSystemComponentsRegistry(ComponentsRegistry componentsRegistry)
+	{
+		if (componentsRegistry == null)
+		{
+			throw new JRRuntimeException("Cannot set a null components registry.");
+		}
+		
+		systemRegistry = componentsRegistry;
+	}
+
+	/**
+	 * Returns the thread components registry, if any.
+	 * 
+	 * @return the thread components registry
+	 */
 	public static ComponentsRegistry getThreadComponentsRegistry()
 	{
 		return (ComponentsRegistry) threadRegistry.get();
 	}
 
-	public static void getThreadComponentsRegistry(ComponentsRegistry componentsRegistry)
+	/**
+	 * Sets the thread components registry.
+	 * 
+	 * @param componentsRegistry
+	 * @see #getComponentsRegistry()
+	 */
+	public static void setThreadComponentsRegistry(ComponentsRegistry componentsRegistry)
 	{
 		threadRegistry.set(componentsRegistry);
 	}
+
+	/**
+	 * Resets (to null) the thread components registry.
+	 * 
+	 * @see #setThreadComponentsRegistry(ComponentsRegistry)
+	 */
+	public static void resetThreadComponentsRegistry()
+	{
+		threadRegistry.set(null);
+	}
 	
+	/**
+	 * Returns the component registry to be used in the current context.
+	 * 
+	 * The method returns the thread component registry (as returned by 
+	 * {@link #getThreadComponentsRegistry()}) if it exists, and the system
+	 * registry (as returned by {@link #getSystemComponentsRegistry()) otherwise.
+	 * 
+	 * @return the context component registry
+	 */
 	public static ComponentsRegistry getComponentsRegistry()
 	{
 		ComponentsRegistry registry = getThreadComponentsRegistry();
