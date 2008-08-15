@@ -280,7 +280,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 
 		writer.writeProlog(encoding);
 
-		writer.startElement(JRXmlConstants.ELEMENT_jasperReport, JASPERREPORTS_NAMESPACE);
+		writer.startElement(JRXmlConstants.ELEMENT_jasperReport, getNamespace());
 		writer.addEncodedAttribute(JRXmlConstants.ATTRIBUTE_name, report.getName());
 		writer.addEncodedAttribute(JRXmlConstants.ATTRIBUTE_language, report.getLanguage(), JRReport.LANGUAGE_JAVA);
 		writer.addAttribute(JRXmlConstants.ATTRIBUTE_columnCount, report.getColumnCount(), 1);
@@ -649,7 +649,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 	 */
 	public void writeElementGroup(JRElementGroup elementGroup) throws IOException
 	{
-		writer.startElement(JRXmlConstants.ELEMENT_elementGroup);
+		writer.startElement(JRXmlConstants.ELEMENT_elementGroup, getNamespace());
 
 		/*   */
 		List children = elementGroup.getChildren();
@@ -670,7 +670,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 	 */
 	public void writeBreak(JRBreak breakElement) throws IOException
 	{
-		writer.startElement(JRXmlConstants.ELEMENT_break);
+		writer.startElement(JRXmlConstants.ELEMENT_break, getNamespace());
 		writer.addAttribute(JRXmlConstants.ATTRIBUTE_type, breakElement.getType(), JRXmlConstants.getBreakTypeMap(), JRBreak.TYPE_PAGE);
 
 		writeReportElement(breakElement);
@@ -684,7 +684,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 	 */
 	public void writeLine(JRLine line) throws IOException
 	{
-		writer.startElement(JRXmlConstants.ELEMENT_line);
+		writer.startElement(JRXmlConstants.ELEMENT_line, getNamespace());
 		writer.addAttribute(JRXmlConstants.ATTRIBUTE_direction, line.getDirection(), JRXmlConstants.getDirectionMap(), JRLine.DIRECTION_TOP_DOWN);
 
 		writeReportElement(line);
@@ -768,7 +768,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 	 */
 	public void writeRectangle(JRRectangle rectangle) throws IOException
 	{
-		writer.startElement(JRXmlConstants.ELEMENT_rectangle);
+		writer.startElement(JRXmlConstants.ELEMENT_rectangle, getNamespace());
 		writer.addAttribute(JRXmlConstants.ATTRIBUTE_radius, rectangle.getOwnRadius());
 
 		writeReportElement(rectangle);
@@ -783,7 +783,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 	 */
 	public void writeEllipse(JREllipse ellipse) throws IOException
 	{
-		writer.startElement(JRXmlConstants.ELEMENT_ellipse);
+		writer.startElement(JRXmlConstants.ELEMENT_ellipse, getNamespace());
 
 		writeReportElement(ellipse);
 		writeGraphicElement(ellipse);
@@ -797,7 +797,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 	 */
 	public void writeImage(JRImage image) throws IOException
 	{
-		writer.startElement(JRXmlConstants.ELEMENT_image);
+		writer.startElement(JRXmlConstants.ELEMENT_image, getNamespace());
 		writer.addAttribute(JRXmlConstants.ATTRIBUTE_scaleImage, image.getOwnScaleImage(), JRXmlConstants.getScaleImageMap());
 		writer.addAttribute(JRXmlConstants.ATTRIBUTE_hAlign, image.getOwnHorizontalAlignment(), JRXmlConstants.getHorizontalAlignMap());
 		writer.addAttribute(JRXmlConstants.ATTRIBUTE_vAlign, image.getOwnVerticalAlignment(), JRXmlConstants.getVerticalAlignMap());
@@ -838,7 +838,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 	 */
 	public void writeStaticText(JRStaticText staticText) throws IOException
 	{
-		writer.startElement(JRXmlConstants.ELEMENT_staticText);
+		writer.startElement(JRXmlConstants.ELEMENT_staticText, getNamespace());
 
 		writeReportElement(staticText);
 		writeBox(staticText.getLineBox());
@@ -915,7 +915,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 	 */
 	public void writeTextField(JRTextField textField) throws IOException
 	{
-		writer.startElement(JRXmlConstants.ELEMENT_textField);
+		writer.startElement(JRXmlConstants.ELEMENT_textField, getNamespace());
 		writer.addAttribute(JRXmlConstants.ATTRIBUTE_isStretchWithOverflow, textField.isStretchWithOverflow(), false);
 		writer.addAttribute(JRXmlConstants.ATTRIBUTE_evaluationTime, textField.getEvaluationTime(), JRXmlConstants.getEvaluationTimeMap(), JRExpression.EVALUATION_TIME_NOW);
 
@@ -953,7 +953,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 	 */
 	public void writeSubreport(JRSubreport subreport) throws IOException
 	{
-		writer.startElement(JRXmlConstants.ELEMENT_subreport);
+		writer.startElement(JRXmlConstants.ELEMENT_subreport, getNamespace());
 		writer.addAttribute(JRXmlConstants.ATTRIBUTE_isUsingCache, subreport.isOwnUsingCache());
 
 		writeReportElement(subreport);
@@ -1077,13 +1077,17 @@ public class JRXmlWriter extends JRXmlBaseWriter
 		writer.closeElement();
 	}
 
+	public void writeElementDataset(JRElementDataset dataset) throws IOException
+	{
+		writeElementDataset(dataset, true);
+	}
 
 	/**
 	 *
 	 */
-	public void writeElementDataset(JRElementDataset dataset) throws IOException
+	public void writeElementDataset(JRElementDataset dataset, boolean skipIfEmpty) throws IOException
 	{
-		writer.startElement(JRXmlConstants.ELEMENT_dataset);
+		writer.startElement(JRXmlConstants.ELEMENT_dataset, getNamespace());
 		writer.addAttribute(JRXmlConstants.ATTRIBUTE_resetType, dataset.getResetType(), JRXmlConstants.getResetTypeMap(), JRVariable.RESET_TYPE_REPORT);
 
 		if (dataset.getResetType() == JRVariable.RESET_TYPE_GROUP)
@@ -1105,7 +1109,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 			writeDatasetRun(datasetRun);
 		}
 
-		writer.closeElement(true);
+		writer.closeElement(skipIfEmpty);
 	}
 
 
@@ -1302,7 +1306,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 	 */
 	public void writePieDataset(JRPieDataset dataset) throws IOException
 	{
-		writer.startElement(JRXmlConstants.ELEMENT_pieDataset);
+		writer.startElement(JRXmlConstants.ELEMENT_pieDataset, getNamespace());
 
 		writeElementDataset(dataset);
 
@@ -1320,7 +1324,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 	 */
 	public void writeValueDataset(JRValueDataset dataset) throws IOException
 	{
-		writer.startElement(JRXmlConstants.ELEMENT_valueDataset);
+		writer.startElement(JRXmlConstants.ELEMENT_valueDataset, getNamespace());
 
 		writeElementDataset(dataset);
 
@@ -1337,7 +1341,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 	 */
 	public void writeValueDisplay(JRValueDisplay valueDisplay) throws IOException
 	{
-		writer.startElement(JRXmlConstants.ELEMENT_valueDisplay);
+		writer.startElement(JRXmlConstants.ELEMENT_valueDisplay, getNamespace());
 
 		writer.addAttribute(JRXmlConstants.ATTRIBUTE_color, valueDisplay.getColor());
 		writer.addAttribute(JRXmlConstants.ATTRIBUTE_mask, valueDisplay.getMask());
@@ -1354,7 +1358,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 	 */
 	public void writeDataRange(JRDataRange dataRange) throws IOException
 	{
-		writer.startElement(JRXmlConstants.ELEMENT_dataRange);
+		writer.startElement(JRXmlConstants.ELEMENT_dataRange, getNamespace());
 
 		writer.writeExpression(JRXmlConstants.ELEMENT_lowExpression, dataRange.getLowExpression(), false);
 		writer.writeExpression(JRXmlConstants.ELEMENT_highExpression, dataRange.getHighExpression(), false);
@@ -1442,7 +1446,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 	 */
 	public void writePieChart(JRChart chart) throws IOException
 	{
-		writer.startElement(JRXmlConstants.ELEMENT_pieChart);
+		writer.startElement(JRXmlConstants.ELEMENT_pieChart, getNamespace());
 		writeChart(chart);
 		writePieDataset((JRPieDataset) chart.getDataset());
 
@@ -1462,7 +1466,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 	 */
 	public void writePie3DChart(JRChart chart) throws IOException
 	{
-		writer.startElement(JRXmlConstants.ELEMENT_pie3DChart);
+		writer.startElement(JRXmlConstants.ELEMENT_pie3DChart, getNamespace());
 		writeChart(chart);
 		writePieDataset((JRPieDataset) chart.getDataset());
 
@@ -1500,7 +1504,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 			axisTickLabelFont == null && axisTickLabelColor == null && axisLineColor == null)
 			return;
 
-		writer.startElement(axisFormatElementName);
+		writer.startElement(axisFormatElementName, getNamespace());
 		writer.startElement(JRXmlConstants.ELEMENT_axisFormat);
 		writer.addAttribute(JRXmlConstants.ATTRIBUTE_labelColor, axisLabelColor);
 		writer.addAttribute(JRXmlConstants.ATTRIBUTE_tickLabelColor, axisTickLabelColor);
@@ -1622,7 +1626,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 	 */
 	public void writeBar3DPlot(JRBar3DPlot plot) throws IOException
 	{
-		writer.startElement(JRXmlConstants.ELEMENT_bar3DPlot);
+		writer.startElement(JRXmlConstants.ELEMENT_bar3DPlot, getNamespace());
 		writer.addAttribute(JRXmlConstants.ATTRIBUTE_isShowLabels, plot.isShowLabels(), false);
 		writer.addAttribute(JRXmlConstants.ATTRIBUTE_xOffset, plot.getXOffset(), BarRenderer3D.DEFAULT_X_OFFSET);
 		writer.addAttribute(JRXmlConstants.ATTRIBUTE_yOffset, plot.getYOffset(), BarRenderer3D.DEFAULT_Y_OFFSET);
@@ -1648,7 +1652,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 	 */
 	public void writeBarChart(JRChart chart) throws IOException
 	{
-		writer.startElement(JRXmlConstants.ELEMENT_barChart);
+		writer.startElement(JRXmlConstants.ELEMENT_barChart, getNamespace());
 
 		writeChart(chart);
 		writeCategoryDataSet((JRCategoryDataset) chart.getDataset());
@@ -1663,7 +1667,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 	 */
 	public void writeBar3DChart(JRChart chart) throws IOException
 	{
-		writer.startElement(JRXmlConstants.ELEMENT_bar3DChart);
+		writer.startElement(JRXmlConstants.ELEMENT_bar3DChart, getNamespace());
 
 		writeChart(chart);
 		writeCategoryDataSet((JRCategoryDataset) chart.getDataset());
@@ -1678,7 +1682,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 	 */
 	public void writeBubbleChart(JRChart chart) throws IOException
 	{
-		writer.startElement(JRXmlConstants.ELEMENT_bubbleChart);
+		writer.startElement(JRXmlConstants.ELEMENT_bubbleChart, getNamespace());
 		writeChart(chart);
 		writeXyzDataset((JRXyzDataset) chart.getDataset());
 		writeBubblePlot((JRBubblePlot) chart.getPlot());
@@ -1691,7 +1695,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 	 */
 	public void writeStackedBarChart(JRChart chart) throws IOException
 	{
-		writer.startElement(JRXmlConstants.ELEMENT_stackedBarChart);
+		writer.startElement(JRXmlConstants.ELEMENT_stackedBarChart, getNamespace());
 
 		writeChart(chart);
 		writeCategoryDataSet((JRCategoryDataset) chart.getDataset());
@@ -1706,7 +1710,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 	 */
 	public void writeStackedBar3DChart(JRChart chart) throws IOException
 	{
-		writer.startElement(JRXmlConstants.ELEMENT_stackedBar3DChart);
+		writer.startElement(JRXmlConstants.ELEMENT_stackedBar3DChart, getNamespace());
 
 		writeChart(chart);
 		writeCategoryDataSet((JRCategoryDataset) chart.getDataset());
@@ -1720,7 +1724,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 	 */
 	public void writeLineChart(JRChart chart) throws IOException
 	{
-		writer.startElement(JRXmlConstants.ELEMENT_lineChart);
+		writer.startElement(JRXmlConstants.ELEMENT_lineChart, getNamespace());
 
 		writeChart(chart);
 		writeCategoryDataSet((JRCategoryDataset) chart.getDataset());
@@ -1731,7 +1735,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 
 	public void writeTimeSeriesChart(JRChart chart) throws IOException
 	{
-		writer.startElement(JRXmlConstants.ELEMENT_timeSeriesChart);
+		writer.startElement(JRXmlConstants.ELEMENT_timeSeriesChart, getNamespace());
 		writeChart(chart);
 		writeTimeSeriesDataset((JRTimeSeriesDataset)chart.getDataset());
 		writeTimeSeriesPlot((JRTimeSeriesPlot)chart.getPlot());
@@ -1740,7 +1744,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 
 	public void writeHighLowDataset(JRHighLowDataset dataset) throws IOException
 	{
-		writer.startElement(JRXmlConstants.ELEMENT_highLowDataset);
+		writer.startElement(JRXmlConstants.ELEMENT_highLowDataset, getNamespace());
 
 		writeElementDataset(dataset);
 
@@ -1759,7 +1763,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 
 	public void writeHighLowChart(JRChart chart) throws IOException
 	{
-		writer.startElement(JRXmlConstants.ELEMENT_highLowChart);
+		writer.startElement(JRXmlConstants.ELEMENT_highLowChart, getNamespace());
 
 		writeChart(chart);
 		writeHighLowDataset((JRHighLowDataset) chart.getDataset());
@@ -1788,7 +1792,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 
 	public void writeCandlestickChart(JRChart chart) throws IOException
 	{
-		writer.startElement(JRXmlConstants.ELEMENT_candlestickChart);
+		writer.startElement(JRXmlConstants.ELEMENT_candlestickChart, getNamespace());
 
 		writeChart(chart);
 		writeHighLowDataset((JRHighLowDataset) chart.getDataset());
@@ -1840,7 +1844,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 	 */
 	public void writeAreaChart(JRChart chart) throws IOException
 	{
-		writer.startElement(JRXmlConstants.ELEMENT_areaChart);
+		writer.startElement(JRXmlConstants.ELEMENT_areaChart, getNamespace());
 
 		writeChart(chart);
 		writeCategoryDataSet((JRCategoryDataset) chart.getDataset());
@@ -1879,7 +1883,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 	 */
 	public void writeScatterChart(JRChart chart) throws IOException
 	{
-		writer.startElement(JRXmlConstants.ELEMENT_scatterChart);
+		writer.startElement(JRXmlConstants.ELEMENT_scatterChart, getNamespace());
 
 		writeChart(chart);
 		writeXyDataset((JRXyDataset) chart.getDataset());
@@ -1894,7 +1898,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 	 */
 	public void writeXyAreaChart(JRChart chart) throws IOException
 	{
-		writer.startElement(JRXmlConstants.ELEMENT_xyAreaChart);
+		writer.startElement(JRXmlConstants.ELEMENT_xyAreaChart, getNamespace());
 
 		writeChart(chart);
 		writeXyDataset((JRXyDataset) chart.getDataset());
@@ -1909,7 +1913,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 	 */
 	public void writeXyBarChart(JRChart chart) throws IOException
 	{
-		writer.startElement(JRXmlConstants.ELEMENT_xyBarChart);
+		writer.startElement(JRXmlConstants.ELEMENT_xyBarChart, getNamespace());
 
 		writeChart(chart);
 		JRChartDataset dataset = chart.getDataset();
@@ -1935,7 +1939,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 	 */
 	public void writeXyLineChart(JRChart chart) throws IOException
 	{
-		writer.startElement(JRXmlConstants.ELEMENT_xyLineChart);
+		writer.startElement(JRXmlConstants.ELEMENT_xyLineChart, getNamespace());
 
 		writeChart(chart);
 		writeXyDataset((JRXyDataset) chart.getDataset());
@@ -1952,7 +1956,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 	 */
 	public void writeMeterChart(JRChart chart) throws IOException
 	{
-		writer.startElement(JRXmlConstants.ELEMENT_meterChart);
+		writer.startElement(JRXmlConstants.ELEMENT_meterChart, getNamespace());
 
 		writeChart(chart);
 		writeValueDataset((JRValueDataset) chart.getDataset());
@@ -1997,7 +2001,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 	 */
 	public void writeThermometerChart(JRChart chart) throws IOException
 	{
-		writer.startElement(JRXmlConstants.ELEMENT_thermometerChart);
+		writer.startElement(JRXmlConstants.ELEMENT_thermometerChart, getNamespace());
 
 		writeChart(chart);
 		writeValueDataset((JRValueDataset) chart.getDataset());
@@ -2005,7 +2009,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 		// write plot
 		JRThermometerPlot plot = (JRThermometerPlot) chart.getPlot();
 
-		writer.startElement(JRThermometerPlotFactory.ELEMENT_thermometerPlot);
+		writer.startElement(JRThermometerPlotFactory.ELEMENT_thermometerPlot, getNamespace());
 
 		writer.addAttribute(JRThermometerPlotFactory.ATTRIBUTE_valueLocation,
 							plot.getValueLocation(),
@@ -2054,7 +2058,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 	 */
 	public void writeMultiAxisChart(JRChart chart) throws IOException
 	{
-		writer.startElement(JRXmlConstants.ELEMENT_multiAxisChart);
+		writer.startElement(JRXmlConstants.ELEMENT_multiAxisChart, getNamespace());
 
 		writeChart(chart);
 
@@ -2085,7 +2089,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 	 */
 	public void writeStackedAreaChart(JRChart chart) throws IOException
 	{
-		writer.startElement(JRXmlConstants.ELEMENT_stackedAreaChart);
+		writer.startElement(JRXmlConstants.ELEMENT_stackedAreaChart, getNamespace());
 
 		writeChart(chart);
 		writeCategoryDataSet((JRCategoryDataset) chart.getDataset());
@@ -2177,7 +2181,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 
 	public void writeCrosstab(JRCrosstab crosstab) throws IOException
 	{
-		writer.startElement(JRCrosstabFactory.ELEMENT_crosstab);
+		writer.startElement(JRCrosstabFactory.ELEMENT_crosstab, getNamespace());
 		writer.addAttribute(JRCrosstabFactory.ATTRIBUTE_isRepeatColumnHeaders, crosstab.isRepeatColumnHeaders(), true);
 		writer.addAttribute(JRCrosstabFactory.ATTRIBUTE_isRepeatRowHeaders, crosstab.isRepeatRowHeaders(), true);
 		writer.addAttribute(JRCrosstabFactory.ATTRIBUTE_columnBreakOffset, crosstab.getColumnBreakOffset(), JRCrosstab.DEFAULT_COLUMN_BREAK_OFFSET);
@@ -2409,7 +2413,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 
 	public void writeDataset(JRDataset dataset) throws IOException
 	{
-		writer.startElement(JRXmlConstants.ELEMENT_subDataset);
+		writer.startElement(JRXmlConstants.ELEMENT_subDataset, getNamespace());
 		writer.addEncodedAttribute(JRXmlConstants.ATTRIBUTE_name, dataset.getName());
 		writer.addAttribute(JRXmlConstants.ATTRIBUTE_scriptletClass, dataset.getScriptletClass());
 		writer.addEncodedAttribute(JRXmlConstants.ATTRIBUTE_resourceBundle, dataset.getResourceBundle());
@@ -2516,7 +2520,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 
 	public void writeFrame(JRFrame frame) throws IOException
 	{
-		writer.startElement(JRXmlConstants.ELEMENT_frame);
+		writer.startElement(JRXmlConstants.ELEMENT_frame, getNamespace());
 
 		writeReportElement(frame);
 		writeBox(frame.getLineBox());
@@ -2599,7 +2603,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 
 	public void writeComponentElement(JRComponentElement componentElement) throws IOException
 	{
-		writer.startElement(JRXmlConstants.ELEMENT_componentElement);
+		writer.startElement(JRXmlConstants.ELEMENT_componentElement, getNamespace());
 		writeReportElement(componentElement);
 		
 		ComponentKey componentKey = componentElement.getComponentKey();
@@ -2609,5 +2613,10 @@ public class JRXmlWriter extends JRXmlBaseWriter
 		componentXmlWriter.writeToXml(componentKey, component, this);
 		
 		writer.closeElement();
+	}
+	
+	protected XmlNamespace getNamespace()
+	{
+		return JASPERREPORTS_NAMESPACE;
 	}
 }
