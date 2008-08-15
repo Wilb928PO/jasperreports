@@ -281,7 +281,7 @@ public class JRXmlWriteHelper
 			buffer.append("><![CDATA[");
 			buffer.append(data);
 			buffer.append("]]></");
-			buffer.append(name);
+			buffer.append(qName);
 			buffer.append(">\n");
 			flushBuffer();
 		}
@@ -313,7 +313,7 @@ public class JRXmlWriteHelper
 			buffer.append("><![CDATA[");
 			buffer.append(data);
 			buffer.append("]]></");
-			buffer.append(name);
+			buffer.append(qName);
 			buffer.append(">\n");
 			flushBuffer();
 		}
