@@ -2604,7 +2604,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 		
 		ComponentKey componentKey = componentElement.getComponentKey();
 		Component component = componentElement.getComponent();
-		ComponentXmlWriter componentXmlWriter = ComponentsEnvironment.getInstace()
+		ComponentXmlWriter componentXmlWriter = ComponentsEnvironment.getComponentsRegistry()
 			.getComponentManager(componentKey).getComponentXmlWriter();
 		componentXmlWriter.writeToXml(componentKey, component, this);
 		

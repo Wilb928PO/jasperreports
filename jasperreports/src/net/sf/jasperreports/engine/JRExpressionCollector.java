@@ -73,9 +73,9 @@ import net.sf.jasperreports.crosstabs.JRCrosstabMeasure;
 import net.sf.jasperreports.crosstabs.JRCrosstabParameter;
 import net.sf.jasperreports.crosstabs.JRCrosstabRowGroup;
 import net.sf.jasperreports.crosstabs.design.JRDesignCrosstab;
-import net.sf.jasperreports.engine.component.ComponentsEnvironment;
 import net.sf.jasperreports.engine.component.ComponentKey;
 import net.sf.jasperreports.engine.component.ComponentManager;
+import net.sf.jasperreports.engine.component.ComponentsEnvironment;
 
 
 /**
@@ -1190,7 +1190,7 @@ public class JRExpressionCollector
 		collectElement(componentElement);
 		
 		ComponentKey componentKey = componentElement.getComponentKey();
-		ComponentManager manager = ComponentsEnvironment.getInstace().getComponentManager(componentKey);
+		ComponentManager manager = ComponentsEnvironment.getComponentsRegistry().getComponentManager(componentKey);
 		Component component = componentElement.getComponent();
 		manager.getComponentCompiler().collectExpressions(component, this);
 	}

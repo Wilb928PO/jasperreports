@@ -36,9 +36,9 @@ import net.sf.jasperreports.engine.JROrigin;
 import net.sf.jasperreports.engine.JRPrintElement;
 import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.JRVisitor;
-import net.sf.jasperreports.engine.component.ComponentsEnvironment;
 import net.sf.jasperreports.engine.component.ComponentKey;
 import net.sf.jasperreports.engine.component.ComponentManager;
+import net.sf.jasperreports.engine.component.ComponentsEnvironment;
 import net.sf.jasperreports.engine.component.FillComponent;
 import net.sf.jasperreports.engine.component.FillContext;
 import net.sf.jasperreports.engine.component.FillPrepareResult;
@@ -60,7 +60,7 @@ public class JRFillComponentElement extends JRFillElement implements JRComponent
 		super(filler, element, factory);
 		
 		ComponentKey componentKey = element.getComponentKey();
-		ComponentManager manager = ComponentsEnvironment.getInstace().getComponentManager(componentKey);
+		ComponentManager manager = ComponentsEnvironment.getComponentsRegistry().getComponentManager(componentKey);
 		fillComponent = manager.getComponentFillFactory().toFillComponent(element.getComponent(), factory);
 		fillComponent.initialize(this);
 	}
@@ -71,7 +71,7 @@ public class JRFillComponentElement extends JRFillElement implements JRComponent
 		super(element, factory);
 		
 		ComponentKey componentKey = element.getComponentKey();
-		ComponentManager manager = ComponentsEnvironment.getInstace().getComponentManager(componentKey);
+		ComponentManager manager = ComponentsEnvironment.getComponentsRegistry().getComponentManager(componentKey);
 		fillComponent = manager.getComponentFillFactory().cloneFillComponent(element.fillComponent, factory);
 		fillComponent.initialize(this);
 	}

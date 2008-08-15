@@ -2726,7 +2726,7 @@ public class JRVerifier
 		
 		if (componentKey != null && component != null)
 		{
-			ComponentCompiler compiler = ComponentsEnvironment.getInstace()
+			ComponentCompiler compiler = ComponentsEnvironment.getComponentsRegistry()
 				.getComponentManager(componentKey).getComponentCompiler();
 			compiler.verify(component, this);
 		}

@@ -32,9 +32,9 @@ import net.sf.jasperreports.engine.JRComponentElement;
 import net.sf.jasperreports.engine.JRConstants;
 import net.sf.jasperreports.engine.JRExpressionCollector;
 import net.sf.jasperreports.engine.JRVisitor;
-import net.sf.jasperreports.engine.component.ComponentsEnvironment;
 import net.sf.jasperreports.engine.component.ComponentKey;
 import net.sf.jasperreports.engine.component.ComponentManager;
+import net.sf.jasperreports.engine.component.ComponentsEnvironment;
 
 /**
  * TODO component
@@ -57,7 +57,7 @@ public class JRBaseComponentElement extends JRBaseElement implements
 		
 		componentKey = element.getComponentKey();
 		
-		ComponentManager manager = ComponentsEnvironment.getInstace().getComponentManager(componentKey);
+		ComponentManager manager = ComponentsEnvironment.getComponentsRegistry().getComponentManager(componentKey);
 		component = manager.getComponentCompiler().toCompiledComponent(
 				element.getComponent(), factory);
 	}
@@ -74,7 +74,7 @@ public class JRBaseComponentElement extends JRBaseElement implements
 
 	public void collectExpressions(JRExpressionCollector collector)
 	{
-		ComponentManager manager = ComponentsEnvironment.getInstace().getComponentManager(componentKey);
+		ComponentManager manager = ComponentsEnvironment.getComponentsRegistry().getComponentManager(componentKey);
 		manager.getComponentCompiler().collectExpressions(component, collector);
 	}
 
