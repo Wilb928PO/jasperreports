@@ -35,8 +35,11 @@ import net.sf.jasperreports.engine.base.JRBasePen;
 
 
 /**
+ * Ellipse information shared by multiple print ellipse objects.
+ * 
  * @author Teodor Danciu (teodord@users.sourceforge.net)
  * @version $Id$
+ * @see JRTemplatePrintEllipse
  */
 public class JRTemplateEllipse extends JRTemplateGraphicElement
 {

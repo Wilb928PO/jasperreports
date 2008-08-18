@@ -56,8 +56,11 @@ import net.sf.jasperreports.engine.util.LineBoxWrapper;
 
 
 /**
+ * Text element information shared by multiple print text objects.
+ * 
  * @author Teodor Danciu (teodord@users.sourceforge.net)
  * @version $Id$
+ * @see JRTemplatePrintText
  */
 public class JRTemplateText extends JRTemplateElement implements JRAlignment, JRBox, JRFont, JRCommonText
 {

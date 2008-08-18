@@ -54,8 +54,11 @@ import net.sf.jasperreports.engine.util.LineBoxWrapper;
 
 
 /**
+ * Image information shared by multiple print image objects.
+ * 
  * @author Teodor Danciu (teodord@users.sourceforge.net)
  * @version $Id$
+ * @see JRTemplatePrintImage
  */
 public class JRTemplateImage extends JRTemplateGraphicElement implements JRAlignment, JRBox, JRCommonImage
 {

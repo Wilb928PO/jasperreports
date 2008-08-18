@@ -43,6 +43,9 @@ import net.sf.jasperreports.engine.util.JRStyleResolver;
 
 
 /**
+ * Base class consisting of graphic print element information shared by multiple
+ * print element instances.
+ * 
  * @author Teodor Danciu (teodord@users.sourceforge.net)
  * @version $Id$
  */

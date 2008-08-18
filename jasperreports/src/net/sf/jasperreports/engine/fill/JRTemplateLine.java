@@ -35,8 +35,11 @@ import net.sf.jasperreports.engine.base.JRBasePen;
 
 
 /**
+ * Line element information shared by multiple print line objects.
+ * 
  * @author Teodor Danciu (teodord@users.sourceforge.net)
  * @version $Id$
+ * @see JRTemplatePrintLine
  */
 public class JRTemplateLine extends JRTemplateGraphicElement
 {
