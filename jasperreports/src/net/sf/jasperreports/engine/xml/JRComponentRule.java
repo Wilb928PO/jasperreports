@@ -27,8 +27,8 @@
  */
 package net.sf.jasperreports.engine.xml;
 
-import net.sf.jasperreports.engine.Component;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.component.Component;
 import net.sf.jasperreports.engine.component.ComponentKey;
 import net.sf.jasperreports.engine.design.JRDesignComponentElement;
 

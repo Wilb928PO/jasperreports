@@ -27,7 +27,6 @@
  */
 package net.sf.jasperreports.engine.component;
 
-import net.sf.jasperreports.engine.Component;
 import net.sf.jasperreports.engine.fill.JRFillCloneFactory;
 import net.sf.jasperreports.engine.fill.JRFillObjectFactory;
 

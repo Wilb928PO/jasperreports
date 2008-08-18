@@ -27,6 +27,7 @@
  */
 package net.sf.jasperreports.engine;
 
+import net.sf.jasperreports.engine.component.Component;
 import net.sf.jasperreports.engine.component.ComponentKey;
 
 /**

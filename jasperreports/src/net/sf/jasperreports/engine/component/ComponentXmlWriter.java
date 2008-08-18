@@ -29,7 +29,6 @@ package net.sf.jasperreports.engine.component;
 
 import java.io.IOException;
 
-import net.sf.jasperreports.engine.Component;
 import net.sf.jasperreports.engine.xml.JRXmlWriter;
 
 /**
