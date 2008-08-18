@@ -106,9 +106,12 @@ public abstract class JRTemplateElement implements JRCommonElement, Serializable
 
 
 	/**
-	 *
+	 * Copies basic element attributes: the element style, key,
+	 * mode, forecolor and backcolor.
+	 * 
+	 * @param element the element to copy attributes from
 	 */
-	protected void setElement(JRElement element)
+	public void setElement(JRElement element)
 	{
 		parentStyle = element.getStyle();
 		
@@ -282,5 +285,15 @@ public abstract class JRTemplateElement implements JRCommonElement, Serializable
 	public JRPropertiesHolder getParentProperties()
 	{
 		return null;
+	}
+
+	/**
+	 * Sets the template element style.
+	 * 
+	 * @param style the style
+	 */
+	public void setStyle(JRStyle style)
+	{
+		this.parentStyle = style;
 	}
 }

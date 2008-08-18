@@ -31,6 +31,7 @@ import net.sf.jasperreports.engine.JRConstants;
 import net.sf.jasperreports.engine.JRDefaultStyleProvider;
 import net.sf.jasperreports.engine.JRLine;
 import net.sf.jasperreports.engine.JROrigin;
+import net.sf.jasperreports.engine.base.JRBasePen;
 
 
 /**
@@ -62,6 +63,21 @@ public class JRTemplateLine extends JRTemplateGraphicElement
 		setLine(line);
 	}
 
+	
+	/**
+	 * Creates a template line.
+	 * 
+	 * @param origin the origin of the elements that will use this template
+	 * @param defaultStyleProvider the default style provider to use for
+	 * this template
+	 */
+	public JRTemplateLine(JROrigin origin, JRDefaultStyleProvider defaultStyleProvider)
+	{
+		super(origin, defaultStyleProvider);
+		
+		this.linePen = new JRBasePen(this);
+	}
+
 
 	/**
 	 *
@@ -84,7 +100,7 @@ public class JRTemplateLine extends JRTemplateGraphicElement
 	/**
 	 *
 	 */
-	protected void setDirection(byte direction)
+	public void setDirection(byte direction)
 	{
 		this.direction = direction;
 	}

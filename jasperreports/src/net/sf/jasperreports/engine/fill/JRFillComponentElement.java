@@ -190,7 +190,7 @@ public class JRFillComponentElement extends JRFillElement implements JRComponent
 
 	public JRComponentElement getComponentElement()
 	{
-		return (JRComponentElement) parent;
+		return this;
 	}
 
 	public JROrigin getElementOrigin()

@@ -106,11 +106,16 @@ public class JRTemplateImage extends JRTemplateGraphicElement implements JRAlign
 		setChart(chart);
 	}
 
-	public JRTemplateImage(JROrigin origin, JRDefaultStyleProvider defaultStyleProvider, JRElement element)
+	/**
+	 * Creates a template image.
+	 * 
+	 * @param origin the origin of the elements that will use this template
+	 * @param defaultStyleProvider the default style provider to use for
+	 * this template
+	 */
+	public JRTemplateImage(JROrigin origin, JRDefaultStyleProvider defaultStyleProvider)
 	{
 		super(origin, defaultStyleProvider);
-		
-		setElement(element);
 		
 		this.lineBox = new JRBaseLineBox(this);
 		this.linePen = new JRBasePen(this);

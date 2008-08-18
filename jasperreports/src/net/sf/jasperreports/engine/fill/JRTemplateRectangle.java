@@ -77,6 +77,21 @@ public class JRTemplateRectangle extends JRTemplateGraphicElement implements JRC
 		
 		setSubreport(subreport);
 	}
+	
+	
+	/**
+	 * Creates a template rectangle.
+	 * 
+	 * @param origin the origin of the elements that will use this template
+	 * @param defaultStyleProvider the default style provider to use for
+	 * this template
+	 */
+	public JRTemplateRectangle(JROrigin origin, JRDefaultStyleProvider defaultStyleProvider)
+	{
+		super(origin, defaultStyleProvider);
+
+		this.linePen = new JRBasePen(this);
+	}
 
 
 	/**
@@ -126,7 +141,7 @@ public class JRTemplateRectangle extends JRTemplateGraphicElement implements JRC
 	/**
 	 *
 	 */
-	protected void setRadius(int radius)
+	public void setRadius(int radius)
 	{
 		this.radius = new Integer(radius);
 	}
@@ -134,7 +149,7 @@ public class JRTemplateRectangle extends JRTemplateGraphicElement implements JRC
 	/**
 	 *
 	 */
-	protected void setRadius(Integer radius)
+	public void setRadius(Integer radius)
 	{
 		this.radius = radius;
 	}

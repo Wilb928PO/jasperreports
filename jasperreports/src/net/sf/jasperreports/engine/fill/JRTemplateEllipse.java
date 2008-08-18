@@ -31,6 +31,7 @@ import net.sf.jasperreports.engine.JRConstants;
 import net.sf.jasperreports.engine.JRDefaultStyleProvider;
 import net.sf.jasperreports.engine.JREllipse;
 import net.sf.jasperreports.engine.JROrigin;
+import net.sf.jasperreports.engine.base.JRBasePen;
 
 
 /**
@@ -55,6 +56,20 @@ public class JRTemplateEllipse extends JRTemplateGraphicElement
 		super(origin, defaultStyleProvider);
 
 		setEllipse(ellipse);
+	}
+
+	/**
+	 * Creates an ellipse template.
+	 * 
+	 * @param origin the origin of the elements that will use this template
+	 * @param defaultStyleProvider the default style provider to use for
+	 * this template
+	 */
+	public JRTemplateEllipse(JROrigin origin, JRDefaultStyleProvider defaultStyleProvider)
+	{
+		super(origin, defaultStyleProvider);
+
+		this.linePen = new JRBasePen(this);
 	}
 
 
