@@ -356,10 +356,10 @@ public class JRPropertiesMap implements Serializable, Cloneable
 	}
 	
 	/**
-	 * TODO component
+	 * Loads a properties file from a location.
 	 * 
-	 * @param location
-	 * @return
+	 * @param location the properties file URL
+	 * @return the properties file loaded as a in-memory properties map
 	 */
 	public static JRPropertiesMap loadProperties(URL location)
 	{

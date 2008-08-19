@@ -581,10 +581,13 @@ public class JRLoader
 	}
 
 	/**
-	 * TODO component
+	 * Scans the context classloader for all resources that have a specified
+	 * name, and returns a list of {@link URL}s for the found resources.
 	 * 
-	 * @param resource
-	 * @return
+	 * @param resource the resource names
+	 * @return a list of {@link URL}s of resources with the specified name;
+	 * the list is empty if no resources have been found for the name
+	 * @see ClassLoader#getResources(String)
 	 */
 	public static List getResources(String resource)
 	{
@@ -615,10 +618,12 @@ public class JRLoader
 	}
 
 	/**
-	 * TODO component
+	 * Returns the resource URL for a specified resource name.
 	 * 
-	 * @param resource
-	 * @return
+	 * @param resource the resource name
+	 * @return the URL of the resource having the specified name, or
+	 * <code>null</code> if none found
+	 * @see ClassLoader#getResource(String)
 	 */
 	public static URL getResource(String resource)
 	{

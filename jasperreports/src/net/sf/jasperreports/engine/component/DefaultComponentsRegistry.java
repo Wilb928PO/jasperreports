@@ -46,7 +46,28 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * TODO component
+ * The default {@link ComponentsRegistry component registry} implementation.
+ *
+ * <p>
+ * The implementation builds a component registry by scanning the context
+ * classloader for resources named <code>jasperreports_component.properties</code>.
+ * 
+ * <p>
+ * Each such resource is loaded as a properties file, and properties that start
+ * with <code>net.sf.jasperreports.component.factory.</code> are identified.
+ * 
+ * <p>
+ * Each such property should have as value the name of a 
+ * {@link ComponentsBundleFactory} implementation.  The bundle factory class is
+ * instantiated, and {@link ComponentsBundleFactory#createComponentsBundle(String, JRPropertiesMap)}
+ * is called on it, using the propery suffix as bundle ID and passing the
+ * properties map.  The bundle factory can collect properties that apply to the
+ * specific bundle by using a property prefix obtain by appending the bundle ID
+ * to "<code>net.sf.jasperreports.component.</code>".
+ * 
+ * <p>
+ * If instantiating a components bundle results in an exception, the bundle
+ * is skipped and an error message is logged.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id: JRCrosstab.java 1741 2007-06-08 10:53:33Z lucianc $
@@ -56,11 +77,21 @@ public class DefaultComponentsRegistry implements ComponentsRegistry
 
 	private static final Log log = LogFactory.getLog(DefaultComponentsRegistry.class);
 	
+	/**
+	 * The name of propery file resources that are used to load components bundles.
+	 */
 	public final static String COMPONENT_RESOURCE_NAME = "jasperreports_component.properties";
 	
+	/**
+	 * The property prefix of components bundle factories.
+	 */
 	public final static String PROPERTY_COMPONENT_FACTORY_PREFIX = 
 			JRProperties.PROPERTY_PREFIX + "component.factory.";
 	
+	/**
+	 * A prefix that can be used to provide bundle-specific properties,
+	 * by appending the bundle ID and a fixed property prefix to it. 
+	 */
 	public static final String PROPERTY_COMPONENT_PREFIX = 
 			JRProperties.PROPERTY_PREFIX + "component.";
 	
@@ -68,10 +99,7 @@ public class DefaultComponentsRegistry implements ComponentsRegistry
 	
 	private final ReferenceMap cache = new ReferenceMap(ReferenceMap.WEAK, ReferenceMap.HARD);
 	
-	/* (non-Javadoc)
-	 * @see net.sf.jasperreports.engine.component.ComponentsEnvironment#getComponentsMeta()
-	 */
-	public Collection getComponentsMeta()
+	public Collection getComponentBundles()
 	{
 		Map components = getCachedComponents();
 		return components.values();
@@ -177,9 +205,6 @@ public class DefaultComponentsRegistry implements ComponentsRegistry
 		return componentsBundle;
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.jasperreports.engine.component.ComponentsEnvironment#getComponentsBundle(java.lang.String)
-	 */
 	public ComponentsBundle getComponentsBundle(String namespace)
 	{
 		Map components = getCachedComponents();
@@ -191,9 +216,6 @@ public class DefaultComponentsRegistry implements ComponentsRegistry
 		return componentsBundle;
 	}
 	
-	/* (non-Javadoc)
-	 * @see net.sf.jasperreports.engine.component.ComponentsEnvironment#getComponentManager(net.sf.jasperreports.engine.component.ComponentKey)
-	 */
 	public ComponentManager getComponentManager(ComponentKey componentKey)
 	{
 		String namespace = componentKey.getNamespace();

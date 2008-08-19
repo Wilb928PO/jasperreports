@@ -157,6 +157,8 @@ import org.jfree.data.time.Day;
 
 
 /**
+ * A writer that produces the JRXML representation of an in-memory report.
+ * 
  * @author Teodor Danciu (teodord@users.sourceforge.net)
  * @author Minor enhancements by Barry Klawans (bklawans@users.sourceforge.net)
  * @version $Id$
@@ -1077,13 +1079,32 @@ public class JRXmlWriter extends JRXmlBaseWriter
 		writer.closeElement();
 	}
 
+	/**
+	 * Writes the JRXML representation of an {@link JRElementDataset element dataset}.
+	 * 
+	 * <p>
+	 * The method produces a <code>&lt;dataset&gt;</code> XML element.
+	 * 
+	 * @param dataset the element dataset
+	 * @throws IOException any I/O exception that occurred while writing the
+	 * XML output
+	 */
 	public void writeElementDataset(JRElementDataset dataset) throws IOException
 	{
 		writeElementDataset(dataset, true);
 	}
 
 	/**
-	 *
+	 * Writes the JRXML representation of an {@link JRElementDataset element dataset}.
+	 * 
+	 * <p>
+	 * The method produces a <code>&lt;dataset&gt;</code> XML element.
+	 * 
+	 * @param dataset the element dataset
+	 * @param skipIfEmpty if set, no output will be produced if the element dataset
+	 * only has default attribute values
+	 * @throws IOException any I/O exception that occurred while writing the
+	 * XML output
 	 */
 	public void writeElementDataset(JRElementDataset dataset, boolean skipIfEmpty) throws IOException
 	{
@@ -2591,11 +2612,23 @@ public class JRXmlWriter extends JRXmlBaseWriter
 		return true;
 	}
 
+	/**
+	 * Returns the XML write helper used by this report writer.
+	 * 
+	 * The helper can be used to output XML elements and attributes.
+	 * 
+	 * @return the XML write helper used by this report writer
+	 */
 	public JRXmlWriteHelper getXmlWriteHelper()
 	{
 		return writer;
 	}
 
+	/**
+	 * Returns the underlying stream to which this writer outputs to.
+	 * 
+	 * @return the underlying stream used by this writer
+	 */
 	public Writer getUnderlyingWriter()
 	{
 		return writer.getUnderlyingWriter();

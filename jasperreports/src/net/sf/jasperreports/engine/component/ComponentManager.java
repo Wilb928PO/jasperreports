@@ -28,18 +28,36 @@
 package net.sf.jasperreports.engine.component;
 
 /**
- * TODO component
+ * A component manager is the entry point thtough which the handlers for a
+ * single component type can be accessed.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id: JRCrosstab.java 1741 2007-06-08 10:53:33Z lucianc $
+ * @see ComponentsRegistry#getComponentManager(ComponentKey)
+ * @see ComponentsBundle#getComponentManager(String)
  */
 public interface ComponentManager
 {
 
+	/**
+	 * Returns the component compiler.
+	 * 
+	 * @return the component compiler
+	 */
 	ComponentCompiler getComponentCompiler();
 
+	/**
+	 * Returns the component XML writer.
+	 * 
+	 * @return the component XML writer
+	 */
 	ComponentXmlWriter getComponentXmlWriter();
 	
+	/**
+	 * Returns the factory of fill component instances.
+	 * 
+	 * @return the factory of fill component instances
+	 */
 	ComponentFillFactory getComponentFillFactory();
 	
 }

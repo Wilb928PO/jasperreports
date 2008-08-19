@@ -43,14 +43,14 @@ import net.sf.jasperreports.engine.JRStyle;
  */
 public interface FillContext
 {
+	
+	JRComponentElement getComponentElement();
 
 	Object evaluate(JRExpression expression, byte evaluation) throws JRException;
 	
-	JRComponentElement getComponentElement();
+	JRDefaultStyleProvider getDefaultStyleProvider();
 	
 	JROrigin getElementOrigin();
-	
-	JRDefaultStyleProvider getDefaultStyleProvider();
 
 	int getElementPrintY();
 	

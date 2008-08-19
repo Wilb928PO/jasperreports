@@ -39,7 +39,8 @@ import net.sf.jasperreports.engine.component.ComponentsEnvironment;
 import net.sf.jasperreports.engine.design.events.JRPropertyChangeSupport;
 
 /**
- * TODO component
+ * A {@link JRComponentElement} implementation which is to be used at report
+ * design time.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id: JRCrosstab.java 1741 2007-06-08 10:53:33Z lucianc $
@@ -57,11 +58,20 @@ public class JRDesignComponentElement extends JRDesignElement implements JRCompo
 	
 	private transient JRPropertyChangeSupport eventSupport;
 
+	/**
+	 * Creates an empty component element.
+	 */
 	public JRDesignComponentElement()
 	{
 		super(null);
 	}
 
+	/**
+	 * Creates an empty component element.
+	 * 
+	 * @param defaultStyleProvider the default style provide to use for this
+	 * element
+	 */
 	public JRDesignComponentElement(JRDefaultStyleProvider defaultStyleProvider)
 	{
 		super(defaultStyleProvider);
@@ -96,6 +106,12 @@ public class JRDesignComponentElement extends JRDesignElement implements JRCompo
 		return component;
 	}
 
+	/**
+	 * Sets the component instance wrapped by this element.
+	 * 
+	 * @param component the component instance
+	 * @see #getComponent()
+	 */
 	public void setComponent(Component component)
 	{
 		Object old = this.component;
@@ -108,6 +124,12 @@ public class JRDesignComponentElement extends JRDesignElement implements JRCompo
 		return componentKey;
 	}
 
+	/**
+	 * Sets the component type key that corresponds to the component instance.
+	 * 
+	 * @param componentKey the component type key
+	 * @see #getComponentKey()
+	 */
 	public void setComponentKey(ComponentKey componentKey)
 	{
 		Object old = this.componentKey;

@@ -30,7 +30,8 @@ package net.sf.jasperreports.engine.component;
 import java.util.Set;
 
 /**
- * TODO component
+ * A component bundle is a package comprising of one or several components that
+ * share the same XML namespace and schema. 
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id: JRCrosstab.java 1741 2007-06-08 10:53:33Z lucianc $
@@ -38,10 +39,29 @@ import java.util.Set;
 public interface ComponentsBundle
 {
 
+	/**
+	 * Returns the XML parsing information for this bundle.
+	 * 
+	 * @return the bundle XML parser
+	 */
 	ComponentsXmlParser getXmlParser();
 
+	/**
+	 * Returns a set that contains the names of components included in this
+	 * bundle.
+	 * 
+	 * @return the set of component names in this bundle
+	 */
 	Set getComponentNames();
 
+	/**
+	 * Returns the manager for a component type identified by name.
+	 * 
+	 * @param componentName the component name
+	 * @return the manager for the corresponding component type
+	 * @throws JRRuntimeException if the bundle does not include a component type
+	 * having the specified name
+	 */
 	ComponentManager getComponentManager(String componentName);
 
 }

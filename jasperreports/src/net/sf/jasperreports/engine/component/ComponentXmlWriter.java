@@ -32,7 +32,12 @@ import java.io.IOException;
 import net.sf.jasperreports.engine.xml.JRXmlWriter;
 
 /**
- * TODO component
+ * A component writer is responsible for producing a XML representation of
+ * component instances.
+ * 
+ * <p>
+ * Its function is inverse to the one of {@link XmlDigesterConfigurer}, which
+ * transforms XML fragments into object instances.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
@@ -40,6 +45,17 @@ import net.sf.jasperreports.engine.xml.JRXmlWriter;
 public interface ComponentXmlWriter
 {
 
+	/**
+	 * Outputs the XML representation of a component.
+	 * 
+	 * @param componentKey the component type key
+	 * @param component the component instance
+	 * @param reportWriter the report writer to which output is to be written
+	 * @throws IOException exceptions produced while writing to the
+	 * output stream
+	 * @see ComponentKey#getNamespacePrefix()
+	 * @see JRXmlWriter#getXmlWriteHelper()
+	 */
 	void writeToXml(ComponentKey componentKey, Component component, 
 			JRXmlWriter reportWriter) throws IOException;
 

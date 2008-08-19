@@ -32,7 +32,7 @@ import net.sf.jasperreports.engine.base.JRBaseObjectFactory;
 import net.sf.jasperreports.engine.design.JRVerifier;
 
 /**
- * TODO component
+ * Responsible with handling a componet during report compile.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id: JRCrosstab.java 1741 2007-06-08 10:53:33Z lucianc $
@@ -40,10 +40,32 @@ import net.sf.jasperreports.engine.design.JRVerifier;
 public interface ComponentCompiler
 {
 
+	/**
+	 * Collects report expressions from a component.
+	 * 
+	 * @param component the component
+	 * @param collector the expression collector
+	 */
 	void collectExpressions(Component component, JRExpressionCollector collector);
 
+	/**
+	 * Logically verifies a component.
+	 * 
+	 * @param component the component
+	 * @param verifier the verifier object, which can be used to raise validation
+	 * errors
+	 */
 	void verify(Component component, JRVerifier verifier);
 
+	/**
+	 * Provides a "compiled" component instance that will be included in the
+	 * compiled report.
+	 * 
+	 * @param component the component from the design report
+	 * @param baseFactory the factory of base/compiled report elements
+	 * @return a component instance that is to be included in the compiled
+	 * report
+	 */
 	Component toCompiledComponent(Component component, JRBaseObjectFactory baseFactory);
 
 }

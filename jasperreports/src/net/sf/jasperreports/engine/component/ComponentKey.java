@@ -29,13 +29,22 @@ package net.sf.jasperreports.engine.component;
 
 import java.io.Serializable;
 
+import net.sf.jasperreports.engine.JRComponentElement;
 import net.sf.jasperreports.engine.JRConstants;
+import net.sf.jasperreports.engine.xml.JRXmlWriter;
 
 /**
- * TODO component
+ * A key identifying a component type/class.
+ *
+ * <p>
+ * A component type is identified by a namespace and a component name.
+ * An instance of this class includes in addition a namespace prefix, which
+ * is required when producing a JRXML representation of the component
+ * (via {@link JRXmlWriter}).
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id: JRCrosstab.java 1741 2007-06-08 10:53:33Z lucianc $
+ * @see JRComponentElement#getComponentKey()
  */
 public class ComponentKey implements Serializable
 {
@@ -46,6 +55,14 @@ public class ComponentKey implements Serializable
 	private final String namespacePrefix;
 	private final String name;
 	
+	
+	/**
+	 * Create a component type key.
+	 * 
+	 * @param namespace the component namespace
+	 * @param namespacePrefix the prefix to use for the namespace
+	 * @param name the component name
+	 */
 	public ComponentKey(String namespace, String namespacePrefix, String name)
 	{
 		this.namespace = namespace;
@@ -80,16 +97,40 @@ public class ComponentKey implements Serializable
 				&& name.equals(key.name);
 	}
 
+	/**
+	 * Returns the component namespace.
+	 * 
+	 * <p>
+	 * This value must match the namespece of a components bundle, as used in
+	 * {@link ComponentsRegistry#getComponentsBundle(String)}.
+	 * 
+	 * @return the component namespace
+	 */
 	public String getNamespace()
 	{
 		return namespace;
 	}
 	
+	/**
+	 * Returns the component name.
+	 * 
+	 * <p>
+	 * The value must match a component name in the components bundle, as
+	 * used in {@link ComponentsBundle#getComponentManager(String)}.
+	 * 
+	 * @return the coponent name
+	 */
 	public String getName()
 	{
 		return name;
 	}
 
+	/**
+	 * Returns the namespace prefix which is to be used when producing
+	 * an XML representation of a component of this type.
+	 * 
+	 * @return the namespace prefix
+	 */
 	public String getNamespacePrefix()
 	{
 		return namespacePrefix;

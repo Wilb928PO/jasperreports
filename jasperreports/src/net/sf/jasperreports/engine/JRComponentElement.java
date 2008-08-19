@@ -31,7 +31,7 @@ import net.sf.jasperreports.engine.component.Component;
 import net.sf.jasperreports.engine.component.ComponentKey;
 
 /**
- * TODO component
+ * A report element that wraps an abstract component.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id: JRCrosstab.java 1741 2007-06-08 10:53:33Z lucianc $
@@ -39,8 +39,22 @@ import net.sf.jasperreports.engine.component.ComponentKey;
 public interface JRComponentElement extends JRElement
 {
 
+	/**
+	 * Returns the component type key for this element.
+	 * 
+	 * <p>
+	 * The component type key needs to be set in order to locate the
+	 * component manager. 
+	 * 
+	 * @return the component type key
+	 */
 	ComponentKey getComponentKey();
 	
+	/**
+	 * Returns the component instance wrapped by this element.
+	 * 
+	 * @return the component instance
+	 */
 	Component getComponent();
 
 }

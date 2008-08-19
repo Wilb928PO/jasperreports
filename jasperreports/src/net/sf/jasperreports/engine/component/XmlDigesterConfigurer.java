@@ -30,14 +30,22 @@ package net.sf.jasperreports.engine.component;
 import org.apache.commons.digester.Digester;
 
 /**
- * TODO component
+ * A digester configurer provides digester rules that apply to component XML
+ * schemas and produce component object instances out of XML fragments.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id: JRCrosstab.java 1741 2007-06-08 10:53:33Z lucianc $
+ * @see ComponentsXmlParser#getDigesterConfigurer()
  */
 public interface XmlDigesterConfigurer
 {
 
+	/**
+	 * Configures an XML digester by adding the rules required to parse
+	 * component XML fragments.
+	 * 
+	 * @param digester the digester to configure
+	 */
 	void configureDigester(Digester digester);
 
 }

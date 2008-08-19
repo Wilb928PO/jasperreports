@@ -30,14 +30,31 @@ package net.sf.jasperreports.engine.component;
 import net.sf.jasperreports.engine.JRPropertiesMap;
 
 /**
- * TODO component
+ * A factory of {@link ComponentsBundle} instance.
+ * 
+ * <p>
+ * Such factories are used by
+ * {@link DefaultComponentsRegistry the default components registry} to
+ * instantiate components bundles. 
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id: JRCrosstab.java 1741 2007-06-08 10:53:33Z lucianc $
+ * @see DefaultComponentsRegistry#PROPERTY_COMPONENT_FACTORY_PREFIX
  */
 public interface ComponentsBundleFactory
 {
 
+	/**
+	 * Instantiates a components bundle.
+	 * 
+	 * @param bundleId the ID of the bundle to instantiate.
+	 * The bundle ID can be used to identify a set of properties to be used
+	 * when instantiating the components bundle.
+	 * @param properties the map of properties that can be used to configure
+	 * the bundle instantiation process
+	 * @return a components bundle instance
+	 * @see DefaultComponentsRegistry#PROPERTY_COMPONENT_PREFIX
+	 */
 	ComponentsBundle createComponentsBundle(String bundleId, JRPropertiesMap properties);
 	
 }

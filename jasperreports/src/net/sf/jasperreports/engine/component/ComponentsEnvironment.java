@@ -55,6 +55,7 @@ public final class ComponentsEnvironment
 	 * A property that provides the default {@link ComponentsRegistry} 
 	 * implementation class. 
 	 * 
+	 * <p>
 	 * This property is only read at initialization time, therefore changing
 	 * the property value at a later time will have no effect. 
 	 */
@@ -86,6 +87,7 @@ public final class ComponentsEnvironment
 	/**
 	 * Returns the system default components registry object.
 	 * 
+	 * <p>
 	 * This is either the one instantiated based on {@link #PROPERTY_COMPONENTS_REGISTRY_CLASS},
 	 * or the one set by {@link #setSystemComponentsRegistry(ComponentsRegistry)}.
 	 * 
@@ -145,9 +147,10 @@ public final class ComponentsEnvironment
 	/**
 	 * Returns the component registry to be used in the current context.
 	 * 
+	 * <p>
 	 * The method returns the thread component registry (as returned by 
 	 * {@link #getThreadComponentsRegistry()}) if it exists, and the system
-	 * registry (as returned by {@link #getSystemComponentsRegistry()) otherwise.
+	 * registry (as returned by {@link #getSystemComponentsRegistry()}) otherwise.
 	 * 
 	 * @return the context component registry
 	 */

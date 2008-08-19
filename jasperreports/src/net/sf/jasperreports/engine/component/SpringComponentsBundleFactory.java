@@ -40,7 +40,24 @@ import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.core.io.UrlResource;
 
 /**
- * TODO component
+ * A {@link ComponentsBundleFactory} which works by loading a Spring beans XML
+ * file and using a bean as {@link ComponentsBundle}.
+ *
+ * <p>
+ * The factory requires a property named
+ * <code>net.sf.jasperreports.component.&lt;bundle ID&gt;.spring.beans.resource</code>
+ * to be present in the properties map passed to
+ * {@link #createComponentsBundle(String, JRPropertiesMap)}.
+ * The value of this property must resolve to a resource name which is loaded
+ * from the context classloader, and parsed as a Spring beans XML file.
+ * 
+ * <p>
+ * Once the Spring beans XML file is loaded, this factory fetches a bean and
+ * returns it as the {@link ComponentsBundle} instance.
+ * The name of this bean can be specified via a property named
+ * <code>net.sf.jasperreports.component.&lt;bundle ID&gt;.spring.bundle.bean</code>
+ * (in the properties map).  If such as property is not preset, the default
+ * bean name <code>componentsBundle</code> is used.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id: JRCrosstab.java 1741 2007-06-08 10:53:33Z lucianc $
@@ -50,10 +67,22 @@ public class SpringComponentsBundleFactory implements ComponentsBundleFactory
 
 	private final static Log log = LogFactory.getLog(SpringComponentsBundleFactory.class);
 	
+	/**
+	 * The suffix of the property that gives the Spring beans XML resource name.
+	 */
 	public static final String PROPERTY_SUFFIX_SPRING_BEANS_RESOURCE = ".spring.beans.resource";
 
+	/**
+	 * The suffix of the property that gives the name of the bean to be
+	 * returned as {@link ComponentsBundle} instance.
+	 * 
+	 * @see #DEFAULT_COMPONENTS_BUNDLE_BEAN
+	 */
 	public static final String PROPERTY_SUFFIX_SPRING_BUNDLE_BEAN = ".spring.bundle.bean";
 
+	/**
+	 * The default bean name of the {@link ComponentsBundle} instance.
+	 */
 	public static final String DEFAULT_COMPONENTS_BUNDLE_BEAN = "componentsBundle";
 	
 	public ComponentsBundle createComponentsBundle(String bundleId,

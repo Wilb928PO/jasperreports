@@ -28,7 +28,7 @@
 package net.sf.jasperreports.engine.component;
 
 /**
- * TODO component
+ * A default {@link ComponentManager component manager} implementation.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id: JRCrosstab.java 1741 2007-06-08 10:53:33Z lucianc $
@@ -45,16 +45,29 @@ public class DefaultComponentManager implements ComponentManager
 		return componentFillFactory;
 	}
 
+	/**
+	 * Sets the fill component factory implementation.
+	 * 
+	 * @param fillFactory the fill component factory 
+	 * @see #getComponentFillFactory()
+	 */
 	public void setComponentFillFactory(ComponentFillFactory fillFactory)
 	{
 		this.componentFillFactory = fillFactory;
 	}
 
+	
 	public ComponentCompiler getComponentCompiler()
 	{
 		return componentCompiler;
 	}
 
+	/**
+	 * Sets the component compiler implementation.
+	 * 
+	 * @param componentCompiler the component compiler
+	 * @see #getComponentCompiler()
+	 */
 	public void setComponentCompiler(ComponentCompiler componentCompiler)
 	{
 		this.componentCompiler = componentCompiler;
@@ -65,6 +78,12 @@ public class DefaultComponentManager implements ComponentManager
 		return componentXmlWriter;
 	}
 
+	/**
+	 * Sets the component XML writer implementation.
+	 * 
+	 * @param componentXmlWriter the component XML writer
+	 * @see #getComponentXmlWriter()
+	 */
 	public void setComponentXmlWriter(ComponentXmlWriter componentXmlWriter)
 	{
 		this.componentXmlWriter = componentXmlWriter;

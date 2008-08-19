@@ -28,7 +28,8 @@
 package net.sf.jasperreports.engine.component;
 
 /**
- * TODO component
+ * A components XML parsers contains information required to parse components
+ * contained by a single component bundle.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id: JRCrosstab.java 1741 2007-06-08 10:53:33Z lucianc $
@@ -36,12 +37,48 @@ package net.sf.jasperreports.engine.component;
 public interface ComponentsXmlParser
 {
 
+	/**
+	 * Returns the namespace used by the component bundle.
+	 * 
+	 * <p>
+	 * The XML representation of the components will use this namespace.
+	 * 
+	 * @return the component bundle namespace
+	 */
 	String getNamespace();
 	
+	/**
+	 * Returns the public location of the component bundle XML schema. 
+	 * 
+	 * <p>
+	 * This would be listed in <code>schemaLocation</code> XML attributes.
+	 * 
+	 * @return the public location of the component bundle XML schema
+	 */
 	String getPublicSchemaLocation();
 
+	/**
+	 * Returns a resource name that resolves to an internal XML schema
+	 * resource.
+	 * 
+	 * <p>
+	 * If not null, the resource (which needs to be present on the classpath)
+	 * will be used when parsing component XML fragments instead of the public
+	 * XML schema.
+	 * 
+	 * @return the name of the internal XML schema resource
+	 */
 	String getInternalSchemaResource();
 
+	/**
+	 * Returns a digester configurer for the component bundle.
+	 *
+	 * <p>
+	 * The digester configurer is responsible for providing digester rules
+	 * that transform an XML fragment into a {@link Component} instance.
+	 * 
+	 * @return a digester configurer
+	 */
 	XmlDigesterConfigurer getDigesterConfigurer();
 
 }

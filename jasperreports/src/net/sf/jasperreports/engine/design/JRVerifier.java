@@ -112,6 +112,12 @@ import net.sf.jasperreports.engine.util.JRQueryExecuterUtils;
 
 
 /**
+ * A report verifier.
+ *
+ * <p>
+ * The verifier checks that a report design meets certain rules in order to pass
+ * report compilation.  
+ * 
  * @author Teodor Danciu (teodord@users.sourceforge.net)
  * @version $Id$
  */
@@ -168,6 +174,13 @@ public class JRVerifier
 		return jasperDesign;
 	}
 	
+	/**
+	 * Logs a broken rule for the report.
+	 * 
+	 * @param message the message
+	 * @param source the source object to which the rule applies; can be null
+	 * if not available
+	 */
 	public void addBrokenRule(String message, Object source)
 	{
 		JRValidationFault fault = new JRValidationFault();
@@ -176,6 +189,12 @@ public class JRVerifier
 		brokenRules.add(fault);
 	}
 
+	/**
+	 * Logs a broken report rule which was caused by an exception.
+	 * 
+	 * @param e the exception that caused the broken rule
+	 * @param source the source object if available
+	 */
 	public void addBrokenRule(Exception e, Object source)
 	{
 		JRValidationFault fault = new JRValidationFault();

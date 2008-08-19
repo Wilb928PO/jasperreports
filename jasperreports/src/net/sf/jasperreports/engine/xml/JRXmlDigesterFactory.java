@@ -462,7 +462,7 @@ public class JRXmlDigesterFactory
 		digester.addFactoryCreate("*/componentElement", JRComponentElementFactory.class.getName());
 		digester.addSetNext("*/componentElement", "addElement", JRDesignElement.class.getName());
 		
-		Collection components = ComponentsEnvironment.getComponentsRegistry().getComponentsMeta();
+		Collection components = ComponentsEnvironment.getComponentsRegistry().getComponentBundles();
 		for (Iterator it = components.iterator(); it.hasNext();)
 		{
 			ComponentsBundle componentsBundle = (ComponentsBundle) it.next();
@@ -1068,7 +1068,7 @@ public class JRXmlDigesterFactory
 	
 	protected static void setComponentsInternalEntityResources(JRXmlDigester digester)
 	{
-		Collection components = ComponentsEnvironment.getComponentsRegistry().getComponentsMeta();
+		Collection components = ComponentsEnvironment.getComponentsRegistry().getComponentBundles();
 		for (Iterator it = components.iterator(); it.hasNext();)
 		{
 			ComponentsBundle componentManager = (ComponentsBundle) it.next();

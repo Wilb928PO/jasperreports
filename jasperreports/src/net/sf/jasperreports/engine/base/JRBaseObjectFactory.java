@@ -144,6 +144,8 @@ import net.sf.jasperreports.engine.JRVariable;
 
 
 /**
+ * Factory of objects used in compiled reports.
+ * 
  * @author Teodor Danciu (teodord@users.sourceforge.net)
  * @version $Id$
  */
@@ -407,9 +409,6 @@ public class JRBaseObjectFactory extends JRAbstractObjectFactory
 	}
 
 
-	/**
-	 *
-	 */
 	public JRExpression getExpression(JRExpression expression, boolean assignNotUsedId)
 	{
 		JRBaseExpression baseExpression = null;

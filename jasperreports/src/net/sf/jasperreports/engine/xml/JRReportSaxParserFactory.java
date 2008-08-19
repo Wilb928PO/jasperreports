@@ -137,7 +137,7 @@ public class JRReportSaxParserFactory implements JRSaxParserFactory
 		schemas.add(getResourceURI(JRXmlConstants.JASPERREPORT_XSD_RESOURCE));
 		schemas.add(getResourceURI(JRXmlConstants.JASPERREPORT_XSD_DTD_COMPAT_RESOURCE));
 		
-		Collection components = ComponentsEnvironment.getComponentsRegistry().getComponentsMeta();
+		Collection components = ComponentsEnvironment.getComponentsRegistry().getComponentBundles();
 		for (Iterator it = components.iterator(); it.hasNext();)
 		{
 			ComponentsBundle componentManager = (ComponentsBundle) it.next();

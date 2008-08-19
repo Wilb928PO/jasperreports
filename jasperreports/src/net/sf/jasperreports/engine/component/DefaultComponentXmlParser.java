@@ -29,7 +29,7 @@ package net.sf.jasperreports.engine.component;
 
 
 /**
- * TODO component
+ * The default {@link ComponentsXmlParser} implementation.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id: JRCrosstab.java 1741 2007-06-08 10:53:33Z lucianc $
@@ -47,6 +47,12 @@ public class DefaultComponentXmlParser implements ComponentsXmlParser
 		return namespace;
 	}
 	
+	/**
+	 * Sets the components namespace.
+	 * 
+	 * @param namespace the components namespace
+	 * @see #getNamespace()
+	 */
 	public void setNamespace(String namespace)
 	{
 		this.namespace = namespace;
@@ -57,6 +63,12 @@ public class DefaultComponentXmlParser implements ComponentsXmlParser
 		return digesterConfigurer;
 	}
 	
+	/**
+	 * Sets the components digester configurer.
+	 * 
+	 * @param digesterConfigurer the components digester configurer
+	 * @see #getDigesterConfigurer()
+	 */
 	public void setDigesterConfigurer(XmlDigesterConfigurer digesterConfigurer)
 	{
 		this.digesterConfigurer = digesterConfigurer;
@@ -67,6 +79,12 @@ public class DefaultComponentXmlParser implements ComponentsXmlParser
 		return publicSchemaLocation;
 	}
 
+	/**
+	 * Sets the public location of the components XML schema.
+	 * 
+	 * @param publicSchemaLocation the components XML schema public location
+	 * @see #getPublicSchemaLocation()
+	 */
 	public void setPublicSchemaLocation(String publicSchemaLocation)
 	{
 		this.publicSchemaLocation = publicSchemaLocation;
@@ -77,6 +95,12 @@ public class DefaultComponentXmlParser implements ComponentsXmlParser
 		return internalSchemaResource;
 	}
 
+	/**
+	 * Sets the internal XML schema resource name. 
+	 * 
+	 * @param internalSchemaResource the internal XML schema resource name
+	 * @see #getInternalSchemaResource()
+	 */
 	public void setInternalSchemaResource(String internalSchemaResource)
 	{
 		this.internalSchemaResource = internalSchemaResource;

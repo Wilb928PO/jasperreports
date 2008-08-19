@@ -30,7 +30,7 @@ package net.sf.jasperreports.engine.component;
 import java.util.Collection;
 
 /**
- * TODO component
+ * A registry of component bundles.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id: JRCrosstab.java 1741 2007-06-08 10:53:33Z lucianc $
@@ -38,10 +38,32 @@ import java.util.Collection;
 public interface ComponentsRegistry
 {
 
-	Collection getComponentsMeta();
+	/**
+	 * Returns the set of all component bundles present in the registry. 
+	 * 
+	 * @return the set of component bundles
+	 */
+	Collection getComponentBundles();
 
+	/**
+	 * Returns a component bundle that corresponds to a namespace.
+	 * 
+	 * @param namespace a component bundle namespace
+	 * @return the corresponding component bundle
+	 * @throws JRRuntimeException if no bundle corresponding to the namespace
+	 * is found in the registry
+	 */
 	ComponentsBundle getComponentsBundle(String namespace);
 
+	/**
+	 * Returns a component manager that corresponds to a particular component
+	 * type key.
+	 * 
+	 * @param componentKey the component type key
+	 * @return the manager for the component type
+	 * @throws JRRuntimeException if the registry does not contain the specified
+	 * component type
+	 */
 	ComponentManager getComponentManager(ComponentKey componentKey);
 
 }

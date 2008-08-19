@@ -33,7 +33,11 @@ import java.util.Set;
 import net.sf.jasperreports.engine.JRRuntimeException;
 
 /**
- * TODO component
+ * The default {@link ComponentsBundle components bundle} implementation.
+ *
+ * <p>
+ * A components bundle consists of a {@link ComponentsXmlParser XML parser}
+ * instance and a map of {@link ComponentManager component managers}.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id: JRCrosstab.java 1741 2007-06-08 10:53:33Z lucianc $
@@ -49,6 +53,12 @@ public class DefaultComponentsBundle implements ComponentsBundle
 		return xmlParser;
 	}
 
+	/**
+	 * Sets the components XML parser implementation.
+	 * 
+	 * @param xmlParser the components XML parser
+	 * @see #getXmlParser()
+	 */
 	public void setXmlParser(ComponentsXmlParser xmlParser)
 	{
 		this.xmlParser = xmlParser;
@@ -70,11 +80,26 @@ public class DefaultComponentsBundle implements ComponentsBundle
 		return manager;
 	}
 	
+	/**
+	 * Returns the internal map of component managers, indexed by component name.
+	 * 
+	 * @return the map of component managers
+	 * @see #setComponentManagers(Map)
+	 */
 	public Map getComponentManagers()
 	{
 		return componentManagers;
 	}
 
+	/**
+	 * Sets the map of component managers.
+	 * 
+	 * <p>
+	 * The map needs to use component names as keys, and {@link ComponentManager}
+	 * instances as values.
+	 * 
+	 * @param componentManagers the map of component managers
+	 */
 	public void setComponentManagers(Map componentManagers)
 	{
 		this.componentManagers = componentManagers;
