@@ -155,7 +155,7 @@ public class JRTemplateImage extends JRTemplateGraphicElement implements JRAlign
 		getLinePen().setLineWidth(0f);
 		setFill(JRGraphicElement.FILL_SOLID);
 		
-		lineBox = chart.getLineBox().clone(this);
+		copyLineBox(chart.getLineBox());
 
 		setLinkType(chart.getLinkType());
 		setHyperlinkTarget(chart.getHyperlinkTarget());
@@ -163,23 +163,13 @@ public class JRTemplateImage extends JRTemplateGraphicElement implements JRAlign
 
 	
 	/**
-	 * TODO component
+	 * Copies box attributes.
 	 * 
-	 * @param lineBox
+	 * @param box the object to copy attributes from
 	 */
-	public void setLineBox(JRLineBox lineBox)
+	public void copyLineBox(JRLineBox box)
 	{
-		this.lineBox = lineBox;
-	}
-
-	/**
-	 * TODO component
-	 * 
-	 * @param linePen
-	 */
-	public void setLinePen(JRPen linePen)
-	{
-		this.linePen = linePen;
+		this.lineBox = box.clone(this);
 	}
 	
 	/**
