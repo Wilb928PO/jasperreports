@@ -1281,9 +1281,13 @@ public class JRFillObjectFactory extends JRAbstractObjectFactory
 
 
 	/**
-	 * TODO component
+	 * Register an element dataset with the report filler.
 	 * 
-	 * @param elementDataset
+	 * <p>
+	 * Registration of element datasets is required in order for the filler
+	 * to increment the datasets when iterating through the datasource.
+	 * 
+	 * @param elementDataset the dataset to register
 	 */
 	public void registerElementDataset(JRFillElementDataset elementDataset)
 	{

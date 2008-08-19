@@ -51,7 +51,20 @@ import org.apache.commons.logging.LogFactory;
 import org.xml.sax.SAXException;
 
 /**
- * TODO component
+ * The default report SAX parser factory.
+ * 
+ * <p>
+ * This factory creates a parser via the default SAX parser factory
+ * (<code>javax.xml.parsers.SAXParserFactory.newInstance()</code>).
+ * 
+ * <p>
+ * JRXMLs are always validated using W3C XML schemas.  Reports that refer
+ * the JasperReports DTD (which has been deprecated) are validated using an
+ * internal XML schema equivalent to the DTD.
+ * 
+ * <p>
+ * To improve performance, XML schemas can be cached when using a Xerces
+ * SAX parser.  See {@link #PROPERTY_CACHE_SCHEMAS}.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id: JRCrosstab.java 1741 2007-06-08 10:53:33Z lucianc $
@@ -61,6 +74,15 @@ public class JRReportSaxParserFactory implements JRSaxParserFactory
 	
 	private static final Log log = LogFactory.getLog(JRXmlDigesterFactory.class);
 	
+	/**
+	 * A property that determines whether XML schemas/grammars are to be cached
+	 * so that they are not read/initialized each time a report is compiled.
+	 * 
+	 * <p>
+	 * Currently, setting this property is only effective when a Xerces XML
+	 * parser is used (either a stock one from Apache or one embedded into a
+	 * SUN JDK).
+	 */
 	public static final String PROPERTY_CACHE_SCHEMAS = JRProperties.PROPERTY_PREFIX
 		+ "compiler.xml.parser.cache.schemas";
 

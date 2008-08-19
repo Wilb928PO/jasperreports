@@ -35,7 +35,16 @@ import net.sf.jasperreports.engine.design.JRDesignComponentElement;
 import org.apache.commons.digester.Rule;
 
 /**
- * TODO component
+ * A digester rule that links a {@link Component} object with its parent
+ * {@link JRDesignComponentElement}.
+ * 
+ * <p>
+ * This rules also sets the {@link ComponentKey component type key} on the
+ * component element via
+ * {@link JRDesignComponentElement#setComponentKey(ComponentKey)}.
+ * The component type key is created based on information from the XML
+ * component node; the node namespace is used as component type namespace
+ * and the node name is used as component name.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id: JRCrosstab.java 1741 2007-06-08 10:53:33Z lucianc $

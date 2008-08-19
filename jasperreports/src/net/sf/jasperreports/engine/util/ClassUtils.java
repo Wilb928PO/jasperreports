@@ -30,7 +30,7 @@ package net.sf.jasperreports.engine.util;
 import net.sf.jasperreports.engine.JRRuntimeException;
 
 /**
- * TODO component
+ * Class utilities.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id: JRCrosstab.java 1741 2007-06-08 10:53:33Z lucianc $
@@ -38,6 +38,18 @@ import net.sf.jasperreports.engine.JRRuntimeException;
 public class ClassUtils
 {
 
+	/**
+	 * Instantiates a class.
+	 * 
+	 * <p>
+	 * The class is expected to have a public no-argument constructor.
+	 * 
+	 * @param className the class name
+	 * @param expectedType the expected (super) type of the result
+	 * @return
+	 * @throws JRRuntimeException if the class cannot be loaded or instantiated,
+	 * or if it does not implement the expected type
+	 */
 	public static final Object instantiateClass(String className, Class expectedType)
 	{
 		try

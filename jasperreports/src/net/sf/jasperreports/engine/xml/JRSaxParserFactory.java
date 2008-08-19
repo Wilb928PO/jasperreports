@@ -32,7 +32,8 @@ import javax.xml.parsers.SAXParser;
 import net.sf.jasperreports.engine.util.JRProperties;
 
 /**
- * TODO component
+ * A factory of {@link SAXParser} objects used by JasperReports
+ * parsers/digesters.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id: JRCrosstab.java 1741 2007-06-08 10:53:33Z lucianc $
@@ -40,8 +41,21 @@ import net.sf.jasperreports.engine.util.JRProperties;
 public interface JRSaxParserFactory
 {
 
+	/**
+	 * A property that gives a parser factory class which should be used
+	 * for parsing JRXMLs.
+	 * 
+	 * <p>
+	 * By default, this property is set to use {@link JRReportSaxParserFactory}
+	 * as report parser factory.
+	 */
 	String PROPERTY_REPORT_PARSER_FACTORY = JRProperties.PROPERTY_PREFIX + "compiler.xml.parser.factory";
 	
+	/**
+	 * Creates a SAX parser.
+	 * 
+	 * @return the created parser
+	 */
 	SAXParser createParser();
 	
 }

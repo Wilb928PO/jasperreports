@@ -28,10 +28,11 @@
 package net.sf.jasperreports.engine.util;
 
 /**
- * TODO component
+ * An XML namespace.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
+ * @see JRXmlWriteHelper#startElement(String, XmlNamespace)
  */
 public class XmlNamespace
 {
@@ -40,6 +41,13 @@ public class XmlNamespace
 	private final String prefix;
 	private final String schemaURI;
 	
+	/**
+	 * Creates an XML namespace.
+	 * 
+	 * @param uri the namespace URI
+	 * @param prefix the namespace prefix
+	 * @param schemaURI the URI of the XML schema associated with the namespace
+	 */
 	public XmlNamespace(String uri, String prefix, String schemaURI)
 	{
 		this.prefix = prefix;
@@ -47,16 +55,31 @@ public class XmlNamespace
 		this.nsURI = uri;
 	}
 	
+	/**
+	 * Returns the namespace URI.
+	 * 
+	 * @return the namespace URI
+	 */
 	public String getNamespaceURI()
 	{
 		return nsURI;
 	}
 
+	/**
+	 * Returns the namespace prefix.
+	 * 
+	 * @return the namespace prefix
+	 */
 	public String getPrefix()
 	{
 		return prefix;
 	}
 
+	/**
+	 * Returns the URI of the XML schema associated with the namespace.
+	 * 
+	 * @return the namespace XML schema URI
+	 */
 	public String getSchemaURI()
 	{
 		return schemaURI;

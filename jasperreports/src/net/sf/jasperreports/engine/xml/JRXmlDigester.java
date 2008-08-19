@@ -106,8 +106,15 @@ public class JRXmlDigester extends Digester
 
 
 	/**
-	 * TODO component
+	 * Adds a mapping of an entity system ID to an internal/classloader resource
+	 * name.
 	 * 
+	 * <p>
+	 * This mapping is used by {@link #resolveEntity(String, String)} to
+	 * resolve a system ID to a classloader resource.
+	 * 
+	 * @param systemId the system ID
+	 * @param resource the resource name
 	 */
 	public void addInternalEntityResource(String systemId, String resource)
 	{
