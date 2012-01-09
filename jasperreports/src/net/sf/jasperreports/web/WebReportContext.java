@@ -23,6 +23,7 @@
  */
 package net.sf.jasperreports.web;
 
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,7 +58,7 @@ public class WebReportContext implements ReportContext
 	 *
 	 */
 	//private ThreadLocal<HttpServletRequest> threadLocalRequest = new ThreadLocal<HttpServletRequest>();//FIXMEJIVE
-	private HttpServletRequest request;//FIXME do not keep the request here as Tomcat reuses requests
+	private Map<String, String> requestParameters = new HashMap<String, String>();
 	private Map<String, Object> parameterValues;
 	private String id;
 	
@@ -122,19 +123,17 @@ public class WebReportContext implements ReportContext
 	/**
 	 *
 	 */
-	public HttpServletRequest getRequest()
-	{
-		//return threadLocalRequest.get();
-		return request;
-	}
-
-	/**
-	 *
-	 */
 	public void setRequest(HttpServletRequest request)
 	{
 		//threadLocalRequest.set(request);
-		this.request = request;
+		requestParameters.clear();
+		for(@SuppressWarnings("unchecked") Enumeration<String> params = request.getParameterNames(); 
+				params.hasMoreElements(); )
+		{
+			String param = params.nextElement();
+			String value = request.getParameter(param);// do getValues here?
+			requestParameters.put(param, value);
+		}
 	}
 
 	/**
@@ -150,8 +149,7 @@ public class WebReportContext implements ReportContext
 	 */
 	public Object getParameterValue(String parameterName)
 	{
-		HttpServletRequest request = getRequest();
-		String requestParameterValue = request.getParameter(parameterName);
+		String requestParameterValue = requestParameters.get(parameterName);
 		if (requestParameterValue != null)
 		{
 			return requestParameterValue;
@@ -165,8 +163,7 @@ public class WebReportContext implements ReportContext
 	 */
 	public boolean containsParameter(String parameterName)
 	{
-		HttpServletRequest request = getRequest();
-		String requestParameterValue = request.getParameter(parameterName);
+		String requestParameterValue = requestParameters.get(parameterName);
 		if (requestParameterValue != null)
 		{
 			return true;
