@@ -806,6 +806,8 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 		
 		try
 		{
+			createBoundElemementMaps();
+
 			if (parentFiller != null)
 			{
 				parentFiller.registerSubfiller(this);
@@ -838,8 +840,6 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 					addPrintStyle(styles[i]);
 				}
 			}
-
-			createBoundElemementMaps();
 
 			/*   */
 			mainDataset.start();

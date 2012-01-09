@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import net.sf.jasperreports.engine.JRConstants;
@@ -86,8 +87,8 @@ public class JRVirtualizationContext implements Serializable, VirtualizationList
 	 */
 	public JRVirtualizationContext()
 	{
-		cachedRenderers = new HashMap<String,JRRenderable>();//FIXME concurrent
-		cachedTemplates = new HashMap<String,JRTemplateElement>();
+		cachedRenderers = new ConcurrentHashMap<String,JRRenderable>();
+		cachedTemplates = new ConcurrentHashMap<String,JRTemplateElement>();
 		
 		pageElementSize = JRProperties.getIntegerProperty(JRVirtualPrintPage.PROPERTY_VIRTUAL_PAGE_ELEMENT_SIZE, 0);
 	}

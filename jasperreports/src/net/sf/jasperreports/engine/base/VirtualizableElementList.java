@@ -252,20 +252,20 @@ class ElementsBlock implements JRVirtualizable<VirtualElementsData>, ElementStor
 				+ "_" + uidRandom.nextInt();
 	}
 
-	public int size()
+	public synchronized int size()
 	{
 		//FIXME store the size separate from the list?
 		ensureVirtualData();
 		return elements.size();
 	}
 
-	public boolean isEmpty()
+	public synchronized boolean isEmpty()
 	{
 		ensureVirtualData();
 		return elements.isEmpty();
 	}
 
-	public JRPrintElement get(int index)
+	public synchronized JRPrintElement get(int index)
 	{
 		ensureDataAndTouch();
 		return elements.get(index);
@@ -307,7 +307,7 @@ class ElementsBlock implements JRVirtualizable<VirtualElementsData>, ElementStor
 		return true;
 	}
 
-	public boolean add(JRPrintElement element, boolean force)
+	public synchronized boolean add(JRPrintElement element, boolean force)
 	{
 		boolean adding = preAdd(element, force);
 		if (adding)
@@ -322,7 +322,7 @@ class ElementsBlock implements JRVirtualizable<VirtualElementsData>, ElementStor
 		return add(element, false);
 	}
 
-	public boolean add(int index, JRPrintElement element, boolean force)
+	public synchronized boolean add(int index, JRPrintElement element, boolean force)
 	{
 		boolean adding = preAdd(element, force);
 		if (adding)
@@ -337,7 +337,7 @@ class ElementsBlock implements JRVirtualizable<VirtualElementsData>, ElementStor
 		return add(index, element, false);
 	}
 
-	public JRPrintElement set(int index, JRPrintElement element)
+	public synchronized JRPrintElement set(int index, JRPrintElement element)
 	{
 		ensureDataAndTouch();
 		
@@ -348,7 +348,7 @@ class ElementsBlock implements JRVirtualizable<VirtualElementsData>, ElementStor
 		return elements.set(index, element);
 	}
 
-	public JRPrintElement remove(int index)
+	public synchronized JRPrintElement remove(int index)
 	{
 		ensureDataAndTouch();
 		
@@ -381,7 +381,7 @@ class ElementsBlock implements JRVirtualizable<VirtualElementsData>, ElementStor
 		{
 			if (context.getVirtualizer() != null)
 			{
-				context.getVirtualizer().touch(this);
+				context.getVirtualizer().touch(this);//FIXME lucianc deadlock
 			}
 		}
 	}
@@ -402,7 +402,7 @@ class ElementsBlock implements JRVirtualizable<VirtualElementsData>, ElementStor
 		}
 	}
 
-	public void setVirtualData(VirtualElementsData virtualData)
+	public synchronized void setVirtualData(VirtualElementsData virtualData)
 	{
 		this.virtualData = virtualData;
 		this.elements = virtualData.getElements();
@@ -413,7 +413,7 @@ class ElementsBlock implements JRVirtualizable<VirtualElementsData>, ElementStor
 		return virtualData;
 	}
 
-	public void removeVirtualData()
+	public synchronized void removeVirtualData()
 	{
 		virtualData = null;
 		elements = null;
@@ -470,7 +470,7 @@ class ElementsBlock implements JRVirtualizable<VirtualElementsData>, ElementStor
 	}
 
 	
-	private void writeObject(java.io.ObjectOutputStream out) throws IOException
+	private synchronized void writeObject(java.io.ObjectOutputStream out) throws IOException
 	{
 		ensureDataAndTouch();
 		beforeExternalization();
