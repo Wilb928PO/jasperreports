@@ -41,6 +41,7 @@ import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.fill.AsynchronousFillHandle;
 import net.sf.jasperreports.engine.util.FileResolver;
 import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.engine.util.JRResourcesUtil;
@@ -65,6 +66,8 @@ public class ReportServlet extends HttpServlet
 	public static final String REQUEST_PARAMETER_RUN_REPORT = "jr.run";
 	public static final String REQUEST_PARAMETER_REPORT_JRXML = "jr.jrxml";
 	public static final String REQUEST_PARAMETER_REPORT_VIEWER = "jr.vwr";
+	
+	public static final String REQUEST_PARAMETER_ASYNC = "jr.async";
 
 //	public static final String REPORT_ACTION = "report.action";
 //	public static final String REPORT_CLEAR_SESSION = "report.clear"; 
@@ -193,9 +196,11 @@ public class ReportServlet extends HttpServlet
 		WebReportContext webReportContext
 		) throws JRException //IOException, ServletException
 	{
-		JasperPrint jasperPrint = (JasperPrint)webReportContext.getParameterValue(WebReportContext.REPORT_CONTEXT_PARAMETER_JASPER_PRINT);
+		JasperPrintAccessor jasperPrintAccessor = (JasperPrintAccessor) webReportContext.getParameterValue(
+				WebReportContext.REPORT_CONTEXT_PARAMETER_JASPER_PRINT_ACCESSOR);
+
 		String run = request.getParameter(REQUEST_PARAMETER_RUN_REPORT);
-		if (jasperPrint == null || Boolean.valueOf(run))
+		if (jasperPrintAccessor == null || Boolean.valueOf(run))
 		{
 			String reportUri = request.getParameter(REQUEST_PARAMETER_REPORT_URI);
 			
@@ -261,14 +266,37 @@ public class ReportServlet extends HttpServlet
 //			}
 			/* data adapter - end */
 			
-			jasperPrint = 
-				JasperFillManager.fillReport(
-					jasperReport, 
-					webReportContext.getParameterValues()
-					);
-						
-			webReportContext.setParameterValue(WebReportContext.REPORT_CONTEXT_PARAMETER_JASPER_PRINT, jasperPrint);
+			boolean async = Boolean.parseBoolean(request.getParameter(REQUEST_PARAMETER_ASYNC));
+			runReport(webReportContext, jasperReport, async);
 		}
+	}
+
+
+	protected void runReport(WebReportContext webReportContext,
+			JasperReport jasperReport, boolean async) throws JRException
+	{
+		JasperPrintAccessor accessor;
+		if (async)
+		{
+			AsynchronousFillHandle fillHandle = AsynchronousFillHandle.createHandle(
+					jasperReport, webReportContext.getParameterValues());
+			AsyncJasperPrintAccessor asyncAccessor = new AsyncJasperPrintAccessor(fillHandle);
+			
+			fillHandle.startFill();
+			
+			accessor = asyncAccessor;
+		}
+		else
+		{
+			JasperPrint jasperPrint = 
+					JasperFillManager.fillReport(
+						jasperReport, 
+						webReportContext.getParameterValues()
+						);
+			accessor = new SimpleJasperPrintAccessor(jasperPrint);
+		}
+		
+		webReportContext.setParameterValue(WebReportContext.REPORT_CONTEXT_PARAMETER_JASPER_PRINT_ACCESSOR, accessor);
 	}
 
 

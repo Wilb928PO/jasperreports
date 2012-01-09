@@ -97,13 +97,14 @@ public class ImageServlet extends HttpServlet
 				throw new ServletException("No web report context found.");
 			}
 			
-			JasperPrint jasperPrint = (JasperPrint)webReportContext.getParameterValue(WebReportContext.REPORT_CONTEXT_PARAMETER_JASPER_PRINT);
-			if (jasperPrint == null)
+			JasperPrintAccessor jasperPrintAccessor = (JasperPrintAccessor) webReportContext.getParameterValue(
+					WebReportContext.REPORT_CONTEXT_PARAMETER_JASPER_PRINT_ACCESSOR);
+			if (jasperPrintAccessor == null)
 			{
 				throw new ServletException("No JasperPrint found in report context.");
 			}
 			
-			List<JasperPrint> jasperPrintList = Collections.singletonList(jasperPrint);
+			List<JasperPrint> jasperPrintList = Collections.singletonList(jasperPrintAccessor.getJasperPrint());
 			
 			JRPrintImage image = JRHtmlExporter.getImage(jasperPrintList, imageName);
 			

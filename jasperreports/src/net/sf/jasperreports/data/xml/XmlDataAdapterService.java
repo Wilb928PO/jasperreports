@@ -23,7 +23,8 @@
  */
 package net.sf.jasperreports.data.xml;
 
-import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
@@ -34,7 +35,10 @@ import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.data.JRXmlDataSource;
 import net.sf.jasperreports.engine.query.JRXPathQueryExecuterFactory;
 import net.sf.jasperreports.engine.util.JRXmlUtils;
+import net.sf.jasperreports.repo.RepositoryUtil;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 
 /**
@@ -44,6 +48,8 @@ import org.w3c.dom.Document;
 public class XmlDataAdapterService extends AbstractDataAdapterService
 {
 
+	private static final Log log = LogFactory.getLog(XmlDataAdapterService.class);
+	
 	public XmlDataAdapterService(XmlDataAdapter xmlDataAdapter) 
 	{
 		super(xmlDataAdapter);
@@ -72,8 +78,23 @@ public class XmlDataAdapterService extends AbstractDataAdapterService
 				else
 				{
 				*/
-					Document document = JRXmlUtils.parse( new File(xmlDataAdapter.getFileName()));
-					parameters.put(JRXPathQueryExecuterFactory.PARAMETER_XML_DATA_DOCUMENT, document);
+					InputStream dataStream = RepositoryUtil.getInputStream(xmlDataAdapter.getFileName());
+					try
+					{
+						Document document = JRXmlUtils.parse(dataStream);
+						parameters.put(JRXPathQueryExecuterFactory.PARAMETER_XML_DATA_DOCUMENT, document);
+					}
+					finally
+					{
+						try
+						{
+							dataStream.close();
+						}
+						catch (IOException e)
+						{
+							log.warn("Failed to close input stream for " + xmlDataAdapter.getFileName());
+						}
+					}
 				//}
 				
 				

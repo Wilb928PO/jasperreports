@@ -234,16 +234,17 @@ jQuery.noConflict();
 		jQuery.noConflict();
 		
 		// @Object
-		jg.AjaxExecutionContext = function(contextId, requestUrl, target, requestParams, elementToExtract) {
+		jg.AjaxExecutionContext = function(contextId, requestUrl, target, requestParams, elementToExtract, callback) {
 			// enforce new
 			if (!(this instanceof jg.AjaxExecutionContext)) {
-				return new jg.AjaxExecutionContext(contextId, requestUrl, target, requestParams, elementToExtract);
+				return new jg.AjaxExecutionContext(contextId, requestUrl, target, requestParams, elementToExtract, callback);
 			}
 			this.contextId = contextId;
 			this.requestUrl = requestUrl;
 			this.target = target;
 			this.requestParams = requestParams;
 			this.elementToExtract = elementToExtract;
+			this.callback = callback;
 		};
 		
 		jg.AjaxExecutionContext.prototype = {
@@ -277,6 +278,7 @@ jQuery.noConflict();
 					};
 				}
 				
+				var callback = this.callback;
 				jQuery(this.target).load(this.requestUrl + (this.elementToExtract!=null ? ' ' +this.elementToExtract : ''), this.requestParams, function(response, status, xhr) {
 					parent.loadmask('hide');
 					
@@ -284,6 +286,9 @@ jQuery.noConflict();
 						// add callback here
 						jg.isFirstAjaxRequest = false;
 						
+						if (callback) {
+							callback(response, status, xhr);
+						}
 					} else if (status == 'error') {
 					    alert('Error: ' + xhr.status + " " + xhr.statusText)
 					    
@@ -351,7 +356,7 @@ jQuery.noConflict();
 		};
 		
 
-		jg.getToolbarExecutionContext = function(startPoint, requestedUrl, params) {
+		jg.getToolbarExecutionContext = function(startPoint, requestedUrl, params, callback) {
 			var executionContextElement = jQuery(startPoint).closest('div.mainReportDiv');
 			
 			if (executionContextElement && executionContextElement.size() > 0) {
@@ -360,7 +365,8 @@ jQuery.noConflict();
 					requestedUrl, 
 					jQuery('div.result', executionContextElement).filter(':first'), // target 
 					params,
-					'div.result'
+					'div.result',
+					callback
 				);
 			}
 		};
@@ -396,6 +402,14 @@ jQuery.noConflict();
 				pageLast = jQuery('.pageLast', jqToolbar),
 				classEnabled = 'enabledPaginationButton',
 				classDisabled = 'disabledPaginationButton',
+				enableElem = function (jqElem) {
+					jqElem.removeClass(classDisabled);
+					jqElem.addClass(classEnabled);
+				},
+				disableElem = function (jqElem) {
+					jqElem.removeClass(classEnabled);
+					jqElem.addClass(classDisabled);
+				},
 				enablePair = function (jqElem1, jqElem2) {
 					jqElem1.removeClass(classDisabled);
 					jqElem2.removeClass(classDisabled);
@@ -411,26 +425,41 @@ jQuery.noConflict();
 					jqElem2.addClass(classDisabled);
 				};
 			
-			if (currentPage < totalPages - 1) {
+			if (typeof(totalPages) == 'undefined') {
+				enableElem(pageNext);
+				disableElem(pageLast);
+			}
+			else if (totalPages > 1 && currentPage < totalPages - 1) {
 				enablePair(pageNext, pageLast);
-				
-				if (currentPage > 0) {
-					enablePair(pageFirst, pagePrevious);
-				}
 			} else {
 				disablePair(pageNext, pageLast);
-				
-				if (currentPage > 0) {
-					enablePair(pageFirst, pagePrevious);
-				}
 			}
 			
 			if (currentPage == 0) {
 				disablePair(pageFirst, pagePrevious);
+			} else {
+				enablePair(pageFirst, pagePrevious);
 			}
-			
-			if (totalPages == 1) {
-				disablePair(pageNext, pageLast);
+		};
+		
+		jg.setAutoRefresh = function(strRunReportParam, jqToolbar) {
+			var pageTimestamp = jqToolbar.attr('data-pageTimestamp');
+			if (pageTimestamp) {
+				var refreshLater = function() {
+					jg.refreshPage(strRunReportParam, jqToolbar, jqToolbar.attr('data-currentpage'), 'jr.pagetimestamp=' + pageTimestamp);
+				};
+				var timeoutId = window.setTimeout(refreshLater, 10000);//FIXME configure
+				jqToolbar.attr('data-autoRefreshId', timeoutId);
+			} else {
+				jqToolbar.removeAttr('data-autoRefreshId');
+			}
+		};
+		
+		jg.cancelAutoRefresh = function(jqToolbar) {
+			var timeoutId = jqToolbar.attr('data-autoRefreshId');
+			if (timeoutId) {
+				window.clearTimeout(timeoutId);
+				jqToolbar.removeAttr('data-autoRefreshId');
 			}
 		};
 		
@@ -438,6 +467,7 @@ jQuery.noConflict();
 			var toolbar = jQuery('#' + toolbarId);
 			
 			jg.updateToolbarPaginationButtons(toolbar);
+			jg.setAutoRefresh(strRunReportParam, toolbar);
 			
 			if (toolbar.attr('data-initialized') == null) {
 				toolbar.attr('data-initialized', 'true');
@@ -450,12 +480,13 @@ jQuery.noConflict();
 					var target = jQuery(event.target);
 					if (target.is('.enabledPaginationButton')) {
 						var parent = jQuery(this),
-							currentHref = parent.attr('data-url'),
 							currentPage = parseInt(parent.attr('data-currentpage')),
 							totalPages = parseInt(parent.attr('data-totalpages')),
 							requestedPage,
-							pageParam = (strRunReportParam != null ? strRunReportParam + '&' : '') + 'jr.page=',
 							ctx;
+						
+						// cancel the auto refresh of the current page
+						jg.cancelAutoRefresh(parent);
 						
 						if (target.is('.pageFirst')) {
 							requestedPage = 0;
@@ -467,16 +498,56 @@ jQuery.noConflict();
 							requestedPage = totalPages -1;
 						}
 						
-						jg.getToolbarExecutionContext(parent, currentHref, pageParam + requestedPage).run();
-						jg.updateCurrentPageForToolbar(parent, requestedPage);
-						jg.updateToolbarPaginationButtons(parent);
+						jg.refreshPage(strRunReportParam, parent, requestedPage);
 					}
 				});
 			}
 		};
+		
+		jg.refreshPage = function(strRunReportParam, toolbar, requestedPage, requestParams) {
+			var currentHref = toolbar.attr('data-url');
+			var params = (strRunReportParam != null ? strRunReportParam + '&' : '') + 'jr.page=' + requestedPage;
+			if (requestParams) {
+				params += '&' + requestParams;
+			}
 
-		jg.updateCurrentPageForToolbar = function(jQueryToolbar, newCurrentPage) {
+			var callback = function(response) {
+				// if the total pages is not already available, see if the response has it
+				var totalPages;
+				var pageTimestamp;
+				if (typeof(toolbar.attr('data-totalpages')) == 'undefined') {
+					// doing simple response text parsing for now
+					var totalPagesAttr = /data-totalpages='(\d+)'/.exec(response);
+					if (totalPagesAttr && totalPagesAttr.length > 1) {
+						totalPages = totalPagesAttr[1];
+					}
+						
+					// if the report is not finished, check the page timestamp
+					var pageTimestampAttr = /data-pagetimestamp='(\d+)'/.exec(response);
+					if (pageTimestampAttr && pageTimestampAttr.length > 1) {
+						pageTimestamp = pageTimestampAttr[1];
+					}
+				}
+							
+				jg.updateCurrentPageForToolbar(toolbar, requestedPage, totalPages, pageTimestamp);
+				jg.updateToolbarPaginationButtons(toolbar);
+				jg.setAutoRefresh(strRunReportParam, toolbar);
+			};
+			
+			jg.getToolbarExecutionContext(toolbar, currentHref, params, callback).run();
+		}
+
+		jg.updateCurrentPageForToolbar = function(jQueryToolbar, newCurrentPage, newTotalPages, pageTimestamp) {
 			jQueryToolbar.attr('data-currentpage', newCurrentPage);
+			if (typeof(newTotalPages) != 'undefined') {
+				jQueryToolbar.attr('data-totalpages', newTotalPages);
+			}
+			
+			if (pageTimestamp) {
+				jQueryToolbar.attr('data-pagetimestamp', pageTimestamp);
+			} else {
+				jQueryToolbar.removeAttr('data-pagetimestamp');
+			}
 		};
 		
 		/**

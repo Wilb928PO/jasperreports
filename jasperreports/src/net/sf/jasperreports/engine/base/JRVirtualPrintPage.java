@@ -109,7 +109,7 @@ public class JRVirtualPrintPage implements JRPrintPage, Serializable
 	{
 		super();
 		
-		this.elements = new VirtualizableElementList(virtualizationContext);
+		this.elements = new VirtualizableElementList(virtualizationContext, this);
 		
 		if (log.isDebugEnabled())
 		{
@@ -228,10 +228,10 @@ public class JRVirtualPrintPage implements JRPrintPage, Serializable
 			ByteArrayInputStream inputStream = new ByteArrayInputStream(buffer, 0, buffer.length);
 			VirtualizationObjectInputStream elementsStream = new VirtualizationObjectInputStream(inputStream, virtualizationContext);
 			@SuppressWarnings("unchecked")
-			List<JRPrintElement> elementsList = (List<JRPrintElement>) elementsStream.readObject();// TODO lucianc test
+			List<JRPrintElement> elementsList = (List<JRPrintElement>) elementsStream.readObject();
 			
 			// create a new list for the elements
-			elements = new VirtualizableElementList(virtualizationContext);
+			elements = new VirtualizableElementList(virtualizationContext, this);
 			elements.addAll(elementsList);
 		}
 	}

@@ -23,61 +23,15 @@
  */
 package net.sf.jasperreports.engine.base;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import net.sf.jasperreports.engine.JRConstants;
-import net.sf.jasperreports.engine.JRPrintElement;
-import net.sf.jasperreports.engine.JRPrintPage;
-
-
 /**
- * @author Teodor Danciu (teodord@users.sourceforge.net)
+ *  
+ * 
+ * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
-public class JRBasePrintPage implements JRPrintPage, Serializable
+public interface VirtualizablePageElements
 {
 
-
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
-
-	/**
-	 *
-	 */
-	protected List<JRPrintElement> elements = Collections.synchronizedList(new ArrayList<JRPrintElement>());
-
+	JRVirtualPrintPage getPage();
 	
-	public JRBasePrintPage()
-	{
-		
-	}
-
-	/**
-	 *
-	 */
-	public List<JRPrintElement> getElements()
-	{
-		return this.elements;
-	}
-		
-	/**
-	 *
-	 */
-	public void setElements(List<JRPrintElement> elements)
-	{
-		this.elements = elements;
-	}
-		
-	/**
-	 *
-	 */
-	public void addElement(JRPrintElement element)
-	{
-		this.elements.add(element);
-	}
 }

@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import net.sf.jasperreports.components.sort.SortElement;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExporterParameter;
-import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.export.JRHtmlExporterParameter;
 import net.sf.jasperreports.engine.export.JRXhtmlExporter;
 import net.sf.jasperreports.web.WebReportContext;
@@ -47,6 +47,8 @@ public abstract class AbstractViewer
 
 	public static final String REQUEST_PARAMETER_PAGE = "jr.page";
 	
+	public static final String REQUEST_PARAMETER_PAGE_TIMESTAMP = "jr.pagetimestamp";
+	
 	protected static final String TEMPLATE_HEADER_NOPAGES = "net/sf/jasperreports/web/servlets/resources/templates/HeaderTemplateNoPages.vm";
 	protected static final String TEMPLATE_FOOTER_NOPAGES = "net/sf/jasperreports/web/servlets/resources/templates/FooterTemplateNoPages.vm";
 	
@@ -59,36 +61,50 @@ public abstract class AbstractViewer
 		PrintWriter writer
 		) throws JRException //IOException, ServletException
 	{
-		JasperPrint jasperPrint = (JasperPrint)webReportContext.getParameterValue(WebReportContext.REPORT_CONTEXT_PARAMETER_JASPER_PRINT);
+		JasperPrintAccessor jasperPrintAccessor = (JasperPrintAccessor) webReportContext.getParameterValue(
+				WebReportContext.REPORT_CONTEXT_PARAMETER_JASPER_PRINT_ACCESSOR);
+		Integer pageCount = jasperPrintAccessor.getTotalPageCount();
+		// if the page count is null, it means that the fill is not yet done but there is at least a page
+		boolean hasPages = pageCount == null || pageCount > 0;
 		
 		JRXhtmlExporter exporter = new JRXhtmlExporter();
-		boolean hasPages = true;
-		
-		exporter.setReportContext(webReportContext);
-		exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
-		exporter.setParameter(JRExporterParameter.OUTPUT_WRITER, writer);
-		exporter.setParameter(JRHtmlExporterParameter.IMAGES_URI, "image?" + WebReportContext.REQUEST_PARAMETER_REPORT_CONTEXT_ID + "=" + webReportContext.getId() + "&image=");
 
-		if (jasperPrint.getPages().size() > 0) 
+		ReportPageStatus pageStatus;
+		if (hasPages)
 		{
 			String reportPage = request.getParameter(REQUEST_PARAMETER_PAGE);
-			if (reportPage == null) {
-				reportPage = "0";
+			int pageIdx = reportPage == null ? 0 : Integer.parseInt(reportPage);
+			String pageTimestamp = request.getParameter(REQUEST_PARAMETER_PAGE_TIMESTAMP);
+			Long timestamp = pageTimestamp == null ? null : Long.valueOf(pageTimestamp);
+			
+			pageStatus = jasperPrintAccessor.pageStatus(pageIdx, timestamp);
+			if (!pageStatus.pageExists())
+			{
+				throw new JRRuntimeException("Page " + pageIdx + " not found in report");
 			}
-			exporter.setParameter(JRExporterParameter.PAGE_INDEX, Integer.parseInt(reportPage));
-		} else {
-			hasPages = false;
+			
+			exporter.setParameter(JRExporterParameter.PAGE_INDEX, pageIdx);
+		}
+		else
+		{
+			pageStatus = ReportPageStatus.PAGE_FINAL;
 		}
 		
-		exporter.setParameter(JRHtmlExporterParameter.HTML_HEADER, getHeader(request, webReportContext, hasPages));
+		exporter.setReportContext(webReportContext);
+		exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrintAccessor.getJasperPrint());
+		exporter.setParameter(JRExporterParameter.OUTPUT_WRITER, writer);
+		exporter.setParameter(JRHtmlExporterParameter.IMAGES_URI, "image?" + WebReportContext.REQUEST_PARAMETER_REPORT_CONTEXT_ID + "=" + webReportContext.getId() + "&image=");
+		
+		exporter.setParameter(JRHtmlExporterParameter.HTML_HEADER, getHeader(request, webReportContext, hasPages, pageStatus));
 		exporter.setParameter(JRHtmlExporterParameter.BETWEEN_PAGES_HTML, getBetweenPages(request, webReportContext));
-		exporter.setParameter(JRHtmlExporterParameter.HTML_FOOTER, getFooter(request, webReportContext, hasPages));
+		exporter.setParameter(JRHtmlExporterParameter.HTML_FOOTER, getFooter(request, webReportContext, hasPages, pageStatus));
 		
 		exporter.setParameter(
 			JRHtmlExporterParameter.HYPERLINK_PRODUCER_FACTORY, 
 			ReportExecutionHyperlinkProducerFactory.getInstance(request)
 			);
 		
+		//TODO lucianc do not export if the page has not modified
 		exporter.exportReport();
 
 //		try
@@ -132,10 +148,10 @@ public abstract class AbstractViewer
 		return request.getContextPath() + request.getServletPath() + "?" + newQueryString;
 	}
 
-	protected abstract String getHeader(HttpServletRequest request, WebReportContext webReportContext, boolean hasPages); 
+	protected abstract String getHeader(HttpServletRequest request, WebReportContext webReportContext, boolean hasPages, ReportPageStatus pageStatus); 
 
 	protected abstract String getBetweenPages(HttpServletRequest request, WebReportContext webReportContext); 
 
-	protected abstract String getFooter(HttpServletRequest request, WebReportContext webReportContext, boolean hasPages); 
+	protected abstract String getFooter(HttpServletRequest request, WebReportContext webReportContext, boolean hasPages, ReportPageStatus pageStatus); 
 
 }

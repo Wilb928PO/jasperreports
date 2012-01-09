@@ -257,6 +257,14 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 		return printElements;
 	}
 
+	public void subreportPageFilled()
+	{
+		if (printPage != null)
+		{
+			subreportFiller.subreportPageFilled(printPage);
+		}
+	}
+
 
 	/**
 	 *

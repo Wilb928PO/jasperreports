@@ -21,63 +21,42 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with JasperReports. If not, see <http://www.gnu.org/licenses/>.
  */
-package net.sf.jasperreports.engine.base;
+package net.sf.jasperreports.web.servlets;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import net.sf.jasperreports.engine.JRConstants;
-import net.sf.jasperreports.engine.JRPrintElement;
-import net.sf.jasperreports.engine.JRPrintPage;
-
+import net.sf.jasperreports.engine.JasperPrint;
 
 /**
- * @author Teodor Danciu (teodord@users.sourceforge.net)
+ * {@link JasperPrint} accessor object.
+ * 
+ * Such an object is usually placed on the session when a report is generated.
+ * 
+ * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
-public class JRBasePrintPage implements JRPrintPage, Serializable
+public interface JasperPrintAccessor
 {
-
-
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
-
-	/**
-	 *
-	 */
-	protected List<JRPrintElement> elements = Collections.synchronizedList(new ArrayList<JRPrintElement>());
-
 	
-	public JRBasePrintPage()
-	{
-		
-	}
-
 	/**
-	 *
+	 * Ensures that a page is available in the generated report.
+	 * 
+	 * @param pageIdx the page index
+	 * @param timestamp 
+	 * @return the status of the requested page
 	 */
-	public List<JRPrintElement> getElements()
-	{
-		return this.elements;
-	}
-		
+	ReportPageStatus pageStatus(int pageIdx, Long pageTimestamp);
+	
 	/**
-	 *
+	 * Returns the generated report.
+	 * 
+	 * @return
 	 */
-	public void setElements(List<JRPrintElement> elements)
-	{
-		this.elements = elements;
-	}
-		
+	JasperPrint getJasperPrint();
+	
 	/**
-	 *
+	 * Returns the total number of pages in the report, or <code>null</code> if not yet known.
+	 * 
+	 * @return
 	 */
-	public void addElement(JRPrintElement element)
-	{
-		this.elements.add(element);
-	}
+	Integer getTotalPageCount();
+	
 }

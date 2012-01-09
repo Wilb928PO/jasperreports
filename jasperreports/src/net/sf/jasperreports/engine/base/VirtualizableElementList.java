@@ -61,17 +61,17 @@ public class VirtualizableElementList extends AbstractList<JRPrintElement> imple
 
 	private ElementStore store;
 	
-	public VirtualizableElementList(JRVirtualizationContext virtualizationContext)
+	public VirtualizableElementList(JRVirtualizationContext virtualizationContext, JRVirtualPrintPage page)
 	{
 		this.virtualizationContext = virtualizationContext;
 		
-		initStore();
+		initStore(page);
 	}
 
-	private void initStore()
+	private void initStore(JRVirtualPrintPage page)
 	{
 		// start with a simple block to reduce memory consumption for small pages
-		this.store = new ElementsBlock(virtualizationContext);
+		this.store = new ElementsBlock(virtualizationContext, page);
 		
 		if (log.isDebugEnabled())
 		{
@@ -79,7 +79,7 @@ public class VirtualizableElementList extends AbstractList<JRPrintElement> imple
 		}
 	}
 
-	public void set(List<JRPrintElement> elements)
+	public synchronized void set(List<JRPrintElement> elements)
 	{
 		clear();
 		addAll(elements);
@@ -91,19 +91,19 @@ public class VirtualizableElementList extends AbstractList<JRPrintElement> imple
 	}
 
 	@Override
-	public JRPrintElement get(int index)
+	public synchronized JRPrintElement get(int index)
 	{
 		return store.get(index);
 	}
 
 	@Override
-	public int size()
+	public synchronized int size()
 	{
 		return store.size();
 	}
 
 	@Override
-	public JRPrintElement set(int index, JRPrintElement element)
+	public synchronized JRPrintElement set(int index, JRPrintElement element)
 	{
 		cacheInContext(element);
 		return store.set(index, element);
@@ -118,7 +118,7 @@ public class VirtualizableElementList extends AbstractList<JRPrintElement> imple
 	}
 
 	@Override
-	public boolean add(JRPrintElement element)
+	public synchronized boolean add(JRPrintElement element)
 	{
 		cacheInContext(element);
 
@@ -135,7 +135,7 @@ public class VirtualizableElementList extends AbstractList<JRPrintElement> imple
 	}
 
 	@Override
-	public void add(int index, JRPrintElement element)
+	public synchronized void add(int index, JRPrintElement element)
 	{
 		cacheInContext(element);
 
@@ -151,20 +151,21 @@ public class VirtualizableElementList extends AbstractList<JRPrintElement> imple
 	}
 
 	@Override
-	public JRPrintElement remove(int index)
+	public synchronized JRPrintElement remove(int index)
 	{
 		return store.remove(index);
 	}
 
 	@Override
-	public void clear()
+	public synchronized void clear()
 	{
 		// recreating the store
+		JRVirtualPrintPage page = store.getPage();
 		store.dispose();
-		initStore();
+		initStore(page);
 	}
 
-	public void dispose()
+	public synchronized void dispose()
 	{
 		store.dispose();
 	}
@@ -172,7 +173,7 @@ public class VirtualizableElementList extends AbstractList<JRPrintElement> imple
 	//FIXME implement faster bulk methods such as addAll
 }
 
-interface ElementStore
+interface ElementStore extends VirtualizablePageElements
 {
 	int size();
 
@@ -210,9 +211,13 @@ class ElementsBlock implements JRVirtualizable<VirtualElementsData>, ElementStor
 	private transient VirtualElementsData virtualData;
 	private transient int deepElementCount;
 	
-	public ElementsBlock(JRVirtualizationContext context)
+	// only kept during the fill and does not get restored on deserialization
+	private transient JRVirtualPrintPage page;
+	
+	public ElementsBlock(JRVirtualizationContext context, JRVirtualPrintPage page)
 	{
 		this.context = context;
+		this.page = page;
 		this.uid = makeUID();
 		
 		if (log.isDebugEnabled())
@@ -516,6 +521,11 @@ class ElementsBlock implements JRVirtualizable<VirtualElementsData>, ElementStor
 			context.getVirtualizer().deregisterObject(this);
 		}
 	}
+	
+	public JRVirtualPrintPage getPage()
+	{
+		return page;
+	}
 }
 
 class ElementsBlockList implements ElementStore, Serializable
@@ -549,7 +559,7 @@ class ElementsBlockList implements ElementStore, Serializable
 	{
 		incrementBlocks();
 		
-		ElementsBlock block = new ElementsBlock(blocks[0].getContext());
+		ElementsBlock block = new ElementsBlock(blocks[0].getContext(), blocks[0].getPage());
 		blocks[blockCount] = block;
 		offsets[blockCount] = size;
 		++blockCount;
@@ -716,5 +726,10 @@ class ElementsBlockList implements ElementStore, Serializable
 		// caching last index for fast serial access
 		lastIndex = blockIndex;
 		return blockIndex;
+	}
+
+	public JRVirtualPrintPage getPage()
+	{
+		return blocks[0].getPage();
 	}
 }

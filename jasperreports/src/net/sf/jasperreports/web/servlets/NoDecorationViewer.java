@@ -25,7 +25,6 @@ package net.sf.jasperreports.web.servlets;
 
 import javax.servlet.http.HttpServletRequest;
 
-import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.web.WebReportContext;
 import net.sf.jasperreports.web.util.VelocityUtil;
@@ -51,7 +50,9 @@ public class NoDecorationViewer extends AbstractViewer
 	private static final String TEMPLATE_BETWEEN_PAGES= "net/sf/jasperreports/web/servlets/resources/dashboard/BetweenPagesTemplate.vm";
 	private static final String TEMPLATE_FOOTER= "net/sf/jasperreports/web/servlets/resources/dashboard/FooterTemplate.vm";
 
-	protected String getHeader(HttpServletRequest request, WebReportContext webReportContext, boolean hasPages)
+	@Override
+	protected String getHeader(HttpServletRequest request, WebReportContext webReportContext, boolean hasPages, 
+			ReportPageStatus pageStatus)
 	{
 		VelocityContext headerContext = new VelocityContext();
 		if (hasPages) 
@@ -71,11 +72,17 @@ public class NoDecorationViewer extends AbstractViewer
 			headerContext.put("currentUrl", getCurrentUrl(request, webReportContext));
 			headerContext.put("strRunReportParam", ReportServlet.REQUEST_PARAMETER_RUN_REPORT + "=false");
 			
-			JasperPrint jasperPrint = (JasperPrint)webReportContext.getParameterValue(WebReportContext.REPORT_CONTEXT_PARAMETER_JASPER_PRINT);
-			headerContext.put("totalPages", jasperPrint.getPages().size());
+			JasperPrintAccessor jasperPrintAccessor = (JasperPrintAccessor) webReportContext.getParameterValue(
+					WebReportContext.REPORT_CONTEXT_PARAMETER_JASPER_PRINT_ACCESSOR);
+			headerContext.put("totalPages", jasperPrintAccessor.getTotalPageCount());
 	
 			String reportPage = request.getParameter(REQUEST_PARAMETER_PAGE);
 			headerContext.put("currentPage", (reportPage != null ? reportPage : "0"));
+			
+			if (!pageStatus.isPageFinal())
+			{
+				headerContext.put("pageTimestamp", pageStatus.getTimestamp());
+			}
 			
 			return VelocityUtil.processTemplate(TEMPLATE_HEADER, headerContext);
 		} else 
@@ -90,7 +97,9 @@ public class NoDecorationViewer extends AbstractViewer
 		return VelocityUtil.processTemplate(TEMPLATE_BETWEEN_PAGES, betweenPagesContext);
 	}
 
-	protected String getFooter(HttpServletRequest request, WebReportContext webReportContext, boolean hasPages) 
+	@Override
+	protected String getFooter(HttpServletRequest request, WebReportContext webReportContext, boolean hasPages, 
+			ReportPageStatus pageStatus) 
 	{
 		VelocityContext footerContext = new VelocityContext();
 		if (hasPages) {

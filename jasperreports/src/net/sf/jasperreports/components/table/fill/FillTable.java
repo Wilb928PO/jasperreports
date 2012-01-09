@@ -354,6 +354,8 @@ public class FillTable extends BaseFillComponent
 			}
 		}
 		
+		fillSubreport.subreportPageFilled();
+		
 		return printFrame;
 	}
 

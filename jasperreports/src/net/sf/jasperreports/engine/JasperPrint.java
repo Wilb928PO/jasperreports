@@ -35,6 +35,7 @@ import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -115,7 +116,8 @@ public class JasperPrint implements Serializable, JRPropertiesHolder
 	private Map<JROrigin, Integer> originsMap = new HashMap<JROrigin, Integer>();
 	private List<JROrigin> originsList = new ArrayList<JROrigin>();
 
-	private List<JRPrintPage> pages = new ArrayList<JRPrintPage>();
+	//FIXME unsynchronize on serialization?
+	private List<JRPrintPage> pages = Collections.synchronizedList(new ArrayList<JRPrintPage>());
 
 	private transient Map<String,JRPrintAnchorIndex> anchorIndexes;
 	private DefaultStyleProvider defaultStyleProvider;

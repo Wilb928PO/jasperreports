@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import net.sf.jasperreports.engine.JRConstants;
 import net.sf.jasperreports.engine.JRPrintElement;
@@ -111,7 +112,7 @@ public class JRVirtualizationContext implements Serializable, VirtualizationList
 	{
 		if (listeners == null)
 		{
-			listeners = new ArrayList<VirtualizationListener<VirtualElementsData>>(1);
+			listeners = new CopyOnWriteArrayList<VirtualizationListener<VirtualElementsData>>();
 		}
 		
 		listeners.add(listener);

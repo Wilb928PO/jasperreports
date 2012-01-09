@@ -21,63 +21,44 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with JasperReports. If not, see <http://www.gnu.org/licenses/>.
  */
-package net.sf.jasperreports.engine.base;
+package net.sf.jasperreports.web.servlets;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import net.sf.jasperreports.engine.JRConstants;
-import net.sf.jasperreports.engine.JRPrintElement;
-import net.sf.jasperreports.engine.JRPrintPage;
-
+import net.sf.jasperreports.engine.JasperPrint;
 
 /**
- * @author Teodor Danciu (teodord@users.sourceforge.net)
+ * Generated report accessor used for fully generated reports.
+ * 
+ * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
-public class JRBasePrintPage implements JRPrintPage, Serializable
+public class SimpleJasperPrintAccessor implements JasperPrintAccessor
 {
 
-
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
-
-	/**
-	 *
-	 */
-	protected List<JRPrintElement> elements = Collections.synchronizedList(new ArrayList<JRPrintElement>());
-
+	private final JasperPrint jasperPrint;
 	
-	public JRBasePrintPage()
+	/**
+	 * Create a report accessor.
+	 * 
+	 * @param jasperPrint the generated report
+	 */
+	public SimpleJasperPrintAccessor(JasperPrint jasperPrint)
 	{
-		
+		this.jasperPrint = jasperPrint;
 	}
 
-	/**
-	 *
-	 */
-	public List<JRPrintElement> getElements()
+	public ReportPageStatus pageStatus(int pageIdx, Long pageTimestamp)
 	{
-		return this.elements;
+		return pageIdx < jasperPrint.getPages().size() ? ReportPageStatus.PAGE_FINAL : ReportPageStatus.NO_SUCH_PAGE;
 	}
-		
-	/**
-	 *
-	 */
-	public void setElements(List<JRPrintElement> elements)
+
+	public JasperPrint getJasperPrint()
 	{
-		this.elements = elements;
+		return jasperPrint;
 	}
-		
-	/**
-	 *
-	 */
-	public void addElement(JRPrintElement element)
+
+	public Integer getTotalPageCount()
 	{
-		this.elements.add(element);
+		return jasperPrint.getPages().size();
 	}
+
 }

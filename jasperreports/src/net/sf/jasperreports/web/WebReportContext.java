@@ -45,14 +45,19 @@ public class WebReportContext implements ReportContext
 	private static final String SESSION_ATTRIBUTE_REPORT_CONTEXT_ID_PREFIX = "net.sf.jasperreports.web.report.context_";
 	public static final String REQUEST_PARAMETER_REPORT_CONTEXT_ID = "jr.ctxid";
 
+	/**
+	 * @deprecated, use {@link #REPORT_CONTEXT_PARAMETER_JASPER_PRINT_ACCESSOR} instead
+	 */
 	public static final String REPORT_CONTEXT_PARAMETER_JASPER_PRINT = "net.sf.jasperreports.web.jasper_print";
+	
+	public static final String REPORT_CONTEXT_PARAMETER_JASPER_PRINT_ACCESSOR = "net.sf.jasperreports.web.jasper_print.accessor";
 	//public static final String REPORT_CONTEXT_PARAMETER_JASPER_REPORT = "net.sf.jasperreports.web.jasper_report";
 	
 	/**
 	 *
 	 */
 	//private ThreadLocal<HttpServletRequest> threadLocalRequest = new ThreadLocal<HttpServletRequest>();//FIXMEJIVE
-	private HttpServletRequest request;
+	private HttpServletRequest request;//FIXME do not keep the request here as Tomcat reuses requests
 	private Map<String, Object> parameterValues;
 	private String id;
 	
