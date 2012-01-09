@@ -29,6 +29,9 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.fill.AsynchronousFillHandle;
@@ -45,6 +48,8 @@ import net.sf.jasperreports.engine.fill.FillListener;
 public class AsyncJasperPrintAccessor implements JasperPrintAccessor, AsynchronousFilllListener, FillListener
 {
 
+	private static final Log log = LogFactory.getLog(AsyncJasperPrintAccessor.class);
+	
 	private final AsynchronousFillHandle fillHandle;
 	private final Lock lock;
 	private final Condition pageCondition;
@@ -170,6 +175,7 @@ public class AsyncJasperPrintAccessor implements JasperPrintAccessor, Asynchrono
 
 	public void reportFillError(Throwable t)
 	{
+		log.error("Error execution report", t);
 		//FIXME
 	}
 

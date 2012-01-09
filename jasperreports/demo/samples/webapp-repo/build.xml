@@ -75,6 +75,7 @@
 			<classes dir="./WEB-INF/classes/">
 				<include name="**/*.class" />
 				<include name="**/*.properties" />
+				<include name="**/*.xml" />
 			</classes>
 			<lib dir="./WEB-INF/lib/">
 				<include name="*.jar" />

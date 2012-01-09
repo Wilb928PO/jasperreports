@@ -34,6 +34,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import net.sf.jasperreports.engine.JRConstants;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRParameter;
@@ -57,6 +60,8 @@ import net.sf.jasperreports.web.WebReportContext;
 public class ReportServlet extends HttpServlet
 {
 	private static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
+	
+	private static final Log log = LogFactory.getLog(ReportServlet.class);
 
 	public static final String PROPERTY_REPOSITORY_ROOT = "net.sf.jasperreports.web.repository.root";//FIXMEJIVE make this config in file repository?
 	public static final String DEFAULT_REPOSITORY_ROOT = "WEB-INF/repository";
@@ -165,8 +170,10 @@ public class ReportServlet extends HttpServlet
 				new NoDecorationViewer().render(request, webReportContext, out);
 			}
 		}
-		catch (JRException e)
+		catch (Exception e)
 		{
+			log.error("Error on report execution", e);
+			
 			out.println("<html>");//FIXMEJIVE do we need to render this? or should this be done by the viewer?
 			out.println("<head>");
 			out.println("<title>JasperReports - Web Application Sample</title>");
