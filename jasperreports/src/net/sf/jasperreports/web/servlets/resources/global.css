@@ -145,5 +145,9 @@
 	border: 0px;
 	margin: 0px;
 }
+
+.columnHeader {
+	cursor: pointer;
+}
 /************************ </FILTER DIV> ***************************/
 

@@ -22,6 +22,10 @@ jQuery.noConflict();
 						SORT_INIT: {
 							name: 'sort_init',
 							status: 'default'
+						},
+						HEADERTOOLBAR_INIT: {
+							name: 'headertoolbar_init',
+							status: 'default'
 						}
 					},
 					eventSubscribers: {},
@@ -30,6 +34,12 @@ jQuery.noConflict();
 			}
 		},
 		jg = jr.modules.global;
+	
+	jg.createImage = function (imageSrc) {
+		var result = new Image();
+		result.src = imageSrc;
+		return result;
+	}
 	
 	/**
 	 * Enhances dest with properties of source
