@@ -1,0 +1,66 @@
+<script class='jasperreports' type='text/javascript'>
+	JasperReports.modules.global.appendScriptElementToDOM('_headertoolbarScript', '${resourceHeaderToolbarJs}', 'JasperReports.modules.headertoolbar.init');
+</script>
+
+#if (${popupId})
+<script class='jasperreports' type='text/javascript'>
+	(function () {
+		var gm = JasperReports.modules.global,
+			arrPopupHtml = [
+				"<div class='popupdiv' id='tbl_${popupId}'",
+					#if (${isFilterable})
+				"		data-filterid='${filterDivId}'",
+					#end
+				"	style='position: absolute; display: none; width: 100px; height: 20px;'>",
+				"	<div class='headerToolbar' style=\"position:absolute; top: -20px; width: 100px; height: 20px; background-color: rgb(0, 51, 102); background-color: rgba(0, 51, 102, 0.6); background-image: url('${transparentPixelSrc}');\">",
+				"		<span>",
+				"			<img class='sortSymbolImage sortAsc' data-href='${sortAscHref}' src='${sortAscSrc}' data-src='${sortAscSrc}' data-hover='${sortAscHoverSrc}' />", 
+				"			<img class='sortSymbolImage sortDesc' data-href='${sortDescHref}' src='${sortDescSrc}' data-src='${sortDescSrc}' data-hover='${sortDescHoverSrc}' />",
+				"			<img class='filterSymbolImage' src='${filterSrc}' data-src='${filterSrc}' data-hover='${filterHoverSrc}' />",
+				"		</span>",
+				"	</div>",
+				"	<div class='headerToolbarMask' style='background-color: rgb(0, 51, 102); background-color: rgba(0, 51, 102, 0.6);'>",
+				"	</div>",
+				"</div>"];
+				
+		gm.subscribeToEvent(gm.events.HEADERTOOLBAR_INIT.name, 'JasperReports.modules.headertoolbar.registerTableHeaderEvents', ['${popupId}', arrPopupHtml]);
+	} ());
+</script>
+#end
+
+#if (${isFilterable})
+<script class='jasperreports' type='text/javascript'>
+	(function () {
+		var gm = JasperReports.modules.global,
+			uid = '${filterDivId}',
+			arrFilterDiv = ["<div id='${filterDivId}' class='filterdiv' style='display: none;' data-forsortlink='${sortLinkClass}'>",
+			                "<img class='hidefilter' src='${filterCloseDialogImageResource}' />",
+			                "<form action='${filterFormAction}' action='GET' class='filterDivForm'>",
+			                "	<input class='postable forClear' type='hidden' name='${filterTableNameParam}' value='${filterTableNameValue}' />",
+			                "	<input class='postable filterField' type='hidden' name='${filterFieldParamName}' value='${filterColumnName}' />",
+			                "	<input class='postable' type='hidden' name='${filterTypeParamName}' value='${filterTypeParamNameValue}' />",
+			                	#if(${filterPatternParamValue})
+			                "	<input class='postable' type='hidden' name='${filterPatternParamName}' value='${filterPatternParamValue}' />",
+			                	#end
+			                "	<label class='filterColumnNameLabel' for='${filterTypeOperatorParamName}'>${filterColumnNameLabel}</label>",
+							"	<select class='postable filterOperatorTypeValueSelector' name='${filterTypeOperatorParamName}'>",
+								#foreach( $entry in ${filterTypeValuesMap.entrySet()} )
+									#set( $selected = "" )
+									#if ($entry.key == ${filterTypeOperatorParamValue})
+										#set( $selected = "selected='selected'" )
+									#end
+    						"	<option value='$entry.key' $selected >$entry.value</option>",
+								#end
+							"	</select>",
+			                "	<input class='postable filterValue filterValueStart' type='text' name='${filterValueStartParamName}' value='${filterValueStartParamValue}' style='width: 80px;' />",
+			                "	<input class='postable filterValue filterValueEnd #if (!${enableFilterEndParameter})hidden' disabled #else ' #end type='text' name='${filterValueEndParamName}' value='${filterValueEndParamValue}' style='width: 80px;' />",
+			                "	<input class='submitFilter' type='button' value='Filter' />",
+			                "	<input class='forClear' type='hidden' name='${filterToRemoveParamName}' value='${filterToRemoveParamvalue}' />",
+			                "	<input class='clearFilter' #if(!${isFiltered}) style='display:none;' #end type='button' value='Clear' />",
+			                "</form>",
+			                "</div>"];
+			                
+		gm.subscribeToEvent(gm.events.HEADERTOOLBAR_INIT.name, 'JasperReports.modules.headertoolbar.createFilterDiv', [uid, arrFilterDiv, '${filtersJsonString}']);
+	} ());
+</script>
+#end
