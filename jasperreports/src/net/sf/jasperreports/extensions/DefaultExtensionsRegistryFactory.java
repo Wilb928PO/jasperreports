@@ -27,6 +27,8 @@ import java.util.Collections;
 import java.util.List;
 
 import net.sf.jasperreports.charts.ChartThemeBundle;
+import net.sf.jasperreports.components.headertoolbar.HeaderToolbarElement;
+import net.sf.jasperreports.components.headertoolbar.HeaderToolbarElementHtmlHandler;
 import net.sf.jasperreports.components.map.MapElementDocxHandler;
 import net.sf.jasperreports.components.map.MapElementGraphics2DHandler;
 import net.sf.jasperreports.components.map.MapElementHtmlHandler;
@@ -143,6 +145,11 @@ public class DefaultExtensionsRegistryFactory implements ExtensionsRegistryFacto
 						&& JRXhtmlExporter.XHTML_EXPORTER_KEY.equals(exporterKey))
 				{
 					return new SortElementHtmlHandler();
+				}
+				if (HeaderToolbarElement.ELEMENT_NAME.equals(elementName) 
+						&& JRXhtmlExporter.XHTML_EXPORTER_KEY.equals(exporterKey))
+				{
+					return new HeaderToolbarElementHtmlHandler();
 				}
 				return null;
 			}
