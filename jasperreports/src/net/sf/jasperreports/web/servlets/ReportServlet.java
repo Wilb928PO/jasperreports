@@ -38,7 +38,10 @@ import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.fill.AsynchronousFillHandle;
+import net.sf.jasperreports.repo.CachedJasperDesignPersistenceService;
+import net.sf.jasperreports.repo.JasperDesignResource;
 import net.sf.jasperreports.repo.RepositoryUtil;
 import net.sf.jasperreports.repo.WebFileRepositoryService;
 import net.sf.jasperreports.web.WebReportContext;
@@ -57,13 +60,9 @@ public class ReportServlet extends HttpServlet
 	
 	private static final Log log = LogFactory.getLog(ReportServlet.class);
 
-	//public static final String PROPERTY_REPOSITORY_ROOT = "net.sf.jasperreports.web.repository.root";
-	public static final String DEFAULT_REPOSITORY_ROOT = "WEB-INF/repository";
-
 	public static final String REQUEST_PARAMETER_REPORT_URI = "jr.uri";
 	public static final String REQUEST_PARAMETER_IGNORE_PAGINATION = "jr.ignrpg";
 	public static final String REQUEST_PARAMETER_RUN_REPORT = "jr.run";
-	//public static final String REQUEST_PARAMETER_REPORT_JRXML = "jr.jrxml";
 	public static final String REQUEST_PARAMETER_REPORT_VIEWER = "jr.vwr";
 	
 	public static final String REQUEST_PARAMETER_ASYNC = "jr.async";
@@ -72,57 +71,12 @@ public class ReportServlet extends HttpServlet
 //	public static final String REPORT_CLEAR_SESSION = "report.clear"; 
 //	public static final String REPORT_CONTEXT_PREFIX = "fillContext_"; 
 	
-
-//	private File repositoryRoot;
-//	private SimpleFileResolver fileResolver;
-	
-	/**
-	 * 
-	 *
-	public File getRepositoryRoot() 
-	{
-		return repositoryRoot;
-	}
-
-	
-	/**
-	 * 
-	 *
-	public FileResolver getFileResolver() 
-	{
-		return fileResolver;
-	}
-
-	
 	/**
 	 * 
 	 */
 	public void init(ServletConfig config) throws ServletException 
 	{
 		super.init(config);
-		
-//		String repo = getInitParameter("repository.root"); //this is used in Jetty config
-//		if (repo == null)
-//		{
-//			repo = JRProperties.getProperty(PROPERTY_REPOSITORY_ROOT);//FIXMEJIVE constant
-//		}
-//		if (repo == null)
-//		{
-//			repo = DEFAULT_REPOSITORY_ROOT;
-//		}
-//		
-//		repositoryRoot = new File(repo);
-//		if (!repositoryRoot.isAbsolute())
-//		{
-//			String realPath = config.getServletContext().getRealPath("/");
-//			if (realPath != null)
-//			{
-//				repositoryRoot = new File(new File(realPath), repo);
-//			}
-//		}
-//		
-//		fileResolver = new SimpleFileResolver(repositoryRoot);
-//		fileResolver.setResolveAbsolutePath(true);
 		
 		WebFileRepositoryService.setApplicationRealPath(config.getServletContext().getRealPath("/"));
 	}
@@ -207,17 +161,6 @@ public class ReportServlet extends HttpServlet
 		{
 			String reportUri = request.getParameter(REQUEST_PARAMETER_REPORT_URI);
 			
-//				Map<String, Object> parameters = (Map<String, Object>)request.getSession().getAttribute(ReportServlet.REPORT_CONTEXT_PREFIX + reportUri);  
-//				if (parameters == null) 
-//				{
-//					parameters = new HashMap<String, Object>();
-//					request.getSession().setAttribute(ReportServlet.REPORT_CONTEXT_PREFIX + reportUri, parameters);
-//				}
-			
-//			webReportContext.setParameterValue(JRParameter.REPORT_FILE_RESOLVER, getFileResolver());//FIXME create file resolver for parent folder
-////				parameters.put(JRParameter.REPORT_FILE_RESOLVER, getFileResolver());//FIXME create file resolver for parent folder
-//			JRResourcesUtil.setThreadFileResolver(fileResolver);
-			
 			Boolean isIgnorePagination = Boolean.valueOf(request.getParameter(REQUEST_PARAMETER_IGNORE_PAGINATION));
 			if (isIgnorePagination != null) 
 			{
@@ -225,20 +168,26 @@ public class ReportServlet extends HttpServlet
 				//parameters.put(JRParameter.IS_IGNORE_PAGINATION, isIgnorePagination);
 			}		
 			
+			CachedJasperDesignPersistenceService.setThreadReportContext(webReportContext);
+			
 			JasperReport jasperReport = null; 
 			
-//			String jrxml = request.getParameter(REQUEST_PARAMETER_REPORT_JRXML);
-//			if (jrxml != null && jrxml.trim().length() > 0)
-//			{
-//				jrxml = jrxml.trim();
-//				jasperReport =  JasperCompileManager.compileReport(new ByteArrayInputStream(jrxml.getBytes()));
-//			}
-//			else 
 			if (reportUri != null && reportUri.trim().length() > 0)
 			{
 				reportUri = reportUri.trim();
 
 				jasperReport = RepositoryUtil.getReport(reportUri);
+				
+				JasperDesignResource jasperDesignResource = RepositoryUtil.getResource(reportUri, JasperDesignResource.class);
+				if (jasperDesignResource == null)
+				{
+					System.out.println("design not found");
+				}
+				else
+				{
+					JasperDesign jasperDesign = jasperDesignResource.getJasperDesign();
+					System.out.println("design : " + jasperDesign.getName());
+				}
 			}
 			
 			if (jasperReport == null)
@@ -247,28 +196,6 @@ public class ReportServlet extends HttpServlet
 			}
 
 			//webReportContext.setParameterValue(WebReportContext.REPORT_CONTEXT_PARAMETER_JASPER_REPORT, jasperReport);
-			
-//				Map parameters = new HashMap();
-			
-//				String clearSession = request.getParameter(REPORT_CLEAR_SESSION);
-//				if (clearSession != null && clearSession.equalsIgnoreCase("true")) {
-//					request.getSession().setAttribute(ReportServlet.REPORT_CONTEXT_PREFIX + reportUri, null);
-//				}
-			
-			/* data adapter - start */
-//			String dataAdapterUri = jasperReport.getProperty("net.sf.jasperreports.data.adapter");
-//			if (dataAdapterUri != null)
-//			{
-//				//repoService.setFileResolver(fileResolver);
-//
-//				DataAdapter dataAdapter = (DataAdapter)RepositoryUtil.getResource(dataAdapterUri, DataAdapter.class);
-//				DataAdapterService dataAdapterService = DataAdapterServiceUtil.getDataAdapterService(dataAdapter);
-//				
-//				Map<String, Object> dasParams = dataAdapterService.getParameters();
-//				//parameters.putAll(dasParams);
-//				webReportContext.setParameterValues(dasParams);
-//			}
-			/* data adapter - end */
 			
 			boolean async = Boolean.parseBoolean(request.getParameter(REQUEST_PARAMETER_ASYNC));
 			runReport(webReportContext, jasperReport, async);

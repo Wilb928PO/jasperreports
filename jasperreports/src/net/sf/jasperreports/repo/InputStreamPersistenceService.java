@@ -23,14 +23,7 @@
  */
 package net.sf.jasperreports.repo;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRRuntimeException;
-import net.sf.jasperreports.engine.util.JRLoader;
-import net.sf.jasperreports.engine.util.JRSaver;
 
 
 
@@ -40,7 +33,7 @@ import net.sf.jasperreports.engine.util.JRSaver;
  * @author Teodor Danciu (teodord@users.sourceforge.net)
  * @version $Id: RepositoryService.java 4603 2011-09-13 12:35:32Z lucianc $
  */
-public class SerializedObjectPersistenceService implements PersistenceService
+public class InputStreamPersistenceService implements PersistenceService
 {
 
 	/**
@@ -48,32 +41,15 @@ public class SerializedObjectPersistenceService implements PersistenceService
 	 */
 	public Resource load(String uri, RepositoryService repositoryService)
 	{
-		ObjectResource resource = null; 
+		InputStreamResource resource = null; 
 
-		InputStreamResource isResource = repositoryService.getResource(uri, InputStreamResource.class);
+		StreamRepositoryService streamRepositoryService = (StreamRepositoryService)repositoryService;
 		
-		InputStream is = isResource == null ? null : isResource.getInputStream();
+		InputStream is = streamRepositoryService.getInputStream(uri);
 		if (is != null)
 		{
-			resource = new ObjectResource();
-			try
-			{
-				resource.setValue(JRLoader.loadObject(is));
-			}
-			catch (JRException e)
-			{
-				throw new JRRuntimeException(e);
-			}
-			finally
-			{
-				try
-				{
-					is.close();
-				}
-				catch (IOException e)
-				{
-				}
-			}
+			resource = new InputStreamResource();
+			resource.setInputStream(is);
 		}
 
 		return resource;
@@ -84,33 +60,7 @@ public class SerializedObjectPersistenceService implements PersistenceService
 	 */
 	public void save(Resource resource, String uri, RepositoryService repositoryService)
 	{
-		ObjectResource objectResource = (ObjectResource)resource;
-		
-		OutputStreamResource osResource = repositoryService.getResource(uri, OutputStreamResource.class);
-		
-		OutputStream os = osResource == null ? null : osResource.getOutputStream();
-		if (os != null)
-		{
-			try
-			{
-				JRSaver.saveObject(objectResource.getValue(), os);
-			}
-			catch (JRException e)
-			{
-				throw new JRRuntimeException(e);
-			}
-			finally
-			{
-				try
-				{
-					os.close();
-				}
-				catch (IOException e)
-				{
-				}
-			}
-		}
-		
+		//FIXMEREPO probably nothing to do
 	}
 	
 }

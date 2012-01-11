@@ -23,7 +23,6 @@
  */
 package net.sf.jasperreports.repo;
 
-import net.sf.jasperreports.data.DataAdapter;
 
 
 
@@ -32,14 +31,14 @@ import net.sf.jasperreports.data.DataAdapter;
  * @author Teodor Danciu (teodord@users.sourceforge.net)
  * @version $Id: FileRepositoryService.java 4882 2012-01-09 14:54:19Z teodord $
  */
-public class DefaultRepositoryPersistenceServiceFactory implements PersistenceServiceFactory
+public class CachedJasperDesignPersistenceServiceFactory implements PersistenceServiceFactory
 {
-	private static final DefaultRepositoryPersistenceServiceFactory INSTANCE = new DefaultRepositoryPersistenceServiceFactory();
+	private static final CachedJasperDesignPersistenceServiceFactory INSTANCE = new CachedJasperDesignPersistenceServiceFactory();
 	
 	/**
 	 * 
 	 */
-	public static DefaultRepositoryPersistenceServiceFactory getInstance()
+	public static CachedJasperDesignPersistenceServiceFactory getInstance()
 	{
 		return INSTANCE;
 	}
@@ -47,27 +46,18 @@ public class DefaultRepositoryPersistenceServiceFactory implements PersistenceSe
 	/**
 	 * 
 	 */
+	private CachedJasperDesignPersistenceServiceFactory() //FIXMEREPO make private constructors in all singleton classes
+	{
+	}
+	
+	/**
+	 * 
+	 */
 	public <K extends RepositoryService, L extends Resource, M extends PersistenceService> M getPersistenceService(Class<K> repositoryServiceType, Class<L> resourceType) 
 	{
-		if (DefaultRepositoryService.class.getName().equals(repositoryServiceType.getName()))
+		if (JasperDesignResource.class.getName().equals(resourceType.getName()))
 		{
-			if (InputStreamResource.class.getName().equals(resourceType.getName()))
-			{
-				return (M)new InputStreamPersistenceService();
-			}
-			else if (OutputStreamResource.class.getName().equals(resourceType.getName()))
-			{
-				return (M)new OutputStreamPersistenceService();
-			}
-//			else if (ReportResource.class.getName().equals(resourceType.getName()))
-//			{
-//				return (M)new ReportPersistenceService();
-//			}
-			else if (DataAdapter.class.isAssignableFrom(resourceType))
-			{
-				return (M)new CastorDataAdapterPersistenceService();
-			}
-			return (M)new SerializedObjectPersistenceService();
+			return (M)new CachedJasperDesignPersistenceService();
 		}
 		return null;
 	}
