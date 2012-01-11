@@ -23,50 +23,40 @@
  */
 package net.sf.jasperreports.repo;
 
-import java.io.InputStream;
+import java.util.List;
 
-
-
+import net.sf.jasperreports.extensions.ExtensionsEnvironment;
 
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
+ * @version $Id: RepositoryUtil.java 4882 2012-01-09 14:54:19Z teodord $
  */
-public interface RepositoryService
+public final class PersistenceUtil
 {
 	/**
 	 * 
-	 *
-	public <T extends RepositoryContext> T createContext();
+	 */
+	public static PersistenceService getPersistenceService(Class repositoryServiceType, Class resourceType)
+	{
+		List<PersistenceServiceFactory> factories = ExtensionsEnvironment.getExtensionsRegistry().getExtensions(PersistenceServiceFactory.class);
+		for (PersistenceServiceFactory factory : factories)
+		{
+			PersistenceService service = factory.getPersistenceService(repositoryServiceType, resourceType);
+			if (service != null)
+			{
+				return service;
+			}
+		}
+		//throw new JRRuntimeException("No persistence service registered for the '" + repositoryServiceType.getName() + "' repository type and '" + resourceType.getName() + "' resource type.");
+		return null;
+	}
+
 
 	/**
 	 * 
 	 */
-	public void setContext(RepositoryContext context);
-
-	/**
-	 * 
-	 */
-	public void revertContext();
-
-	/**
-	 * @deprecated Replaced by {@link StreamRepositoryService#getInputStream(String)}.
-	 */
-	public InputStream getInputStream(String uri);
-	
-	/**
-	 * 
-	 */
-	public Resource getResource(String uri);
-	
-	/**
-	 * 
-	 */
-	public void saveResource(String uri, Resource resource);
-	
-	/**
-	 * 
-	 */
-	public <K extends Resource> K getResource(String uri, Class<K> resourceType);
+	private PersistenceUtil()
+	{
+	}
 }

@@ -23,50 +23,17 @@
  */
 package net.sf.jasperreports.repo;
 
-import java.io.InputStream;
-
-
-
-
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
+ * @version $Id: DataAdapterServiceFactory.java 4595 2011-09-08 15:55:10Z teodord $
  */
-public interface RepositoryService
+public interface PersistenceServiceFactory
 {
+
 	/**
-	 * 
 	 *
-	public <T extends RepositoryContext> T createContext();
-
-	/**
-	 * 
 	 */
-	public void setContext(RepositoryContext context);
-
-	/**
-	 * 
-	 */
-	public void revertContext();
-
-	/**
-	 * @deprecated Replaced by {@link StreamRepositoryService#getInputStream(String)}.
-	 */
-	public InputStream getInputStream(String uri);
-	
-	/**
-	 * 
-	 */
-	public Resource getResource(String uri);
-	
-	/**
-	 * 
-	 */
-	public void saveResource(String uri, Resource resource);
-	
-	/**
-	 * 
-	 */
-	public <K extends Resource> K getResource(String uri, Class<K> resourceType);
+	public <K extends RepositoryService, L extends Resource, M extends PersistenceService> M getPersistenceService(Class<K> repositoryServiceType, Class<L> resourceType);
+  
 }

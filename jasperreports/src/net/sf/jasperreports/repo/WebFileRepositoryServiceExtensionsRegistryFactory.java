@@ -33,27 +33,27 @@ import net.sf.jasperreports.extensions.SingletonExtensionRegistry;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
+ * @version $Id: FileRepositoryServiceExtensionsRegistryFactory.java 4595 2011-09-08 15:55:10Z teodord $
  */
-public class FileRepositoryServiceExtensionsRegistryFactory implements ExtensionsRegistryFactory
+public class WebFileRepositoryServiceExtensionsRegistryFactory implements ExtensionsRegistryFactory
 {
 
 	/**
 	 * 
 	 */
-	public final static String FILE_REPOSITORY_PROPERTY_PREFIX = 
-		DefaultExtensionsRegistry.PROPERTY_REGISTRY_PREFIX + "file.repository.";
-	public final static String PROPERTY_FILE_REPOSITORY_ROOT = FILE_REPOSITORY_PROPERTY_PREFIX + "root";
-	public final static String PROPERTY_FILE_REPOSITORY_RESOLVE_ABSOLUTE_PATH = FILE_REPOSITORY_PROPERTY_PREFIX + "resolve.absolute.path";
+	public final static String WEB_FILE_REPOSITORY_PROPERTY_PREFIX = 
+		DefaultExtensionsRegistry.PROPERTY_REGISTRY_PREFIX + "web.file.repository.";
+	public final static String PROPERTY_WEB_FILE_REPOSITORY_ROOT = WEB_FILE_REPOSITORY_PROPERTY_PREFIX + "root";
+	public final static String PROPERTY_WEB_FILE_REPOSITORY_RESOLVE_ABSOLUTE_PATH = WEB_FILE_REPOSITORY_PROPERTY_PREFIX + "resolve.absolute.path";
 	
 	/**
 	 * 
 	 */
 	public ExtensionsRegistry createRegistry(String registryId, JRPropertiesMap properties) 
 	{
-		String root = JRProperties.getProperty(properties, PROPERTY_FILE_REPOSITORY_ROOT);
-		boolean resolveAbsolutePath = JRProperties.getBooleanProperty(properties, PROPERTY_FILE_REPOSITORY_RESOLVE_ABSOLUTE_PATH, false);
+		String root = JRProperties.getProperty(properties, PROPERTY_WEB_FILE_REPOSITORY_ROOT);
+		boolean resolveAbsolutePath = JRProperties.getBooleanProperty(properties, PROPERTY_WEB_FILE_REPOSITORY_RESOLVE_ABSOLUTE_PATH, false);
 
-		return new SingletonExtensionRegistry<RepositoryService>(RepositoryService.class, new FileRepositoryService(root, resolveAbsolutePath));
+		return new SingletonExtensionRegistry<RepositoryService>(RepositoryService.class, new WebFileRepositoryService(root, resolveAbsolutePath));
 	}
 }

@@ -23,37 +23,46 @@
  */
 package net.sf.jasperreports.repo;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import net.sf.jasperreports.engine.JRPropertiesMap;
 import net.sf.jasperreports.engine.util.JRProperties;
+import net.sf.jasperreports.engine.util.JRProperties.PropertySuffix;
 import net.sf.jasperreports.extensions.DefaultExtensionsRegistry;
 import net.sf.jasperreports.extensions.ExtensionsRegistry;
 import net.sf.jasperreports.extensions.ExtensionsRegistryFactory;
-import net.sf.jasperreports.extensions.SingletonExtensionRegistry;
-
+import net.sf.jasperreports.extensions.ListExtensionRegistry;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
+ * @version $Id: SimpleFontExtensionsRegistryFactory.java 4595 2011-09-08 15:55:10Z teodord $
  */
-public class FileRepositoryServiceExtensionsRegistryFactory implements ExtensionsRegistryFactory
+public class CastorMappingExtensionsRegistryFactory implements ExtensionsRegistryFactory
 {
 
 	/**
 	 * 
 	 */
-	public final static String FILE_REPOSITORY_PROPERTY_PREFIX = 
-		DefaultExtensionsRegistry.PROPERTY_REGISTRY_PREFIX + "file.repository.";
-	public final static String PROPERTY_FILE_REPOSITORY_ROOT = FILE_REPOSITORY_PROPERTY_PREFIX + "root";
-	public final static String PROPERTY_FILE_REPOSITORY_RESOLVE_ABSOLUTE_PATH = FILE_REPOSITORY_PROPERTY_PREFIX + "resolve.absolute.path";
+	public final static String CASTOR_MAPPING_PROPERTY_PREFIX = 
+		DefaultExtensionsRegistry.PROPERTY_REGISTRY_PREFIX + "repository.castor.mapping.";
 	
 	/**
 	 * 
 	 */
-	public ExtensionsRegistry createRegistry(String registryId, JRPropertiesMap properties) 
+	public ExtensionsRegistry createRegistry(String registryId, JRPropertiesMap properties)
 	{
-		String root = JRProperties.getProperty(properties, PROPERTY_FILE_REPOSITORY_ROOT);
-		boolean resolveAbsolutePath = JRProperties.getBooleanProperty(properties, PROPERTY_FILE_REPOSITORY_RESOLVE_ABSOLUTE_PATH, false);
-
-		return new SingletonExtensionRegistry<RepositoryService>(RepositoryService.class, new FileRepositoryService(root, resolveAbsolutePath));
+		List<PropertySuffix> castorMappingProperties = JRProperties.getProperties(properties, CASTOR_MAPPING_PROPERTY_PREFIX);
+		List<CastorMapping> castorMappings = new ArrayList<CastorMapping>();
+		for (Iterator<PropertySuffix> it = castorMappingProperties.iterator(); it.hasNext();)
+		{
+			PropertySuffix castorMappingProp = it.next();
+			String castorMappingPath = castorMappingProp.getValue();
+			castorMappings.add(new CastorMapping(castorMappingPath));
+		}
+		
+		return new ListExtensionRegistry<CastorMapping>(CastorMapping.class, castorMappings);
 	}
+
 }

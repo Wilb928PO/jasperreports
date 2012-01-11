@@ -21,52 +21,43 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with JasperReports. If not, see <http://www.gnu.org/licenses/>.
  */
-package net.sf.jasperreports.repo;
+package net.sf.jasperreports.extensions;
 
-import java.io.InputStream;
-
-
-
-
+import java.util.List;
 
 /**
+ * An extension registry that contains a list of extensions.
+ * 
+ * @param <Type> the extension type
+ *  
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
+ * @version $Id: SingletonExtensionRegistry.java 4600 2011-09-12 10:32:17Z teodord $
  */
-public interface RepositoryService
+public class ListExtensionRegistry<Type> implements ExtensionsRegistry
 {
-	/**
-	 * 
-	 *
-	public <T extends RepositoryContext> T createContext();
 
-	/**
-	 * 
-	 */
-	public void setContext(RepositoryContext context);
-
-	/**
-	 * 
-	 */
-	public void revertContext();
-
-	/**
-	 * @deprecated Replaced by {@link StreamRepositoryService#getInputStream(String)}.
-	 */
-	public InputStream getInputStream(String uri);
+	private final Class<Type> type;
+	private final List<Type> extensions;
 	
 	/**
+	 * Creates a singleton extension registry.
 	 * 
+	 * @param type the registry type
+	 * @param extension the extension object
 	 */
-	public Resource getResource(String uri);
+	public ListExtensionRegistry(Class<Type> type, List<Type> extension)
+	{
+		this.type = type;
+		this.extensions = extension;
+	}
 	
-	/**
-	 * 
-	 */
-	public void saveResource(String uri, Resource resource);
-	
-	/**
-	 * 
-	 */
-	public <K extends Resource> K getResource(String uri, Class<K> resourceType);
+	public <T> List<T> getExtensions(Class<T> extensionType)
+	{
+		if (type.equals(extensionType))
+		{
+			return (List<T>) extensions;
+		}
+		return null;
+	}
+
 }

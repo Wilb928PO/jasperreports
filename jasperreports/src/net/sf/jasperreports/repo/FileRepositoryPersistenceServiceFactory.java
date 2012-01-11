@@ -23,50 +23,47 @@
  */
 package net.sf.jasperreports.repo;
 
-import java.io.InputStream;
-
+import net.sf.jasperreports.data.DataAdapter;
 
 
 
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
+ * @version $Id: FileRepositoryService.java 4882 2012-01-09 14:54:19Z teodord $
  */
-public interface RepositoryService
+public class FileRepositoryPersistenceServiceFactory implements PersistenceServiceFactory
 {
-	/**
-	 * 
-	 *
-	public <T extends RepositoryContext> T createContext();
-
-	/**
-	 * 
-	 */
-	public void setContext(RepositoryContext context);
-
-	/**
-	 * 
-	 */
-	public void revertContext();
-
-	/**
-	 * @deprecated Replaced by {@link StreamRepositoryService#getInputStream(String)}.
-	 */
-	public InputStream getInputStream(String uri);
+	private static final FileRepositoryPersistenceServiceFactory INSTANCE = new FileRepositoryPersistenceServiceFactory();
 	
 	/**
 	 * 
 	 */
-	public Resource getResource(String uri);
+	public static FileRepositoryPersistenceServiceFactory getInstance()
+	{
+		return INSTANCE;
+	}
 	
 	/**
 	 * 
 	 */
-	public void saveResource(String uri, Resource resource);
-	
-	/**
-	 * 
-	 */
-	public <K extends Resource> K getResource(String uri, Class<K> resourceType);
+	public <K extends RepositoryService, L extends Resource, M extends PersistenceService> M getPersistenceService(Class<K> repositoryServiceType, Class<L> resourceType) 
+	{
+		if (FileRepositoryService.class.isAssignableFrom(repositoryServiceType))
+		{
+			if (InputStreamResource.class.getName().equals(resourceType.getName()))
+			{
+				return (M)new StreamPersistenceService();
+			}
+			else if (ReportResource.class.getName().equals(resourceType.getName()))
+			{
+				return (M)new ReportPersistenceService();
+			}
+			else if (DataAdapter.class.isAssignableFrom(resourceType))
+			{
+				return (M)new CastorDataAdapterPersistenceService();
+			}
+		}
+		return null;
+	}
 }
