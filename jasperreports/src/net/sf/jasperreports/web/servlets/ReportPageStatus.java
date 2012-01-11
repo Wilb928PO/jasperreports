@@ -35,6 +35,7 @@ public class ReportPageStatus
 {
 
 	private static final long STATUS_NO_SUCH_PAGE = -1;
+	private static final long STATUS_ERROR = -2;
 	private static final long STATUS_PAGE_FINAL = 0;
 	
 	/**
@@ -59,11 +60,29 @@ public class ReportPageStatus
 		return new ReportPageStatus(modified ? timestamp : -timestamp);
 	}
 	
+	/**
+	 * Creates an error status.
+	 * 
+	 * @param error the error
+	 * @return an error status object
+	 */
+	public static ReportPageStatus error(Throwable error)
+	{
+		return new ReportPageStatus(error);
+	}
+	
 	private final long status;
+	private Throwable error;
 	
 	protected ReportPageStatus(long status)
 	{
 		this.status = status;
+	}
+
+	protected ReportPageStatus(Throwable error)
+	{
+		this(STATUS_ERROR);
+		this.error = error;
 	}
 
 	/**
@@ -105,5 +124,15 @@ public class ReportPageStatus
 	public long getTimestamp()
 	{
 		return status < -1 ? -status : status;
+	}
+
+	/**
+	 * Returns the error encountered during the report generation, if any.
+	 * 
+	 * @return the error encountered during the report generation, if any
+	 */
+	public Throwable getError()
+	{
+		return error;
 	}
 }

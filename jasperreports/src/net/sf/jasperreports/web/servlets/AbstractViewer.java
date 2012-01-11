@@ -78,6 +78,12 @@ public abstract class AbstractViewer
 			Long timestamp = pageTimestamp == null ? null : Long.valueOf(pageTimestamp);
 			
 			pageStatus = jasperPrintAccessor.pageStatus(pageIdx, timestamp);
+			
+			if (pageStatus.getError() != null)
+			{
+				throw new JRRuntimeException("Error occured during report generation", pageStatus.getError());
+			}
+			
 			if (!pageStatus.pageExists())
 			{
 				throw new JRRuntimeException("Page " + pageIdx + " not found in report");

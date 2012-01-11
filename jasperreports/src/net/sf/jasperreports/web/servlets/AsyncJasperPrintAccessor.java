@@ -56,6 +56,7 @@ public class AsyncJasperPrintAccessor implements JasperPrintAccessor, Asynchrono
 	private final Map<Integer, Long> trackedPages = new HashMap<Integer, Long>();
 	
 	private volatile boolean done;
+	private volatile Throwable error;
 	private volatile JasperPrint jasperPrint;
 	private volatile int pageCount;
 	
@@ -87,6 +88,11 @@ public class AsyncJasperPrintAccessor implements JasperPrintAccessor, Asynchrono
 			while (!done && pageIdx >= pageCount)
 			{
 				pageCondition.await();
+			}
+			
+			if (error != null)
+			{
+				return ReportPageStatus.error(error);
 			}
 			
 			if (pageIdx >= pageCount)
@@ -170,13 +176,42 @@ public class AsyncJasperPrintAccessor implements JasperPrintAccessor, Asynchrono
 
 	public void reportCancelled()
 	{
-		//FIXME
+		if (log.isDebugEnabled())
+		{
+			log.debug("Report cancelled");
+		}
+		
+		lock.lock();
+		try
+		{
+			done = true;
+			
+			// signal to pageStatus
+			pageCondition.signal();
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	public void reportFillError(Throwable t)
 	{
-		log.error("Error execution report", t);
-		//FIXME
+		log.error("Error during report execution", t);
+		
+		lock.lock();
+		try
+		{
+			error = t;
+			done = true;
+			
+			// signal to pageStatus
+			pageCondition.signal();
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	public void pageGenerated(JasperPrint jasperPrint, int pageIndex)
