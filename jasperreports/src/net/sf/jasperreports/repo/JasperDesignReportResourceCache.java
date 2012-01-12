@@ -23,42 +23,58 @@
  */
 package net.sf.jasperreports.repo;
 
+import java.util.HashMap;
+import java.util.Map;
 
+import net.sf.jasperreports.engine.ReportContext;
 
 
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id: FileRepositoryService.java 4882 2012-01-09 14:54:19Z teodord $
+ * @version $Id: FileRepositoryService.java 4819 2011-11-28 15:24:25Z lucianc $
  */
-public class CachedJasperDesignPersistenceServiceFactory implements PersistenceServiceFactory
+public class JasperDesignReportResourceCache
 {
-	private static final CachedJasperDesignPersistenceServiceFactory INSTANCE = new CachedJasperDesignPersistenceServiceFactory();
-	
 	/**
 	 * 
 	 */
-	public static CachedJasperDesignPersistenceServiceFactory getInstance()
-	{
-		return INSTANCE;
-	}
-	
+	private static final String PARAMETER_JASPER_DESIGN_CACHE = "net.sf.jasperreports.parameter.jasperdesign.cache";
+
 	/**
 	 * 
 	 */
-	private CachedJasperDesignPersistenceServiceFactory() //FIXMEREPO make private constructors in all singleton classes
-	{
-	}
-	
+	private Map<String, JasperDesignReportResource> cachedResourcesMap = new HashMap<String, JasperDesignReportResource>();
+
 	/**
 	 * 
 	 */
-	public <K extends RepositoryService, L extends Resource, M extends PersistenceService> M getPersistenceService(Class<K> repositoryServiceType, Class<L> resourceType) 
+	public static JasperDesignReportResourceCache getInstance(ReportContext reportContext)
 	{
-		if (JasperDesignResource.class.getName().equals(resourceType.getName()))
+		JasperDesignReportResourceCache cache = (JasperDesignReportResourceCache)reportContext.getParameterValue(PARAMETER_JASPER_DESIGN_CACHE);
+		
+		if (cache == null)
 		{
-			return (M)new CachedJasperDesignPersistenceService();
+			cache = new JasperDesignReportResourceCache();
+			reportContext.setParameterValue(PARAMETER_JASPER_DESIGN_CACHE, cache);
 		}
-		return null;
+		
+		return cache;
+	}
+	
+	/**
+	 * 
+	 */
+	public JasperDesignReportResource getResource(String uri)
+	{
+		return cachedResourcesMap.get(uri);
+	}
+
+	/**
+	 * 
+	 */
+	public void setResource(String uri, JasperDesignReportResource resource)
+	{
+		cachedResourcesMap.put(uri, resource);
 	}
 }

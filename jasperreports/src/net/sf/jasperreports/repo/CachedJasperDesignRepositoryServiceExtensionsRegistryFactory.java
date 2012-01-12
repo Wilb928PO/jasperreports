@@ -23,29 +23,30 @@
  */
 package net.sf.jasperreports.repo;
 
-import net.sf.jasperreports.engine.design.JasperDesign;
-
+import net.sf.jasperreports.engine.JRPropertiesMap;
+import net.sf.jasperreports.extensions.ExtensionsRegistry;
+import net.sf.jasperreports.extensions.ExtensionsRegistryFactory;
+import net.sf.jasperreports.extensions.SingletonExtensionRegistry;
 
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id: ReportResource.java 4595 2011-09-08 15:55:10Z teodord $
+ * @version $Id: FileRepositoryServiceExtensionsRegistryFactory.java 4595 2011-09-08 15:55:10Z teodord $
  */
-public class JasperDesignResource extends ObjectResource
+public class CachedJasperDesignRepositoryServiceExtensionsRegistryFactory implements ExtensionsRegistryFactory
 {
+
 	/**
 	 * 
 	 */
-	public JasperDesign getJasperDesign()
-	{
-		return (JasperDesign)getValue();
-	}
+	private final static ExtensionsRegistry extensionsRegistry = 
+		new SingletonExtensionRegistry<RepositoryService>(RepositoryService.class, CachedJasperDesignRepositoryService.getInstance());
 	
 	/**
 	 * 
 	 */
-	public void setJasperDesign(JasperDesign jasperDesign)
+	public ExtensionsRegistry createRegistry(String registryId, JRPropertiesMap properties) 
 	{
-		setValue(jasperDesign);
+		return extensionsRegistry;
 	}
 }

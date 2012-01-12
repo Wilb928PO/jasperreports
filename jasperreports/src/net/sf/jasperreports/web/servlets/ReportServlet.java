@@ -40,8 +40,9 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.fill.AsynchronousFillHandle;
-import net.sf.jasperreports.repo.CachedJasperDesignPersistenceService;
-import net.sf.jasperreports.repo.JasperDesignResource;
+import net.sf.jasperreports.repo.CachedJasperDesignRepositoryService;
+import net.sf.jasperreports.repo.JasperDesignReportResource;
+import net.sf.jasperreports.repo.JasperDesignReportResourceCache;
 import net.sf.jasperreports.repo.RepositoryUtil;
 import net.sf.jasperreports.repo.WebFileRepositoryService;
 import net.sf.jasperreports.web.WebReportContext;
@@ -168,7 +169,7 @@ public class ReportServlet extends HttpServlet
 				//parameters.put(JRParameter.IS_IGNORE_PAGINATION, isIgnorePagination);
 			}		
 			
-			CachedJasperDesignPersistenceService.setThreadReportContext(webReportContext);
+			CachedJasperDesignRepositoryService.setThreadReportContext(webReportContext);
 			
 			JasperReport jasperReport = null; 
 			
@@ -178,16 +179,7 @@ public class ReportServlet extends HttpServlet
 
 				jasperReport = RepositoryUtil.getReport(reportUri);
 				
-				JasperDesignResource jasperDesignResource = RepositoryUtil.getResource(reportUri, JasperDesignResource.class);
-				if (jasperDesignResource == null)
-				{
-					System.out.println("design not found");
-				}
-				else
-				{
-					JasperDesign jasperDesign = jasperDesignResource.getJasperDesign();
-					System.out.println("design : " + jasperDesign.getName());
-				}
+//				JasperDesignReportResource jasperDesignResource = JasperDesignReportResourceCache.getInstance(webReportContext).getResource(reportUri)
 			}
 			
 			if (jasperReport == null)

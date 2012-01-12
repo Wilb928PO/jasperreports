@@ -27,11 +27,11 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRRuntimeException;
+import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.ReportContext;
 import net.sf.jasperreports.engine.design.JasperDesign;
@@ -41,22 +41,38 @@ import net.sf.jasperreports.engine.xml.JRXmlWriter;
 
 
 
+
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id: FileRepositoryService.java 4819 2011-11-28 15:24:25Z lucianc $
+ * @version $Id: FileRepositoryService.java 4882 2012-01-09 14:54:19Z teodord $
  */
-public class CachedJasperDesignPersistenceService implements PersistenceService
+public class CachedJasperDesignRepositoryService implements RepositoryService
 {
 	/**
 	 * 
 	 */
-	private static final String PARAMETER_JASPER_DESIGN_CACHE = "net.sf.jasperreports.parameter.jasperdesign.cache";
+	private static final CachedJasperDesignRepositoryService INSTANCE = new CachedJasperDesignRepositoryService();
 
 	/**
 	 * 
 	 */
 	private static final ThreadLocal<ReportContext> threadReportContext = new InheritableThreadLocal<ReportContext>();
 
+	/**
+	 * 
+	 */
+	public static CachedJasperDesignRepositoryService getInstance()
+	{
+		return INSTANCE;
+	}
+	
+	/**
+	 * 
+	 */
+	private CachedJasperDesignRepositoryService()
+	{
+	}
+	
 	/**
 	 * 
 	 */
@@ -84,7 +100,7 @@ public class CachedJasperDesignPersistenceService implements PersistenceService
 	/**
 	 * 
 	 */
-	private Map<String, JasperDesign> getCache()
+	private JasperDesignReportResourceCache getCache()
 	{
 		ReportContext reportContext = getThreadReportContext();
 		if (reportContext == null)
@@ -92,23 +108,39 @@ public class CachedJasperDesignPersistenceService implements PersistenceService
 			throw new JRRuntimeException("Thread report context not set.");
 		}
 
-		Map<String, JasperDesign> cache = (Map<String, JasperDesign>)reportContext.getParameterValue(PARAMETER_JASPER_DESIGN_CACHE);
-		
-		if (cache == null)
-		{
-			cache = new HashMap<String, JasperDesign>();
-			reportContext.setParameterValue(PARAMETER_JASPER_DESIGN_CACHE, cache);
-		}
-		
-		return cache;
+		return JasperDesignReportResourceCache.getInstance(reportContext);
 	}
 	
 	/**
 	 * 
 	 */
-	private JasperDesign getJasperDesignFromCache(String uri)
+	private JasperDesignReportResource getResourceFromCache(String uri)
 	{
-		return getCache().get(uri);
+		return getCache().getResource(uri);
+	}
+	
+	/**
+	 * 
+	 */
+	private JasperDesign getJasperDesignFromRepositories(String uri)
+	{
+		List<RepositoryService> services = RepositoryUtil.getRepositoryServices();
+		if (services != null)
+		{
+			for (RepositoryService service : services)
+			{
+				if (!service.getClass().equals(CachedJasperDesignRepositoryService.class))
+				{
+					JasperDesign jasperDesign = getJasperDesignFromRepository(uri, service);
+					if (jasperDesign != null)
+					{
+						return jasperDesign;
+					}
+				}
+			}
+		}
+		
+		return null;
 	}
 	
 	/**
@@ -137,11 +169,7 @@ public class CachedJasperDesignPersistenceService implements PersistenceService
 
 		if (jrxmlIs == null)
 		{
-			if (jasperIs == null)
-			{
-				throw new JRRuntimeException("Report not found: " + reportUri);
-			}
-			else
+			if (jasperIs != null)
 			{
 				try
 				{
@@ -169,59 +197,112 @@ public class CachedJasperDesignPersistenceService implements PersistenceService
 
 		JasperDesign jasperDesign = null;
 		
-		try
-		{
-			jasperDesign = JRXmlLoader.load(jrxmlIs);
-		}
-		catch (JRException e)
-		{
-			throw new JRRuntimeException(e);
-		}
-		finally
+		if (jrxmlIs != null)
 		{
 			try
 			{
-				jrxmlIs.close();
+				jasperDesign = JRXmlLoader.load(jrxmlIs);
 			}
-			catch (IOException e)
+			catch (JRException e)
 			{
+				throw new JRRuntimeException(e);
+			}
+			finally
+			{
+				try
+				{
+					jrxmlIs.close();
+				}
+				catch (IOException e)
+				{
+				}
 			}
 		}
 		
 		return jasperDesign;
 	}
-	
-	
-	/**
-	 * 
-	 */
-	public Resource load(String uri, RepositoryService repositoryService)
-	{
-		JasperDesign jasperDesign = getJasperDesignFromCache(uri);
-		
-		if (jasperDesign == null)
-		{
-			jasperDesign = getJasperDesignFromRepository(uri, repositoryService);
-		}
-		
-		JasperDesignResource resource = null;
-
-		if (jasperDesign != null)
-		{
-			resource = new JasperDesignResource();
-			resource.setJasperDesign(jasperDesign);
-		}
-
-		return resource;
-	}
-
 
 	/**
 	 * 
 	 */
-	public void save(Resource resource, String uri, RepositoryService repositoryService) 
+	public void setContext(RepositoryContext context) //FIXMEREPO the context is useless here; consider refactoring
 	{
-		// TODO Auto-generated method stub
+	}
+	
+	public void revertContext()
+	{
 	}
 
+	/**
+	 * 
+	 */
+	public InputStream getInputStream(String uri)
+	{
+		throw new UnsupportedOperationException();
+	}
+	
+	/**
+	 * 
+	 */
+	public Resource getResource(String uri)
+	{
+		throw new JRRuntimeException("Not implemented.");//FIXMEREPO
+	}
+	
+	/**
+	 * 
+	 */
+	public <K extends Resource> K getResource(String uri, Class<K> resourceType)
+	{
+		if (ReportResource.class.isAssignableFrom(resourceType))
+		{
+			JasperDesignReportResource resource = getResourceFromCache(uri);
+			
+			if (resource == null)
+			{
+				JasperDesign jasperDesign = getJasperDesignFromRepositories(uri);
+
+				if (jasperDesign != null)
+				{
+					resource = new JasperDesignReportResource();
+					resource.setJasperDesign(jasperDesign);
+					
+					getCache().setResource(uri, resource);
+				}
+			}
+			
+			if (resource != null)
+			{
+				JasperReport jasperReport = resource.getReport();
+				if (jasperReport == null)
+				{
+					try
+					{
+						jasperReport = JasperCompileManager.compileReport(resource.getJasperDesign());
+						resource.setReport(jasperReport);
+					}
+					catch (JRException e)
+					{
+						throw new JRRuntimeException(e);
+					}
+				}
+			}
+			
+			return (K)resource;
+		}
+
+		return null;
+	}
+
+	/**
+	 * 
+	 */
+	public void saveResource(String uri, Resource resource)
+	{
+//		PersistenceService persistenceService = PersistenceUtil.getPersistenceService(FileRepositoryService.class, resource.getClass());
+//		if (persistenceService != null)
+//		{
+//			persistenceService.save(resource, uri, this);
+//		}
+	}
 }

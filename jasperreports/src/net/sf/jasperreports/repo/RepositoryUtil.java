@@ -51,7 +51,7 @@ public final class RepositoryUtil
 	/**
 	 * 
 	 */
-	private static List<RepositoryService> getRepositoryServices()
+	public static List<RepositoryService> getRepositoryServices()
 	{
 		List<RepositoryService> cachedServices = repositoryServices.get();
 		if (cachedServices != null)

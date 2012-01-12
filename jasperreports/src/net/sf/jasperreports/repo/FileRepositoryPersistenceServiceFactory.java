@@ -61,8 +61,12 @@ public class FileRepositoryPersistenceServiceFactory implements PersistenceServi
 			}
 			else if (ReportResource.class.getName().equals(resourceType.getName()))
 			{
-				return (M)new ReportPersistenceService();
+				return (M)new SerializedReportPersistenceService();
 			}
+//			else if (ReportResource.class.getName().equals(resourceType.getName()))
+//			{
+//				return (M)new ReportPersistenceService();
+//			}
 			else if (DataAdapter.class.isAssignableFrom(resourceType))
 			{
 				return (M)new CastorDataAdapterPersistenceService();
