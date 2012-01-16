@@ -189,7 +189,8 @@
 		            		columnNameSel = columnSelectorPrefix + self.attr('data-popupColumn'), // FIXMEJIVE 'col_' prefix hardcoded in TableReport.java
 		            		firstElem = jQuery(columnNameSel + ':first'),
 		            		lastElem = jQuery(columnNameSel + ':last'),
-		            		headerSelectorPrefix = '.header_';
+		            		headerSelectorPrefix = '.header_',
+		            		headerNameSel = headerSelectorPrefix + self.attr('data-popupColumn');
 		            	
 		            	// determine left and right columns
 		            	var leftColName = self.prev('.columnHeader').attr('data-popupColumn'),
@@ -231,46 +232,35 @@
 			                		self.prev().css({left: self.css('left')});
 			                	},
 			                	stop: function(event, ui) {
+			                		console.log('resize stop');
+			                		
 			                		var self = jQuery(this),
 			                			currentLeftPx = self.css('left'),
 			                			currentLeft = parseInt(currentLeftPx.substring(0, currentLeftPx.indexOf('px'))),
 			                			deltaLeft = ui.originalPosition.left - currentLeft,
 			                			deltaWidth = self.width() - ui.originalSize.width,
-			                			headerClass = '.header' + columnNameSel.substring(columnNameSel.indexOf('_'));
+			                			direction;
 			                		
 			                	    if (deltaWidth != 0 && deltaLeft == 0) {	// deltaWidth > 0 ? 'resize column right positive' : 'resize column right negative'
-		                	    		
-			                	    	// set current column width
-		                	    		setColumnCssWidth(columnNameSel, deltaWidth);
-		                	    		setColumnCssWidth(headerClass, deltaWidth);
-
-		                	    		if (rightColumnSelector) {
-			                	    		// set right column left
-			                	    		setColumnCssLeft(rightColumnSelector, deltaWidth);
-			                	    		setColumnCssLeft(headerSelectorPrefix + rightColName, deltaWidth);
-			                	    		
-			                	    		// set right column width
-			                	    		setColumnCssWidth(rightColumnSelector, -deltaWidth);
-			                	    		setColumnCssWidth(headerSelectorPrefix + rightColName, -deltaWidth);
-		                	    		}
-		                	    		
+		                	    		direction = 'right';
 			                	    } else if (deltaLeft != 0) {	// deltaLeft > 0 ? 'resize column left positive' : 'resize column left negative'
-
-			                	    	// set current column left
-		                	    		setColumnCssLeft(columnNameSel, -deltaLeft);
-		                	    		setColumnCssLeft(headerClass, -deltaLeft);
-		                	    		
-		                	    		// set current column width
-		                	    		setColumnCssWidth(columnNameSel, deltaLeft);
-		                	    		setColumnCssWidth(headerClass, deltaLeft);
-		                	    		
-		                	    		if (leftColumnSelector) {
-			                	    		// set left column width
-			                	    		setColumnCssWidth(leftColumnSelector, -deltaLeft);
-			                	    		setColumnCssWidth(headerSelectorPrefix + leftColName, -deltaLeft);
-		                	    		}
-		                	    		
+			                	    	direction = 'left';
 			                	    }
+			                	    
+			                	    var actionData = {actionName: 'resize',
+			                	    				resizeColumnData: {
+			                	    					columnIndex: jQuery('.columnHeader').index(jQuery(headerNameSel+':first')),
+			                	    					direction: direction,
+			                	    					width: self.width()
+			                	    				}},
+			                	    	resizeActionLink = self.attr('data-resizeAction'),
+			                	    	ctx = gm.getToolbarExecutionContext(jQuery('div.columnHeader:first'), resizeActionLink, 'jr.action=' + gm.toJsonString(actionData), null, true);
+
+			                        if (ctx) {
+			                            ctx.run();
+			                        }
+			                	    
+			                	    
 			                	}
 			                });
 			            	
@@ -330,6 +320,7 @@
 				event.preventDefault();
                 var currentHref = jQuery(this).attr("data-href"),
                 	ctx = gm.getExecutionContext(this, currentHref, null);
+//                	ctx = gm.getToolbarExecutionContext(jQuery('div.columnHeader:first'), currentHref, null, null);
 
                 if (ctx) {
                     ctx.run();

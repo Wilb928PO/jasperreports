@@ -204,6 +204,8 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 			
 			velocityContext.put("filterValueStartParamName", HeaderToolbarElement.REQUEST_PARAMETER_FILTER_VALUE_START);
 			velocityContext.put("filterValueEndParamName", HeaderToolbarElement.REQUEST_PARAMETER_FILTER_VALUE_END);
+			
+			velocityContext.put("resizeColumnAction", getResizeColumnLink(context));
 
 			// begin:temp
 			if (popupId != null) {
@@ -341,6 +343,20 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 	}
 	
 	private String getFilterFormActionLink(JRHtmlExporterContext context) {
+		JRBasePrintHyperlink hyperlink = new JRBasePrintHyperlink();
+		hyperlink.setLinkType("ReportExecution");
+		
+		JRPrintHyperlinkParameters parameters = new JRPrintHyperlinkParameters();
+		ReportContext reportContext = context.getExporter().getReportContext();
+		parameters.addParameter(new JRPrintHyperlinkParameter(WebReportContext.REQUEST_PARAMETER_REPORT_CONTEXT_ID, String.class.getName(), reportContext.getId()));
+		parameters.addParameter(new JRPrintHyperlinkParameter(ReportServlet.REQUEST_PARAMETER_RUN_REPORT, String.class.getName(), "true"));
+		
+		hyperlink.setHyperlinkParameters(parameters);
+		
+		return context.getHyperlinkURL(hyperlink);
+	}
+	
+	private String getResizeColumnLink(JRHtmlExporterContext context) {
 		JRBasePrintHyperlink hyperlink = new JRBasePrintHyperlink();
 		hyperlink.setLinkType("ReportExecution");
 		

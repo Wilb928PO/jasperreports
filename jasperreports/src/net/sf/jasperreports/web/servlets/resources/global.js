@@ -243,11 +243,25 @@ jQuery.noConflict();
 		// Remove jQuery '$' alias from global namespace 
 		jQuery.noConflict();
 		
+		jg.ajaxJsonLoad = function (url, elementToAppendTo, elementToExtract, requestParams) {
+			jQuery.get( url, requestParams, function (data, textStatus, jqXHR) {
+		        
+				if (elementToAppendTo) {
+					var toExtract = data;
+					if (elementToExtract) {
+						toExtract = $(elementToExtract, data);
+					}
+					elementToAppendTo.html(toExtract);
+				}
+				
+			}, 'json');
+		};
+		
 		// @Object
-		jg.AjaxExecutionContext = function(contextId, requestUrl, target, requestParams, elementToExtract, callback) {
+		jg.AjaxExecutionContext = function(contextId, requestUrl, target, requestParams, elementToExtract, callback, isJSON) {
 			// enforce new
 			if (!(this instanceof jg.AjaxExecutionContext)) {
-				return new jg.AjaxExecutionContext(contextId, requestUrl, target, requestParams, elementToExtract, callback);
+				return new jg.AjaxExecutionContext(contextId, requestUrl, target, requestParams, elementToExtract, callback, isJSON);
 			}
 			this.contextId = contextId;
 			this.requestUrl = requestUrl;
@@ -255,6 +269,7 @@ jQuery.noConflict();
 			this.requestParams = requestParams;
 			this.elementToExtract = elementToExtract;
 			this.callback = callback;
+			this.isJSON = isJSON;
 		};
 		
 		jg.AjaxExecutionContext.prototype = {
@@ -273,6 +288,11 @@ jQuery.noConflict();
 				if (parent.size() == 0) {
 					parent = jQuery(this.target).closest('div.jiveContext');
 				}
+				
+				if (parent.size() == 0) {
+					parent = this.target;
+				}
+				
 				parent.loadmask();
 				
 				// FIXME: must know if this is an ajax request, to prevent some resources from reloading
@@ -289,23 +309,28 @@ jQuery.noConflict();
 				}
 				
 				var callback = this.callback;
-				jQuery(this.target).load(this.requestUrl + (this.elementToExtract!=null ? ' ' +this.elementToExtract : ''), this.requestParams, function(response, status, xhr) {
-					parent.loadmask('hide');
-					
-					if (status == 'success') {
-						// add callback here
-						jg.isFirstAjaxRequest = false;
+				
+//				if (this.isJSON) {
+//					jg.ajaxJsonLoad(this.requestUrl, this.target, this.elementToExtract, this.requestParams);
+//				} else {
+					jQuery(this.target).load(this.requestUrl + (this.elementToExtract!=null ? ' ' +this.elementToExtract : ''), this.requestParams, function(response, status, xhr) {
+						parent.loadmask('hide');
 						
-						if (callback) {
-							callback(response, status, xhr);
+						if (status == 'success') {
+							// add callback here
+							jg.isFirstAjaxRequest = false;
+							
+							if (callback) {
+								callback(response, status, xhr);
+							}
+						} else if (status == 'error') {
+						    alert('Error: ' + xhr.status + " " + xhr.statusText)
+						    
+						} else {
+							alert('Unknown: ' + xhr.status + "; " + xhr.statusText);
 						}
-					} else if (status == 'error') {
-					    alert('Error: ' + xhr.status + " " + xhr.statusText)
-					    
-					} else {
-						alert('Unknown: ' + xhr.status + "; " + xhr.statusText);
-					}
-				});
+					});
+//				}
 			}
 		};
 		
@@ -358,6 +383,7 @@ jQuery.noConflict();
 					reqUrlBase, 
 					jQuery('div.result', executionContextElement), // target 
 					newParams,
+					null,
 					null
 				);
 			}
@@ -366,7 +392,7 @@ jQuery.noConflict();
 		};
 		
 
-		jg.getToolbarExecutionContext = function(startPoint, requestedUrl, params, callback) {
+		jg.getToolbarExecutionContext = function(startPoint, requestedUrl, params, callback, isJSON) {
 			var executionContextElement = jQuery(startPoint).closest('div.mainReportDiv');
 			
 			if (executionContextElement && executionContextElement.size() > 0) {
@@ -376,7 +402,8 @@ jQuery.noConflict();
 					jQuery('div.result', executionContextElement).filter(':first'), // target 
 					params,
 					'div.result',
-					callback
+					callback,
+					isJSON
 				);
 			}
 		};
@@ -410,6 +437,8 @@ jQuery.noConflict();
 				pagePrevious = jQuery('.pagePrevious', jqToolbar),
 				pageNext = jQuery('.pageNext', jqToolbar),
 				pageLast = jQuery('.pageLast', jqToolbar),
+				undo = jQuery('.undo', jqToolbar),
+				redo = jQuery('.redo', jqToolbar),
 				classEnabled = 'enabledPaginationButton',
 				classDisabled = 'disabledPaginationButton',
 				enableElem = function (jqElem) {
@@ -450,6 +479,9 @@ jQuery.noConflict();
 			} else {
 				enablePair(pageFirst, pagePrevious);
 			}
+			
+			enableElem(undo);
+			enableElem(redo);
 		};
 		
 		jg.setAutoRefresh = function(strRunReportParam, jqToolbar) {
@@ -508,7 +540,27 @@ jQuery.noConflict();
 							requestedPage = totalPages -1;
 						}
 						
-						jg.refreshPage(strRunReportParam, parent, requestedPage);
+						if (requestedPage != null) {
+							jg.refreshPage(strRunReportParam, parent, requestedPage);
+						}
+						
+						if (target.is('.undo')) {		// FIXMEJIVE: place this in headertoolbar.js
+							var actionData = {actionName: 'undo'},
+								undoActionLink = jQuery('.headerToolbarMask:first').attr('data-resizeAction'),
+								ctx = jg.getToolbarExecutionContext(jQuery('div.columnHeader:first'), undoActionLink, 'jr.action=' + jg.toJsonString(actionData), null, true);
+	                        
+							if (ctx) {
+	                            ctx.run();
+	                        }
+						} else if (target.is('.redo')) {		// FIXMEJIVE: place this in headertoolbar.js
+							var actionData = {actionName: 'redo'},
+							undoActionLink = jQuery('.headerToolbarMask:first').attr('data-resizeAction'),
+							ctx = jg.getToolbarExecutionContext(jQuery('div.columnHeader:first'), undoActionLink, 'jr.action=' + jg.toJsonString(actionData), null, true);
+							
+                        if (ctx) {
+                            ctx.run();
+                        }
+					}
 					}
 				});
 			}
@@ -544,7 +596,7 @@ jQuery.noConflict();
 				jg.setAutoRefresh(strRunReportParam, toolbar);
 			};
 			
-			jg.getToolbarExecutionContext(toolbar, currentHref, params, callback).run();
+			jg.getToolbarExecutionContext(toolbar, currentHref, params, callback, null).run();
 		}
 
 		jg.updateCurrentPageForToolbar = function(jQueryToolbar, newCurrentPage, newTotalPages, pageTimestamp) {
@@ -559,6 +611,58 @@ jQuery.noConflict();
 				jQueryToolbar.removeAttr('data-pagetimestamp');
 			}
 		};
+		
+		jg.escapeString = function(str) {
+    		return encodeURIComponent(str.replace(/(\n)|(\r)|(\t)|(\b)/g, '').replace(/\"/g, '\\\"'));
+    	};
+		
+		jg.toJsonString = function(object) {
+    		var o2s = Object.prototype.toString.call(object),
+    			result = '';
+    		
+    		switch (o2s) {
+				case '[object Array]':
+					result += "[";
+					for (var i = 0, ln = object.length; i < ln; i++) {
+						result += jg.toJsonString(object[i]);
+						if (i < ln -1) {
+							result += ",";
+						}
+					}
+					result += "]";
+					break;
+
+				case '[object Object]':
+					result += "{";
+					for (var property in object) {
+		    			if (object.hasOwnProperty(property) && object[property] != null) {
+							result += "\"" + property + "\":" + jg.toJsonString(object[property]) + ",";
+		    			}
+					}
+					if (result.indexOf(",") != -1) {
+		    			result = result.substring(0, result.lastIndexOf(","));
+		    		}
+					result += "}";
+					break;
+
+				case '[object Function]':
+					result += "\"" + escapeString(object.toString()) + "\"";
+					break;
+
+				case '[object String]':
+					result += "\"" + jg.escapeString(object) + "\"";
+					break;
+
+				case '[object Null]':
+					result = null;
+					break;
+
+				default:
+					result += object;
+					break;
+			}
+    		return result;
+    	};
 		
 		/**
 		 * A jQuery plugin that displays an overlapping image for a specified element 

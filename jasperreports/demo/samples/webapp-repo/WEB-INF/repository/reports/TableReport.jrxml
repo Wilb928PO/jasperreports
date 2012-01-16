@@ -53,7 +53,7 @@
 				<reportElement x="0" y="0" width="760" height="1"/>
 			</line>
 			<textField isBlankWhenNull="true" bookmarkLevel="1">
-				<reportElement style="Sans_Normal" x="123" y="10" width="515" height="30"/>
+				<reportElement key="report_title" style="Sans_Normal" x="123" y="10" width="515" height="30"/>
 				<textElement textAlignment="Center">
 					<font size="22"/>
 				</textElement>
@@ -89,7 +89,7 @@
 	<summary>
 		<band height="73">
 			<componentElement>
-				<reportElement x="0" y="0" width="760" height="70"/>
+				<reportElement key="table_component" x="0" y="0" width="760" height="70"/>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" whenNoDataType="AllSectionsNoDetail">
 					<datasetRun subDataset="TableDataset"/>
 					<jr:columnGroup width="760">

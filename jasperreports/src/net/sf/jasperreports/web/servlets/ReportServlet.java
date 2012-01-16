@@ -23,6 +23,7 @@
  */
 package net.sf.jasperreports.web.servlets;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -38,17 +39,22 @@ import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.ReportContext;
 import net.sf.jasperreports.engine.fill.AsynchronousFillHandle;
 import net.sf.jasperreports.repo.CachedJasperDesignRepositoryService;
-import net.sf.jasperreports.repo.JasperDesignReportResource;
-import net.sf.jasperreports.repo.JasperDesignReportResourceCache;
 import net.sf.jasperreports.repo.RepositoryUtil;
 import net.sf.jasperreports.repo.WebFileRepositoryService;
 import net.sf.jasperreports.web.WebReportContext;
+import net.sf.jasperreports.web.actions.AbstractAction;
+import net.sf.jasperreports.web.actions.Action;
+import net.sf.jasperreports.web.actions.ResizeColumnAction;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.JsonParser;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 
 
 /**
@@ -67,6 +73,8 @@ public class ReportServlet extends HttpServlet
 	public static final String REQUEST_PARAMETER_REPORT_VIEWER = "jr.vwr";
 	
 	public static final String REQUEST_PARAMETER_ASYNC = "jr.async";
+
+	public static final String REQUEST_PARAMETER_ACTION = "jr.action";
 
 //	public static final String REPORT_ACTION = "report.action";
 //	public static final String REPORT_CLEAR_SESSION = "report.clear"; 
@@ -179,14 +187,32 @@ public class ReportServlet extends HttpServlet
 
 				jasperReport = RepositoryUtil.getReport(reportUri);
 				
-//				JasperDesignReportResource jasperDesignResource = JasperDesignReportResourceCache.getInstance(webReportContext).getResource(reportUri)
+//				StringBuilder sb = new StringBuilder();
+//				
+//				BufferedReader br;
+//				String str;
+//				try {
+//					br = request.getReader();
+//					while ((str = br.readLine()) != null) {
+//						sb.append(str);
+//					}
+//				} catch (IOException e) {
+//					e.printStackTrace();
+//				}
+				
+				Action action = getAction(webReportContext, reportUri, request.getParameter(REQUEST_PARAMETER_ACTION));
+				if (action != null) {
+					action.run();
+					jasperReport = RepositoryUtil.getReport(reportUri);
+				}
+
 			}
 			
 			if (jasperReport == null)
 			{
 				throw new JRException("Report not found at : " + reportUri);
 			}
-
+			
 			//webReportContext.setParameterValue(WebReportContext.REPORT_CONTEXT_PARAMETER_JASPER_REPORT, jasperReport);
 			
 			boolean async = Boolean.parseBoolean(request.getParameter(REQUEST_PARAMETER_ASYNC));
@@ -221,19 +247,43 @@ public class ReportServlet extends HttpServlet
 		
 		webReportContext.setParameterValue(WebReportContext.REPORT_CONTEXT_PARAMETER_JASPER_PRINT_ACCESSOR, accessor);
 	}
-
-
-	public static String extractReportUri(String paramReportUri) //FIXMEJIVE consider moving from here
+	
+	
+	private Action getAction(ReportContext webReportContext, String reportUri, String jsonData)
 	{
-		String lcReportUri = paramReportUri.toLowerCase();
-		if (lcReportUri.endsWith(".jasper"))
-		{
-			paramReportUri = paramReportUri.substring(0, lcReportUri.lastIndexOf(".jasper"));
+		AbstractAction result = null;
+		if (jsonData != null) {
+			ObjectMapper mapper = new ObjectMapper();
+			mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+			try {
+				result = mapper.readValue(jsonData, AbstractAction.class);
+				result.init(webReportContext, reportUri);
+			} catch (JsonParseException e) {
+				e.printStackTrace();
+			} catch (JsonMappingException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
-		else if (lcReportUri.endsWith(".jrxml"))
-		{
-			paramReportUri = paramReportUri.substring(0, lcReportUri.lastIndexOf(".jrxml"));
-		}
-		return paramReportUri;
+		return result;
 	}
+	
+	public static void main(String[] args) {
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+		
+		String strColData = "{'actionName': 'resize', 'resizeColumnData': {'columnIndex': 1, 'width': 100, 'direction': 'left'}}";
+		try {
+			AbstractAction rcd = mapper.readValue(strColData, AbstractAction.class);
+			System.out.println("rcd: " + ((ResizeColumnAction)rcd).getResizeColumnData());
+		} catch (JsonParseException e) {
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 }
