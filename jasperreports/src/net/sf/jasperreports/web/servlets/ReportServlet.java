@@ -46,7 +46,9 @@ import net.sf.jasperreports.repo.WebFileRepositoryService;
 import net.sf.jasperreports.web.WebReportContext;
 import net.sf.jasperreports.web.actions.AbstractAction;
 import net.sf.jasperreports.web.actions.Action;
+import net.sf.jasperreports.web.actions.RedoAction;
 import net.sf.jasperreports.web.actions.ResizeColumnAction;
+import net.sf.jasperreports.web.actions.UndoAction;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -54,6 +56,7 @@ import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.jsontype.NamedType;
 
 
 /**
@@ -255,6 +258,11 @@ public class ReportServlet extends HttpServlet
 		if (jsonData != null) {
 			ObjectMapper mapper = new ObjectMapper();
 			mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+			
+			mapper.registerSubtypes(new NamedType(ResizeColumnAction.class, "resize"));
+			mapper.registerSubtypes(new NamedType(UndoAction.class, "undo"));
+			mapper.registerSubtypes(new NamedType(RedoAction.class, "redo"));
+			
 			try {
 				result = mapper.readValue(jsonData, AbstractAction.class);
 				result.init(webReportContext, reportUri);
@@ -272,8 +280,9 @@ public class ReportServlet extends HttpServlet
 	public static void main(String[] args) {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+		mapper.registerSubtypes(new NamedType(ResizeColumnAction.class, "net.sf.jasperreports.web.actions.ResizeColumnAction"));
 		
-		String strColData = "{'actionName': 'resize', 'resizeColumnData': {'columnIndex': 1, 'width': 100, 'direction': 'left'}}";
+		String strColData = "{'actionName': 'net.sf.jasperreports.web.actions.ResizeColumnAction', 'resizeColumnData': {'columnIndex': 1, 'width': 100, 'direction': 'left'}}";
 		try {
 			AbstractAction rcd = mapper.readValue(strColData, AbstractAction.class);
 			System.out.println("rcd: " + ((ResizeColumnAction)rcd).getResizeColumnData());

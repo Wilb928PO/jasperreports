@@ -29,7 +29,9 @@ jQuery.noConflict();
 						}
 					},
 					eventSubscribers: {},
-					isFirstAjaxRequest: true
+					isFirstAjaxRequest: true,
+					reportContainerSelector: 'div.jrPage:first'		// FIXMEJIVE jrPage hardcoded in JRXHtmlExporter.java
+//					reportContainerSelector: 'body'
 				}
 			}
 		},
@@ -243,25 +245,60 @@ jQuery.noConflict();
 		// Remove jQuery '$' alias from global namespace 
 		jQuery.noConflict();
 		
-		jg.ajaxJsonLoad = function (url, elementToAppendTo, elementToExtract, requestParams) {
-			jQuery.get( url, requestParams, function (data, textStatus, jqXHR) {
-		        
-				if (elementToAppendTo) {
-					var toExtract = data;
-					if (elementToExtract) {
-						toExtract = $(elementToExtract, data);
+		jg.ajaxLoad = function (url, elementToAppendTo, elementToExtract, requestParams, callback, arrCallbackArgs, loadMaskTarget) {
+			jQuery.ajax(url, 
+					{
+						data: requestParams,
+						
+						success: function(data, textStatus, jqXHR) {
+							loadMaskTarget.loadmask('hide');
+							
+							var response = jQuery(jqXHR.responseText);
+
+							if (elementToAppendTo) {
+								var toExtract = response;
+
+								if (elementToExtract) {
+									toExtract = jQuery(elementToExtract, response);
+								}
+								
+								elementToAppendTo.html(toExtract);
+								
+								// execute script tags from response after appending to DOM because the script may rely on new DOM elements
+								response.filter('script').each(function(idx, elem) {
+									var scriptObj = jQuery(elem);
+									if (!scriptObj.attr('src')) { // run only scripts that don't load files
+										var scriptString = scriptObj.html();
+										if (scriptString) {
+							    			global.eval(scriptString);
+							    		}
+									}
+								});
+							}
+							
+							
+							if (callback) {
+								if (arrCallbackArgs) {
+									callback.apply(null, arrCallbackArgs);
+								} else {
+									callback(response, textStatus, jqXHR);
+								}
+							}
+						},
+						
+						error: function(jqXHR, textStatus, errorThrown) {
+							loadMaskTarget.loadmask('hide');
+							alert('Error: ' + textStatus + ': ' + errorThrown);
+						}
 					}
-					elementToAppendTo.html(toExtract);
-				}
-				
-			}, 'json');
+			);
 		};
 		
 		// @Object
-		jg.AjaxExecutionContext = function(contextId, requestUrl, target, requestParams, elementToExtract, callback, isJSON) {
+		jg.AjaxExecutionContext = function(contextId, requestUrl, target, requestParams, elementToExtract, callback, arrCallbackArgs, isJSON) {
 			// enforce new
 			if (!(this instanceof jg.AjaxExecutionContext)) {
-				return new jg.AjaxExecutionContext(contextId, requestUrl, target, requestParams, elementToExtract, callback, isJSON);
+				return new jg.AjaxExecutionContext(contextId, requestUrl, target, requestParams, elementToExtract, callback, arrCallbackArgs, isJSON);
 			}
 			this.contextId = contextId;
 			this.requestUrl = requestUrl;
@@ -269,6 +306,7 @@ jQuery.noConflict();
 			this.requestParams = requestParams;
 			this.elementToExtract = elementToExtract;
 			this.callback = callback;
+			this.arrCallbackArgs = arrCallbackArgs;
 			this.isJSON = isJSON;
 		};
 		
@@ -308,29 +346,7 @@ jQuery.noConflict();
 					};
 				}
 				
-				var callback = this.callback;
-				
-//				if (this.isJSON) {
-//					jg.ajaxJsonLoad(this.requestUrl, this.target, this.elementToExtract, this.requestParams);
-//				} else {
-					jQuery(this.target).load(this.requestUrl + (this.elementToExtract!=null ? ' ' +this.elementToExtract : ''), this.requestParams, function(response, status, xhr) {
-						parent.loadmask('hide');
-						
-						if (status == 'success') {
-							// add callback here
-							jg.isFirstAjaxRequest = false;
-							
-							if (callback) {
-								callback(response, status, xhr);
-							}
-						} else if (status == 'error') {
-						    alert('Error: ' + xhr.status + " " + xhr.statusText)
-						    
-						} else {
-							alert('Unknown: ' + xhr.status + "; " + xhr.statusText);
-						}
-					});
-//				}
+				jg.ajaxLoad(this.requestUrl, this.target, this.elementToExtract, this.requestParams, this.callback, this.arrCallbackArgs, parent);
 			}
 		};
 		
@@ -384,6 +400,7 @@ jQuery.noConflict();
 					jQuery('div.result', executionContextElement), // target 
 					newParams,
 					null,
+					null,
 					null
 				);
 			}
@@ -392,7 +409,7 @@ jQuery.noConflict();
 		};
 		
 
-		jg.getToolbarExecutionContext = function(startPoint, requestedUrl, params, callback, isJSON) {
+		jg.getToolbarExecutionContext = function(startPoint, requestedUrl, params, callback, arrCallbackArgs, isJSON) {
 			var executionContextElement = jQuery(startPoint).closest('div.mainReportDiv');
 			
 			if (executionContextElement && executionContextElement.size() > 0) {
@@ -403,6 +420,7 @@ jQuery.noConflict();
 					params,
 					'div.result',
 					callback,
+					arrCallbackArgs,
 					isJSON
 				);
 			}
@@ -430,6 +448,30 @@ jQuery.noConflict();
 			return result;
 		};
 		
+		jg.toolbarUtils = function() {
+			var classEnabled = 'enabledPaginationButton',
+				classDisabled = 'disabledPaginationButton';
+			
+			return {
+				enableElem: function(jqElem) {
+					jqElem.removeClass(classDisabled);
+					jqElem.addClass(classEnabled);
+				},
+				disableElem: function(jqElem) {
+					jqElem.removeClass(classEnabled);
+					jqElem.addClass(classDisabled);
+				},
+				enablePair: function(jqElem1, jqElem2){
+					this.enableElem(jqElem1);
+					this.enableElem(jqElem2);
+				},
+				disablePair: function(jqElem1, jqElem2){
+					this.disableElem(jqElem1);
+					this.disableElem(jqElem2);
+				}
+			};
+		}
+		
 		jg.updateToolbarPaginationButtons = function (jqToolbar) {
 			var currentPage = jqToolbar.attr('data-currentpage'),
 				totalPages = jqToolbar.attr('data-totalpages'),
@@ -441,47 +483,40 @@ jQuery.noConflict();
 				redo = jQuery('.redo', jqToolbar),
 				classEnabled = 'enabledPaginationButton',
 				classDisabled = 'disabledPaginationButton',
-				enableElem = function (jqElem) {
-					jqElem.removeClass(classDisabled);
-					jqElem.addClass(classEnabled);
-				},
-				disableElem = function (jqElem) {
-					jqElem.removeClass(classEnabled);
-					jqElem.addClass(classDisabled);
-				},
-				enablePair = function (jqElem1, jqElem2) {
-					jqElem1.removeClass(classDisabled);
-					jqElem2.removeClass(classDisabled);
-	
-					jqElem1.addClass(classEnabled);
-					jqElem2.addClass(classEnabled);
-				},
-				disablePair = function (jqElem1, jqElem2) {
-					jqElem1.removeClass(classEnabled);
-					jqElem2.removeClass(classEnabled);
-	
-					jqElem1.addClass(classDisabled);
-					jqElem2.addClass(classDisabled);
-				};
+				utils = jg.toolbarUtils();
 			
 			if (typeof(totalPages) == 'undefined') {
-				enableElem(pageNext);
-				disableElem(pageLast);
+				utils.enableElem(pageNext);
+				utils.disableElem(pageLast);
 			}
 			else if (totalPages > 1 && currentPage < totalPages - 1) {
-				enablePair(pageNext, pageLast);
+				utils.enablePair(pageNext, pageLast);
 			} else {
-				disablePair(pageNext, pageLast);
+				utils.disablePair(pageNext, pageLast);
 			}
 			
 			if (currentPage == 0) {
-				disablePair(pageFirst, pagePrevious);
+				utils.disablePair(pageFirst, pagePrevious);
 			} else {
-				enablePair(pageFirst, pagePrevious);
+				utils.enablePair(pageFirst, pagePrevious);
 			}
 			
-			enableElem(undo);
-			enableElem(redo);
+			utils.disableElem(undo);
+			utils.disableElem(redo);
+		};
+		
+		jg.updateToolbarUndoButton = function (toolbarId, boolEnable) {
+			var jqToolbar = jQuery('#' + toolbarId),
+				utils = jg.toolbarUtils();
+			
+			utils.enableElem(jQuery('.undo', jqToolbar));
+		};
+
+		jg.updateToolbarRedoButton = function (toolbarId, boolEnable) {
+			var jqToolbar = jQuery('#' + toolbarId),
+			utils = jg.toolbarUtils();
+			
+			utils.enableElem(jQuery('.redo', jqToolbar));
 		};
 		
 		jg.setAutoRefresh = function(strRunReportParam, jqToolbar) {
@@ -547,7 +582,11 @@ jQuery.noConflict();
 						if (target.is('.undo')) {		// FIXMEJIVE: place this in headertoolbar.js
 							var actionData = {actionName: 'undo'},
 								undoActionLink = jQuery('.headerToolbarMask:first').attr('data-resizeAction'),
-								ctx = jg.getToolbarExecutionContext(jQuery('div.columnHeader:first'), undoActionLink, 'jr.action=' + jg.toJsonString(actionData), null, true);
+								ctx = jg.getToolbarExecutionContext(jQuery('div.columnHeader:first'), 
+																	undoActionLink, 'jr.action=' + jg.toJsonString(actionData), 
+																	jg.updateToolbarRedoButton, 
+                	    											[parent.attr('id'), true], 
+																	true);
 	                        
 							if (ctx) {
 	                            ctx.run();
@@ -555,7 +594,7 @@ jQuery.noConflict();
 						} else if (target.is('.redo')) {		// FIXMEJIVE: place this in headertoolbar.js
 							var actionData = {actionName: 'redo'},
 							undoActionLink = jQuery('.headerToolbarMask:first').attr('data-resizeAction'),
-							ctx = jg.getToolbarExecutionContext(jQuery('div.columnHeader:first'), undoActionLink, 'jr.action=' + jg.toJsonString(actionData), null, true);
+							ctx = jg.getToolbarExecutionContext(jQuery('div.columnHeader:first'), undoActionLink, 'jr.action=' + jg.toJsonString(actionData), null, null, true);
 							
                         if (ctx) {
                             ctx.run();
@@ -596,7 +635,7 @@ jQuery.noConflict();
 				jg.setAutoRefresh(strRunReportParam, toolbar);
 			};
 			
-			jg.getToolbarExecutionContext(toolbar, currentHref, params, callback, null).run();
+			jg.getToolbarExecutionContext(toolbar, currentHref, params, callback, null, null).run();
 		}
 
 		jg.updateCurrentPageForToolbar = function(jQueryToolbar, newCurrentPage, newTotalPages, pageTimestamp) {

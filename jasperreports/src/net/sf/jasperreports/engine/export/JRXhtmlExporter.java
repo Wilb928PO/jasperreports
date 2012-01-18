@@ -674,7 +674,7 @@ public class JRXhtmlExporter extends JRAbstractExporter
 		}
 		
 		writer.write(
-			"<div style=\"" + (isWhitePageBackground ? "background-color: #FFFFFF;" : "") 
+			"<div class=\"jrPage\" style=\"" + (isWhitePageBackground ? "background-color: #FFFFFF;" : "") 
 			+ "position:relative;width:" + toSizeUnit(rightLimit - leftLimit) 
 			+ ";height:" + toSizeUnit(bottomLimit - topLimit) + ";\">\n"
 			);

@@ -28,7 +28,7 @@
 		
 		// if filter container does not exist, create it
 		if (jQuery(fcuid).size() == 0) {
-			 jQuery('body').append(filterContainerDiv);
+			 jQuery(gm.reportContainerSelector).append(filterContainerDiv);
 		}
 		
 		// if filter with id of 'uniqueId' does not exist, append it to filter container
@@ -213,8 +213,8 @@
 		            	
 			            	popupDiv.css({
 			                    'z-index': 999998,
-			                    left: self.offset().left  + 'px',
-			                    top: (self.offset().top/* - popupDiv.height()*/) + 'px'
+			                    left: (self.position().left + self.parent().position().left)  + 'px',
+			                    top: (self.position().top + self.parent().position().top/* - popupDiv.height()*/) + 'px'
 			                });
 			            	
 			            	var handlesArr = [];
@@ -232,8 +232,6 @@
 			                		self.prev().css({left: self.css('left')});
 			                	},
 			                	stop: function(event, ui) {
-			                		console.log('resize stop');
-			                		
 			                		var self = jQuery(this),
 			                			currentLeftPx = self.css('left'),
 			                			currentLeft = parseInt(currentLeftPx.substring(0, currentLeftPx.indexOf('px'))),
@@ -243,18 +241,25 @@
 			                		
 			                	    if (deltaWidth != 0 && deltaLeft == 0) {	// deltaWidth > 0 ? 'resize column right positive' : 'resize column right negative'
 		                	    		direction = 'right';
-			                	    } else if (deltaLeft != 0) {	// deltaLeft > 0 ? 'resize column left positive' : 'resize column left negative'
+			                	    } else if (deltaLeft != 0) {				// deltaLeft > 0 ? 'resize column left positive' : 'resize column left negative'
 			                	    	direction = 'left';
 			                	    }
 			                	    
-			                	    var actionData = {actionName: 'resize',
-			                	    				resizeColumnData: {
-			                	    					columnIndex: jQuery('.columnHeader').index(jQuery(headerNameSel+':first')),
-			                	    					direction: direction,
-			                	    					width: self.width()
+			                	    var actionData = {	actionName: 'resize',
+			                	    					resizeColumnData: {
+			                	    						columnIndex: jQuery('.columnHeader').index(jQuery(headerNameSel+':first')),
+			                	    						direction: direction,
+			                	    						width: self.width()
 			                	    				}},
 			                	    	resizeActionLink = self.attr('data-resizeAction'),
-			                	    	ctx = gm.getToolbarExecutionContext(jQuery('div.columnHeader:first'), resizeActionLink, 'jr.action=' + gm.toJsonString(actionData), null, true);
+			                	    	toolbarId = self.closest('.mainReportDiv').find('.toolbarDiv').attr('id'),
+			                	    	boolEnable = true,
+			                	    	ctx = gm.getToolbarExecutionContext(jQuery('div.columnHeader:first'), 
+			                	    											resizeActionLink, 
+			                	    											'jr.action=' + gm.toJsonString(actionData), 
+			                	    											gm.updateToolbarUndoButton, 
+			                	    											[toolbarId, boolEnable], 
+			                	    											true);
 
 			                        if (ctx) {
 			                            ctx.run();
@@ -273,23 +278,6 @@
 			gm.processEvent(headertoolbarEvent.name);
 		}
 		
-		/**
-		 * Helper functions
-		 */
-		function setColumnCssLeft(columnSelector, deltaLeft) {
-			var currentLeft = jQuery(columnSelector + ':first').position().left;
-			jQuery(columnSelector).css({left: currentLeft + deltaLeft + 'px'});
-		}
-		
-		function setColumnCssWidth(columnSelector, deltaWidth) {
-			jQuery(columnSelector).css({width: jQuery(columnSelector + ':first').width() + deltaWidth + 'px'});
-			
-			// resize children also
-			jQuery(columnSelector).children().each(function(index, element) {
-				var self = jQuery(element);
-				self.css({width: self.width() + deltaWidth + 'px'});
-			});
-		}
 	};
 	
 	js.registerTableHeaderEvents = function (popupId, arrPopupHtml) {
@@ -301,7 +289,7 @@
 		
 		// if filter container does not exist, create it
 		if (jQuery(fcuid).size() == 0) {
-			 jQuery('body').append(filterContainerDiv);
+			 jQuery(gm.reportContainerSelector).append(filterContainerDiv);
 		}
 		
 		// if filter with id of 'uniqueId' does not exist, append it to filter container

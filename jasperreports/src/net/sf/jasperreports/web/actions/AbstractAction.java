@@ -6,16 +6,9 @@ import net.sf.jasperreports.repo.JasperDesignReportResource;
 import net.sf.jasperreports.repo.JasperDesignReportResourceCache;
 import net.sf.jasperreports.web.commands.CommandStack;
 
-import org.codehaus.jackson.annotate.JsonSubTypes;
-import org.codehaus.jackson.annotate.JsonSubTypes.Type;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
 
 @JsonTypeInfo(use=JsonTypeInfo.Id.NAME, include=JsonTypeInfo.As.PROPERTY, property="actionName")
-@JsonSubTypes({ 
-	 @Type(value = ResizeColumnAction.class, name = "resize"),  
-	 @Type(value = UndoAction.class, name = "undo"),  
-	 @Type(value = RedoAction.class, name = "redo")  
-})
 public abstract class AbstractAction implements Action {
 	
 	private static final String PARAM_COMMAND_STACK = "net.sf.jasperreports.command.stack";

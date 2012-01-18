@@ -7,10 +7,10 @@
 		a {text-decoration: none}
 	</style>
     #if(!${isAjax})
-    	<script type='text/javascript' src='${contextPath}/jquery/js/jquery-1.7.1.min.js'></script>
-    	<script type='text/javascript' src='${contextPath}/jquery/js/jquery-ui-1.8.16.custom.min.js'></script>
-    	<script type='text/javascript' src='${globaljs}'></script>
-    	<script type='text/javascript'>
+    	<script src='${contextPath}/jquery/js/jquery-1.7.1.min.js'></script>
+    	<script src='${contextPath}/jquery/js/jquery-ui-1.8.16.custom.min.js'></script>
+    	<script src='${globaljs}'></script>
+    	<script>
     		JasperReports.modules.global.APPLICATION_CONTEXT_PATH = '${contextPath}';
     	</script>
     #end
