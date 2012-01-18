@@ -23,7 +23,6 @@
  */
 package net.sf.jasperreports.web.servlets;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -215,7 +214,8 @@ public class ReportServlet extends HttpServlet
 			
 			//webReportContext.setParameterValue(WebReportContext.REPORT_CONTEXT_PARAMETER_JASPER_REPORT, jasperReport);
 			
-			boolean async = Boolean.parseBoolean(request.getParameter(REQUEST_PARAMETER_ASYNC));
+			boolean async = Boolean.parseBoolean((String) webReportContext.getParameterValue(REQUEST_PARAMETER_ASYNC));
+			webReportContext.setParameterValue(REQUEST_PARAMETER_ASYNC, Boolean.toString(async));
 			runReport(webReportContext, jasperReport, async);
 		}
 	}
