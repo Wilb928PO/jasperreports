@@ -40,7 +40,6 @@ import net.sf.jasperreports.engine.ReportContext;
 import net.sf.jasperreports.engine.design.JRAbstractCompiler;
 import net.sf.jasperreports.engine.design.JRDesignSortField;
 import net.sf.jasperreports.engine.type.SortFieldTypeEnum;
-import net.sf.jasperreports.engine.type.SortOrderEnum;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -235,6 +234,9 @@ public class HeaderToolbarParameterContributor implements ParameterContributor
 	}
 	
 	public static void main(String[] args) throws JsonParseException, JsonMappingException, IOException {
+	}
+
+	public void dispose() {
 	}
 
 }
