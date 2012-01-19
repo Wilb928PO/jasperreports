@@ -863,6 +863,7 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 		finally
 		{
 			mainDataset.closeDatasource();
+			mainDataset.disposeParameterContributors();
 
 			if (parentFiller != null)
 			{
