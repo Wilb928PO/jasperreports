@@ -39,7 +39,7 @@ public class JasperDesignReportResourceCache
 	/**
 	 * 
 	 */
-	private static final String PARAMETER_JASPER_DESIGN_CACHE = "net.sf.jasperreports.parameter.jasperdesign.cache";
+	private static final String PARAMETER_JASPER_DESIGN_REPORT_RESOURCE_CACHE = "net.sf.jasperreports.parameter.jasperdesign.report.resource.cache";
 
 	/**
 	 * 
@@ -51,12 +51,12 @@ public class JasperDesignReportResourceCache
 	 */
 	public static JasperDesignReportResourceCache getInstance(ReportContext reportContext)
 	{
-		JasperDesignReportResourceCache cache = (JasperDesignReportResourceCache)reportContext.getParameterValue(PARAMETER_JASPER_DESIGN_CACHE);
+		JasperDesignReportResourceCache cache = (JasperDesignReportResourceCache)reportContext.getParameterValue(PARAMETER_JASPER_DESIGN_REPORT_RESOURCE_CACHE);
 		
 		if (cache == null)
 		{
 			cache = new JasperDesignReportResourceCache();
-			reportContext.setParameterValue(PARAMETER_JASPER_DESIGN_CACHE, cache);
+			reportContext.setParameterValue(PARAMETER_JASPER_DESIGN_REPORT_RESOURCE_CACHE, cache);
 		}
 		
 		return cache;
