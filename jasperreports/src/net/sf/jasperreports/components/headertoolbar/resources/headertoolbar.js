@@ -253,12 +253,11 @@
 			                	    				}},
 			                	    	resizeActionLink = self.attr('data-resizeAction'),
 			                	    	toolbarId = self.closest('.mainReportDiv').find('.toolbarDiv').attr('id'),
-			                	    	boolEnable = true,
 			                	    	ctx = gm.getToolbarExecutionContext(jQuery('div.columnHeader:first'), 
 			                	    											resizeActionLink, 
 			                	    											'jr.action=' + gm.toJsonString(actionData), 
-			                	    											gm.updateToolbarUndoButton, 
-			                	    											[toolbarId, boolEnable], 
+			                	    											gm.performAction, 
+			                	    											[toolbarId], 
 			                	    											true);
 
 			                        if (ctx) {

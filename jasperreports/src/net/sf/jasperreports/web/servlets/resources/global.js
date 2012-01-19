@@ -30,8 +30,11 @@ jQuery.noConflict();
 					},
 					eventSubscribers: {},
 					isFirstAjaxRequest: true,
-					reportContainerSelector: 'div.jrPage:first'		// FIXMEJIVE jrPage hardcoded in JRXHtmlExporter.java
-//					reportContainerSelector: 'body'
+					reportContainerSelector: 'div.jrPage:first',		// FIXMEJIVE jrPage hardcoded in JRXHtmlExporter.java
+					undoRedoCounters: {
+						undos: 0,
+						redos: 0
+					}
 				}
 			}
 		},
@@ -251,10 +254,7 @@ jQuery.noConflict();
 						data: requestParams,
 						
 						success: function(data, textStatus, jqXHR) {
-							loadMaskTarget.loadmask('hide');
-							
 							var response = jQuery(jqXHR.responseText);
-
 							if (elementToAppendTo) {
 								var toExtract = response;
 
@@ -267,7 +267,7 @@ jQuery.noConflict();
 								// execute script tags from response after appending to DOM because the script may rely on new DOM elements
 								response.filter('script').each(function(idx, elem) {
 									var scriptObj = jQuery(elem);
-									if (!scriptObj.attr('src')) { // run only scripts that don't load files
+									if (!scriptObj.attr('src')) { // FIXMEJIVE only scripts that don't load files are run
 										var scriptString = scriptObj.html();
 										if (scriptString) {
 							    			global.eval(scriptString);
@@ -276,7 +276,6 @@ jQuery.noConflict();
 								});
 							}
 							
-							
 							if (callback) {
 								if (arrCallbackArgs) {
 									callback.apply(null, arrCallbackArgs);
@@ -284,6 +283,8 @@ jQuery.noConflict();
 									callback(response, textStatus, jqXHR);
 								}
 							}
+							
+							loadMaskTarget.loadmask('hide');
 						},
 						
 						error: function(jqXHR, textStatus, errorThrown) {
@@ -448,7 +449,7 @@ jQuery.noConflict();
 			return result;
 		};
 		
-		jg.toolbarUtils = function() {
+		jg.toolbarUtils = (function() {
 			var classEnabled = 'enabledPaginationButton',
 				classDisabled = 'disabledPaginationButton';
 			
@@ -470,7 +471,7 @@ jQuery.noConflict();
 					this.disableElem(jqElem2);
 				}
 			};
-		}
+		}());
 		
 		jg.updateToolbarPaginationButtons = function (jqToolbar) {
 			var currentPage = jqToolbar.attr('data-currentpage'),
@@ -483,7 +484,7 @@ jQuery.noConflict();
 				redo = jQuery('.redo', jqToolbar),
 				classEnabled = 'enabledPaginationButton',
 				classDisabled = 'disabledPaginationButton',
-				utils = jg.toolbarUtils();
+				utils = jg.toolbarUtils;
 			
 			if (typeof(totalPages) == 'undefined') {
 				utils.enableElem(pageNext);
@@ -501,22 +502,70 @@ jQuery.noConflict();
 				utils.enablePair(pageFirst, pagePrevious);
 			}
 			
-			utils.disableElem(undo);
-			utils.disableElem(redo);
+			if (!(undo.hasClass(classEnabled) || undo.hasClass(classDisabled))) {
+				utils.disableElem(undo);
+			}
+			if (!(redo.hasClass(classEnabled) || redo.hasClass(classDisabled))) {
+				utils.disableElem(redo);
+			}
+		};
+		
+		jg.performAction = function (toolbarId) {
+			var undoRedoCounters = jg.undoRedoCounters;
+			
+			undoRedoCounters.undos ++;
+			jg.updateToolbarUndoButton(toolbarId, true); // enable undo
+			
+			undoRedoCounters.redos = 0;
+			jg.updateToolbarRedoButton(toolbarId, false); // disable redo
+		};
+		
+		jg.performUndo = function (toolbarId) {
+			var undoRedoCounters = jg.undoRedoCounters;
+			
+			undoRedoCounters.redos ++;
+			jg.updateToolbarRedoButton(toolbarId, true); // enable redo
+			
+			undoRedoCounters.undos --;
+			if (undoRedoCounters.undos <= 0) {
+				jg.updateToolbarUndoButton(toolbarId, false); // disable undo
+				undoRedoCounters.undos = 0;
+			}
+		};
+		
+		jg.performRedo = function (toolbarId) {
+			var undoRedoCounters = jg.undoRedoCounters;
+			
+			undoRedoCounters.undos ++;
+			jg.updateToolbarUndoButton(toolbarId, true); // enable undo
+			
+			undoRedoCounters.redos --;
+			if (undoRedoCounters.redos <= 0) {
+				jg.updateToolbarRedoButton(toolbarId, false); // disable redo
+				undoRedoCounters.redos = 0;
+			}
 		};
 		
 		jg.updateToolbarUndoButton = function (toolbarId, boolEnable) {
 			var jqToolbar = jQuery('#' + toolbarId),
-				utils = jg.toolbarUtils();
+				utils = jg.toolbarUtils;
 			
-			utils.enableElem(jQuery('.undo', jqToolbar));
+			if (boolEnable) {
+				utils.enableElem(jQuery('.undo', jqToolbar));
+			} else {
+				utils.disableElem(jQuery('.undo', jqToolbar));
+			}
 		};
 
 		jg.updateToolbarRedoButton = function (toolbarId, boolEnable) {
 			var jqToolbar = jQuery('#' + toolbarId),
-			utils = jg.toolbarUtils();
+				utils = jg.toolbarUtils;
 			
-			utils.enableElem(jQuery('.redo', jqToolbar));
+			if (boolEnable) {
+				utils.enableElem(jQuery('.redo', jqToolbar));
+			} else {	
+				utils.disableElem(jQuery('.redo', jqToolbar));
+			}
 		};
 		
 		jg.setAutoRefresh = function(strRunReportParam, jqToolbar) {
@@ -541,7 +590,14 @@ jQuery.noConflict();
 		};
 		
 		jg.initToolbar = function(toolbarId, strRunReportParam) {
+			console.log('initToolbar');
+			
 			var toolbar = jQuery('#' + toolbarId);
+			
+			if (toolbar.size() != 1) {
+				console.log('no toolbar with id: ' + toolbarId);
+				return;
+			}
 			
 			jg.updateToolbarPaginationButtons(toolbar);
 			jg.setAutoRefresh(strRunReportParam, toolbar);
@@ -584,22 +640,28 @@ jQuery.noConflict();
 								undoActionLink = jQuery('.headerToolbarMask:first').attr('data-resizeAction'),
 								ctx = jg.getToolbarExecutionContext(jQuery('div.columnHeader:first'), 
 																	undoActionLink, 'jr.action=' + jg.toJsonString(actionData), 
-																	jg.updateToolbarRedoButton, 
-                	    											[parent.attr('id'), true], 
+																	jg.performUndo, 
+                	    											[parent.attr('id')], 
 																	true);
 	                        
 							if (ctx) {
 	                            ctx.run();
 	                        }
+							
 						} else if (target.is('.redo')) {		// FIXMEJIVE: place this in headertoolbar.js
 							var actionData = {actionName: 'redo'},
 							undoActionLink = jQuery('.headerToolbarMask:first').attr('data-resizeAction'),
-							ctx = jg.getToolbarExecutionContext(jQuery('div.columnHeader:first'), undoActionLink, 'jr.action=' + jg.toJsonString(actionData), null, null, true);
+							ctx = jg.getToolbarExecutionContext(jQuery('div.columnHeader:first'), 
+																undoActionLink, 
+																'jr.action=' + jg.toJsonString(actionData), 
+																jg.performRedo, 
+																[parent.attr('id')], 
+																true);
 							
-                        if (ctx) {
-                            ctx.run();
-                        }
-					}
+	                        if (ctx) {
+	                            ctx.run();
+	                        }
+						}
 					}
 				});
 			}
