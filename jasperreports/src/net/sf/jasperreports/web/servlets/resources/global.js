@@ -574,7 +574,7 @@ jQuery.noConflict();
 				var refreshLater = function() {
 					jg.refreshPage(strRunReportParam, jqToolbar, jqToolbar.attr('data-currentpage'), 'jr.pagetimestamp=' + pageTimestamp);
 				};
-				var timeoutId = window.setTimeout(refreshLater, 10000);//FIXME configure
+				var timeoutId = window.setTimeout(refreshLater, 5000);//FIXME configure
 				jqToolbar.attr('data-autoRefreshId', timeoutId);
 			} else {
 				jqToolbar.removeAttr('data-autoRefreshId');
