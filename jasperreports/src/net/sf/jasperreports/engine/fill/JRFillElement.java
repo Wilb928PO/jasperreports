@@ -32,6 +32,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import net.sf.jasperreports.engine.JRConditionalStyle;
 import net.sf.jasperreports.engine.JRConstants;
@@ -218,6 +219,14 @@ public abstract class JRFillElement implements JRElement, JRFillCloneable, JRSty
 	}
 
 
+	/**
+	 *
+	 */
+	public UUID getUUID()
+	{
+		return parent.getUUID();
+	}
+	
 	/**
 	 *
 	 */
