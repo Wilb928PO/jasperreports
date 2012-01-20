@@ -40,7 +40,6 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.ReportContext;
 import net.sf.jasperreports.engine.fill.AsynchronousFillHandle;
-import net.sf.jasperreports.repo.CachedJasperDesignRepositoryService;
 import net.sf.jasperreports.repo.RepositoryUtil;
 import net.sf.jasperreports.repo.WebFileRepositoryService;
 import net.sf.jasperreports.web.WebReportContext;
@@ -179,7 +178,8 @@ public class ReportServlet extends HttpServlet
 				//parameters.put(JRParameter.IS_IGNORE_PAGINATION, isIgnorePagination);
 			}		
 			
-			CachedJasperDesignRepositoryService.setThreadReportContext(webReportContext);
+			//CachedJasperDesignRepositoryService.setThreadReportContext(webReportContext);
+			RepositoryUtil.setThreadReportContext(webReportContext);
 			
 			JasperReport jasperReport = null; 
 			

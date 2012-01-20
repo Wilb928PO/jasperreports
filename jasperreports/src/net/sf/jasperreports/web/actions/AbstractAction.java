@@ -2,8 +2,7 @@ package net.sf.jasperreports.web.actions;
 
 import net.sf.jasperreports.engine.ReportContext;
 import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.repo.JasperDesignReportResource;
-import net.sf.jasperreports.repo.JasperDesignReportResourceCache;
+import net.sf.jasperreports.repo.JasperDesignCache;
 import net.sf.jasperreports.web.commands.CommandStack;
 
 import org.codehaus.jackson.annotate.JsonTypeInfo;
@@ -13,14 +12,20 @@ public abstract class AbstractAction implements Action {
 	
 	private static final String PARAM_COMMAND_STACK = "net.sf.jasperreports.command.stack";
 	
-	private JasperDesignReportResource jasperDesignResource;
+	private ReportContext reportContext;
+	private String reportUri;
+	private JasperDesign jasperDesign;
 	private CommandStack commandStack;
 	
 	public AbstractAction(){
 	}
 	
-	public void init(ReportContext reportContext, String reportUri) {
-		jasperDesignResource = JasperDesignReportResourceCache.getInstance(reportContext).getResource(reportUri);
+	public void init(ReportContext reportContext, String reportUri) 
+	{
+		this.reportContext = reportContext;
+		this.reportUri = reportUri;
+		
+		jasperDesign = JasperDesignCache.getInstance(reportContext).getJasperDesign(reportUri);
 		commandStack = (CommandStack)reportContext.getParameterValue(PARAM_COMMAND_STACK);
 		
 		if (commandStack == null) {
@@ -30,7 +35,7 @@ public abstract class AbstractAction implements Action {
 	}
 	
 	public JasperDesign getJasperDesign() {
-		return jasperDesignResource.getJasperDesign();
+		return jasperDesign;
 	}
 	
 	public void run() {
@@ -39,7 +44,7 @@ public abstract class AbstractAction implements Action {
 	}
 	
 	public void resetJasperReport() {
-		jasperDesignResource.setReport(null);
+		JasperDesignCache.getInstance(reportContext).set(reportUri, jasperDesign);
 	}
 	
 	public CommandStack getCommandStack() {

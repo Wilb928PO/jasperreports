@@ -74,7 +74,7 @@
 				<subreportParameter name="CustomerID">
 					<subreportParameterExpression>$F{CustomerID}</subreportParameterExpression>
 				</subreportParameter>
-				<subreportExpression class="java.lang.String"><![CDATA["/reports/OrdersReport"]]></subreportExpression>
+				<subreportExpression class="java.lang.String"><![CDATA["/reports/OrdersReport.jasper"]]></subreportExpression>
 			</subreport>
 			<textField>
 				<reportElement x="109" y="5" width="291" height="15" isPrintWhenDetailOverflows="true" style="Sans_Bold"/>

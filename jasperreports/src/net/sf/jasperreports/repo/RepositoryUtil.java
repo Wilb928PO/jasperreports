@@ -31,6 +31,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.ReportContext;
 import net.sf.jasperreports.engine.util.ThreadLocalStack;
 import net.sf.jasperreports.extensions.ExtensionsEnvironment;
 
@@ -45,6 +46,8 @@ public final class RepositoryUtil
 
 	private static ThreadLocalStack localContextStack = new ThreadLocalStack();//FIXMEREPO final?
 	
+	private static final ThreadLocal<ReportContext> threadReportContext = new InheritableThreadLocal<ReportContext>();
+
 	private static AtomicReference<List<RepositoryService>> repositoryServices = 
 			new AtomicReference<List<RepositoryService>>();//FIXMEREPO should this be lazy loaded or not? maybe thread local?
 	
@@ -119,16 +122,59 @@ public final class RepositoryUtil
 	
 	
 	/**
+	 * 
+	 */
+	public static ReportContext getThreadReportContext()
+	{
+		return threadReportContext.get();
+	}
+
+	/**
+	 * 
+	 */
+	public static void setThreadReportContext(ReportContext reportContext)
+	{
+		threadReportContext.set(reportContext);
+	}
+
+	/**
+	 * 
+	 */
+	public static void resetThreadReportContext()
+	{
+		threadReportContext.set(null);
+	}
+
+	/**
 	 *
 	 */
 	public static JasperReport getReport(String location) throws JRException
 	{
-		ReportResource resource = getResource(location, ReportResource.class);
-		if (resource == null)
+		JasperReport jasperReport = null;
+		
+		JasperDesignCache cache = getJasperDesignCache();
+		if (cache != null)
 		{
-			throw new JRException("Report not found at : " + location);
+			jasperReport = cache.getJasperReport(location);
 		}
-		return resource.getReport();
+
+		if (jasperReport == null)
+		{
+			ReportResource resource = getResource(location, ReportResource.class);
+			if (resource == null)
+			{
+				throw new JRException("Report not found at : " + location);
+			}
+
+			jasperReport = resource.getReport();
+
+			if (cache != null)
+			{
+				cache.set(location, jasperReport);
+			}
+		}
+		
+		return jasperReport;
 	}
 
 
@@ -253,6 +299,20 @@ public final class RepositoryUtil
 		return baos.toByteArray();
 	}
 
+
+	/**
+	 * 
+	 */
+	private static JasperDesignCache getJasperDesignCache()
+	{
+		ReportContext reportContext = getThreadReportContext();
+		if (reportContext != null)
+		{
+			return JasperDesignCache.getInstance(reportContext);
+		}
+		return null;
+	}
+	
 
 	/**
 	 * 
