@@ -280,7 +280,7 @@ jQuery.noConflict();
 								if (arrCallbackArgs) {
 									callback.apply(null, arrCallbackArgs);
 								} else {
-									callback(response, textStatus, jqXHR);
+									callback(jqXHR.responseText);
 								}
 							}
 							
@@ -454,6 +454,12 @@ jQuery.noConflict();
 				classDisabled = 'disabledPaginationButton';
 			
 			return {
+				getClassEnabled: function() {
+					return classEnabled;
+				},
+				getClassDisabled: function() {
+					return classDisabled;
+				},
 				enableElem: function(jqElem) {
 					jqElem.removeClass(classDisabled);
 					jqElem.addClass(classEnabled);
@@ -482,9 +488,9 @@ jQuery.noConflict();
 				pageLast = jQuery('.pageLast', jqToolbar),
 				undo = jQuery('.undo', jqToolbar),
 				redo = jQuery('.redo', jqToolbar),
-				classEnabled = 'enabledPaginationButton',
-				classDisabled = 'disabledPaginationButton',
-				utils = jg.toolbarUtils;
+				utils = jg.toolbarUtils,
+				classEnabled = utils.getClassEnabled(),
+				classDisabled = utils.getClassDisabled();
 			
 			if (typeof(totalPages) == 'undefined') {
 				utils.enableElem(pageNext);
