@@ -135,9 +135,9 @@
 
 	<target name="jasperreportsAntCleanJar">
 		<ant antfile="${jasperreports.ant.file}" target="clean" inheritall="false"/>
-		<ant antfile="${jasperreports.ant.file}" target="jar" inheritall="false"/>
+		<ant antfile="${jasperreports.ant.file}" target="plainjar" inheritall="false"/>
 	</target>
-	
+
 	<target name="copyWarToTomcat" depends="clean, war">
 		<copy todir="${tomcat.home}/webapps" file="${basedir}/${war.name}" />
 	</target>
@@ -164,5 +164,12 @@
 		<antcall target="copyWarToTomcat" />
 		<antcall target="startTomcat" inheritall="false" />
 	</target>
-		
+
+	<target name="deploy_nostart">
+		<antcall target="stopTomcat" />
+		<antcall target="jasperreportsAntCleanJar" />
+		<antcall target="cleanTomcat" />
+		<antcall target="copyWarToTomcat" />
+	</target>
+
 </project>
