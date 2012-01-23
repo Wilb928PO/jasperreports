@@ -145,10 +145,60 @@ public final class RepositoryUtil
 		threadReportContext.set(null);
 	}
 
+	
+	/**
+	 *
+	 *
+	public static JasperReport getReport(String location) throws JRException
+	{
+		return getReport(location, null);
+	}
+
+	
+	/**
+	 *
+	 *
+	public static JasperReport getReport(String location, UUID subreportElementUUID) throws JRException 
+	{
+		//FIXMEJIVE same subreport element can load designs from different locations, in which case we would remember only the last one?
+		// check isCaching for subreport element too
+		JasperReport jasperReport = null;
+		
+		JasperDesignCache cache = getJasperDesignCache();
+		if (cache != null)
+		{
+			jasperReport = cache.getJasperReport(location);
+		}
+
+		if (jasperReport == null)
+		{
+			ReportResource resource = getResource(location, ReportResource.class);
+			if (resource == null)
+			{
+				throw new JRException("Report not found at : " + location);
+			}
+
+			jasperReport = resource.getReport();
+
+			if (cache != null)
+			{
+				cache.set(location, jasperReport);
+			}
+		}
+
+		if (cache != null)
+		{
+			cache.set(subreportElementUUID, location);
+		}
+		
+		return jasperReport;
+	}
+
+
 	/**
 	 *
 	 */
-	public static JasperReport getReport(String location) throws JRException
+	public static JasperReport getReport(String location) throws JRException 
 	{
 		JasperReport jasperReport = null;
 		
@@ -173,7 +223,7 @@ public final class RepositoryUtil
 				cache.set(location, jasperReport);
 			}
 		}
-		
+
 		return jasperReport;
 	}
 

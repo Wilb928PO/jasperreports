@@ -1,5 +1,6 @@
 package net.sf.jasperreports.web.actions;
 
+import net.sf.jasperreports.repo.JasperDesignCache;
 import net.sf.jasperreports.web.commands.CommandStack;
 import net.sf.jasperreports.web.commands.ResizeColumnCommand;
 
@@ -28,7 +29,7 @@ public class ResizeColumnAction extends AbstractAction {
 			CommandStack commandStack = getCommandStack();
 			
 			// execute command
-			commandStack.execute(new ResizeColumnCommand(getJasperDesign(), resizeColumnData));
+			commandStack.execute(new ResizeColumnCommand(JasperDesignCache.getInstance(getReportContext()), resizeColumnData));
 		}
 	}
 

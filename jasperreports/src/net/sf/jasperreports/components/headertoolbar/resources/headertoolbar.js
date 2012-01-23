@@ -247,6 +247,7 @@
 			                	    
 			                	    var actionData = {	actionName: 'resize',
 			                	    					resizeColumnData: {
+			                	    						uuid: 'FIXMEJIVETABLEUUID',
 			                	    						columnIndex: jQuery('.columnHeader').index(jQuery(headerNameSel+':first')),
 			                	    						direction: direction,
 			                	    						width: self.width()

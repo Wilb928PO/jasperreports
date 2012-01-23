@@ -38,6 +38,10 @@ public abstract class AbstractAction implements Action {
 		return jasperDesign;
 	}
 	
+	public ReportContext getReportContext() {
+		return reportContext;
+	}
+	
 	public void run() {
 		performAction();
 		resetJasperReport();

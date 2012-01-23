@@ -28,15 +28,21 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
+import net.sf.jasperreports.engine.JRBand;
+import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.ReportContext;
+import net.sf.jasperreports.engine.design.JRDesignComponentElement;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import net.sf.jasperreports.engine.xml.JRXmlWriter;
+import net.sf.jasperreports.web.commands.CommandTarget;
 
 
 
@@ -55,6 +61,7 @@ public class JasperDesignCache
 	 * 
 	 */
 	private Map<String, JasperDesignReportResource> cachedResourcesMap = new HashMap<String, JasperDesignReportResource>();
+	//private Map<UUID, String> cachedSubreportsMap = new HashMap<UUID, String>();
 
 	/**
 	 * 
@@ -107,6 +114,60 @@ public class JasperDesignCache
 
 	/**
 	 * 
+	 *
+	public JasperDesign getJasperDesign(UUID subreportElementUUID)
+	{
+		String uri = cachedSubreportsMap.get(subreportElementUUID);
+		if (uri != null)
+		{
+			JasperDesignReportResource resource = getResource(uri);
+			if (resource != null)
+			{
+				return resource.getJasperDesign();
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * 
+	 */
+	public CommandTarget getCommandTarget(UUID uuid)
+	{
+//		Collection<JasperDesignReportResource> resources = cachedResourcesMap.values();
+//		for (JasperDesignReportResource resource : resources)
+//		{
+		Set<String> uris = cachedResourcesMap.keySet();
+		for (String uri : uris)
+		{
+			CommandTarget target = new CommandTarget();
+			target.setUri(uri);
+			
+			JasperDesign jasperDesign = getJasperDesign(uri);
+			
+			//FIXMEJIVE now we just look for table components in title and summary bands
+			// this is strongly hardcoded to allow the reports in the webapp-repo sample to work
+			JRBand[] bands = new JRBand[]{jasperDesign.getTitle(), jasperDesign.getSummary()};
+			for (JRBand band : bands)
+			{
+				if (band != null)
+				{
+					for (JRElement element : band.getElements())
+					{
+						if (element instanceof JRDesignComponentElement)
+						{
+							target.setIdentifiable(element);
+							return target;
+						}
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * 
 	 */
 	public void set(String uri, JasperReport jasperReport)
 	{
@@ -123,6 +184,27 @@ public class JasperDesignCache
 		JasperDesignReportResource resource = new JasperDesignReportResource();
 		resource.setJasperDesign(jasperDesign);
 		cachedResourcesMap.put(uri, resource);
+	}
+
+	/**
+	 * 
+	 */
+	public void resetJasperReport(String uri)
+	{
+		JasperDesignReportResource resource = cachedResourcesMap.get(uri);
+		if (resource != null)
+		{
+			resource.setReport(null);
+		}
+		//cachedResourcesMap.put(uri, resource);
+	}
+
+	/**
+	 * 
+	 *
+	public void set(UUID subreportElementUUID, String uri)
+	{
+		cachedSubreportsMap.put(subreportElementUUID, uri);
 	}
 
 	/**

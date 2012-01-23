@@ -2,6 +2,7 @@ package net.sf.jasperreports.web.actions;
 
 
 public class ResizeColumnData {
+	private String uuid;
 	private int columnIndex;
 	private int width;
 	private String direction;
@@ -9,12 +10,19 @@ public class ResizeColumnData {
 	public ResizeColumnData() {
 	}
 	
-	public ResizeColumnData(int columnIndex, int width, String direction) {
+	public ResizeColumnData(String uuid, int columnIndex, int width, String direction) {
+		this.uuid = uuid;
 		this.columnIndex = columnIndex;
 		this.width = width;
 		this.direction = direction;
 	}
 	
+	public String getUuid() {
+		return uuid;
+	}
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+	}
 	public int getColumnIndex() {
 		return columnIndex;
 	}
@@ -36,6 +44,6 @@ public class ResizeColumnData {
 	
 	@Override
 	public String toString() {
-		return "columnIndex: " + columnIndex + "; width: " + width + "; direction: " + direction;
+		return "uuid: " + uuid + "; columnIndex: " + columnIndex + "; width: " + width + "; direction: " + direction;
 	}
 }
