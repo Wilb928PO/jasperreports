@@ -23,7 +23,6 @@
  */
 package net.sf.jasperreports.web;
 
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -91,7 +90,7 @@ public class WebReportContext implements ReportContext
 		
 		if (webReportContext != null)
 		{
-			webReportContext.setRequest(request);
+			//webReportContext.setRequest(request);
 			webReportContext.setParameterValue("net.sf.jasperreports.web.app.context.path", request.getContextPath());
 			webReportContext.setParameterValue(JRParameter.REPORT_CONTEXT, webReportContext);
 		}
@@ -122,7 +121,7 @@ public class WebReportContext implements ReportContext
 
 	/**
 	 *
-	 */
+	 *
 	public void setRequest(HttpServletRequest request)
 	{
 		//threadLocalRequest.set(request);

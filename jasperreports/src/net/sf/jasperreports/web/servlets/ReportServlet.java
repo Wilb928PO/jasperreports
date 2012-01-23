@@ -35,12 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 import net.sf.jasperreports.engine.JRConstants;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRParameter;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.ReportContext;
-import net.sf.jasperreports.engine.fill.AsynchronousFillHandle;
-import net.sf.jasperreports.repo.RepositoryUtil;
 import net.sf.jasperreports.repo.WebFileRepositoryService;
 import net.sf.jasperreports.web.WebReportContext;
 import net.sf.jasperreports.web.actions.AbstractAction;
@@ -77,10 +72,6 @@ public class ReportServlet extends HttpServlet
 	public static final String REQUEST_PARAMETER_ASYNC = "jr.async";
 
 	public static final String REQUEST_PARAMETER_ACTION = "jr.action";
-
-//	public static final String REPORT_ACTION = "report.action";
-//	public static final String REPORT_CLEAR_SESSION = "report.clear"; 
-//	public static final String REPORT_CONTEXT_PREFIX = "fillContext_"; 
 	
 	/**
 	 * 
@@ -164,97 +155,44 @@ public class ReportServlet extends HttpServlet
 		WebReportContext webReportContext
 		) throws JRException //IOException, ServletException
 	{
-		JasperPrintAccessor jasperPrintAccessor = (JasperPrintAccessor) webReportContext.getParameterValue(
-				WebReportContext.REPORT_CONTEXT_PARAMETER_JASPER_PRINT_ACCESSOR);
+		JasperPrintAccessor jasperPrintAccessor = 
+			(JasperPrintAccessor) webReportContext.getParameterValue(
+				WebReportContext.REPORT_CONTEXT_PARAMETER_JASPER_PRINT_ACCESSOR
+			);
 
 		String run = request.getParameter(REQUEST_PARAMETER_RUN_REPORT);
 		if (jasperPrintAccessor == null || Boolean.valueOf(run))
 		{
 			String reportUri = request.getParameter(REQUEST_PARAMETER_REPORT_URI);
+			if (reportUri != null)
+			{
+				webReportContext.setParameterValue(REQUEST_PARAMETER_REPORT_URI, reportUri);
+			}
 			
 			Boolean isIgnorePagination = Boolean.valueOf(request.getParameter(REQUEST_PARAMETER_IGNORE_PAGINATION));
 			if (isIgnorePagination != null) 
 			{
 				webReportContext.setParameterValue(JRParameter.IS_IGNORE_PAGINATION, isIgnorePagination);
-				//parameters.put(JRParameter.IS_IGNORE_PAGINATION, isIgnorePagination);
 			}		
 			
-			//CachedJasperDesignRepositoryService.setThreadReportContext(webReportContext);
-			RepositoryUtil.setThreadReportContext(webReportContext);
-			
-			JasperReport jasperReport = null; 
-			
-			if (reportUri != null && reportUri.trim().length() > 0)
+			String async = request.getParameter(REQUEST_PARAMETER_ASYNC);
+			if (async != null)
 			{
-				reportUri = reportUri.trim();
-
-//				jasperReport = RepositoryUtil.getReport(reportUri);
-				
-//				StringBuilder sb = new StringBuilder();
-//				
-//				BufferedReader br;
-//				String str;
-//				try {
-//					br = request.getReader();
-//					while ((str = br.readLine()) != null) {
-//						sb.append(str);
-//					}
-//				} catch (IOException e) {
-//					e.printStackTrace();
-//				}
-				
-				Action action = getAction(webReportContext, request.getParameter(REQUEST_PARAMETER_ACTION));
-				//Action action = getAction(webReportContext, reportUri, request.getParameter(REQUEST_PARAMETER_ACTION));
-				if (action != null) {
-					action.run();
-					//jasperReport = RepositoryUtil.getReport(reportUri);
-				}
-
-				jasperReport = RepositoryUtil.getReport(reportUri);
+				webReportContext.setParameterValue(REQUEST_PARAMETER_ASYNC, Boolean.valueOf(async));
 			}
+
+			Action action = getAction(webReportContext, request.getParameter(REQUEST_PARAMETER_ACTION));
+
+			Controller controller = new Controller();
 			
-			if (jasperReport == null)
-			{
-				throw new JRException("Report not found at : " + reportUri);
-			}
-			
-			//webReportContext.setParameterValue(WebReportContext.REPORT_CONTEXT_PARAMETER_JASPER_REPORT, jasperReport);
-			
-			boolean async = Boolean.parseBoolean((String) webReportContext.getParameterValue(REQUEST_PARAMETER_ASYNC));
-			webReportContext.setParameterValue(REQUEST_PARAMETER_ASYNC, Boolean.toString(async));
-			runReport(webReportContext, jasperReport, async);
+			controller.runReport(webReportContext, action);
 		}
 	}
 
 
-	protected void runReport(WebReportContext webReportContext,
-			JasperReport jasperReport, boolean async) throws JRException
-	{
-		JasperPrintAccessor accessor;
-		if (async)
-		{
-			AsynchronousFillHandle fillHandle = AsynchronousFillHandle.createHandle(
-					jasperReport, webReportContext.getParameterValues());
-			AsyncJasperPrintAccessor asyncAccessor = new AsyncJasperPrintAccessor(fillHandle);
-			
-			fillHandle.startFill();
-			
-			accessor = asyncAccessor;
-		}
-		else
-		{
-			JasperPrint jasperPrint = 
-					JasperFillManager.fillReport(
-						jasperReport, 
-						webReportContext.getParameterValues()
-						);
-			accessor = new SimpleJasperPrintAccessor(jasperPrint);
-		}
-		
-		webReportContext.setParameterValue(WebReportContext.REPORT_CONTEXT_PARAMETER_JASPER_PRINT_ACCESSOR, accessor);
-	}
-	
-	
+	/**
+	 *
+	 */
 	private Action getAction(ReportContext webReportContext, String jsonData)
 	//private Action getAction(ReportContext webReportContext, String reportUri, String jsonData)
 	{
@@ -281,7 +219,11 @@ public class ReportServlet extends HttpServlet
 		}
 		return result;
 	}
-	
+
+
+	/**
+	 *
+	 */
 	public static void main(String[] args) {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
