@@ -44,7 +44,7 @@ public abstract class AbstractAction implements Action {
 	
 	public void run() {
 		performAction();
-		resetJasperReport();
+		//resetJasperReport();
 	}
 	
 	public void resetJasperReport() {
