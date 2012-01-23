@@ -86,8 +86,11 @@ public class ResizeColumnCommand implements Command {
 	}
 	
 	private void resizeColumn(StandardColumn column, int amount) {
+		resizeCellChildren(column.getTableHeader(), amount);
 		resizeCellChildren(column.getColumnHeader(), amount);
 		resizeCellChildren(column.getDetailCell(), amount);
+		resizeCellChildren(column.getColumnFooter(), amount);
+		resizeCellChildren(column.getTableFooter(), amount);
 	}
 	
 	private void resizeCellChildren(Cell cell, int amount) {
