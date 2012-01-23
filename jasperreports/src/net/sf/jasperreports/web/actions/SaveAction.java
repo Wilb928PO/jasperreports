@@ -1,6 +1,5 @@
 package net.sf.jasperreports.web.actions;
 
-import net.sf.jasperreports.engine.design.JasperDesign;
 
 
 public class SaveAction extends AbstractAction {
@@ -14,7 +13,7 @@ public class SaveAction extends AbstractAction {
 
 	public void performAction() 
 	{
-		JasperDesign jasperDesign = getJasperDesign();
+//		JasperDesign jasperDesign = getJasperDesign();
 	}
 
 }

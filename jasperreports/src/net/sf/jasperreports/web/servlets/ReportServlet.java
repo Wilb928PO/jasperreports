@@ -187,7 +187,7 @@ public class ReportServlet extends HttpServlet
 			{
 				reportUri = reportUri.trim();
 
-				jasperReport = RepositoryUtil.getReport(reportUri);
+//				jasperReport = RepositoryUtil.getReport(reportUri);
 				
 //				StringBuilder sb = new StringBuilder();
 //				
@@ -202,12 +202,14 @@ public class ReportServlet extends HttpServlet
 //					e.printStackTrace();
 //				}
 				
-				Action action = getAction(webReportContext, reportUri, request.getParameter(REQUEST_PARAMETER_ACTION));
+				Action action = getAction(webReportContext, request.getParameter(REQUEST_PARAMETER_ACTION));
+				//Action action = getAction(webReportContext, reportUri, request.getParameter(REQUEST_PARAMETER_ACTION));
 				if (action != null) {
 					action.run();
-					jasperReport = RepositoryUtil.getReport(reportUri);
+					//jasperReport = RepositoryUtil.getReport(reportUri);
 				}
 
+				jasperReport = RepositoryUtil.getReport(reportUri);
 			}
 			
 			if (jasperReport == null)
@@ -252,7 +254,8 @@ public class ReportServlet extends HttpServlet
 	}
 	
 	
-	private Action getAction(ReportContext webReportContext, String reportUri, String jsonData)
+	private Action getAction(ReportContext webReportContext, String jsonData)
+	//private Action getAction(ReportContext webReportContext, String reportUri, String jsonData)
 	{
 		AbstractAction result = null;
 		if (jsonData != null) {
@@ -265,7 +268,7 @@ public class ReportServlet extends HttpServlet
 			
 			try {
 				result = mapper.readValue(jsonData, AbstractAction.class);
-				result.init(webReportContext, reportUri);
+				result.init(webReportContext);//, reportUri);
 			} catch (JsonParseException e) {
 				e.printStackTrace();
 			} catch (JsonMappingException e) {
