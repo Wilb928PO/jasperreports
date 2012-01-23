@@ -57,6 +57,14 @@ public class WebFileRepositoryService extends FileRepositoryService
 		applicationRealPath = appRealPath;
 	}
 	
+	/**
+	 * 
+	 */
+	public static String getApplicationRealPath()
+	{
+		return applicationRealPath;
+	}
+
 	@Override
 	public String getRoot()
 	{

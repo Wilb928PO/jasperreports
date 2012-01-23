@@ -47,6 +47,7 @@ import net.sf.jasperreports.web.actions.AbstractAction;
 import net.sf.jasperreports.web.actions.Action;
 import net.sf.jasperreports.web.actions.RedoAction;
 import net.sf.jasperreports.web.actions.ResizeColumnAction;
+import net.sf.jasperreports.web.actions.SaveAction;
 import net.sf.jasperreports.web.actions.UndoAction;
 
 import org.apache.commons.logging.Log;
@@ -265,6 +266,7 @@ public class ReportServlet extends HttpServlet
 			mapper.registerSubtypes(new NamedType(ResizeColumnAction.class, "resize"));
 			mapper.registerSubtypes(new NamedType(UndoAction.class, "undo"));
 			mapper.registerSubtypes(new NamedType(RedoAction.class, "redo"));
+			mapper.registerSubtypes(new NamedType(SaveAction.class, "save"));
 			
 			try {
 				result = mapper.readValue(jsonData, AbstractAction.class);

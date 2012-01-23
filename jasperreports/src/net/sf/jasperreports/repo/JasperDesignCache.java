@@ -279,4 +279,13 @@ public class JasperDesignCache
 		
 		return resource;
 	}
+
+
+	/**
+	 * 
+	 */
+	public Map<String, JasperDesignReportResource> getCachedResources()
+	{
+		return cachedResourcesMap;
+	}
 }

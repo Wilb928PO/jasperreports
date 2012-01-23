@@ -488,6 +488,7 @@ jQuery.noConflict();
 				pageLast = jQuery('.pageLast', jqToolbar),
 				undo = jQuery('.undo', jqToolbar),
 				redo = jQuery('.redo', jqToolbar),
+				save = jQuery('.save', jqToolbar),
 				utils = jg.toolbarUtils,
 				classEnabled = utils.getClassEnabled(),
 				classDisabled = utils.getClassDisabled();
@@ -656,6 +657,19 @@ jQuery.noConflict();
 							
 						} else if (target.is('.redo')) {		// FIXMEJIVE: place this in headertoolbar.js
 							var actionData = {actionName: 'redo'},
+							undoActionLink = jQuery('.headerToolbarMask:first').attr('data-resizeAction'),
+							ctx = jg.getToolbarExecutionContext(jQuery('div.columnHeader:first'), 
+																undoActionLink, 
+																'jr.action=' + jg.toJsonString(actionData), 
+																jg.performRedo, 
+																[parent.attr('id')], 
+																true);
+							
+	                        if (ctx) {
+	                            ctx.run();
+	                        }
+						} else if (target.is('.save')) {		// FIXMEJIVE: place this in headertoolbar.js
+							var actionData = {actionName: 'save'},
 							undoActionLink = jQuery('.headerToolbarMask:first').attr('data-resizeAction'),
 							ctx = jg.getToolbarExecutionContext(jQuery('div.columnHeader:first'), 
 																undoActionLink, 
