@@ -65,7 +65,7 @@ public abstract class AbstractViewer
 				WebReportContext.REPORT_CONTEXT_PARAMETER_JASPER_PRINT_ACCESSOR);
 		Integer pageCount = jasperPrintAccessor.getTotalPageCount();
 		// if the page count is null, it means that the fill is not yet done but there is at least a page
-		boolean hasPages = pageCount == null || pageCount > 0;
+		boolean hasPages = pageCount == null || pageCount > 0;//FIXMEJIVE we should call pageStatus here
 		
 		JRXhtmlExporter exporter = new JRXhtmlExporter();
 

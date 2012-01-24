@@ -734,6 +734,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 	private void writeReportElement(JRElement element) throws IOException
 	{
 		writer.startElement(JRXmlConstants.ELEMENT_reportElement);
+		writer.addEncodedAttribute(JRXmlConstants.ATTRIBUTE_uuid, element.getUUID().toString());
 		writer.addEncodedAttribute(JRXmlConstants.ATTRIBUTE_key, element.getKey());
 		writeStyleReferenceAttr(element);
 		writer.addAttribute(JRXmlConstants.ATTRIBUTE_positionType, element.getPositionTypeValue(), PositionTypeEnum.FIX_RELATIVE_TO_TOP);
