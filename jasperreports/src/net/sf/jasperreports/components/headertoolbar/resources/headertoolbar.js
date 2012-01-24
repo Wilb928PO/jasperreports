@@ -244,14 +244,15 @@
 			                	    } else if (deltaLeft != 0) {				// deltaLeft > 0 ? 'resize column left positive' : 'resize column left negative'
 			                	    	direction = 'left';
 			                	    }
-			                	    
+			                	    var uuid = jQuery(headerNameSel+':first').parent('.jrtableframe').attr('data-uuid');
 			                	    var actionData = {	actionName: 'resize',
 			                	    					resizeColumnData: {
-			                	    						uuid: 'FIXMEJIVETABLEUUID',
+			                	    						uuid: uuid,
 			                	    						columnIndex: jQuery('.columnHeader').index(jQuery(headerNameSel+':first')),
 			                	    						direction: direction,
 			                	    						width: self.width()
-			                	    				}},
+			                	    					}
+			                	    	},
 			                	    	resizeActionLink = self.attr('data-resizeAction'),
 			                	    	toolbarId = self.closest('.mainReportDiv').find('.toolbarDiv').attr('id'),
 			                	    	ctx = gm.getToolbarExecutionContext(jQuery('div.columnHeader:first'), 

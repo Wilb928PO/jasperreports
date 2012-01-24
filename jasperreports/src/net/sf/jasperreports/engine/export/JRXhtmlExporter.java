@@ -2316,6 +2316,16 @@ public class JRXhtmlExporter extends JRAbstractExporter
 			writer.write(styleBuffer.toString());
 			writer.write("\"");
 		}
+		
+		String tableUuidProp = "net.sf.jasperreports.export.tableuuid"; //FIXMEJIVE hardcoded property
+		
+		if (frame.getPropertiesMap() != null && frame.getPropertiesMap().containsProperty(tableUuidProp)) {
+			writer.write(" data-uuid=\"");
+			writer.write(frame.getUUID().toString());
+			writer.write("\"");
+			writer.write(" class=\"jrtableframe\"");
+		}
+
 
 		writer.write(">\n");
 		

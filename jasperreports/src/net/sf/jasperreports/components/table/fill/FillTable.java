@@ -318,6 +318,8 @@ public class FillTable extends BaseFillComponent
 	public JRPrintElement fill()
 	{
 		JRTemplatePrintFrame printFrame = new JRTemplatePrintFrame(getFrameTemplate(), elementId);
+		printFrame.getPropertiesMap().setProperty("net.sf.jasperreports.export.tableuuid", fillContext.getComponentElement().getUUID().toString()); //FIXMEJIVE hardcoded property
+
 		printFrame.setX(fillContext.getComponentElement().getX());
 		printFrame.setY(fillContext.getElementPrintY());
 		printFrame.setWidth(fillWidth);

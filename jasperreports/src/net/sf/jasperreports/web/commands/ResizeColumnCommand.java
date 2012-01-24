@@ -34,17 +34,13 @@ public class ResizeColumnCommand implements Command {
 	
 	public ResizeColumnCommand(JasperDesignCache cache, ResizeColumnData resizeColumnData) {
 		this.cache = cache;
-		UUID uuid = null;//FIXMEJIVETABLEUUID UUID.fromString(resizeColumnData.getUuid());
-		this.target = cache.getCommandTarget(uuid);
 		this.resizeColumnData = resizeColumnData;
 		this.individualResizeCommandStack = new CommandStack();
 	}
 
 	public void execute() 
 	{
-		//StandardTable table = (StandardTable) ((JRDesignComponentElement) receiver.getSummary().getElementByKey("table_component")).getComponent();
-//		UUID uuid = null;//FIXMEJIVETABLEUUID UUID.fromString(resizeColumnData.getUuid());
-//		CommandTarget target = cache.getCommandTarget(uuid);
+		target = cache.getCommandTarget(UUID.fromString(resizeColumnData.getUuid()));
 		if (target != null)
 		{
 			JRIdentifiable identifiable = target.getIdentifiable();

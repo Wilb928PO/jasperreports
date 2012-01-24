@@ -154,10 +154,13 @@ public class JasperDesignCache
 				{
 					for (JRElement element : band.getElements())
 					{
-						if (element instanceof JRDesignComponentElement)
+						if (element instanceof JRDesignComponentElement) 
 						{
-							target.setIdentifiable(element);
-							return target;
+							if (uuid.equals(element.getUUID()))
+							{
+								target.setIdentifiable(element);
+								return target;
+							}
 						}
 					}
 				}
