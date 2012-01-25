@@ -23,14 +23,7 @@
  */
 package net.sf.jasperreports.repo;
 
-import java.io.IOException;
-import java.io.InputStream;
-
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRRuntimeException;
-import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.util.JRLoader;
 
 
 
@@ -41,9 +34,23 @@ import net.sf.jasperreports.engine.util.JRLoader;
 public class ReportPersistenceService extends SerializedObjectPersistenceService
 {
 
+	@Override
+	public Resource load(String uri, RepositoryService repositoryService)
+	{
+		ObjectResource objectResource = (ObjectResource)super.load(uri, repositoryService);
+		if (objectResource != null)
+		{
+			ReportResource reportResource = new ReportResource();
+			reportResource.setReport((JasperReport)objectResource.getValue());
+			return reportResource;
+		}
+		return null;
+	}
+	
+	
 	/**
 	 * 
-	 */
+	 *
 	public Resource load(String uri, RepositoryService repositoryService)
 	{
 		String reportUri = uri;
@@ -143,5 +150,6 @@ public class ReportPersistenceService extends SerializedObjectPersistenceService
 //		resource.setReport(jasperReport);
 		return resource;
 	}
+	*/
 
 }
