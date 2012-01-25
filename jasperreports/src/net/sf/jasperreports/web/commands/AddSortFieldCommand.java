@@ -21,27 +21,61 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with JasperReports. If not, see <http://www.gnu.org/licenses/>.
  */
-package net.sf.jasperreports.components.table;
+package net.sf.jasperreports.web.commands;
 
-import java.util.List;
-
-import net.sf.jasperreports.engine.JRCloneable;
-import net.sf.jasperreports.engine.JRDatasetRun;
-import net.sf.jasperreports.engine.component.Component;
-import net.sf.jasperreports.engine.component.ContextAwareComponent;
-
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRRuntimeException;
+import net.sf.jasperreports.engine.design.JRDesignDataset;
+import net.sf.jasperreports.engine.design.JRDesignSortField;
 
 /**
- * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
+ * @author Teodor Danciu (teodord@users.sourceforge.net)
+ * @version $Id: AbstractViewer.java 4931 2012-01-24 12:17:25Z teodord $
  */
-public interface TableComponent extends ContextAwareComponent, JRCloneable
+public class AddSortFieldCommand implements Command 
 {
-
-	JRDatasetRun getDatasetRun();
-
-	List<BaseColumn> getColumns();
 	
-	WhenNoDataTypeTableEnum getWhenNoDataType();
+	private JRDesignDataset dataset;
+	private JRDesignSortField sortField;
 	
+	/**
+	 * 
+	 */
+	public AddSortFieldCommand(JRDesignDataset dataset, JRDesignSortField sortField) 
+	{
+		this.dataset = dataset;
+		this.sortField = sortField;
+	}
+
+	/**
+	 * 
+	 */
+	public void execute() 
+	{
+		try
+		{
+			dataset.addSortField(sortField);
+		}
+		catch (JRException e)
+		{
+			throw new JRRuntimeException(e);
+		}
+	}
+	
+	/**
+	 * 
+	 */
+	public void undo() 
+	{
+		dataset.removeSortField(sortField);
+	}
+
+	/**
+	 * 
+	 */
+	public void redo() 
+	{
+		execute();
+	}
+
 }

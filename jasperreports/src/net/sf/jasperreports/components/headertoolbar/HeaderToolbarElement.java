@@ -43,6 +43,7 @@ public interface HeaderToolbarElement {
 	public static final String SORT_ORDER_NONE = "None";
 	public static final String SORT_COLUMN_TOKEN_SEPARATOR = ":";
 	
+	public static final String PARAMETER_TABLE_UUID = "tableUUID";
 	public static final String PARAMETER_SORT_COLUMN_NAME = "sortColumnName";
 	public static final String PARAMETER_SORT_COLUMN_LABEL = "sortColumnLabel";
 	public static final String PARAMETER_SORT_COLUMN_TYPE = "sortColumnType";

@@ -1,7 +1,8 @@
 package net.sf.jasperreports.web.actions;
 
 
-public class ResizeColumnData {
+public class ResizeColumnData 
+{
 	private String uuid;
 	private int columnIndex;
 	private int width;

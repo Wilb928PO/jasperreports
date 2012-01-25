@@ -29,9 +29,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import net.sf.jasperreports.components.headertoolbar.HeaderToolbarElement;
 import net.sf.jasperreports.components.headertoolbar.HeaderToolbarElementUtils;
 import net.sf.jasperreports.components.sort.FilterTypesEnum;
@@ -67,6 +64,7 @@ import net.sf.jasperreports.engine.JRTextField;
 import net.sf.jasperreports.engine.JRValueParameter;
 import net.sf.jasperreports.engine.JRVariable;
 import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.component.ContextAwareComponent;
 import net.sf.jasperreports.engine.component.FillContext;
 import net.sf.jasperreports.engine.design.JRDesignBand;
 import net.sf.jasperreports.engine.design.JRDesignElement;
@@ -92,6 +90,9 @@ import net.sf.jasperreports.engine.type.SplitTypeEnum;
 import net.sf.jasperreports.engine.type.StretchTypeEnum;
 import net.sf.jasperreports.engine.type.WhenNoDataTypeEnum;
 import net.sf.jasperreports.engine.type.WhenResourceMissingTypeEnum;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * 
@@ -521,6 +522,7 @@ public class TableReport implements JRReport
 				throw new JRRuntimeException("Unrecognized filter expression type " + sortExpression.getType());
 			}
 			
+			addElementParameter(genericElement, HeaderToolbarElement.PARAMETER_TABLE_UUID, ((ContextAwareComponent)table).getContext().getComponentElement().getUUID().toString());
 			addElementParameter(genericElement, HeaderToolbarElement.PARAMETER_SORT_COLUMN_NAME, name);
 			addElementParameter(genericElement, HeaderToolbarElement.PARAMETER_SORT_COLUMN_LABEL, getColumnHeaderLabelExpression(header));
 			addElementParameter(genericElement, HeaderToolbarElement.PARAMETER_SORT_COLUMN_TYPE, columnType.getName());
