@@ -68,7 +68,7 @@ public class HeaderToolbarParameterContributor implements ParameterContributor
 		ReportContext reportContext = (ReportContext) parameterValues.get(JRParameter.REPORT_CONTEXT);
 		if (reportContext != null)
 		{
-			String reportActionData = (String)reportContext.getParameterValue(HeaderToolbarElement.REQUEST_PARAMETER_SORT_DATA);
+//			String reportActionData = (String)reportContext.getParameterValue(HeaderToolbarElement.REQUEST_PARAMETER_SORT_DATA);
 			String paramTableName = (String)reportContext.getParameterValue(HeaderToolbarElement.REQUEST_PARAMETER_DATASET_RUN);
 			
 			String currentDataset = JRAbstractCompiler.getUnitName(context.getJasperReport(), context.getDataset());
@@ -77,47 +77,47 @@ public class HeaderToolbarParameterContributor implements ParameterContributor
 				return;
 			}
 			
-			String currentTableSortFieldsParam = paramTableName + HeaderToolbarElement.SORT_FIELDS_PARAM_SUFFIX;
+//			String currentTableSortFieldsParam = paramTableName + HeaderToolbarElement.SORT_FIELDS_PARAM_SUFFIX;
 			String currentTableFiltersParam = paramTableName + HeaderToolbarElement.FILTER_FIELDS_PARAM_SUFFIX;
 
-			@SuppressWarnings("unchecked")
-			List<JRSortField> existingFields = (List<JRSortField>) reportContext.getParameterValue(currentTableSortFieldsParam);
-			List<JRSortField> sortFields = new ArrayList<JRSortField>();
-
-			// add existing sort fields first
-			if (existingFields != null)
-			{
-				sortFields.addAll(existingFields);
-			}
-			
-			if (reportActionData != null)
-			{
-				
-				String[] tokens = reportActionData.split(",");
-				for (int i = 0; i < tokens.length; i++)
-				{
-					String token = tokens[i];
-					String[] chunks = HeaderToolbarElementUtils.extractColumnInfo(token);
-					
-					if (log.isDebugEnabled())
-					{
-						log.debug("Adding sort " + token);
-					}
-					
-					overwriteExistingSortField(
-							sortFields,
-							new JRDesignSortField(
-								chunks[0],
-								SortFieldTypeEnum.getByName(chunks[1]),
-								HeaderToolbarElementUtils.getSortOrder(chunks[2])
-								)
-							);
-				}
-				
-			}
-
-			parameterValues.put(JRParameter.SORT_FIELDS, sortFields);
-			reportContext.setParameterValue(currentTableSortFieldsParam, sortFields); 
+//			@SuppressWarnings("unchecked")
+//			List<JRSortField> existingFields = (List<JRSortField>) reportContext.getParameterValue(currentTableSortFieldsParam);
+//			List<JRSortField> sortFields = new ArrayList<JRSortField>();
+//
+//			// add existing sort fields first
+//			if (existingFields != null)
+//			{
+//				sortFields.addAll(existingFields);
+//			}
+//			
+//			if (reportActionData != null)
+//			{
+//				
+//				String[] tokens = reportActionData.split(",");
+//				for (int i = 0; i < tokens.length; i++)
+//				{
+//					String token = tokens[i];
+//					String[] chunks = HeaderToolbarElementUtils.extractColumnInfo(token);
+//					
+//					if (log.isDebugEnabled())
+//					{
+//						log.debug("Adding sort " + token);
+//					}
+//					
+//					overwriteExistingSortField(
+//							sortFields,
+//							new JRDesignSortField(
+//								chunks[0],
+//								SortFieldTypeEnum.getByName(chunks[1]),
+//								HeaderToolbarElementUtils.getSortOrder(chunks[2])
+//								)
+//							);
+//				}
+//				
+//			}
+//
+//			parameterValues.put(JRParameter.SORT_FIELDS, sortFields);
+//			reportContext.setParameterValue(currentTableSortFieldsParam, sortFields); 
 			
 			String paramFieldName = (String)reportContext.getParameterValue(HeaderToolbarElement.REQUEST_PARAMETER_FILTER_FIELD);
 			String paramFieldValueStart = (String)reportContext.getParameterValue(HeaderToolbarElement.REQUEST_PARAMETER_FILTER_VALUE_START);

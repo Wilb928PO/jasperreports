@@ -58,11 +58,13 @@
 				}
 			});
 			
-			jQuery('.submitFilter', filterDiv).live(('createTouch' in document) ? 'touchend' : 'click', function(event){
-				var params = {},
-					parentForm = jQuery(this).parent(),
+			jQuery('.submitFilter', filterDiv).bind(('createTouch' in document) ? 'touchend' : 'click', function(event){
+				var self = jQuery(this),
+					params = {},
+					parentForm = self.parent(),
 					currentHref = parentForm.attr("action"),
-					parentFilterDiv = jQuery(this).closest('.filterdiv'),
+					parentFilterDiv = self.closest('.filterdiv'),
+					actionData = jQuery.parseJSON(parentFilterDiv.attr('data-filter')),
 					contextStartPoint = jQuery('.' + parentFilterDiv.attr('data-forsortlink') + ':first');
 				
 				// extract form params
@@ -73,7 +75,15 @@
 					}
 				});
 				
-				var ctx = gm.getExecutionContext(contextStartPoint, currentHref, params);
+				actionData.filterData = params;
+//				var ctx = gm.getExecutionContext(contextStartPoint, currentHref, params);
+				var toolbarId = self.closest('.mainReportDiv').find('.toolbarDiv').attr('id'),
+					ctx = gm.getToolbarExecutionContext(jQuery('div.columnHeader:first'), 
+						currentHref, 
+						'jr.action=' + gm.toJsonString(actionData), 
+						gm.performAction, 
+						[toolbarId], 
+						true);
 				
 				if (ctx) {
 					parentFilterDiv.hide();
@@ -82,7 +92,7 @@
 			});
 			
 			// show the second filter value for options containing 'between'
-			jQuery('.filterOperatorTypeValueSelector', filterDiv).live('change', function (event) {
+			jQuery('.filterOperatorTypeValueSelector', filterDiv).bind('change', function (event) {
 				var optionValue = jQuery(this).val();
 				if (optionValue && optionValue.toLowerCase().indexOf('between') != -1) {
 					jQuery('.filterValueEnd', filterDiv)
@@ -95,11 +105,13 @@
 				}
 			});
 			
-			jQuery('.clearFilter', filterDiv).live(('createTouch' in document) ? 'touchend' : 'click', function(event){
-				var params = {},
-					parentForm = jQuery(this).parent(),
+			jQuery('.clearFilter', filterDiv).bind(('createTouch' in document) ? 'touchend' : 'click', function(event){
+				var self = jQuery(this),
+					params = {},
+					parentForm = self.parent(),
 					currentHref = parentForm.attr("action"),
-					parentFilterDiv = jQuery(this).closest('.filterdiv'),
+					parentFilterDiv = self.closest('.filterdiv'),
+					actionData = jQuery.parseJSON(parentFilterDiv.attr('data-clear')),
 					contextStartPoint = jQuery('.' + parentFilterDiv.attr('data-forsortlink') + ':first');
 				
 				// extract form params
@@ -110,7 +122,15 @@
 					}
 				});
 				
-				var ctx = gm.getExecutionContext(contextStartPoint, currentHref, params);
+				actionData.clearFilterData = params;
+//				var ctx = gm.getExecutionContext(contextStartPoint, currentHref, params);
+				var toolbarId = self.closest('.mainReportDiv').find('.toolbarDiv').attr('id'),
+					ctx = gm.getToolbarExecutionContext(jQuery('div.columnHeader:first'), 
+							currentHref, 
+							'jr.action=' + gm.toJsonString(actionData), 
+							gm.performAction, 
+							[toolbarId], 
+							true);
 				
 				if (ctx) {
 					parentFilterDiv.hide();

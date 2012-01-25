@@ -63,6 +63,8 @@ import net.sf.jasperreports.engine.util.JRColorUtil;
 import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.repo.JasperDesignCache;
 import net.sf.jasperreports.web.WebReportContext;
+import net.sf.jasperreports.web.actions.ClearFilterData;
+import net.sf.jasperreports.web.actions.FilterData;
 import net.sf.jasperreports.web.actions.SortData;
 import net.sf.jasperreports.web.commands.CommandTarget;
 import net.sf.jasperreports.web.servlets.ReportServlet;
@@ -197,24 +199,33 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 			velocityContext.put("filterFormAction", getFilterFormActionLink(context));
 			velocityContext.put("filterReportUriParamName", ReportServlet.REQUEST_PARAMETER_REPORT_URI);
 			velocityContext.put("filterReportUriParamValue", reportContext.getParameterValue(ReportServlet.REQUEST_PARAMETER_REPORT_URI));
-			velocityContext.put("filterFieldParamName", HeaderToolbarElement.REQUEST_PARAMETER_FILTER_FIELD);
 			velocityContext.put("filterColumnName", sortColumnName);
 			velocityContext.put("filterColumnNameLabel", sortColumnLabel != null ? sortColumnLabel : "");
-			velocityContext.put("filterTableNameParam", HeaderToolbarElement.REQUEST_PARAMETER_DATASET_RUN);
-			velocityContext.put("filterTableNameValue", sortDatasetName);
 			velocityContext.put("filterCloseDialogImageResource", imagesResourcePath + HeaderToolbarElementHtmlHandler.RESOURCE_IMAGE_CLOSE);
+			
+			// begin: the params that will generate the JSON post object for filtering
+			velocityContext.put("filterTableNameParam", FilterData.FILTER_DATASET_NAME);
+			velocityContext.put("filterTableNameValue", sortDatasetName);
 
-			velocityContext.put("filterTypeParamName", HeaderToolbarElement.REQUEST_PARAMETER_FILTER_TYPE);
+			velocityContext.put("filterFieldParamName", FilterData.FIELD_NAME);
+
+			velocityContext.put("filterTypeParamName", FilterData.FILTER_TYPE);
 			velocityContext.put("filterTypeParamNameValue", filterType.getName());
-			velocityContext.put("filterTypeOperatorParamName", HeaderToolbarElement.REQUEST_PARAMETER_FILTER_TYPE_OPERATOR);
 			
-			velocityContext.put("filterPatternParamName", HeaderToolbarElement.REQUEST_PARAMETER_FILTER_PATTERN);
+			velocityContext.put("filterPatternParamName", FilterData.FILTER_PATTERN);
 			velocityContext.put("filterPatternParamValue", filterPattern);
-
-			velocityContext.put("filterTypeValuesMap", translatedOperators);
 			
-			velocityContext.put("filterValueStartParamName", HeaderToolbarElement.REQUEST_PARAMETER_FILTER_VALUE_START);
-			velocityContext.put("filterValueEndParamName", HeaderToolbarElement.REQUEST_PARAMETER_FILTER_VALUE_END);
+			velocityContext.put("filterTypeOperatorParamName", FilterData.FILTER_TYPE_OPERATOR);
+			velocityContext.put("filterTypeValuesMap", translatedOperators);
+
+			velocityContext.put("filterValueStartParamName", FilterData.FIELD_VALUE_START);
+			
+			velocityContext.put("filterValueEndParamName", FilterData.FIELD_VALUE_END);
+			// end
+			
+			
+
+			
 			
 			velocityContext.put("resizeColumnAction", getResizeColumnLink(context));
 
@@ -306,7 +317,9 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 			}
 			
 			velocityContext.put("isFiltered", isFiltered);
-			velocityContext.put("filterToRemoveParamName", HeaderToolbarElement.REQUEST_PARAMETER_REMOVE_FILTER);
+			
+			// params for clear filter
+			velocityContext.put("filterToRemoveParamName", ClearFilterData.FIELD_NAME);
 			velocityContext.put("filterToRemoveParamvalue", sortColumnName);
 			
 			String filtersJsonString = getJsonString(fieldFilters).replaceAll("\\\"", "\\\\\\\"");
@@ -321,7 +334,6 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 			velocityContext.put("enableFilterEndParameter", enableFilterEndParameter);
 			
 			// begin:temp
-//			velocityContext.put("sortAscHref", sortAscHref);
 			velocityContext.put("sortAscHref", sortAscHref);
 			velocityContext.put("sortAscData", getJsonString(sortAscData).replaceAll("\\\"", "\\\\\\\""));
 			velocityContext.put("sortDescHref", sortDescHref);
