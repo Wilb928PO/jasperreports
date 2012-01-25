@@ -116,4 +116,9 @@ public class ListOfArrayDataSource implements JRRewindableDataSource
 	}
 
 
+	public int size()
+	{
+		return records.size();
+	}
+	
 }

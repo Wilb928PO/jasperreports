@@ -2834,6 +2834,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 	{
 		writer.startElement(JRXmlConstants.ELEMENT_datasetRun, getNamespace());
 		writer.addEncodedAttribute(JRXmlConstants.ATTRIBUTE_subDataset, datasetRun.getDatasetName());
+		writer.addEncodedAttribute(JRXmlConstants.ATTRIBUTE_uuid, datasetRun.getUUID().toString());
 
 		writer.writeExpression(JRXmlConstants.ELEMENT_parametersMapExpression, datasetRun.getParametersMapExpression());
 

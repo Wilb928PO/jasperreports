@@ -21,34 +21,54 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with JasperReports. If not, see <http://www.gnu.org/licenses/>.
  */
-package net.sf.jasperreports.engine.xml;
+package net.sf.jasperreports.extensions;
 
-import java.util.UUID;
-
-import net.sf.jasperreports.engine.design.JRDesignDatasetRun;
-
-import org.xml.sax.Attributes;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
+ * An extension registry that contains several lists of extensions.
+ * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
-public class JRDatasetRunFactory extends JRBaseFactory
+public class ListExtensionsRegistry implements ExtensionsRegistry
 {
+
+	private final Map<Class<?>, List<Object>> extensions;
 	
-	public Object createObject(Attributes atts)
+	public ListExtensionsRegistry()
 	{
-		JRDesignDatasetRun datasetRun = new JRDesignDatasetRun();
-		
-		datasetRun.setDatasetName(atts.getValue(JRXmlConstants.ATTRIBUTE_subDataset));
-		
-		String uuid = atts.getValue(JRXmlConstants.ATTRIBUTE_uuid);
-		if (uuid != null)
+		extensions = new HashMap<Class<?>, List<Object>>();
+	}
+
+	/**
+	 * Adds an extension.
+	 * 
+	 * @param type the extension type
+	 * @param extension the extension object
+	 * @return this object
+	 */
+	public <T> ListExtensionsRegistry add(Class<T> type, T extension)
+	{
+		List<Object> list = extensions.get(type);
+		if (list == null)
 		{
-			datasetRun.setUUID(UUID.fromString(uuid));
+			list = new ArrayList<Object>();
+			extensions.put(type, list);
 		}
 		
-		return datasetRun;
+		list.add(extension);
+		return this;
+	}
+	
+	public <T> List<T> getExtensions(Class<T> extensionType)
+	{
+		@SuppressWarnings("unchecked")
+		List<T> list = (List<T>) extensions.get(extensionType);
+		return list;
 	}
 
 }

@@ -4175,6 +4175,11 @@ should extend <code>net.sf.jasperreports.engine.JRAbstractChartCustomizer</code>
  	 <documentation>The name of the <elem>subdataset</elem> to instantiate.</documentation>
 	</annotation>
    </attribute>
+   <attribute name="uuid" type="string" use="optional">
+	<annotation>
+	 <documentation>This attribute is auto-generated and is used to uniquely identify elements accross multiple report templates.</documentation>
+	</annotation>
+   </attribute>  
   </complexType>
  </element>
 

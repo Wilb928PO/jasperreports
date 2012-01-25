@@ -69,6 +69,7 @@ import net.sf.jasperreports.engine.JRVirtualizer;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.PrintElementVisitor;
+import net.sf.jasperreports.engine.ReportContext;
 import net.sf.jasperreports.engine.base.JRBasePrintPage;
 import net.sf.jasperreports.engine.base.JRVirtualPrintPage;
 import net.sf.jasperreports.engine.base.VirtualElementsData;
@@ -378,6 +379,15 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 
 		createDatasets();
 		mainDataset = factory.getDataset(jasperReport.getMainDataset());
+		
+		if (parentFiller == null)
+		{
+			FillDatasetPosition masterFillPosition = new FillDatasetPosition(null);
+			// adding this attribute only to have something at root level
+			masterFillPosition.addAttribute("report", jasperReport.getName());
+			mainDataset.setFillPosition(masterFillPosition);
+		}
+		
 		groups = mainDataset.groups;
 
 		createReportTemplates(factory);
@@ -857,6 +867,12 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 			{
 				log.debug("Fill " + fillerId + ": ended");
 			}
+			
+			if (parentFiller == null)
+			{
+				// commit the cached data
+				fillContext.cacheDone();
+			}
 
 			return jasperPrint;
 		}
@@ -1167,6 +1183,12 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 		setFormatFactory(parameterValues);
 
 		setIgnorePagination(parameterValues);
+
+		if (parentFiller == null)
+		{
+			ReportContext reportContext = (ReportContext) parameterValues.get(JRParameter.REPORT_CONTEXT);
+			fillContext.setReportContext(reportContext);
+		}
 
 		mainDataset.setParameterValues(parameterValues);
 		mainDataset.initDatasource();
@@ -2068,6 +2090,10 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 		return id;
 	}
 
+	public FillDatasetPosition getDatasetPosition()
+	{
+		return mainDataset.fillPosition;
+	}
 }
 
 

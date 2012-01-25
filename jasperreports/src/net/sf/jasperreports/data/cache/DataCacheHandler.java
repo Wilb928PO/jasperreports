@@ -21,34 +21,31 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with JasperReports. If not, see <http://www.gnu.org/licenses/>.
  */
-package net.sf.jasperreports.engine.xml;
+package net.sf.jasperreports.data.cache;
 
-import java.util.UUID;
-
-import net.sf.jasperreports.engine.design.JRDesignDatasetRun;
-
-import org.xml.sax.Attributes;
+import net.sf.jasperreports.engine.JRDataSource;
 
 /**
+ * Report data cache handler.
+ * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
-public class JRDatasetRunFactory extends JRBaseFactory
+public interface DataCacheHandler
 {
 	
-	public Object createObject(Attributes atts)
-	{
-		JRDesignDatasetRun datasetRun = new JRDesignDatasetRun();
-		
-		datasetRun.setDatasetName(atts.getValue(JRXmlConstants.ATTRIBUTE_subDataset));
-		
-		String uuid = atts.getValue(JRXmlConstants.ATTRIBUTE_uuid);
-		if (uuid != null)
-		{
-			datasetRun.setUUID(UUID.fromString(uuid));
-		}
-		
-		return datasetRun;
-	}
+	String PARAMETER_DATA_CACHE_HANDLER = "net.sf.jasperreports.data.cache.handler";
 
+	boolean isCachingEnabled();
+	
+	void setCachePopulated();
+	
+	boolean isCachePopulated();
+
+	DataCollector getCollector(Object key);
+	
+	boolean hasCachedData(Object key);
+	
+	JRDataSource getCachedData(Object key);
+	
 }

@@ -23,6 +23,8 @@
  */
 package net.sf.jasperreports.web.servlets;
 
+import net.sf.jasperreports.data.cache.ArrayListDataCacheHandler;
+import net.sf.jasperreports.data.cache.DataCacheHandler;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -58,6 +60,16 @@ public class Controller
 		String reportUri = (String)webReportContext.getParameterValue(REQUEST_PARAMETER_REPORT_URI);
 
 		RepositoryUtil.setThreadReportContext(webReportContext);
+		
+		DataCacheHandler dataCacheHandler = (DataCacheHandler) webReportContext.getParameterValue(
+				DataCacheHandler.PARAMETER_DATA_CACHE_HANDLER);
+		if (dataCacheHandler == null)
+		{
+			//initialize the data cache handler
+			dataCacheHandler = new ArrayListDataCacheHandler();
+			webReportContext.setParameterValue(
+					DataCacheHandler.PARAMETER_DATA_CACHE_HANDLER, dataCacheHandler);
+		}
 		
 		JasperReport jasperReport = null; 
 		

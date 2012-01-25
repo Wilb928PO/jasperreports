@@ -89,6 +89,7 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 	 */
 	private Map<String, Object> parameterValues;
 	private JRSubreportParameter[] parameters;
+	private FillDatasetPosition datasetPosition;
 	private Connection connection;
 	private JRDataSource dataSource;
 	private JasperReport jasperReport;
@@ -356,13 +357,24 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 		
 		if (jasperReport != null)
 		{
+			datasetPosition = new FillDatasetPosition(filler.mainDataset.fillPosition);
+			datasetPosition.addAttribute("subreportUUID", getUUID());
+			datasetPosition.addAttribute("rowIndex", filler.getVariableValue(JRVariable.REPORT_COUNT));		
+			
 			/*   */
 			connection = (Connection) evaluateExpression(
 					getConnectionExpression(), evaluation);
 	
-			/*   */
-			dataSource = (JRDataSource) evaluateExpression(
-					getDataSourceExpression(), evaluation);
+			if (filler.fillContext.hasCachedData(datasetPosition))
+			{
+				// TODO lucianc put something here so that data adapters know not to create a data source
+				dataSource = null;
+			}
+			else
+			{
+				dataSource = (JRDataSource) evaluateExpression(
+						getDataSourceExpression(), evaluation);
+			}
 			
 			parameterValues = 
 				evaluateParameterValues(evaluation);
@@ -447,6 +459,8 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 		
 		runner = getRunnerFactory().createSubreportRunner(this, subreportFiller);
 		subreportFiller.setSubreportRunner(runner);
+		
+		subreportFiller.mainDataset.setFillPosition(datasetPosition);
 	}
 
 

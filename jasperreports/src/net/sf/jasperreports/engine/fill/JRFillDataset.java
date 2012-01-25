@@ -35,6 +35,8 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TimeZone;
 
+import net.sf.jasperreports.data.cache.DataCacheHandler;
+import net.sf.jasperreports.data.cache.DataCollector;
 import net.sf.jasperreports.engine.DatasetFilter;
 import net.sf.jasperreports.engine.EvaluationType;
 import net.sf.jasperreports.engine.JRAbstractScriptlet;
@@ -222,6 +224,8 @@ public class JRFillDataset implements JRDataset, DatasetFillContext
 	
 	protected DatasetFilter filter;
 
+	protected FillDatasetPosition fillPosition;
+	protected DataCollector dataCacher;
 	
 	/**
 	 * Creates a fill dataset object.
@@ -616,12 +620,19 @@ public class JRFillDataset implements JRDataset, DatasetFillContext
 	public void initDatasource() throws JRException
 	{
 		queryExecuter = null;
+		dataSource = null;
+
+		// init data caching
+		cacheInit();
 		
-		dataSource = (JRDataSource) getParameterValue(JRParameter.REPORT_DATA_SOURCE);
-		if (!useDatasourceParamValue && (useConnectionParamValue || dataSource == null))
+		if (dataSource == null)
 		{
-			dataSource = createQueryDatasource();
-			setParameter(JRParameter.REPORT_DATA_SOURCE, dataSource);
+			dataSource = (JRDataSource) getParameterValue(JRParameter.REPORT_DATA_SOURCE);
+			if (!useDatasourceParamValue && (useConnectionParamValue || dataSource == null))
+			{
+				dataSource = createQueryDatasource();
+				setParameter(JRParameter.REPORT_DATA_SOURCE, dataSource);
+			}
 		}
 
 		if (DatasetSortUtil.needSorting(this))
@@ -631,6 +642,86 @@ public class JRFillDataset implements JRDataset, DatasetFillContext
 		}
 	}
 
+	public void setFillPosition(FillDatasetPosition fillPosition)
+	{
+		this.fillPosition = fillPosition;
+	}
+	
+	protected void cacheInit()
+	{
+		dataCacher = null;
+		
+		// TODO lucianc report property to inhibit caching
+		DataCacheHandler cacheHandler = filler.fillContext.getCacheHandler();
+		if (cacheHandler != null && cacheHandler.isCachingEnabled())
+		{
+			if (fillPosition == null)
+			{
+				log.debug("No fill position present, not using the data cache");
+				return;
+			}
+			
+			if (cacheHandler.isCachePopulated())
+			{
+				// using cached data
+				dataSource = cacheHandler.getCachedData(fillPosition);
+
+				if (log.isDebugEnabled())
+				{
+					if (dataSource == null)
+					{
+						log.debug("No cached data found for " + fillPosition);
+					}
+					else
+					{
+						log.debug("Using cached data for " + fillPosition);
+					}
+				}
+			}
+			else
+			{
+				// populating the cache
+				dataCacher = cacheHandler.getCollector(fillPosition);
+				// this will also remove existing data on rewind
+				dataCacher.init(parent.getFields());
+				
+				if (log.isDebugEnabled())
+				{
+					log.debug("Populating data cache for " + fillPosition);
+				}
+			}
+		}
+	}
+
+	protected void cacheRecord()
+	{
+		if (dataCacher != null && !dataCacher.hasEnded())
+		{
+			Object[] values;
+			if (fields == null)
+			{
+				values = new Object[0];
+			}
+			else
+			{
+				values = new Object[fields.length];
+				for (int i = 0; i < fields.length; i++)
+				{
+					values[i] = fields[i].getValue();
+				}
+			}
+			
+			dataCacher.addRecord(values);
+		}
+	}
+
+	protected void cacheEnd()
+	{
+		if (dataCacher != null && !dataCacher.hasEnded())
+		{
+			dataCacher.end();
+		}
+	}
 
 	/**
 	 * Sets the parameter values from the values map.
@@ -872,7 +963,7 @@ public class JRFillDataset implements JRDataset, DatasetFillContext
 	 * @return <code>true</code> if the data source was not exhausted
 	 * @throws JRException
 	 */
-	protected boolean next(boolean filter) throws JRException
+	protected boolean next(boolean applyFilter) throws JRException
 	{
 		boolean hasNext = false;
 
@@ -881,15 +972,44 @@ public class JRFillDataset implements JRDataset, DatasetFillContext
 			boolean includeRow = true;
 			do
 			{
-				hasNext = advanceDataSource(filter);
+				hasNext = advanceDataSource(applyFilter);
 				if (hasNext)
 				{
 					setOldValues();
 
 					calculator.estimateVariables();
-					if (filter)
+					if (applyFilter)
 					{
-						includeRow = evaluateFilter();
+						includeRow = true;
+						
+						// evaluate the filter expression
+						JRExpression filterExpression = getFilterExpression();
+						if (filterExpression != null)
+						{
+							Boolean filterExprResult = (Boolean) calculator.evaluate(
+									filterExpression, JRExpression.EVALUATION_ESTIMATED);
+							includeRow = filterExprResult != null && filterExprResult.booleanValue();
+						}
+
+						if (includeRow)
+						{
+							// cache the record if the filter expression evaluated to true;
+							// dynamic filters do not exclude records from the cache
+							cacheRecord();
+							
+							if (filter != null)
+							{
+								includeRow = filter.matches(EvaluationType.ESTIMATED);
+								if (log.isDebugEnabled())
+								{
+									log.debug("Record matched by filter: " + includeRow);
+								}
+							}
+						}
+					}
+					else
+					{
+						cacheRecord();
 					}
 					
 					if (!includeRow)
@@ -904,6 +1024,11 @@ public class JRFillDataset implements JRDataset, DatasetFillContext
 			{
 				++reportCount;
 			}
+		}
+		
+		if (!hasNext)
+		{
+			cacheEnd();
 		}
 
 		return hasNext;
@@ -971,33 +1096,6 @@ public class JRFillDataset implements JRDataset, DatasetFillContext
 			hasNext = dataSource.next();
 		}
 		return hasNext;
-	}
-	
-	protected boolean evaluateFilter() throws JRException
-	{
-		boolean includeRow = true;
-		
-		if (filter != null)
-		{
-			includeRow = filter.matches(EvaluationType.ESTIMATED);
-			if (log.isDebugEnabled())
-			{
-				log.debug("Record matched by filter: " + includeRow);
-			}
-		}
-		
-		if (includeRow)
-		{
-			JRExpression filterExpression = getFilterExpression();
-			if (filterExpression != null)
-			{
-				Boolean filterExprResult = (Boolean) calculator.evaluate(
-						filterExpression, JRExpression.EVALUATION_ESTIMATED);
-				includeRow = filterExprResult != null && filterExprResult.booleanValue();
-			}
-		}
-		
-		return includeRow;
 	}
 	
 	/**

@@ -32,7 +32,9 @@ import net.sf.jasperreports.engine.JRDatasetRun;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRRewindableDataSource;
+import net.sf.jasperreports.engine.JRVariable;
 import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.fill.FillDatasetPosition;
 import net.sf.jasperreports.engine.fill.JRFillDataset;
 import net.sf.jasperreports.engine.fill.JRFillDatasetRun;
 import net.sf.jasperreports.engine.fill.JRFillExpressionEvaluator;
@@ -57,6 +59,7 @@ public class FillDatasetRun extends JRFillDatasetRun
 	private final JRFillExpressionEvaluator expressionEvaluator;
 	
 	private Map<String, Object> parameterValues;
+	private FillDatasetPosition datasetPosition;
 	private JRDataSource dataSource;
 	private Connection connection;
 	private boolean first;
@@ -97,11 +100,22 @@ public class FillDatasetRun extends JRFillDatasetRun
 			dataset.getResourceBundle() != null,//hasResourceBundle
 			false//hasFormatFactory
 			);
+		
+		datasetPosition = new FillDatasetPosition(filler.getDatasetPosition());
+		datasetPosition.addAttribute("datasetRunUUID", getUUID());
+		datasetPosition.addAttribute("rowIndex", filler.getVariableValue(JRVariable.REPORT_COUNT));		
 
 		if (dataSourceExpression != null)
 		{
-			dataSource = (JRDataSource) expressionEvaluator.evaluate(
-					dataSourceExpression, evaluation);
+			if (filler.getFillContext().hasCachedData(datasetPosition))
+			{
+				dataSource = null;
+			}
+			else
+			{
+				dataSource = (JRDataSource) expressionEvaluator.evaluate(
+						dataSourceExpression, evaluation);
+			}
 		}
 		else if (connectionExpression != null)
 		{
@@ -129,6 +143,10 @@ public class FillDatasetRun extends JRFillDatasetRun
 		copyConnectionParameter(parameterValues);
 		dataset.initCalculator();
 		dataset.setParameterValues(parameterValues);
+
+		// set fill position for caching
+		dataset.setFillPosition(datasetPosition);
+		
 		dataset.initDatasource();
 		
 		dataset.start();
