@@ -41,8 +41,7 @@
 				jQuery(this).parent().hide();
 			});
 			
-			filterDiv
-				.draggable();
+			filterDiv.draggable();
 			
 			// 'Enter' key press for filter value triggers 'contextual' submit
 			jQuery('.filterValue', filterDiv).bind('keypress', function(event) {
@@ -328,7 +327,8 @@
              * Show filter div when clicking the filter icon
              */
             jQuery('.filterSymbolImage', popupDiv).bind('click', function(event) {
-                var filterDiv = jQuery('#' + jQuery(this).parents('.popupdiv').attr('data-filterid'));
+                var self = jQuery(this),
+                	filterDiv = jQuery('#' + jQuery(this).parents('.popupdiv').attr('data-filterid'));
 
                 // hide all other open filters FIXMEJIVE: this will close all visible filters from all reports on the same page
                 jQuery('.filterdiv').filter(':visible').each(function (index, element) {
@@ -339,8 +339,8 @@
                     filterDiv.css({
                         position: 'absolute',
                         'z-index': 999998,
-                        left: (event.pageX)  + "px",
-                        top: (event.pageY) + "px"
+                        left: (40 + self.closest('.popupdiv').position().left)  + "px", // FIXMEJIVE filterdiv should be moved into popupdiv	
+                        top: (self.closest('.headerToolbar').position().top + self.closest('.popupdiv').position().top + 3) + "px"
                     });
                     filterDiv.show();
                 }
