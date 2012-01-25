@@ -597,12 +597,9 @@ jQuery.noConflict();
 		};
 		
 		jg.initToolbar = function(toolbarId, strRunReportParam) {
-			console.log('initToolbar');
-			
 			var toolbar = jQuery('#' + toolbarId);
 			
 			if (toolbar.size() != 1) {
-				console.log('no toolbar with id: ' + toolbarId);
 				return;
 			}
 			

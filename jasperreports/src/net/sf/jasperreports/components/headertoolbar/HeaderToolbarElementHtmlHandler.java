@@ -55,6 +55,7 @@ import net.sf.jasperreports.engine.type.ModeEnum;
 import net.sf.jasperreports.engine.util.JRColorUtil;
 import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.web.WebReportContext;
+import net.sf.jasperreports.web.actions.SortData;
 import net.sf.jasperreports.web.servlets.ReportServlet;
 import net.sf.jasperreports.web.servlets.ResourceServlet;
 import net.sf.jasperreports.web.util.VelocityUtil;
@@ -211,8 +212,13 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 			if (popupId != null) {
 				velocityContext.put("popupId", popupId);
 			}
-			String sortAscHref = getSortLink(context, sortColumnName, sortColumnType, HeaderToolbarElement.SORT_ORDER_ASC, sortDatasetName);
-			String sortDescHref = getSortLink(context, sortColumnName, sortColumnType, HeaderToolbarElement.SORT_ORDER_DESC, sortDatasetName);
+//			String sortAscHref = getSortLink(context, sortColumnName, sortColumnType, HeaderToolbarElement.SORT_ORDER_ASC, sortDatasetName);
+			String sortAscHref = getSortActionLink(context);
+			SortData sortAscData = new SortData(sortColumnName, sortColumnType, HeaderToolbarElement.SORT_ORDER_ASC, sortDatasetName);
+	
+//			String sortDescHref = getSortLink(context, sortColumnName, sortColumnType, HeaderToolbarElement.SORT_ORDER_DESC, sortDatasetName);
+			String sortDescHref = getSortActionLink(context);
+			SortData sortDescData = new SortData(sortColumnName, sortColumnType, HeaderToolbarElement.SORT_ORDER_DESC, sortDatasetName);
 	
 			String sortAscSrc = RESOURCE_SORT_DEFAULT_ASC;
 			String sortAscHoverSrc = RESOURCE_SORT_DEFAULT_ASC_HOVER;
@@ -240,11 +246,11 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 				
 				boolean isAscending = HeaderToolbarElement.SORT_ORDER_ASC.equals(sortActionData[2]);
 				if (isAscending) {
-					sortAscHref = getSortLink(context, sortColumnName, sortColumnType, HeaderToolbarElement.SORT_ORDER_NONE, sortDatasetName);
+					sortAscData.setSortOrder(HeaderToolbarElement.SORT_ORDER_NONE);
 					sortAscSrc = RESOURCE_SORT_ENABLED_ASC;
 					sortAscHoverSrc = RESOURCE_SORT_ENABLED_ASC_HOVER;
 				} else {
-					sortDescHref = getSortLink(context, sortColumnName, sortColumnType, HeaderToolbarElement.SORT_ORDER_NONE, sortDatasetName);
+					sortDescData.setSortOrder(HeaderToolbarElement.SORT_ORDER_NONE);
 					sortDescSrc = RESOURCE_SORT_ENABLED_DESC;
 					sortDescHoverSrc = RESOURCE_SORT_ENABLED_DESC_HOVER;
 				}
@@ -305,8 +311,11 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 			velocityContext.put("enableFilterEndParameter", enableFilterEndParameter);
 			
 			// begin:temp
+//			velocityContext.put("sortAscHref", sortAscHref);
 			velocityContext.put("sortAscHref", sortAscHref);
+			velocityContext.put("sortAscData", getJsonString(sortAscData).replaceAll("\\\"", "\\\\\\\""));
 			velocityContext.put("sortDescHref", sortDescHref);
+			velocityContext.put("sortDescData", getJsonString(sortDescData).replaceAll("\\\"", "\\\\\\\""));
 			
 			velocityContext.put("sortAscSrc", imagesResourcePath + sortAscSrc);
 			velocityContext.put("sortAscHoverSrc", imagesResourcePath + sortAscHoverSrc);
@@ -322,17 +331,31 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 		return htmlFragment;
 	}
 	
-	private String getSortLink(JRHtmlExporterContext context, String sortColumnName, String sortColumnType, String sortOrder, String sortTableName) {
+//	private String getSortLink(JRHtmlExporterContext context, String sortColumnName, String sortColumnType, String sortOrder, String sortTableName) {
+//		JRBasePrintHyperlink hyperlink = new JRBasePrintHyperlink();
+//		hyperlink.setLinkType("ReportExecution");
+//		
+//		JRPrintHyperlinkParameters parameters = new JRPrintHyperlinkParameters();
+//		parameters.addParameter(new JRPrintHyperlinkParameter(
+//				HeaderToolbarElement.REQUEST_PARAMETER_SORT_DATA,
+//				String.class.getName(), 
+//				HeaderToolbarElementUtils.packSortColumnInfo(sortColumnName, sortColumnType, sortOrder)));
+//		parameters.addParameter(new JRPrintHyperlinkParameter(HeaderToolbarElement.REQUEST_PARAMETER_DATASET_RUN, String.class.getName(), sortTableName));
+//		
+//		ReportContext reportContext = context.getExporter().getReportContext();
+//		parameters.addParameter(new JRPrintHyperlinkParameter(WebReportContext.REQUEST_PARAMETER_REPORT_CONTEXT_ID, String.class.getName(), reportContext.getId()));
+//		parameters.addParameter(new JRPrintHyperlinkParameter(ReportServlet.REQUEST_PARAMETER_RUN_REPORT, String.class.getName(), "true"));
+//		
+//		hyperlink.setHyperlinkParameters(parameters);
+//		
+//		return context.getHyperlinkURL(hyperlink);
+//	}
+	
+	private String getSortActionLink(JRHtmlExporterContext context) {
 		JRBasePrintHyperlink hyperlink = new JRBasePrintHyperlink();
 		hyperlink.setLinkType("ReportExecution");
 		
 		JRPrintHyperlinkParameters parameters = new JRPrintHyperlinkParameters();
-		parameters.addParameter(new JRPrintHyperlinkParameter(
-				HeaderToolbarElement.REQUEST_PARAMETER_SORT_DATA,
-				String.class.getName(), 
-				HeaderToolbarElementUtils.packSortColumnInfo(sortColumnName, sortColumnType, sortOrder)));
-		parameters.addParameter(new JRPrintHyperlinkParameter(HeaderToolbarElement.REQUEST_PARAMETER_DATASET_RUN, String.class.getName(), sortTableName));
-		
 		ReportContext reportContext = context.getExporter().getReportContext();
 		parameters.addParameter(new JRPrintHyperlinkParameter(WebReportContext.REQUEST_PARAMETER_REPORT_CONTEXT_ID, String.class.getName(), reportContext.getId()));
 		parameters.addParameter(new JRPrintHyperlinkParameter(ReportServlet.REQUEST_PARAMETER_RUN_REPORT, String.class.getName(), "true"));
@@ -433,12 +456,12 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 		}
 	}
 	
-	private String getJsonString(List<FieldFilter> fieldFilters) {
+	private String getJsonString(Object object) {
 		
 		ObjectMapper mapper = new ObjectMapper();
 		StringWriter writer = new StringWriter(128);
 		try {
-			mapper.writeValue(writer, fieldFilters);
+			mapper.writeValue(writer, object);
 			writer.flush();
 			writer.close();
 		} catch (Exception e) {
