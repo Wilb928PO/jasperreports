@@ -40,7 +40,6 @@ import net.sf.jasperreports.repo.WebFileRepositoryService;
 import net.sf.jasperreports.web.WebReportContext;
 import net.sf.jasperreports.web.actions.AbstractAction;
 import net.sf.jasperreports.web.actions.Action;
-import net.sf.jasperreports.web.actions.ClearFilterAction;
 import net.sf.jasperreports.web.actions.FilterAction;
 import net.sf.jasperreports.web.actions.RedoAction;
 import net.sf.jasperreports.web.actions.ResizeColumnAction;
@@ -210,7 +209,6 @@ public class ReportServlet extends HttpServlet
 			mapper.registerSubtypes(new NamedType(SaveAction.class, "save"));
 			mapper.registerSubtypes(new NamedType(SortAction.class, "sort"));
 			mapper.registerSubtypes(new NamedType(FilterAction.class, "filter"));
-			mapper.registerSubtypes(new NamedType(ClearFilterAction.class, "clearfilter"));
 			
 			try {
 				result = mapper.readValue(jsonData, AbstractAction.class);

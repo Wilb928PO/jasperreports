@@ -39,7 +39,6 @@ import net.sf.jasperreports.components.sort.FilterTypeNumericOperatorsEnum;
 import net.sf.jasperreports.components.sort.FilterTypeTextOperatorsEnum;
 import net.sf.jasperreports.components.sort.FilterTypesEnum;
 import net.sf.jasperreports.components.table.StandardTable;
-import net.sf.jasperreports.engine.CompositeDatasetFilter;
 import net.sf.jasperreports.engine.DatasetFilter;
 import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JRGenericPrintElement;
@@ -47,6 +46,7 @@ import net.sf.jasperreports.engine.JRIdentifiable;
 import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JRPrintHyperlinkParameter;
 import net.sf.jasperreports.engine.JRPrintHyperlinkParameters;
+import net.sf.jasperreports.engine.JRPropertiesMap;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JRSortField;
 import net.sf.jasperreports.engine.ReportContext;
@@ -63,10 +63,10 @@ import net.sf.jasperreports.engine.util.JRColorUtil;
 import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.repo.JasperDesignCache;
 import net.sf.jasperreports.web.WebReportContext;
-import net.sf.jasperreports.web.actions.ClearFilterData;
 import net.sf.jasperreports.web.actions.FilterData;
 import net.sf.jasperreports.web.actions.SortData;
 import net.sf.jasperreports.web.commands.CommandTarget;
+import net.sf.jasperreports.web.commands.FilterCommand;
 import net.sf.jasperreports.web.servlets.ReportServlet;
 import net.sf.jasperreports.web.servlets.ResourceServlet;
 import net.sf.jasperreports.web.util.VelocityUtil;
@@ -75,6 +75,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.velocity.VelocityContext;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
@@ -204,8 +205,8 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 			velocityContext.put("filterCloseDialogImageResource", imagesResourcePath + HeaderToolbarElementHtmlHandler.RESOURCE_IMAGE_CLOSE);
 			
 			// begin: the params that will generate the JSON post object for filtering
-			velocityContext.put("filterTableNameParam", FilterData.FILTER_DATASET_NAME);
-			velocityContext.put("filterTableNameValue", sortDatasetName);
+			velocityContext.put("filterTableNameParam", FilterData.FILTER_TABLE_UUID);
+			velocityContext.put("filterTableNameValue", tableUUID);
 
 			velocityContext.put("filterFieldParamName", FilterData.FIELD_NAME);
 
@@ -278,48 +279,39 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 			}
 			
 			// existing filters
-			String currentDataset = (String) reportContext.getParameterValue(HeaderToolbarElement.REQUEST_PARAMETER_DATASET_RUN);
 			String filterValueStart = "";
 			String filterValueEnd = "";
 			String filterTypeOperatorValue = "";
 			boolean isFiltered = false;
 			boolean enableFilterEndParameter = false;
-			List<FieldFilter> fieldFilters = new ArrayList<FieldFilter>();
+			List<DatasetFilter> fieldFilters = getExistingFiltersForField(reportContext, tableUUID, sortColumnName);
 
-			if (sortDatasetName != null && sortDatasetName.equals(currentDataset))
-			{
-				String currentTableFiltersParam = currentDataset + HeaderToolbarElement.FILTER_FIELDS_PARAM_SUFFIX;
-				DatasetFilter existingFilter = (DatasetFilter) reportContext.getParameterValue(currentTableFiltersParam);
-				getFieldFilters(existingFilter, fieldFilters, sortColumnName);
-				
-				if (fieldFilters.size() > 0) {
-					FieldFilter ff = fieldFilters.get(0);
-					if (ff.getFilterValueStart() != null) {
-						filterValueStart = ff.getFilterValueStart();
-					}
-					if (ff.getFilterValueEnd() != null) {
-						filterValueEnd = ff.getFilterValueEnd();
-					}
-					filterTypeOperatorValue = ff.getFilterTypeOperator();
-					isFiltered = true;
-					if (filterTypeOperatorValue != null && filterTypeOperatorValue.toLowerCase().contains("between")) {
-						enableFilterEndParameter = true;
-					}
-					if (!ff.getIsValid()) {
-						filterSrc = RESOURCE_FILTER_WRONG;
-						filterHoverSrc = RESOURCE_FILTER_WRONG_HOVER;
-					} else {
-						filterSrc = RESOURCE_FILTER_ENABLED;
-						filterHoverSrc = RESOURCE_FILTER_ENABLED_HOVER;
-					}
-					
+			if (fieldFilters.size() > 0) {
+				FieldFilter ff = (FieldFilter)fieldFilters.get(0);
+				if (ff.getFilterValueStart() != null) {
+					filterValueStart = ff.getFilterValueStart();
+				}
+				if (ff.getFilterValueEnd() != null) {
+					filterValueEnd = ff.getFilterValueEnd();
+				}
+				filterTypeOperatorValue = ff.getFilterTypeOperator();
+				isFiltered = true;
+				if (filterTypeOperatorValue != null && filterTypeOperatorValue.toLowerCase().contains("between")) {
+					enableFilterEndParameter = true;
+				}
+				if (ff.getIsValid() != null && !ff.getIsValid()) {
+					filterSrc = RESOURCE_FILTER_WRONG;
+					filterHoverSrc = RESOURCE_FILTER_WRONG_HOVER;
+				} else {
+					filterSrc = RESOURCE_FILTER_ENABLED;
+					filterHoverSrc = RESOURCE_FILTER_ENABLED_HOVER;
 				}
 			}
 			
 			velocityContext.put("isFiltered", isFiltered);
 			
 			// params for clear filter
-			velocityContext.put("filterToRemoveParamName", ClearFilterData.FIELD_NAME);
+			velocityContext.put("filterToRemoveParamName", FilterData.FIELD_NAME);
 			velocityContext.put("filterToRemoveParamvalue", sortColumnName);
 			
 			String filtersJsonString = getJsonString(fieldFilters).replaceAll("\\\"", "\\\\\\\"");
@@ -485,17 +477,51 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 		return result;
 	}
 	
-	private void getFieldFilters(DatasetFilter existingFilter, List<FieldFilter> fieldFilters, String fieldName) {
-		if (existingFilter instanceof FieldFilter) {
-			if ( fieldName == null || (fieldName != null && ((FieldFilter)existingFilter).getField().equals(fieldName))) {
-				fieldFilters.add((FieldFilter)existingFilter);
-			} 
-		} else if (existingFilter instanceof CompositeDatasetFilter) {
-			for (DatasetFilter filter : ((CompositeDatasetFilter)existingFilter).getFilters())
-			{
-				getFieldFilters(filter, fieldFilters, fieldName);
+	private List<DatasetFilter> getExistingFiltersForField(ReportContext reportContext, String uuid, String filterFieldName) {
+		
+		JasperDesignCache cache = JasperDesignCache.getInstance(reportContext);
+		CommandTarget target = cache.getCommandTarget(UUID.fromString(uuid));
+		List<DatasetFilter> result = new ArrayList<DatasetFilter>();
+		if (target != null)
+		{
+			JRIdentifiable identifiable = target.getIdentifiable();
+			JRDesignComponentElement componentElement = identifiable instanceof JRDesignComponentElement ? (JRDesignComponentElement)identifiable : null;
+			StandardTable table = componentElement == null ? null : (StandardTable)componentElement.getComponent();
+			
+			JRDesignDatasetRun datasetRun = (JRDesignDatasetRun)table.getDatasetRun();
+			
+			String datasetName = datasetRun.getDatasetName();
+			
+			JasperDesign jasperDesign = cache.getJasperDesign(target.getUri());//FIXMEJIVE getJasperReport not design
+			JRDesignDataset dataset = (JRDesignDataset)jasperDesign.getDatasetMap().get(datasetName);
+			
+			// get existing filter as JSON string
+			String serializedFilters = "[]";
+			JRPropertiesMap propertiesMap = dataset.getPropertiesMap();
+			if (propertiesMap.getProperty(FilterCommand.DATASET_FILTER_PROPERTY) != null) {
+				serializedFilters = propertiesMap.getProperty(FilterCommand.DATASET_FILTER_PROPERTY);
+			}
+			
+			ObjectMapper mapper = new ObjectMapper();
+			List<DatasetFilter> existingFilters = null;
+			try {
+				existingFilters = mapper.readValue(serializedFilters, new TypeReference<List<FieldFilter>>(){});
+			} catch (Exception e) {
+				throw new JRRuntimeException(e);
+			}
+			
+			if (existingFilters.size() > 0) {
+				for (DatasetFilter filter: existingFilters) {
+					if (((FieldFilter)filter).getField().equals(filterFieldName)) {
+						result.add(filter);
+						break;
+					}
+				}
 			}
 		}
+		
+		return result;
+		
 	}
 	
 	private String getJsonString(Object object) {

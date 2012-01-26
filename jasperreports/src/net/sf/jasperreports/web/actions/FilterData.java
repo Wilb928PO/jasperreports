@@ -2,7 +2,7 @@ package net.sf.jasperreports.web.actions;
 
 public class FilterData {
 	
-	public static final String FILTER_DATASET_NAME = "filterDatasetName";
+	public static final String FILTER_TABLE_UUID = "uuid";
 	public static final String FIELD_NAME = "fieldName";
 	public static final String FIELD_VALUE_START = "fieldValueStart";
 	public static final String FIELD_VALUE_END = "fieldValueEnd";
@@ -10,25 +10,26 @@ public class FilterData {
 	public static final String FILTER_TYPE_OPERATOR = "filterTypeOperator";
 	public static final String FILTER_PATTERN = "filterPattern";
 	
-	private String filterDatasetName;
+	private String uuid;
 	private String fieldName;
 	private String fieldValueStart;
 	private String fieldValueEnd;
 	private String filterType;
 	private String filterTypeOperator;
 	private String filterPattern;
+	private boolean clearFilter;
 	
 	public FilterData() {
 	}
 	
-	public String getFilterDatasetName() {
-		return filterDatasetName;
+	public String getUuid() {
+		return uuid;
 	}
-
-	public void setFilterDatasetName(String filterDatasetName) {
-		this.filterDatasetName = filterDatasetName;
+	
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
 	}
-
+	
 	public String getFieldName() {
 		return fieldName;
 	}
@@ -75,6 +76,14 @@ public class FilterData {
 
 	public void setFilterPattern(String filterPattern) {
 		this.filterPattern = filterPattern;
+	}
+
+	public boolean isClearFilter() {
+		return clearFilter;
+	}
+
+	public void setClearFilter(boolean clearFilter) {
+		this.clearFilter = clearFilter;
 	}
 
 }

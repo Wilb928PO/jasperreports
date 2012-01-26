@@ -33,7 +33,7 @@
 	(function () {
 		var gm = JasperReports.modules.global,
 			uid = '${filterDivId}',
-			arrFilterDiv = ["<div id='${filterDivId}' class='filterdiv' style='display: none;' data-forsortlink='${sortLinkClass}' data-filter='{\"actionName\":\"filter\"}' data-clear='{\"actionName\":\"clearfilter\"}'>",
+			arrFilterDiv = ["<div id='${filterDivId}' class='filterdiv' style='display: none;' data-forsortlink='${sortLinkClass}' data-filter='{\"actionName\":\"filter\"}' data-clear='{\"actionName\":\"filter\",\"filterData\":{\"clearFilter\":true}}'>",
 			                "<img class='hidefilter' src='${filterCloseDialogImageResource}' />",
 			                "<form action='${filterFormAction}' action='GET' class='filterDivForm'>",
 			                "	<input class='postable forClear' type='hidden' name='${filterTableNameParam}' value='${filterTableNameValue}' />",

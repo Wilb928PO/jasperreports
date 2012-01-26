@@ -107,11 +107,11 @@
 			
 			jQuery('.clearFilter', filterDiv).bind(('createTouch' in document) ? 'touchend' : 'click', function(event){
 				var self = jQuery(this),
-					params = {},
 					parentForm = self.parent(),
 					currentHref = parentForm.attr("action"),
 					parentFilterDiv = self.closest('.filterdiv'),
 					actionData = jQuery.parseJSON(parentFilterDiv.attr('data-clear')),
+					params = actionData.filterData,
 					contextStartPoint = jQuery('.' + parentFilterDiv.attr('data-forsortlink') + ':first');
 				
 				// extract form params
@@ -122,7 +122,6 @@
 					}
 				});
 				
-				actionData.clearFilterData = params;
 //				var ctx = gm.getExecutionContext(contextStartPoint, currentHref, params);
 				var toolbarId = self.closest('.mainReportDiv').find('.toolbarDiv').attr('id'),
 					ctx = gm.getToolbarExecutionContext(jQuery('div.columnHeader:first'), 
