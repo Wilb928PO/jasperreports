@@ -221,17 +221,20 @@
 	            			headerToolbar.css({
 	            				left: '0px'
 	            			});
+	            			
+	            			// the popup div contains headerToolbar(fixes size) and headerToolbarMask divs
 
 	            			headerToolbarMask.css({
 		            			position: 'absolute',
 		            			'z-index': 999999,
 		            			width: firstElem.width() + 'px',
-		            			height: (firstElem.height() + lastElem.offset().top - self.offset().top + lastElem.height()) + 'px',
+		            			height: (lastElem.position().top + lastElem.height() - self.position().top) + 'px',
 		            			left: '0px'
 		            		});
 		            	
 			            	popupDiv.css({
 			                    'z-index': 999998,
+			                    width: firstElem.width() + 'px',
 			                    left: (self.position().left + self.parent().position().left)  + 'px',
 			                    top: (self.position().top + self.parent().position().top/* - popupDiv.height()*/) + 'px'
 			                });
