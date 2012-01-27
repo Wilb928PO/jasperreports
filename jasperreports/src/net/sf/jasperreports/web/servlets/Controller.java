@@ -61,15 +61,7 @@ public class Controller
 
 		RepositoryUtil.setThreadReportContext(webReportContext);
 		
-		DataCacheHandler dataCacheHandler = (DataCacheHandler) webReportContext.getParameterValue(
-				DataCacheHandler.PARAMETER_DATA_CACHE_HANDLER);
-		if (dataCacheHandler == null)
-		{
-			//initialize the data cache handler
-			dataCacheHandler = new ArrayListDataCacheHandler();
-			webReportContext.setParameterValue(
-					DataCacheHandler.PARAMETER_DATA_CACHE_HANDLER, dataCacheHandler);
-		}
+		setDataCache(webReportContext);
 		
 		JasperReport jasperReport = null; 
 		
@@ -98,6 +90,39 @@ public class Controller
 		webReportContext.setParameterValue(REQUEST_PARAMETER_ASYNC, async);
 		
 		runReport(webReportContext, jasperReport, async.booleanValue());
+	}
+
+
+	protected void setDataCache(WebReportContext webReportContext)
+	{
+		DataCacheHandler dataCacheHandler = (DataCacheHandler) webReportContext.getParameterValue(
+				DataCacheHandler.PARAMETER_DATA_CACHE_HANDLER);
+		if (dataCacheHandler != null && !dataCacheHandler.isCachePopulated())
+		{
+			// if we have an old cache handler which is not yet final, create a new one
+			// TODO lucianc also check for final but disabled caches
+			
+			if (log.isDebugEnabled())
+			{
+				log.debug("Data cache handler not final " + dataCacheHandler);
+			}
+			
+			dataCacheHandler = null;
+		}
+		
+		if (dataCacheHandler == null)
+		{
+			//initialize the data cache handler
+			dataCacheHandler = new ArrayListDataCacheHandler();
+			
+			if (log.isDebugEnabled())
+			{
+				log.debug("Created data cache handler " + dataCacheHandler);
+			}
+			
+			webReportContext.setParameterValue(
+					DataCacheHandler.PARAMETER_DATA_CACHE_HANDLER, dataCacheHandler);
+		}
 	}
 
 

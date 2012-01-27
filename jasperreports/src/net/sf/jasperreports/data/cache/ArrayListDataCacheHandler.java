@@ -47,7 +47,7 @@ public class ArrayListDataCacheHandler implements DataCacheHandler
 	private static final Log log = LogFactory.getLog(ArrayListDataCacheHandler.class);
 
 	private boolean enabled;
-	private boolean populated;
+	private volatile boolean populated;
 	
 	private Map<Object, ArrayDataCollector> cachers = new HashMap<Object, ArrayDataCollector>();
 	private Map<Object, ListOfArrayDataSource> cachedDataSources = new HashMap<Object, ListOfArrayDataSource>();
