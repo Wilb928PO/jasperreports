@@ -203,10 +203,11 @@
 		            		popupDiv = jQuery('#tbl_' + popupId),
 		            		headerToolbar = jQuery('.headerToolbar', popupDiv),
 		            		headerToolbarMask = jQuery('.headerToolbarMask', popupDiv),
+		            		parentFrame = self.closest('.jrtableframe'),
 		            		columnSelectorPrefix = '.col_',
 		            		columnNameSel = columnSelectorPrefix + self.attr('data-popupColumn'), // FIXMEJIVE 'col_' prefix hardcoded in TableReport.java
-		            		firstElem = jQuery(columnNameSel + ':first'),
-		            		lastElem = jQuery(columnNameSel + ':last'),
+		            		firstElem = jQuery(columnNameSel + ':first', parentFrame),
+		            		lastElem = jQuery(columnNameSel + ':last', parentFrame),
 		            		headerSelectorPrefix = '.header_',
 		            		headerNameSel = headerSelectorPrefix + self.attr('data-popupColumn');
 		            	
