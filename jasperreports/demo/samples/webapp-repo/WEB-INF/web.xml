@@ -9,6 +9,10 @@
 
 
 	<servlet>
+		<servlet-name>ViewerServlet</servlet-name>
+		<servlet-class>net.sf.jasperreports.web.servlets.ViewerServlet</servlet-class>
+	</servlet>
+	<servlet>
 		<servlet-name>ReportServlet</servlet-name>
 		<servlet-class>net.sf.jasperreports.web.servlets.ReportServlet</servlet-class>
 	</servlet>
@@ -22,6 +26,10 @@
 	</servlet>
 	
 
+	<servlet-mapping>
+		<servlet-name>ViewerServlet</servlet-name>
+		<url-pattern>/servlets/viewer</url-pattern>
+	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>ReportServlet</servlet-name>
 		<url-pattern>/servlets/report</url-pattern>

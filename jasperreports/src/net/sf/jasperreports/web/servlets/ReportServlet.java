@@ -152,7 +152,7 @@ public class ReportServlet extends HttpServlet
 	/**
 	 *
 	 */
-	public void runReport(
+	public static void runReport(
 		HttpServletRequest request, //FIXMEJIVE put request in report context, maybe as a thread local?
 		WebReportContext webReportContext
 		) throws JRException //IOException, ServletException
@@ -195,7 +195,7 @@ public class ReportServlet extends HttpServlet
 	/**
 	 *
 	 */
-	private Action getAction(ReportContext webReportContext, String jsonData)
+	private static Action getAction(ReportContext webReportContext, String jsonData)
 	//private Action getAction(ReportContext webReportContext, String reportUri, String jsonData)
 	{
 		AbstractAction result = null;
