@@ -25,7 +25,6 @@ package net.sf.jasperreports.components.sort;
 
 import java.io.IOException;
 
-import net.sf.jasperreports.engine.JRFont;
 import net.sf.jasperreports.engine.component.Component;
 import net.sf.jasperreports.engine.component.ComponentKey;
 import net.sf.jasperreports.engine.component.ComponentXmlWriter;
@@ -33,7 +32,6 @@ import net.sf.jasperreports.engine.component.ComponentsEnvironment;
 import net.sf.jasperreports.engine.type.EvaluationTimeEnum;
 import net.sf.jasperreports.engine.util.JRXmlWriteHelper;
 import net.sf.jasperreports.engine.util.XmlNamespace;
-import net.sf.jasperreports.engine.xml.JRXmlConstants;
 import net.sf.jasperreports.engine.xml.JRXmlWriter;
 
 /**
@@ -78,27 +76,9 @@ public class SortComponentXmlWriter implements ComponentXmlWriter {
 		writer.addAttribute(SortComponent.PROPERTY_COLUMN_NAME, sortComponent.getSortFieldName());
 		writer.addAttribute(SortComponent.PROPERTY_HANDLER_HORIZONTAL_ALIGN, sortComponent.getHandlerHorizontalAlign());
 		writer.addAttribute(SortComponent.PROPERTY_HANDLER_VERTICAL_ALIGN, sortComponent.getHandlerVerticalAlign());
-		writeFont(writer, sortComponent.getSymbolFont());
+		reportWriter.writeFont(sortComponent.getSymbolFont());
 		writer.closeElement();
 
 		writer.closeElement();
-	}
-	
-	private void writeFont(JRXmlWriteHelper writer, JRFont font) throws IOException
-	{
-		if (font != null)
-		{
-			writer.startElement(JRXmlConstants.ELEMENT_font);
-			writer.addEncodedAttribute(JRXmlConstants.ATTRIBUTE_fontName, font.getOwnFontName());
-			writer.addAttribute(JRXmlConstants.ATTRIBUTE_size, font.getOwnFontSize());
-			writer.addAttribute(JRXmlConstants.ATTRIBUTE_isBold, font.isOwnBold());
-			writer.addAttribute(JRXmlConstants.ATTRIBUTE_isItalic, font.isOwnItalic());
-			writer.addAttribute(JRXmlConstants.ATTRIBUTE_isUnderline, font.isOwnUnderline());
-			writer.addAttribute(JRXmlConstants.ATTRIBUTE_isStrikeThrough, font.isOwnStrikeThrough());
-			writer.addEncodedAttribute(JRXmlConstants.ATTRIBUTE_pdfFontName, font.getOwnPdfFontName());
-			writer.addEncodedAttribute(JRXmlConstants.ATTRIBUTE_pdfEncoding, font.getOwnPdfEncoding());
-			writer.addAttribute(JRXmlConstants.ATTRIBUTE_isPdfEmbedded, font.isOwnPdfEmbedded());
-			writer.closeElement(true);
-		}
 	}
 }

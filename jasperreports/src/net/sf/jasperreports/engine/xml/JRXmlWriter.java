@@ -906,11 +906,11 @@ public class JRXmlWriter extends JRXmlBaseWriter
 	/**
 	 *
 	 */
-	private void writeFont(JRFont font) throws IOException
+	public void writeFont(JRFont font) throws IOException
 	{
 		if (font != null)
 		{
-			writer.startElement(JRXmlConstants.ELEMENT_font);
+			writer.startElement(JRXmlConstants.ELEMENT_font, getNamespace());
 			writer.addEncodedAttribute(JRXmlConstants.ATTRIBUTE_fontName, font.getOwnFontName());
 			writer.addAttribute(JRXmlConstants.ATTRIBUTE_size, font.getOwnFontSize());
 			writer.addAttribute(JRXmlConstants.ATTRIBUTE_isBold, font.isOwnBold());
