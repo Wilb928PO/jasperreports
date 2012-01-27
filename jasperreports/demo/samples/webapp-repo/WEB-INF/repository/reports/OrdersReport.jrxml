@@ -36,6 +36,7 @@
 		</field>
 		<variable name="TotalFreight" class="java.lang.Float" calculation="Sum">
 			<variableExpression><![CDATA[$F{Freight}]]></variableExpression>
+			<initialValueExpression>new Float(0)</initialValueExpression>
 		</variable>
 	</subDataset>
 						<parameter name="XML_DATA_DOCUMENT" class="java.lang.Object"/>
@@ -117,7 +118,7 @@
 							</staticText>
 						</jr:columnHeader>
 						<jr:detailCell height="14">
-							<textField isStretchWithOverflow="true" pattern="yyyy, MMM dd">
+							<textField isStretchWithOverflow="true" pattern="yyyy, MMM dd" isBlankWhenNull="true">
 								<reportElement positionType="Float" x="0" y="2" width="67" height="10"/>
 								<textElement textAlignment="Center"/>
 								<textFieldExpression><![CDATA[$F{ShippedDate}]]></textFieldExpression>
@@ -126,7 +127,7 @@
 					</jr:column>
 					<jr:column width="55">
 						<jr:tableFooter height="10">
-							<textField pattern="¤ #,##0.00">
+							<textField pattern="#,##0.00">
 								<reportElement style="Sans_Bold" mode="Opaque" x="0" y="0" width="52" height="10" backcolor="#33CCCC"/>
 								<textElement textAlignment="Right"/>
 								<textFieldExpression><![CDATA[$V{TotalFreight}]]></textFieldExpression>
@@ -140,7 +141,7 @@
 							</staticText>
 						</jr:columnHeader>
 						<jr:detailCell height="14">
-							<textField isStretchWithOverflow="true" pattern="¤ #,##0.00">
+							<textField isStretchWithOverflow="true" pattern="#,##0.00">
 								<reportElement positionType="Float" x="0" y="2" width="52" height="10"/>
 								<textElement textAlignment="Right"/>
 								<textFieldExpression><![CDATA[$F{Freight}]]></textFieldExpression>
