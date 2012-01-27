@@ -193,27 +193,27 @@
 		        return false;  
 		    });
 			
-			jQuery('.jrtableframe').live('mouseover', 
+			jQuery('.jrtableframe').live('click', 
 					function(event) {
 						var target = jQuery(event.target),
 							currentTarget = jQuery(this),
 							colHeader = target.closest('.columnHeader'); 
 						if (colHeader.size() == 1) {	// first look for column header
-							colHeader.trigger('click');
+							colHeader.trigger('highlight');
 							
 						} else {	// look for columns
 							var column = target.closest('.column');
 							if (column.size() == 1) {
 								var colName = /col_(\w+)/.exec(column.attr('class'));
 								if(colName && colName.length > 1) {
-									currentTarget.find('.header_' + colName[1]).trigger('click');
+									currentTarget.find('.header_' + colName[1]).trigger('highlight');
 								}
 							}
 						}
 					}
 			);
 	
-            jQuery('.columnHeader').live('click',	// FIXMEJIVE 'columnHeader' hardcoded in TableReport.java
+            jQuery('.columnHeader').live('highlight',	// FIXMEJIVE 'columnHeader' hardcoded in TableReport.java
             		function(event) {
             			// hide all other popupdivs
             			jQuery('.popupdiv').fadeOut(100);
