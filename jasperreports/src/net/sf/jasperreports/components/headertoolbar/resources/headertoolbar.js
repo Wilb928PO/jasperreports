@@ -192,6 +192,26 @@
 			jQuery(document).bind("contextmenu",function(e){  
 		        return false;  
 		    });
+			
+			jQuery('.jrtableframe').live('mouseover', 
+					function(event) {
+						var target = jQuery(event.target),
+							currentTarget = jQuery(this),
+							colHeader = target.closest('.columnHeader'); 
+						if (colHeader.size() == 1) {	// first look for column header
+							colHeader.trigger('click');
+							
+						} else {	// look for columns
+							var column = target.closest('.column');
+							if (column.size() == 1) {
+								var colName = /col_(\w+)/.exec(column.attr('class'));
+								if(colName && colName.length > 1) {
+									currentTarget.find('.header_' + colName[1]).trigger('click');
+								}
+							}
+						}
+					}
+			);
 	
             jQuery('.columnHeader').live('click',	// FIXMEJIVE 'columnHeader' hardcoded in TableReport.java
             		function(event) {
@@ -320,7 +340,7 @@
 			jQuery(fcuid).append(arrPopupHtml.join(''));
 			var popupDiv = jQuery(uid);
 			
-			popupDiv.bind('dblclick', function(event) {
+			popupDiv.bind('mouseleave', function(event) {
 				jQuery(this).fadeOut(100);
 			});
 

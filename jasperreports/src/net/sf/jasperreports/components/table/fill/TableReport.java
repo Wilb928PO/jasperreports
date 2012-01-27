@@ -107,6 +107,7 @@ public class TableReport implements JRReport
 	protected static final String SUMMARY_GROUP_NAME = "__SummaryGroup";
 
 	protected static final String HTML_CLASS_COLUMN_PREFIX = "col_";
+	protected static final String HTML_CLASS_COLUMN = "column";
 	
 	private final FillContext fillContext;
 	private final TableComponent table;
@@ -536,7 +537,7 @@ public class TableReport implements JRReport
 			frame.getPropertiesMap().setProperty(JRHtmlExporter.PROPERTY_HTML_POPUP_ID, popupId);
 			frame.getPropertiesMap().setProperty(JRHtmlExporter.PROPERTY_HTML_POPUP_COLUMN, name);
 			
-			headerClasses.put(column.hashCode(), TableReport.HTML_CLASS_COLUMN_PREFIX + name);
+			headerClasses.put(column.hashCode(), TableReport.HTML_CLASS_COLUMN + " " + TableReport.HTML_CLASS_COLUMN_PREFIX + name);
 			
 			if (filterType != null)
 			{
