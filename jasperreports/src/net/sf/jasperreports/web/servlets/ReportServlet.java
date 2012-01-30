@@ -40,12 +40,8 @@ import net.sf.jasperreports.repo.WebFileRepositoryService;
 import net.sf.jasperreports.web.WebReportContext;
 import net.sf.jasperreports.web.actions.AbstractAction;
 import net.sf.jasperreports.web.actions.Action;
-import net.sf.jasperreports.web.actions.FilterAction;
-import net.sf.jasperreports.web.actions.RedoAction;
 import net.sf.jasperreports.web.actions.ResizeColumnAction;
-import net.sf.jasperreports.web.actions.SaveAction;
-import net.sf.jasperreports.web.actions.SortAction;
-import net.sf.jasperreports.web.actions.UndoAction;
+import net.sf.jasperreports.web.util.JacksonUtil;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -198,28 +194,10 @@ public class ReportServlet extends HttpServlet
 	private static Action getAction(ReportContext webReportContext, String jsonData)
 	//private Action getAction(ReportContext webReportContext, String reportUri, String jsonData)
 	{
-		AbstractAction result = null;
-		if (jsonData != null) {
-			ObjectMapper mapper = new ObjectMapper();
-			mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
-			
-			mapper.registerSubtypes(new NamedType(ResizeColumnAction.class, "resize"));
-			mapper.registerSubtypes(new NamedType(UndoAction.class, "undo"));
-			mapper.registerSubtypes(new NamedType(RedoAction.class, "redo"));
-			mapper.registerSubtypes(new NamedType(SaveAction.class, "save"));
-			mapper.registerSubtypes(new NamedType(SortAction.class, "sort"));
-			mapper.registerSubtypes(new NamedType(FilterAction.class, "filter"));
-			
-			try {
-				result = mapper.readValue(jsonData, AbstractAction.class);
-				result.init(webReportContext);//, reportUri);
-			} catch (JsonParseException e) {
-				e.printStackTrace();
-			} catch (JsonMappingException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		AbstractAction result = (AbstractAction)JacksonUtil.load(jsonData, AbstractAction.class);
+		if (result != null) 
+		{
+			result.init(webReportContext);//, reportUri);
 		}
 		return result;
 	}
