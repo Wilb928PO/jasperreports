@@ -1489,4 +1489,9 @@ public class JRFillDataset implements JRDataset, DatasetFillContext
 	{
 		return locale;
 	}
+
+	public FillDatasetPosition getDatasetPosition()
+	{
+		return fillPosition;
+	}
 }

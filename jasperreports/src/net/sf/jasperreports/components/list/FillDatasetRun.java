@@ -101,9 +101,10 @@ public class FillDatasetRun extends JRFillDatasetRun
 			false//hasFormatFactory
 			);
 		
-		datasetPosition = new FillDatasetPosition(filler.getDatasetPosition());
+		JRFillDataset parentDataset = expressionEvaluator.getFillDataset();
+		datasetPosition = new FillDatasetPosition(parentDataset.getDatasetPosition());
 		datasetPosition.addAttribute("datasetRunUUID", getUUID());
-		datasetPosition.addAttribute("rowIndex", filler.getVariableValue(JRVariable.REPORT_COUNT));		
+		datasetPosition.addAttribute("rowIndex", parentDataset.getVariableValue(JRVariable.REPORT_COUNT));		
 
 		if (dataSourceExpression != null)
 		{

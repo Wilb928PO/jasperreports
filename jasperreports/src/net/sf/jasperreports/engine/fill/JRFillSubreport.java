@@ -357,9 +357,10 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 		
 		if (jasperReport != null)
 		{
-			datasetPosition = new FillDatasetPosition(filler.mainDataset.fillPosition);
+			JRFillDataset parentDataset = expressionEvaluator.getFillDataset();
+			datasetPosition = new FillDatasetPosition(parentDataset.fillPosition);
 			datasetPosition.addAttribute("subreportUUID", getUUID());
-			datasetPosition.addAttribute("rowIndex", filler.getVariableValue(JRVariable.REPORT_COUNT));		
+			datasetPosition.addAttribute("rowIndex", parentDataset.getVariableValue(JRVariable.REPORT_COUNT));		
 			
 			/*   */
 			connection = (Connection) evaluateExpression(

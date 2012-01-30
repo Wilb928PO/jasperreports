@@ -2089,11 +2089,6 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 		fillElements.put(id, fillElement);
 		return id;
 	}
-
-	public FillDatasetPosition getDatasetPosition()
-	{
-		return mainDataset.fillPosition;
-	}
 }
 
 
