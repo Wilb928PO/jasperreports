@@ -100,12 +100,12 @@ public class ArrayListDataCacheHandler implements DataCacheHandler
 		ListOfArrayDataSource dataSource = cachedDataSources.get(key);
 		if (dataSource == null)
 		{
-			throw new JRRuntimeException("No cached data exists");
+			throw new JRRuntimeException("No cached data exists for " + key);
 		}
 		
 		if (log.isDebugEnabled())
 		{
-			log.debug("Found cached data source of " + dataSource.size() + " records");
+			log.debug("Found cached data source of " + dataSource.size() + " records for " + key);
 		}
 		
 		// rewind to make sure it starts with the first record
