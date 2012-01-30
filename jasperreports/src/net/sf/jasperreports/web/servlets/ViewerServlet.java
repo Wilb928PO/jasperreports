@@ -33,6 +33,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.jasperreports.components.headertoolbar.actions.ResizeColumnAction;
 import net.sf.jasperreports.components.sort.SortElement;
 import net.sf.jasperreports.engine.JRConstants;
 import net.sf.jasperreports.engine.JRExporterParameter;
@@ -43,7 +44,6 @@ import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.repo.WebFileRepositoryService;
 import net.sf.jasperreports.web.WebReportContext;
 import net.sf.jasperreports.web.actions.AbstractAction;
-import net.sf.jasperreports.web.actions.ResizeColumnAction;
 import net.sf.jasperreports.web.util.ReportExecutionHyperlinkProducerFactory;
 import net.sf.jasperreports.web.util.VelocityUtil;
 

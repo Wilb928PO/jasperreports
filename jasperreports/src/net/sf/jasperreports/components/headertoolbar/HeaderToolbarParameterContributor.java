@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.sf.jasperreports.components.sort.FieldFilter;
+import net.sf.jasperreports.components.sort.actions.FilterCommand;
 import net.sf.jasperreports.engine.CompositeDatasetFilter;
 import net.sf.jasperreports.engine.DatasetFilter;
 import net.sf.jasperreports.engine.JRException;
@@ -35,7 +36,6 @@ import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.ParameterContributor;
 import net.sf.jasperreports.engine.ParameterContributorContext;
 import net.sf.jasperreports.engine.ReportContext;
-import net.sf.jasperreports.web.commands.FilterCommand;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

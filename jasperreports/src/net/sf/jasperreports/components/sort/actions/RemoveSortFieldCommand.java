@@ -21,27 +21,29 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with JasperReports. If not, see <http://www.gnu.org/licenses/>.
  */
-package net.sf.jasperreports.web.commands;
+package net.sf.jasperreports.components.sort.actions;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRRuntimeException;
+import net.sf.jasperreports.engine.JRSortField;
 import net.sf.jasperreports.engine.design.JRDesignDataset;
-import net.sf.jasperreports.engine.design.JRDesignSortField;
+import net.sf.jasperreports.web.commands.Command;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
  * @version $Id: AbstractViewer.java 4931 2012-01-24 12:17:25Z teodord $
  */
-public class AddSortFieldCommand implements Command 
+public class RemoveSortFieldCommand implements Command
 {
 	
 	private JRDesignDataset dataset;
-	private JRDesignSortField sortField;
+	private JRSortField sortField;
+	private int removeIndex;
 	
 	/**
 	 * 
 	 */
-	public AddSortFieldCommand(JRDesignDataset dataset, JRDesignSortField sortField) 
+	public RemoveSortFieldCommand(JRDesignDataset dataset, JRSortField sortField) 
 	{
 		this.dataset = dataset;
 		this.sortField = sortField;
@@ -52,13 +54,10 @@ public class AddSortFieldCommand implements Command
 	 */
 	public void execute() 
 	{
-		try
+		removeIndex = dataset.getSortFieldsList().indexOf(sortField);
+		if (removeIndex >= 0)
 		{
-			dataset.addSortField(sortField);
-		}
-		catch (JRException e)
-		{
-			throw new JRRuntimeException(e);
+			dataset.removeSortField(sortField);
 		}
 	}
 	
@@ -67,7 +66,17 @@ public class AddSortFieldCommand implements Command
 	 */
 	public void undo() 
 	{
-		dataset.removeSortField(sortField);
+		if (removeIndex >= 0)
+		{
+			try
+			{
+				dataset.addSortField(removeIndex, sortField);
+			}
+			catch (JRException e)
+			{
+				throw new JRRuntimeException(e);
+			}
+		}
 	}
 
 	/**

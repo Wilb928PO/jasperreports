@@ -1,8 +1,10 @@
-package net.sf.jasperreports.web.commands;
+package net.sf.jasperreports.components.headertoolbar.actions;
 
 import net.sf.jasperreports.engine.base.JRBaseElement;
+import net.sf.jasperreports.web.commands.Command;
 
-public class ResizeElementCommand implements Command {
+public class ResizeElementCommand implements Command 
+{
 	
 	private int width;
 	private int oldWidth;

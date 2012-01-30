@@ -28,21 +28,15 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
 
-import net.sf.jasperreports.engine.JRBand;
-import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.ReportContext;
-import net.sf.jasperreports.engine.design.JRDesignComponentElement;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import net.sf.jasperreports.engine.xml.JRXmlWriter;
-import net.sf.jasperreports.web.commands.CommandTarget;
 
 
 
@@ -131,7 +125,7 @@ public class JasperDesignCache
 
 	/**
 	 * 
-	 */
+	 *
 	public CommandTarget getCommandTarget(UUID uuid)
 	{
 //		Collection<JasperDesignReportResource> resources = cachedResourcesMap.values();

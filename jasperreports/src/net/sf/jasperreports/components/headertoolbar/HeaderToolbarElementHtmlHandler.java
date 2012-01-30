@@ -33,11 +33,16 @@ import java.util.ResourceBundle;
 import java.util.UUID;
 
 import net.sf.jasperreports.components.BaseElementHtmlHandler;
+import net.sf.jasperreports.components.headertoolbar.actions.FilterAction;
+import net.sf.jasperreports.components.headertoolbar.actions.SortAction;
 import net.sf.jasperreports.components.sort.FieldFilter;
 import net.sf.jasperreports.components.sort.FilterTypeDateOperatorsEnum;
 import net.sf.jasperreports.components.sort.FilterTypeNumericOperatorsEnum;
 import net.sf.jasperreports.components.sort.FilterTypeTextOperatorsEnum;
 import net.sf.jasperreports.components.sort.FilterTypesEnum;
+import net.sf.jasperreports.components.sort.actions.FilterCommand;
+import net.sf.jasperreports.components.sort.actions.FilterData;
+import net.sf.jasperreports.components.sort.actions.SortData;
 import net.sf.jasperreports.components.table.StandardTable;
 import net.sf.jasperreports.engine.DatasetFilter;
 import net.sf.jasperreports.engine.JRExporterParameter;
@@ -63,10 +68,7 @@ import net.sf.jasperreports.engine.util.JRColorUtil;
 import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.repo.JasperDesignCache;
 import net.sf.jasperreports.web.WebReportContext;
-import net.sf.jasperreports.web.actions.FilterData;
-import net.sf.jasperreports.web.actions.SortData;
 import net.sf.jasperreports.web.commands.CommandTarget;
-import net.sf.jasperreports.web.commands.FilterCommand;
 import net.sf.jasperreports.web.servlets.ReportServlet;
 import net.sf.jasperreports.web.servlets.ResourceServlet;
 import net.sf.jasperreports.web.util.VelocityUtil;
@@ -422,7 +424,9 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 //		List<JRSortField> existingFields = (List<JRSortField>) reportContext.getParameterValue(currentTableSortFieldsParam);
 
 		JasperDesignCache cache = JasperDesignCache.getInstance(reportContext);
-		CommandTarget target = cache.getCommandTarget(UUID.fromString(uuid));
+		SortAction action = new SortAction();
+		action.init(reportContext);
+		CommandTarget target = action.getCommandTarget(UUID.fromString(uuid));
 		if (target != null)
 		{
 			JRIdentifiable identifiable = target.getIdentifiable();
@@ -480,7 +484,9 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 	private List<DatasetFilter> getExistingFiltersForField(ReportContext reportContext, String uuid, String filterFieldName) {
 		
 		JasperDesignCache cache = JasperDesignCache.getInstance(reportContext);
-		CommandTarget target = cache.getCommandTarget(UUID.fromString(uuid));
+		FilterAction action = new FilterAction();
+		action.init(reportContext);
+		CommandTarget target = action.getCommandTarget(UUID.fromString(uuid));
 		List<DatasetFilter> result = new ArrayList<DatasetFilter>();
 		if (target != null)
 		{

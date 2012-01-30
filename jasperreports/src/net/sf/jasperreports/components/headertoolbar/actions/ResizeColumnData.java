@@ -1,4 +1,4 @@
-package net.sf.jasperreports.web.actions;
+package net.sf.jasperreports.components.headertoolbar.actions;
 
 
 public class ResizeColumnData 
