@@ -666,13 +666,13 @@ public class JRFillDataset implements JRDataset, DatasetFillContext
 				// using cached data
 				dataSource = cacheHandler.getCachedData(fillPosition);
 
-				if (log.isDebugEnabled())
+				if (dataSource == null)
 				{
-					if (dataSource == null)
-					{
-						log.debug("No cached data found for " + fillPosition);
-					}
-					else
+					log.warn("No cached data found for " + fillPosition);
+				}
+				else
+				{
+					if (log.isDebugEnabled())
 					{
 						log.debug("Using cached data for " + fillPosition);
 					}
