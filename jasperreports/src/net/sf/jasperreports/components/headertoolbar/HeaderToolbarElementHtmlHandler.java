@@ -23,7 +23,6 @@
  */
 package net.sf.jasperreports.components.headertoolbar;
 
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -71,6 +70,7 @@ import net.sf.jasperreports.web.WebReportContext;
 import net.sf.jasperreports.web.commands.CommandTarget;
 import net.sf.jasperreports.web.servlets.ReportServlet;
 import net.sf.jasperreports.web.servlets.ResourceServlet;
+import net.sf.jasperreports.web.util.JacksonUtil;
 import net.sf.jasperreports.web.util.VelocityUtil;
 
 import org.apache.commons.logging.Log;
@@ -316,7 +316,7 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 			velocityContext.put("filterToRemoveParamName", FilterData.FIELD_NAME);
 			velocityContext.put("filterToRemoveParamvalue", sortColumnName);
 			
-			String filtersJsonString = getJsonString(fieldFilters).replaceAll("\\\"", "\\\\\\\"");
+			String filtersJsonString = JacksonUtil.getEscapedJsonString(fieldFilters);
 			if (log.isDebugEnabled()) {
 				log.debug("filtersJsonString: " + filtersJsonString);
 			}
@@ -329,9 +329,9 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 			
 			// begin:temp
 			velocityContext.put("sortAscHref", sortAscHref);
-			velocityContext.put("sortAscData", getJsonString(sortAscData).replaceAll("\\\"", "\\\\\\\""));
+			velocityContext.put("sortAscData", JacksonUtil.getEscapedJsonString(sortAscData));
 			velocityContext.put("sortDescHref", sortDescHref);
-			velocityContext.put("sortDescData", getJsonString(sortDescData).replaceAll("\\\"", "\\\\\\\""));
+			velocityContext.put("sortDescData", JacksonUtil.getEscapedJsonString(sortDescData));
 			
 			velocityContext.put("sortAscSrc", imagesResourcePath + sortAscSrc);
 			velocityContext.put("sortAscHoverSrc", imagesResourcePath + sortAscHoverSrc);
@@ -526,23 +526,7 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 			}
 		}
 		
-		return result;
-		
-	}
-	
-	private String getJsonString(Object object) {
-		
-		ObjectMapper mapper = new ObjectMapper();
-		StringWriter writer = new StringWriter(128);
-		try {
-			mapper.writeValue(writer, object);
-			writer.flush();
-			writer.close();
-		} catch (Exception e) {
-			throw new JRRuntimeException(e);
-		}
-		
-		return writer.getBuffer().toString();
+		return result;		
 	}
 
 }

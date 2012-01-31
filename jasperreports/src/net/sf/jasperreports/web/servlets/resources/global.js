@@ -245,9 +245,6 @@ jQuery.noConflict();
 	 * Isolates jQuery dependent functions
 	 */
 	jg.doJqueryStuff = function () {
-		// Remove jQuery '$' alias from global namespace 
-		jQuery.noConflict();
-		
 		jg.ajaxLoad = function (url, elementToAppendTo, elementToExtract, requestParams, callback, arrCallbackArgs, loadMaskTarget) {
 			jQuery.ajax(url, 
 					{
@@ -277,11 +274,11 @@ jQuery.noConflict();
 							}
 							
 							if (callback) {
-								if (arrCallbackArgs) {
-									callback.apply(null, arrCallbackArgs);
-								} else {
-									callback(jqXHR.responseText);
+								if (!arrCallbackArgs) {
+									arrCallbackArgs = [];
 								}
+								arrCallbackArgs.push(response);
+								callback.apply(null, arrCallbackArgs);
 							}
 							
 							loadMaskTarget.loadmask('hide');
@@ -450,8 +447,8 @@ jQuery.noConflict();
 		};
 		
 		jg.toolbarUtils = (function() {
-			var classEnabled = 'enabledPaginationButton',
-				classDisabled = 'disabledPaginationButton';
+			var classEnabled = 'enabledViewerButton',
+				classDisabled = 'disabledViewerButton';
 			
 			return {
 				getClassEnabled: function() {
@@ -493,7 +490,7 @@ jQuery.noConflict();
 				classEnabled = utils.getClassEnabled(),
 				classDisabled = utils.getClassDisabled();
 			
-			if (typeof(totalPages) == 'undefined') {
+			if (jg.isEmpty(totalPages)) {
 				utils.enableElem(pageNext);
 				utils.disableElem(pageLast);
 			}
@@ -517,7 +514,15 @@ jQuery.noConflict();
 			}
 		};
 		
-		jg.performAction = function (toolbarId) {
+		jg.disableToolbarPaginationButtons = function (toolbarId) {
+			var jqToolbar = jQuery('#' + toolbarId),
+				utils = jg.toolbarUtils;
+			utils.disablePair(jQuery('.pageFirst', jqToolbar), jQuery('.pageLast', jqToolbar));
+			utils.disablePair(jQuery('.pagePrevious', jqToolbar), jQuery('.pageNext', jqToolbar));
+			
+		};
+		
+		jg.performAction = function (toolbarId, response) {
 			var undoRedoCounters = jg.undoRedoCounters;
 			
 			undoRedoCounters.undos ++;
@@ -525,9 +530,13 @@ jQuery.noConflict();
 			
 			undoRedoCounters.redos = 0;
 			jg.updateToolbarRedoButton(toolbarId, false); // disable redo
+			
+			
+			jg.disableToolbarPaginationButtons(toolbarId);
+			jg.afterReportLoadCallback(toolbarId, response);
 		};
 		
-		jg.performUndo = function (toolbarId) {
+		jg.performUndo = function (toolbarId, response) {
 			var undoRedoCounters = jg.undoRedoCounters;
 			
 			undoRedoCounters.redos ++;
@@ -538,9 +547,12 @@ jQuery.noConflict();
 				jg.updateToolbarUndoButton(toolbarId, false); // disable undo
 				undoRedoCounters.undos = 0;
 			}
+			
+			jg.disableToolbarPaginationButtons(toolbarId);
+			jg.afterReportLoadCallback(toolbarId, response);
 		};
 		
-		jg.performRedo = function (toolbarId) {
+		jg.performRedo = function (toolbarId, response) {
 			var undoRedoCounters = jg.undoRedoCounters;
 			
 			undoRedoCounters.undos ++;
@@ -551,6 +563,9 @@ jQuery.noConflict();
 				jg.updateToolbarRedoButton(toolbarId, false); // disable redo
 				undoRedoCounters.redos = 0;
 			}
+			
+			jg.disableToolbarPaginationButtons(toolbarId);
+			jg.afterReportLoadCallback(toolbarId, response);
 		};
 		
 		jg.updateToolbarUndoButton = function (toolbarId, boolEnable) {
@@ -575,36 +590,41 @@ jQuery.noConflict();
 			}
 		};
 		
-		jg.setAutoRefresh = function(strRunReportParam, jqToolbar) {
-			var pageTimestamp = jqToolbar.attr('data-pageTimestamp');
+		jg.setAutoRefresh = function(toolbarId) {
+			var jqToolbar = jQuery('#' + toolbarId),
+				pageTimestamp = jqToolbar.attr('data-pageTimestamp');
+			
 			if (pageTimestamp) {
-				var refreshLater = function() {
-					jg.refreshPage(strRunReportParam, jqToolbar, jqToolbar.attr('data-currentpage'), 'jr.pagetimestamp=' + pageTimestamp);
-				};
-				var timeoutId = window.setTimeout(refreshLater, 5000);//FIXME configure
+				var timeoutId = global.setTimeout(
+						(function (tid, reqPage, reqParams) {
+							return function() {
+								jg.refreshPage(tid, reqPage, reqParams);
+							};
+						}(toolbarId, jqToolbar.attr('data-currentpage'), 'jr.pagetimestamp=' + pageTimestamp)), 
+						5000);//FIXME configure
 				jqToolbar.attr('data-autoRefreshId', timeoutId);
 			} else {
 				jqToolbar.removeAttr('data-autoRefreshId');
 			}
 		};
 		
-		jg.cancelAutoRefresh = function(jqToolbar) {
-			var timeoutId = jqToolbar.attr('data-autoRefreshId');
+		jg.cancelAutoRefresh = function(toolbar) {
+			if (typeof toolbar === 'string') {
+				toolbar = jQuery('#' + toolbar);
+			} 
+			var timeoutId = toolbar.attr('data-autoRefreshId');
 			if (timeoutId) {
 				window.clearTimeout(timeoutId);
-				jqToolbar.removeAttr('data-autoRefreshId');
+				toolbar.removeAttr('data-autoRefreshId');
 			}
 		};
 		
-		jg.initToolbar = function(toolbarId, strRunReportParam) {
+		jg.initToolbar = function(toolbarId) {
 			var toolbar = jQuery('#' + toolbarId);
 			
 			if (toolbar.size() != 1) {
 				return;
 			}
-			
-			jg.updateToolbarPaginationButtons(toolbar);
-			jg.setAutoRefresh(strRunReportParam, toolbar);
 			
 			if (toolbar.attr('data-initialized') == null) {
 				toolbar.attr('data-initialized', 'true');
@@ -615,8 +635,9 @@ jQuery.noConflict();
 				
 				toolbar.bind('click', function(event) {
 					var target = jQuery(event.target);
-					if (target.is('.enabledPaginationButton')) {
+					if (target.is('.enabledViewerButton')) {
 						var parent = jQuery(this),
+							toolbarId = parent.attr('id'),
 							currentPage = parseInt(parent.attr('data-currentpage')),
 							totalPages = parseInt(parent.attr('data-totalpages')),
 							requestedPage,
@@ -636,7 +657,7 @@ jQuery.noConflict();
 						}
 						
 						if (requestedPage != null) {
-							jg.refreshPage(strRunReportParam, parent, requestedPage);
+							jg.refreshPage(toolbarId, requestedPage);
 						}
 						
 						if (target.is('.undo')) {		// FIXMEJIVE: place this in headertoolbar.js
@@ -645,7 +666,7 @@ jQuery.noConflict();
 								ctx = jg.getToolbarExecutionContext(jQuery('div.columnHeader:first'), 
 																	undoActionLink, 'jr.action=' + jg.toJsonString(actionData), 
 																	jg.performUndo, 
-                	    											[parent.attr('id')], 
+                	    											[toolbarId], 
 																	true);
 	                        
 							if (ctx) {
@@ -659,7 +680,7 @@ jQuery.noConflict();
 																undoActionLink, 
 																'jr.action=' + jg.toJsonString(actionData), 
 																jg.performRedo, 
-																[parent.attr('id')], 
+																[toolbarId], 
 																true);
 							
 	                        if (ctx) {
@@ -671,8 +692,8 @@ jQuery.noConflict();
 							ctx = jg.getToolbarExecutionContext(jQuery('div.columnHeader:first'), 
 																undoActionLink, 
 																'jr.action=' + jg.toJsonString(actionData), 
-																jg.performRedo, 
-																[parent.attr('id')], 
+																null, 
+																null, 
 																true);
 							
 	                        if (ctx) {
@@ -684,43 +705,32 @@ jQuery.noConflict();
 			}
 		};
 		
-		jg.refreshPage = function(strRunReportParam, toolbar, requestedPage, requestParams) {
-			var currentHref = toolbar.attr('data-url');
-			var params = (strRunReportParam != null ? strRunReportParam + '&' : '') + 'jr.page=' + requestedPage;
+		jg.refreshPage = function(toolbarId, requestedPage, requestParams) {
+			var toolbar = jQuery('#' + toolbarId),
+				currentHref = toolbar.attr('data-url'),
+				params = 'jr.page=' + requestedPage;
+			
 			if (requestParams) {
 				params += '&' + requestParams;
 			}
 
-			var callback = function(response) {
-				// if the total pages is not already available, see if the response has it
-				var totalPages;
-				var pageTimestamp;
-				if (typeof(toolbar.attr('data-totalpages')) == 'undefined') {
-					// doing simple response text parsing for now
-					var totalPagesAttr = /data-totalpages='(\d+)'/.exec(response);
-					if (totalPagesAttr && totalPagesAttr.length > 1) {
-						totalPages = totalPagesAttr[1];
-					}
-						
-					// if the report is not finished, check the page timestamp
-					var pageTimestampAttr = /data-pagetimestamp='(\d+)'/.exec(response);
-					if (pageTimestampAttr && pageTimestampAttr.length > 1) {
-						pageTimestamp = pageTimestampAttr[1];
-					}
-				}
-							
-				jg.updateCurrentPageForToolbar(toolbar, requestedPage, totalPages, pageTimestamp);
-				jg.updateToolbarPaginationButtons(toolbar);
-				jg.setAutoRefresh(strRunReportParam, toolbar);
-			};
-			
-			jg.getToolbarExecutionContext(toolbar, currentHref, params, callback, null, null).run();
-		}
+			var ctx = jg.getToolbarExecutionContext(toolbar, 
+											currentHref, 
+											params, 
+											jg.afterReportLoadCallback, 
+											[toolbarId], 
+											true);
+			if (ctx) {
+				ctx.run();
+			}
+		};
 
 		jg.updateCurrentPageForToolbar = function(jQueryToolbar, newCurrentPage, newTotalPages, pageTimestamp) {
 			jQueryToolbar.attr('data-currentpage', newCurrentPage);
 			if (typeof(newTotalPages) != 'undefined') {
 				jQueryToolbar.attr('data-totalpages', newTotalPages);
+			} else {
+				jQueryToolbar.attr('data-totalpages', '');
 			}
 			
 			if (pageTimestamp) {
@@ -781,7 +791,33 @@ jQuery.noConflict();
 			}
     		return result;
     	};
+    	
+    	jg.loadReport = function (reportUrl, jsonParamsObject, toolbarId) {
+    		var ctx = jg.getToolbarExecutionContext(jQuery('#'+toolbarId),	// startPoint 
+    									reportUrl, 							// url
+    									jQuery.parseJSON(jsonParamsObject), // params
+    									jg.afterReportLoadCallback, 		// callback
+    									[toolbarId],						// calback args array
+    									true);								// is JSON
+    		if (ctx) {
+    			ctx.run();
+    		}
+    	};
 		
+    	jg.afterReportLoadCallback = function (toolbarId, response) {
+    		var jqToolbar = jQuery('#' + toolbarId),
+    			reportStatusDiv = jQuery('#reportStatus', response);
+    		
+			jg.updateCurrentPageForToolbar(jqToolbar, 
+											reportStatusDiv.attr('data-currentPage'), 
+											reportStatusDiv.attr('data-totalPages'), 
+											reportStatusDiv.attr('data-pagetimestamp'));
+			
+			jg.updateToolbarPaginationButtons(jqToolbar);
+    		jg.setAutoRefresh(toolbarId);
+    	};
+    	
+    	
 		/**
 		 * A jQuery plugin that displays an overlapping image for a specified element 
 		 * (based on element's id)

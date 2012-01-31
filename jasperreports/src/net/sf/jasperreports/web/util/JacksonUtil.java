@@ -30,6 +30,7 @@ import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.extensions.ExtensionsEnvironment;
 import net.sf.jasperreports.web.actions.AbstractAction;
 
+import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -88,7 +89,7 @@ public class JacksonUtil
 	{
 		try
 		{
-			Class clazz = Class.forName(mapping.getClassName());
+			Class<?> clazz = Class.forName(mapping.getClassName());
 			mapper.registerSubtypes(new NamedType(clazz, mapping.getName()));
 		}
 		catch (ClassNotFoundException e)
@@ -101,7 +102,7 @@ public class JacksonUtil
 	/**
 	 *
 	 */
-	public static Object load(String jsonData, Class clazz)
+	public static Object load(String jsonData, Class<?> clazz)
 	{
 		Object result = null;
 		if (jsonData != null) 
@@ -129,4 +130,35 @@ public class JacksonUtil
 	}
 
 
+	/**
+	 * 
+	 */
+	public static String getJsonString(Object object) 
+	{
+		ObjectMapper mapper = getObjectMapper();
+		try 
+		{
+			return mapper.writeValueAsString(object);
+		} 
+		catch (JsonGenerationException e) 
+		{
+			throw new JRRuntimeException(e);
+		} 
+		catch (JsonMappingException e) 
+		{
+			throw new JRRuntimeException(e);
+		} 
+		catch (IOException e) 
+		{
+			throw new JRRuntimeException(e);
+		}
+	}
+	
+	
+	/**
+	 * 
+	 */
+	public static String getEscapedJsonString(Object object){
+		return getJsonString(object).replaceAll("\\\"", "\\\\\\\"");
+	}
 }
