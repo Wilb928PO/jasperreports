@@ -32,7 +32,6 @@ import net.sf.jasperreports.engine.JRDatasetRun;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRRewindableDataSource;
-import net.sf.jasperreports.engine.JRVariable;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.fill.FillDatasetPosition;
 import net.sf.jasperreports.engine.fill.JRFillDataset;
@@ -104,7 +103,7 @@ public class FillDatasetRun extends JRFillDatasetRun
 		JRFillDataset parentDataset = expressionEvaluator.getFillDataset();
 		datasetPosition = new FillDatasetPosition(parentDataset.getDatasetPosition());
 		datasetPosition.addAttribute("datasetRunUUID", getUUID());
-		datasetPosition.addAttribute("rowIndex", parentDataset.getVariableValue(JRVariable.REPORT_COUNT));		
+		datasetPosition.addAttribute("rowIndex", parentDataset.getCacheRecordIndex());		
 
 		if (dataSourceExpression != null)
 		{

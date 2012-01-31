@@ -121,7 +121,7 @@ public class JRFillDatasetRun implements JRDatasetRun
 			// set fill position for caching
 			FillDatasetPosition datasetPosition = new FillDatasetPosition(filler.mainDataset.fillPosition);
 			datasetPosition.addAttribute("datasetRunUUID", getUUID());
-			datasetPosition.addAttribute("rowIndex", filler.getVariableValue(JRVariable.REPORT_COUNT));		
+			datasetPosition.addAttribute("rowIndex", filler.mainDataset.getCacheRecordIndex());		
 			dataset.setFillPosition(datasetPosition);
 			
 			if (dataSourceExpression != null)

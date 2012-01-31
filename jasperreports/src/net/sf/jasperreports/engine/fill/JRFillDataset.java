@@ -60,6 +60,7 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.ParameterContributor;
 import net.sf.jasperreports.engine.ParameterContributorContext;
 import net.sf.jasperreports.engine.ParameterContributorFactory;
+import net.sf.jasperreports.engine.data.IndexedDataSource;
 import net.sf.jasperreports.engine.design.JRDesignVariable;
 import net.sf.jasperreports.engine.query.JRQueryExecuter;
 import net.sf.jasperreports.engine.query.JRQueryExecuterFactory;
@@ -1493,5 +1494,19 @@ public class JRFillDataset implements JRDataset, DatasetFillContext
 	public FillDatasetPosition getDatasetPosition()
 	{
 		return fillPosition;
+	}
+	
+	public Integer getCacheRecordIndex()
+	{
+		DataCacheHandler cacheHandler = filler.fillContext.getCacheHandler();
+		// if we're using a cached data source, return the original record index
+		if (cacheHandler != null && cacheHandler.isCachingEnabled() && cacheHandler.isCachePopulated()
+				&& dataSource instanceof IndexedDataSource)
+		{
+			return ((IndexedDataSource) dataSource).getRecordIndex() + 1;//indexes are 1-based
+		}
+		
+		// otherwise return the report record index
+		return (Integer) getVariableValue(JRVariable.REPORT_COUNT);
 	}
 }

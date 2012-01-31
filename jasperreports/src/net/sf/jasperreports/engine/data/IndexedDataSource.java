@@ -21,31 +21,29 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with JasperReports. If not, see <http://www.gnu.org/licenses/>.
  */
-package net.sf.jasperreports.data.cache;
+package net.sf.jasperreports.engine.data;
 
-import net.sf.jasperreports.engine.data.IndexedDataSource;
+import net.sf.jasperreports.engine.JRDataSource;
 
 /**
- * Report data cache handler.
+ * {@link JRDataSource} extension that can provide the record index at 
+ * the current position.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
-public interface DataCacheHandler
+public interface IndexedDataSource extends JRDataSource
 {
-	
-	String PARAMETER_DATA_CACHE_HANDLER = "net.sf.jasperreports.data.cache.handler";
 
-	boolean isCachingEnabled();
-	
-	void setCachePopulated();
-	
-	boolean isCachePopulated();
+	/**
+	 * Returns the index of the current record in the data source.
+	 * 
+	 * Note that this would not necessarily be the same as the index of the record
+	 * in the order in which the data appears in the report, as after sorting or
+	 * filtering a data source the original index of the record will be returned.
+	 * 
+	 * @return the index of the current record
+	 */
+	int getRecordIndex();
 
-	DataCollector getCollector(Object key);
-	
-	boolean hasCachedData(Object key);
-	
-	IndexedDataSource getCachedData(Object key);
-	
 }

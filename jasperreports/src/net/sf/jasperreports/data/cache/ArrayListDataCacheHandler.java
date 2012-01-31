@@ -27,13 +27,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.sf.jasperreports.engine.JRField;
+import net.sf.jasperreports.engine.data.IndexedDataSource;
+import net.sf.jasperreports.engine.data.ListOfArrayDataSource;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import net.sf.jasperreports.engine.JRDataSource;
-import net.sf.jasperreports.engine.JRField;
-import net.sf.jasperreports.engine.JRRuntimeException;
-import net.sf.jasperreports.engine.data.ListOfArrayDataSource;
 
 /**
  * Report data cache handler that collects data in lists of arrays.
@@ -95,7 +94,7 @@ public class ArrayListDataCacheHandler implements DataCacheHandler
 		return dataSource != null;
 	}
 
-	public JRDataSource getCachedData(Object key)
+	public IndexedDataSource getCachedData(Object key)
 	{
 		ListOfArrayDataSource dataSource = cachedDataSources.get(key);
 		if (dataSource == null)
