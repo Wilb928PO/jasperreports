@@ -61,7 +61,7 @@ public class DefaultRepositoryPersistenceServiceFactory implements PersistenceSe
 			}
 			else if (ReportResource.class.getName().equals(resourceType.getName()))
 			{
-				return (M)new ReportPersistenceService();
+				return (M)new SerializedReportPersistenceService();
 			}
 			else if (DataAdapter.class.isAssignableFrom(resourceType))
 			{
