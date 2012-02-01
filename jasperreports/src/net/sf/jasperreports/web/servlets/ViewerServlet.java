@@ -61,8 +61,9 @@ public class ViewerServlet extends HttpServlet
 	private static final String TEMPLATE_BODY = "net/sf/jasperreports/web/servlets/resources/viewer/BodyTemplate.vm";
 	private static final String TEMPLATE_FOOTER = "net/sf/jasperreports/web/servlets/resources/viewer/FooterTemplate.vm";
 	
-	private static final String RESOURCE_GLOBAL_JS = "net/sf/jasperreports/web/servlets/resources/global.js";
-	private static final String RESOURCE_GLOBAL_CSS = "net/sf/jasperreports/web/servlets/resources/global.css";
+	private static final String RESOURCE_JR_GLOBAL_JS = "net/sf/jasperreports/web/servlets/resources/jasperreports-global.js";
+	private static final String RESOURCE_JR_GLOBAL_CSS = "net/sf/jasperreports/web/servlets/resources/jasperreports-global.css";
+	private static final String RESOURCE_VIEWER_TOOLBAR_JS = "net/sf/jasperreports/web/servlets/resources/jasperreports-reportViewerToolbar.js";
 
 	public static final String REQUEST_PARAMETER_REPORT_URI = "jr.uri";
 	
@@ -162,8 +163,9 @@ public class ViewerServlet extends HttpServlet
 			webResourcesBasePath = request.getContextPath() + ResourceServlet.DEFAULT_PATH + "?" + ResourceServlet.RESOURCE_URI + "=";
 		}
 		headerContext.put("contextPath", request.getContextPath());
-		headerContext.put("globaljs", webResourcesBasePath + RESOURCE_GLOBAL_JS);
-		headerContext.put("globalcss", webResourcesBasePath + RESOURCE_GLOBAL_CSS);
+		headerContext.put("jasperreports_global_js", webResourcesBasePath + RESOURCE_JR_GLOBAL_JS);
+		headerContext.put("jasperreports_reportViewerToolbar_js", webResourcesBasePath + RESOURCE_VIEWER_TOOLBAR_JS);
+		headerContext.put("jasperreports_global_css", webResourcesBasePath + RESOURCE_JR_GLOBAL_CSS);
 		headerContext.put("showToolbar", Boolean.TRUE);
 		headerContext.put("toolbarId", toolbarId);
 		headerContext.put("currentUrl", getCurrentUrl(request, webReportContext));

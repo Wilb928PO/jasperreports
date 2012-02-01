@@ -87,7 +87,7 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 {
 	private static final Log log = LogFactory.getLog(HeaderToolbarElementHtmlHandler.class);
 	
-	private static final String RESOURCE_HEADERTOOLBAR_JS = "net/sf/jasperreports/components/headertoolbar/resources/headertoolbar.js";
+	private static final String RESOURCE_HEADERTOOLBAR_JS = "net/sf/jasperreports/components/headertoolbar/resources/jasperreports-tableHeaderToolbar.js";
 	private static final String RESOURCE_IMAGE_CLOSE = "net/sf/jasperreports/components/headertoolbar/resources/images/delete_edit.gif";
 	private static final String RESOURCE_TRANSPARENT_PIXEL = "net/sf/jasperreports/engine/images/pixel.GIF";
 	
@@ -189,7 +189,7 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 			}
 			String imagesResourcePath = (appContextPath == null ? "" : appContextPath) + webResourcesBasePath;//FIXMEJIVE
 
-			velocityContext.put("resourceHeaderToolbarJs", webResourcesBasePath + HeaderToolbarElementHtmlHandler.RESOURCE_HEADERTOOLBAR_JS);
+			velocityContext.put("jasperreports_tableHeaderToolbar_js", webResourcesBasePath + HeaderToolbarElementHtmlHandler.RESOURCE_HEADERTOOLBAR_JS);
 			velocityContext.put("elementX", ((JRXhtmlExporter)context.getExporter()).toSizeUnit(element.getX()));
 			velocityContext.put("elementY", ((JRXhtmlExporter)context.getExporter()).toSizeUnit(element.getY()));
 			velocityContext.put("elementWidth", element.getWidth());

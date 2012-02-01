@@ -1,8 +1,8 @@
 /**
- * Defines 'headertoolbar' module in JasperReports namespace
+ * Defines 'headertoolbar' module in jasperreports namespace
  */
 (function(global) {
-	if (typeof global.JasperReports.modules.headertoolbar !== 'undefined') {
+	if (typeof global.jasperreports.tableheadertoolbar !== 'undefined') {
 		return;
 	}
 	
@@ -10,7 +10,7 @@
 				filters: {
 					filterContainerId: "jasperreports_filters"
 				}
-		};
+	};
 	
 	/**
 	 * Creates a unique filter div
@@ -20,7 +20,8 @@
 	 * @param filtersJsonString a JSON string of a java.util.List<net.sf.jasperreports.components.sort.FieldFilter>
 	 */
 	js.createFilterDiv = function (uniqueId, arrFilterDiv, filtersJsonString) {
-		var gm = global.JasperReports.modules.global,
+		var gm = global.jasperreports.global,
+			jvt = global.jasperreports.reportviewertoolbar,
 			filterContainerId = js.filters.filterContainerId,
 			filterContainerDiv = "<div id='" + filterContainerId + "'></div>",
 			fcuid = '#' + filterContainerId,
@@ -81,7 +82,7 @@
 					ctx = gm.getToolbarExecutionContext(jQuery('div.columnHeader:first'), 
 						currentHref, 
 						'jr.action=' + gm.toJsonString(actionData), 
-						gm.performAction, 
+						jvt.performAction, 
 						[toolbarId], 
 						true);
 				
@@ -127,7 +128,7 @@
 					ctx = gm.getToolbarExecutionContext(jQuery('div.columnHeader:first'), 
 							currentHref, 
 							'jr.action=' + gm.toJsonString(actionData), 
-							gm.performAction, 
+							jvt.performAction, 
 							[toolbarId], 
 							true);
 				
@@ -183,7 +184,7 @@
 	 * Initialization and event registration for non-dynamic JR elements
 	 */
 	js.init = function() { 
-		var gm = global.JasperReports.modules.global,
+		var gm = global.jasperreports.global,
 			headertoolbarEvent = gm.events.HEADERTOOLBAR_INIT;
 		
 		// init should be done only once
@@ -195,6 +196,8 @@
 			
 			jQuery('.jrtableframe').live('click', 
 					function(event) {
+						event.stopPropagation();
+						
 						var target = jQuery(event.target),
 							currentTarget = jQuery(this),
 							colHeader = target.closest('.columnHeader'); 
@@ -242,8 +245,28 @@
 	            				left: '0px'
 	            			});
 	            			
+	            			/**
+	            			 * The popupDiv is in the first 'jrPage'; the column header is in a 'jrtableframe'
+	            			 * So, to calculate popupDiv's top and left we need to add each parent's top/left until jrPage is reached
+	            			 */
+	            			var popupTop = self.position().top,
+	            				popupLeft = self.position().left,
+	            				closestPage = self.closest('.jrPage'),	            			
+	            				selfParents = self.parents();
+	            			
+	            			for (var i = 0, ln = selfParents.size(); i < ln; i ++) {
+	            				var parent = jQuery(selfParents[i]);
+	            				if (parent.is(closestPage)) {
+	            					break;
+	            				}
+	            				if (parent.position()) {
+	            					popupTop += parent.position().top;
+	            					popupLeft += parent.position().left;
+	            				}
+	            			}
+	            			
+	            			
 	            			// the popup div contains headerToolbar(fixes size) and headerToolbarMask divs
-
 	            			headerToolbarMask.css({
 		            			position: 'absolute',
 		            			'z-index': 999999,
@@ -255,8 +278,8 @@
 			            	popupDiv.css({
 			                    'z-index': 999998,
 			                    width: firstElem.width() + 'px',
-			                    left: (self.position().left + self.parent().position().left)  + 'px',
-			                    top: (self.position().top + self.parent().position().top/* - popupDiv.height()*/) + 'px'
+			                    left: popupLeft  + 'px',
+			                    top: popupTop + 'px'
 			                });
 			            	
 			            	var handlesArr = [];
@@ -274,7 +297,8 @@
 			                		self.prev().css({left: self.css('left')});
 			                	},
 			                	stop: function(event, ui) {
-			                		var self = jQuery(this),
+			                		var jvt = global.jasperreports.reportviewertoolbar,
+			                			self = jQuery(this),
 			                			currentLeftPx = self.css('left'),
 			                			currentLeft = parseInt(currentLeftPx.substring(0, currentLeftPx.indexOf('px'))),
 			                			deltaLeft = ui.originalPosition.left - currentLeft,
@@ -300,7 +324,7 @@
 			                	    	ctx = gm.getToolbarExecutionContext(jQuery('div.columnHeader:first'), 
 			                	    											resizeActionLink, 
 			                	    											'jr.action=' + gm.toJsonString(actionData), 
-			                	    											gm.performAction, 
+			                	    											jvt.performAction, 
 			                	    											[toolbarId], 
 			                	    											true);
 
@@ -324,7 +348,8 @@
 	};
 	
 	js.registerTableHeaderEvents = function (popupId, arrPopupHtml) {
-		var gm = global.JasperReports.modules.global,
+		var gm = global.jasperreports.global,
+			jvt = global.jasperreports.reportviewertoolbar,
 			filterContainerId = "jive_dialogs", //js.filters.filterContainerId,
 			filterContainerDiv = "<div id='" + filterContainerId + "'></div>",
 			fcuid = '#' + filterContainerId,
@@ -340,6 +365,8 @@
 			jQuery(fcuid).append(arrPopupHtml.join(''));
 			var popupDiv = jQuery(uid);
 			
+			// hide popup when mouse is out
+//			popupDiv.bind('dblclick', function(event) {
 			popupDiv.bind('mouseleave', function(event) {
 				jQuery(this).fadeOut(100);
 			});
@@ -357,7 +384,7 @@
                 	ctx = gm.getToolbarExecutionContext(jQuery('div.columnHeader:first'), // getToolbarExecutionContext(startPoint, requestedUrl, params, callback, arrCallbackArgs, isJSON) 
                 										currentHref, 
                 										param, 
-                										gm.performAction, 
+                										jvt.performAction, 
     	    											[toolbarId],  
                 										true);
 
@@ -411,5 +438,5 @@
 		}
 	};
 	
-	global.JasperReports.modules.headertoolbar = js;
+	global.jasperreports.tableheadertoolbar = js;
 } (this));

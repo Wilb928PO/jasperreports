@@ -1,11 +1,11 @@
 <script class='jasperreports'>
-	JasperReports.modules.global.appendScriptElementToDOM('_headertoolbarScript', '${resourceHeaderToolbarJs}', 'JasperReports.modules.headertoolbar.init');
+	jasperreports.global.appendScriptElementToDOM('_headertoolbarScript', '${jasperreports_tableHeaderToolbar_js}', 'jasperreports.tableheadertoolbar.init');
 </script>
 
 #if (${popupId})
 <script class='jasperreports'>
 	(function () {
-		var gm = JasperReports.modules.global,
+		var gm = jasperreports.global,
 			arrPopupHtml = [
 				"<div class='popupdiv' id='tbl_${popupId}'",
 					#if (${isFilterable})
@@ -23,7 +23,7 @@
 				"	</div>",
 				"</div>"];
 				
-		gm.subscribeToEvent(gm.events.HEADERTOOLBAR_INIT.name, 'JasperReports.modules.headertoolbar.registerTableHeaderEvents', ['${popupId}', arrPopupHtml]);
+		gm.subscribeToEvent(gm.events.HEADERTOOLBAR_INIT.name, 'jasperreports.tableheadertoolbar.registerTableHeaderEvents', ['${popupId}', arrPopupHtml]);
 	} ());
 </script>
 #end
@@ -31,7 +31,7 @@
 #if (${isFilterable})
 <script class='jasperreports'>
 	(function () {
-		var gm = JasperReports.modules.global,
+		var gm = jasperreports.global,
 			uid = '${filterDivId}',
 			arrFilterDiv = ["<div id='${filterDivId}' class='filterdiv' style='display: none;' data-forsortlink='${sortLinkClass}' data-filter='{\"actionName\":\"filter\"}' data-clear='{\"actionName\":\"filter\",\"filterData\":{\"clearFilter\":true}}'>",
 			                "<img class='hidefilter' src='${filterCloseDialogImageResource}' />",
@@ -60,7 +60,7 @@
 			                "</form>",
 			                "</div>"];
 			                
-		gm.subscribeToEvent(gm.events.HEADERTOOLBAR_INIT.name, 'JasperReports.modules.headertoolbar.createFilterDiv', [uid, arrFilterDiv, '${filtersJsonString}']);
+		gm.subscribeToEvent(gm.events.HEADERTOOLBAR_INIT.name, 'jasperreports.tableheadertoolbar.createFilterDiv', [uid, arrFilterDiv, '${filtersJsonString}']);
 	} ());
 </script>
 #end
