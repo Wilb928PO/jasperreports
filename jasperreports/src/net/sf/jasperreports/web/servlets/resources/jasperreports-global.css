@@ -151,3 +151,16 @@
 }
 /************************ </FILTER DIV> ***************************/
 
+/********************** <COLUMN SELECTION> ************************/
+.headerToolbarMaskDefaultStyle {
+	background-color: rgb(0, 51, 102); 
+	background-color: rgba(0, 51, 102, 0.6);
+}
+
+.headerToolbarMaskDroppable {
+	background-color: rgb(0, 10, 80); 
+	background-color: rgba(0, 10, 80, 0.3);
+}
+/********************** </COLUMN SELECTION> ***********************/
+
+

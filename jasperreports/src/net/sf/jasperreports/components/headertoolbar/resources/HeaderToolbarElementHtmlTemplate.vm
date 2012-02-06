@@ -19,7 +19,7 @@
 				"			<img class='filterSymbolImage' src='${filterSrc}' data-src='${filterSrc}' data-hover='${filterHoverSrc}' />",
 				"		</span>",
 				"	</div>",
-				"	<div class='headerToolbarMask' style='background-color: rgb(0, 51, 102); background-color: rgba(0, 51, 102, 0.6);' data-resizeAction='${resizeColumnAction}'>",
+				"	<div class='headerToolbarMask headerToolbarMaskDefaultStyle' data-resizeAction='${resizeColumnAction}'>",
 				"	</div>",
 				"</div>"];
 				

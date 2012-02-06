@@ -14,7 +14,9 @@
 				canDrop: false,
 				draggedColumnHeaderClass: null,
 				dragTableFrameUuid: null,
-				cursorInsideMaskPosition: null
+				cursorInsideMaskPosition: null,
+				moveColumnActionData: null,
+				dragMaskPosition: null
 	};
 	
 	/**
@@ -241,6 +243,7 @@
 								headerName = /header_(\w+)/.exec(header.attr('class'));
 								if(headerName && headerName.length > 1) {
 									arrHeaderData.push({
+										maxLeft: header.position().left,
 										maxRight: header.position().left + header.width(),
 										headerClass: '.header_' + headerName[1],
 										toString: function () {return '{' + this.maxRight + ', ' + this.headerClass + '}'}
@@ -271,21 +274,26 @@
 				if (tht.dragStarted) {
 					var currentDraggedColumnHeader = tht.draggedColumnHeaderClass,
 						tableFrame = jQuery('.jrtableframe[data-uuid=' + tht.dragTableFrameUuid + ']'), // find tableFrame by uuid
-						arrHeaderData = tableFrame.data('cachedHeaderData');
-					
-					var centerOfHeaderMaskPos = event.pageX - tableFrame.offset().left + tht.cursorInsideMaskPosition,
-						hd,
+						arrHeaderData = tableFrame.data('cachedHeaderData'),
+						centerOfHeaderMaskPos = event.pageX - tableFrame.offset().left + tht.cursorInsideMaskPosition,
 						currentHeader = jQuery(currentDraggedColumnHeader, tableFrame),
-						currentHeaderMaxRight = currentHeader.position().left + currentHeader.width();
+						currentColPosition = jQuery('.columnHeader', tableFrame).index(currentHeader),
+						hd;
 					
 					for (var i = 0, ln = arrHeaderData.length; i < ln; i++) {
 						hd = arrHeaderData[i];
 						if (centerOfHeaderMaskPos <= hd.maxRight) {
 							
 							if (currentDraggedColumnHeader == hd.headerClass) {
-								console.log('same column');
+								tht.canDrop = false;
 							} else {
-								console.log('could move; column: ' + hd.headerClass);
+								tht.canDrop = true;
+								tht.moveColumnActionData = {actionName: 'move',
+															moveColumnData: {
+															uuid: tht.dragTableFrameUuid,
+															columnToMoveIndex: currentColPosition,
+															columnToMoveNewIndex: i,
+														}};
 							}
 							
 							break;
@@ -378,16 +386,42 @@
 			            			var tht = global.jasperreports.tableheadertoolbar,
 			            				self = jQuery(this);
 			            			
+			            			self.prev().hide();
+			            			
 			            			tht.dragStarted = true;
 			            			tht.draggedColumnHeaderClass = self.data('columnHeaderClass');
 			            			tht.dragTableFrameUuid = self.data('tableFrameUuid');
 			            			tht.cursorInsideMaskPosition = self.width()/2 - (event.originalEvent.pageX - self.offset().left);	// relative to the middle
+			            			tht.dragMaskPosition = self.position();
 			            		},
 			            		drag: function(event, ui) {
 			            		},
 			            		stop: function(event, ui) {
-			            			var tht = global.jasperreports.tableheadertoolbar;
+			            			var	self = jQuery(this),
+			            				tht = global.jasperreports.tableheadertoolbar;
+			            			
 			            			tht.dragStarted = false;
+			            			
+			            			if (tht.canDrop) {
+						            	var	gm = global.jasperreports.global,
+					            			resizeActionLink = self.attr('data-resizeAction'),
+				                	    	toolbarId = self.closest('.mainReportDiv').find('.toolbarDiv').attr('id'),
+				                	    	ctx = gm.getToolbarExecutionContext(self, 
+				                	    										resizeActionLink, 
+				                	    										'jr.action=' + gm.toJsonString(tht.moveColumnActionData), 
+				                	    										js.highlightColumn, 
+				                	    										[tht.draggedColumnHeaderClass, tht.dragTableFrameUuid, toolbarId], 
+				                	    										true);
+				                        if (ctx) {
+				                            ctx.run();
+				                        }
+			            			} else {
+			            				// move mask back to its place
+			            				self.animate(tht.dragMaskPosition, function() {
+			            					// show the toolbar
+			            					jQuery(this).prev().show();
+			            				});
+			            			}
 			            		}
 			            	});
 			            	
@@ -446,6 +480,14 @@
 			gm.processEvent(headertoolbarEvent.name);
 		}
 		
+	};
+	
+	js.highlightColumn = function (columnHeaderClass, tableFrameUuid, toolbarId) {
+		var jvt = global.jasperreports.reportviewertoolbar;
+		jvt.performAction(toolbarId);
+		
+		var tableFrame = jQuery('.jrtableframe[data-uuid=' + tableFrameUuid + ']');
+		jQuery(columnHeaderClass, tableFrame).trigger('click').trigger('highlight');
 	};
 	
 	js.registerTableHeaderEvents = function (popupId, arrPopupHtml) {
