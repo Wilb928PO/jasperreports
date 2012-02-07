@@ -127,6 +127,7 @@ public class ComponentsXmlHandler implements XmlDigesterConfigurer, ComponentXml
 		digester.addSetNext(listContentsPattern, "setContents");
 	}
 
+	@SuppressWarnings("deprecation")
 	protected void addBarbecueRules(Digester digester)
 	{
 		String barcodePattern = "*/componentElement/barbecue";
@@ -199,6 +200,7 @@ public class ComponentsXmlHandler implements XmlDigesterConfigurer, ComponentXml
 				"*/componentElement/PDF417", PDF417Component.class);
 	}
 	
+	@SuppressWarnings("deprecation")
 	protected <T> void addBaseBarcode4jRules(Digester digester, 
 			String barcodePattern, Class<T> barcodeComponentClass)
 	{
@@ -263,6 +265,7 @@ public class ComponentsXmlHandler implements XmlDigesterConfigurer, ComponentXml
 				JRExpression.class.getName());
 	}
 
+	@SuppressWarnings("deprecation")
 	protected void addTableRules(Digester digester)
 	{
 		String tablePattern = "*/componentElement/table";
