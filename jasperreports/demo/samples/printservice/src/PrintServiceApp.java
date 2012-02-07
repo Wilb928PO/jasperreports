@@ -104,7 +104,7 @@ public class PrintServiceApp extends AbstractSampleApp
 		//printServiceAttributeSet.add(new PrinterName("hp LaserJet 1320 PCL 6", null));
 		//printServiceAttributeSet.add(new PrinterName("PDFCreator", null));
 		
-		JRPrintServiceExporter exporter = new JRPrintServiceExporter();
+		JRPrintServiceExporter exporter = new JRPrintServiceExporter(getJasperReportsContext());
 		
 		exporter.setParameter(JRExporterParameter.INPUT_FILE_NAME, "build/reports/PrintServiceReport.jrprint");
 		exporter.setParameter(JRPrintServiceExporterParameter.PRINT_REQUEST_ATTRIBUTE_SET, printRequestAttributeSet);

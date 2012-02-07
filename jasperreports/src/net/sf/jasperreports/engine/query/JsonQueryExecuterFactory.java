@@ -27,8 +27,7 @@ import java.util.Map;
 
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.query.JRQueryExecuter;
-import net.sf.jasperreports.engine.query.JRQueryExecuterFactory;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.util.JRProperties;
 
 /**
@@ -40,7 +39,7 @@ import net.sf.jasperreports.engine.util.JRProperties;
  * @author Narcis Marcu (narcism@users.sourceforge.net)
  * @version $Id$
  */
-public class JsonQueryExecuterFactory implements JRQueryExecuterFactory
+public class JsonQueryExecuterFactory extends JRAbstractQueryExecuterFactory
 {
 	/**
 	 * Built-in parameter holding the value of the <code>java.io.InputStream</code> to be used for obtaining the JSON data.
@@ -107,10 +106,13 @@ public class JsonQueryExecuterFactory implements JRQueryExecuterFactory
 		return JSON_BUILTIN_PARAMETERS;
 	}
 
-	public JRQueryExecuter createQueryExecuter(JRDataset dataset, Map parameters)
-			throws JRException
+	public JRQueryExecuter createQueryExecuter(
+		JasperReportsContext jasperReportsContext,
+		JRDataset dataset, 
+		Map parameters
+		) throws JRException
 	{
-		return new JsonQueryExecuter(dataset, parameters);
+		return new JsonQueryExecuter(jasperReportsContext, dataset, parameters);
 	}
 
 	public boolean supportsQueryParameterType(String className)

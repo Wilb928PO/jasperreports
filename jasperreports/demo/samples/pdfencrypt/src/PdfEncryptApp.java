@@ -69,7 +69,7 @@ public class PdfEncryptApp extends AbstractSampleApp
 	public void fill() throws JRException
 	{
 		long start = System.currentTimeMillis();
-		JasperFillManager.fillReportToFile("build/reports/PdfEncryptReport.jasper", null, new JREmptyDataSource());
+		JasperFillManager.getInstance(getJasperReportsContext()).fillToFile("build/reports/PdfEncryptReport.jasper", null, new JREmptyDataSource());
 		System.err.println("Filling time : " + (System.currentTimeMillis() - start));
 	}
 
@@ -86,7 +86,7 @@ public class PdfEncryptApp extends AbstractSampleApp
 
 		File destFile = new File(sourceFile.getParent(), jasperPrint.getName() + ".pdf");
 		
-		JRPdfExporter exporter = new JRPdfExporter();
+		JRPdfExporter exporter = new JRPdfExporter(getJasperReportsContext());
 		
 		exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
 		exporter.setParameter(JRExporterParameter.OUTPUT_FILE, destFile);

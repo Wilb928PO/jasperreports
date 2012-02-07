@@ -28,6 +28,7 @@ import java.util.Map;
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRValueParameter;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.util.JRProperties;
 
 /**
@@ -39,7 +40,8 @@ import net.sf.jasperreports.engine.util.JRProperties;
  * @author Narcis Marcu (narcism@users.sourceforge.net)
  * @version $Id$
  */
-public class JRXlsQueryExecuterFactory implements JRQueryExecuterFactory {
+public class JRXlsQueryExecuterFactory extends JRAbstractQueryExecuterFactory 
+{
 
 	/**
 	 * Built-in parameter holding the value of the <code>jxl.Workbook</code> to be used for obtaining the XLS data.
@@ -167,9 +169,13 @@ public class JRXlsQueryExecuterFactory implements JRQueryExecuterFactory {
 		return XLS_BUILTIN_PARAMETERS;
 	}
 
-	public JRQueryExecuter createQueryExecuter(JRDataset dataset, Map<String,? extends JRValueParameter> parameters)
-			throws JRException {
-		return new JRXlsQueryExecuter(dataset, parameters);
+	public JRQueryExecuter createQueryExecuter(
+		JasperReportsContext jasperReportsContext, 
+		JRDataset dataset, 
+		Map<String,? extends JRValueParameter> parameters
+		) throws JRException 
+	{
+		return new JRXlsQueryExecuter(jasperReportsContext, dataset, parameters);
 	}
 
 	public boolean supportsQueryParameterType(String className) {

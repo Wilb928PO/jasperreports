@@ -484,7 +484,6 @@ public class JRViewerPanel extends JPanel implements JRHyperlinkListener, JRView
 			exporter.setParameter(JRGraphics2DExporterParameter.ZOOM_RATIO, new Float(realZoom));
 			exporter.setParameter(JRExporterParameter.OFFSET_X, Integer.valueOf(1)); //lblPage border
 			exporter.setParameter(JRExporterParameter.OFFSET_Y, Integer.valueOf(1));
-			exporter.setParameter(JRExporterParameter.FILE_RESOLVER, viewerContext.getFileResolver());
 			exporter.exportReport();
 		}
 		catch(Exception e)
@@ -510,7 +509,7 @@ public class JRViewerPanel extends JPanel implements JRHyperlinkListener, JRView
 
 	protected JRGraphics2DExporter getGraphics2DExporter() throws JRException
 	{
-		return new JRGraphics2DExporter();
+		return new JRGraphics2DExporter(viewerContext.getJasperReportsContext());
 	}
 
 	protected void paintPageError(Graphics2D grx)
@@ -730,7 +729,7 @@ public class JRViewerPanel extends JPanel implements JRHyperlinkListener, JRView
 		{
 			try
 			{
-				image = JasperPrintManager.printPageToImage(viewerContext.getJasperPrint(), viewerContext.getPageIndex(), realZoom);
+				image = JasperPrintManager.getInstance(viewerContext.getJasperReportsContext()).printToImage(viewerContext.getJasperPrint(), viewerContext.getPageIndex(), realZoom);
 			}
 			catch (Exception e)
 			{

@@ -80,7 +80,7 @@ public class ChartsApp extends AbstractSampleApp
 		{
 			File reportFile = files[i];
 			long start = System.currentTimeMillis();
-			JasperFillManager.fillReportToFile(
+			JasperFillManager.getInstance(getJasperReportsContext()).fillToFile(
 				reportFile.getAbsolutePath(), 
 				parameters, 
 				getDemoHsqldbConnection()
@@ -100,7 +100,7 @@ public class ChartsApp extends AbstractSampleApp
 		{
 			File reportFile = files[i];
 			long start = System.currentTimeMillis();
-			JasperExportManager.exportReportToPdfFile(
+			JasperExportManager.getInstance(getJasperReportsContext()).exportToPdfFile(
 				reportFile.getAbsolutePath()
 				);
 			System.err.println("Report : " + reportFile + ". PDF export time : " + (System.currentTimeMillis() - start));
@@ -118,7 +118,7 @@ public class ChartsApp extends AbstractSampleApp
 		{
 			File reportFile = files[i];
 			long start = System.currentTimeMillis();
-			JasperExportManager.exportReportToHtmlFile(
+			JasperExportManager.getInstance(getJasperReportsContext()).exportToHtmlFile(
 				reportFile.getAbsolutePath()
 				);
 			System.err.println("Report : " + reportFile + ". HTML export time : " + (System.currentTimeMillis() - start));
@@ -141,7 +141,7 @@ public class ChartsApp extends AbstractSampleApp
 
 			File destFile = new File(sourceFile.getParent(), jasperPrint.getName() + ".x.html");
 			
-			JRXhtmlExporter exporter = new JRXhtmlExporter();
+			JRXhtmlExporter exporter = new JRXhtmlExporter(getJasperReportsContext());
 
 			exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
 			exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, destFile.toString());

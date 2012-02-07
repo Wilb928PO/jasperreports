@@ -71,7 +71,7 @@ public class GenericElementApp extends AbstractSampleApp
 	public void fill() throws JRException
 	{
 		long start = System.currentTimeMillis();
-		JasperFillManager.fillReportToFile("build/reports/GenericElementReport.jasper", null, new JREmptyDataSource());
+		JasperFillManager.getInstance(getJasperReportsContext()).fillToFile("build/reports/GenericElementReport.jasper", null, new JREmptyDataSource());
 		System.err.println("Filling time : " + (System.currentTimeMillis() - start));
 	}
 	
@@ -82,7 +82,7 @@ public class GenericElementApp extends AbstractSampleApp
 	public void xml() throws JRException
 	{
 		long start = System.currentTimeMillis();
-		JasperExportManager.exportReportToXmlFile("build/reports/GenericElementReport.jrprint", false);
+		JasperExportManager.getInstance(getJasperReportsContext()).exportToXmlFile("build/reports/GenericElementReport.jrprint", false);
 		System.err.println("XML creation time : " + (System.currentTimeMillis() - start));
 	}
 	
@@ -93,7 +93,7 @@ public class GenericElementApp extends AbstractSampleApp
 	public void xmlEmbed() throws JRException
 	{
 		long start = System.currentTimeMillis();
-		JasperExportManager.exportReportToXmlFile("build/reports/GenericElementReport.jrprint", true);
+		JasperExportManager.getInstance(getJasperReportsContext()).exportToXmlFile("build/reports/GenericElementReport.jrprint", true);
 		System.err.println("XML creation time : " + (System.currentTimeMillis() - start));
 	}
 	
@@ -104,7 +104,7 @@ public class GenericElementApp extends AbstractSampleApp
 	public void html() throws JRException
 	{
 		long start = System.currentTimeMillis();
-		JasperExportManager.exportReportToHtmlFile("build/reports/GenericElementReport.jrprint");
+		JasperExportManager.getInstance(getJasperReportsContext()).exportToHtmlFile("build/reports/GenericElementReport.jrprint");
 		System.err.println("HTML creation time : " + (System.currentTimeMillis() - start));
 	}
 	
@@ -121,7 +121,7 @@ public class GenericElementApp extends AbstractSampleApp
 
 		File destFile = new File(sourceFile.getParent(), jasperPrint.getName() + ".x.html");
 		
-		JRXhtmlExporter exporter = new JRXhtmlExporter();
+		JRXhtmlExporter exporter = new JRXhtmlExporter(getJasperReportsContext());
 		
 		exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
 		exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, destFile.toString());

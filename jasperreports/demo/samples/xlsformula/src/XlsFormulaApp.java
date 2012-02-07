@@ -73,7 +73,7 @@ public class XlsFormulaApp extends AbstractSampleApp
 	public void fill() throws JRException
 	{
 		long start = System.currentTimeMillis();
-		JasperFillManager.fillReportToFile("build/reports/XlsFormulaReport.jasper", null, new JREmptyDataSource());
+		JasperFillManager.getInstance(getJasperReportsContext()).fillToFile("build/reports/XlsFormulaReport.jasper", null, new JREmptyDataSource());
 		System.err.println("Filling time : " + (System.currentTimeMillis() - start));
 	}
 
@@ -90,7 +90,7 @@ public class XlsFormulaApp extends AbstractSampleApp
 
 		File destFile = new File(sourceFile.getParent(), jasperPrint.getName() + ".xls");
 		
-		JRXlsExporter exporter = new JRXlsExporter();
+		JRXlsExporter exporter = new JRXlsExporter(getJasperReportsContext());
 		
 		exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
 		exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, destFile.toString());
@@ -114,7 +114,7 @@ public class XlsFormulaApp extends AbstractSampleApp
 
 		File destFile = new File(sourceFile.getParent(), jasperPrint.getName() + ".jxl.xls");
 
-		JExcelApiExporter exporter = new JExcelApiExporter();
+		JExcelApiExporter exporter = new JExcelApiExporter(getJasperReportsContext());
 
 		exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
 		exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, destFile.toString());
@@ -138,7 +138,7 @@ public class XlsFormulaApp extends AbstractSampleApp
 
 		File destFile = new File(sourceFile.getParent(), jasperPrint.getName() + ".ods");
 
-		JROdsExporter exporter = new JROdsExporter();
+		JROdsExporter exporter = new JROdsExporter(getJasperReportsContext());
 
 		exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
 		exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, destFile.toString());
@@ -162,7 +162,7 @@ public class XlsFormulaApp extends AbstractSampleApp
 
 		File destFile = new File(sourceFile.getParent(), jasperPrint.getName() + ".xlsx");
 		
-		JRXlsxExporter exporter = new JRXlsxExporter();
+		JRXlsxExporter exporter = new JRXlsxExporter(getJasperReportsContext());
 		
 		exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
 		exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, destFile.toString());

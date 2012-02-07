@@ -33,6 +33,7 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.ReportContext;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
@@ -54,20 +55,26 @@ public class JasperDesignCache
 	/**
 	 * 
 	 */
+	private JasperReportsContext jasperReportsContext;
 	private Map<String, JasperDesignReportResource> cachedResourcesMap = new HashMap<String, JasperDesignReportResource>();
 	//private Map<UUID, String> cachedSubreportsMap = new HashMap<UUID, String>();
 
 	/**
 	 * 
 	 */
-	public static JasperDesignCache getInstance(ReportContext reportContext)
+	public static JasperDesignCache getInstance(JasperReportsContext jasperReportsContext, ReportContext reportContext)//FIXMECONTEXT a jr context change would be inconsistent
 	{
-		JasperDesignCache cache = (JasperDesignCache)reportContext.getParameterValue(PARAMETER_JASPER_DESIGN_CACHE);
-		
-		if (cache == null)
+		JasperDesignCache cache = null;
+
+		if (reportContext != null)
 		{
-			cache = new JasperDesignCache();
-			reportContext.setParameterValue(PARAMETER_JASPER_DESIGN_CACHE, cache);
+			cache = (JasperDesignCache)reportContext.getParameterValue(PARAMETER_JASPER_DESIGN_CACHE);
+			
+			if (cache == null)
+			{
+				cache = new JasperDesignCache(jasperReportsContext);
+				reportContext.setParameterValue(PARAMETER_JASPER_DESIGN_CACHE, cache);
+			}
 		}
 		
 		return cache;
@@ -76,8 +83,9 @@ public class JasperDesignCache
 	/**
 	 * 
 	 */
-	private JasperDesignCache()
+	private JasperDesignCache(JasperReportsContext jasperReportsContext)
 	{
+		this.jasperReportsContext = jasperReportsContext;
 	}
 	
 	/**
@@ -259,7 +267,7 @@ public class JasperDesignCache
 				{
 					try
 					{
-						jasperReport = JasperCompileManager.compileReport(jasperDesign);
+						jasperReport = JasperCompileManager.getInstance(jasperReportsContext).compile(jasperDesign);
 						resource.setReport(jasperReport);
 					}
 					catch (JRException e)

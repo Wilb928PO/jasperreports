@@ -43,6 +43,7 @@ import java.util.SortedMap;
 import java.util.TimeZone;
 
 import net.sf.jasperreports.charts.type.EdgeEnum;
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRAbstractExporter;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExporterParameter;
@@ -59,6 +60,7 @@ import net.sf.jasperreports.engine.JRPrintPage;
 import net.sf.jasperreports.engine.JRPrintRectangle;
 import net.sf.jasperreports.engine.JRPrintText;
 import net.sf.jasperreports.engine.JRStyledTextAttributeSelector;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.base.JRBasePrintText;
 import net.sf.jasperreports.engine.type.HorizontalAlignEnum;
 import net.sf.jasperreports.engine.type.RotationEnum;
@@ -437,6 +439,24 @@ public abstract class JRXlsAbstractExporter extends JRAbstractExporter
 		return defaultFont;
 	}
 
+
+	/**
+	 * @deprecated Replaced by {@link #JRXlsAbstractExporter(JasperReportsContext)}.
+	 */
+	public JRXlsAbstractExporter()
+	{
+		this(DefaultJasperReportsContext.getInstance());
+	}
+
+	
+	/**
+	 *
+	 */
+	public JRXlsAbstractExporter(JasperReportsContext jasperReportsContext)
+	{
+		super(jasperReportsContext);
+	}
+	
 
 	/**
 	 *

@@ -24,6 +24,8 @@
 package net.sf.jasperreports.repo;
 
 import net.sf.jasperreports.data.DataAdapter;
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
+import net.sf.jasperreports.engine.JasperReportsContext;
 
 
 
@@ -47,7 +49,11 @@ public class FileRepositoryPersistenceServiceFactory implements PersistenceServi
 	/**
 	 * 
 	 */
-	public <K extends RepositoryService, L extends Resource, M extends PersistenceService> M getPersistenceService(Class<K> repositoryServiceType, Class<L> resourceType) 
+	public <K extends RepositoryService, L extends Resource, M extends PersistenceService> M getPersistenceService(
+		JasperReportsContext jasperReportsContext,
+		Class<K> repositoryServiceType, 
+		Class<L> resourceType
+		) 
 	{
 		if (FileRepositoryService.class.isAssignableFrom(repositoryServiceType))
 		{
@@ -69,9 +75,17 @@ public class FileRepositoryPersistenceServiceFactory implements PersistenceServi
 //			}
 			else if (DataAdapter.class.isAssignableFrom(resourceType))
 			{
-				return (M)new CastorDataAdapterPersistenceService();
+				return (M)new CastorDataAdapterPersistenceService(jasperReportsContext);
 			}
 		}
 		return null;
+	}
+	
+	/**
+	 * @deprecated Replaced by {@link #getPersistenceService(JasperReportsContext, Class, Class)}.
+	 */
+	public <K extends RepositoryService, L extends Resource, M extends PersistenceService> M getPersistenceService(Class<K> repositoryServiceType, Class<L> resourceType) 
+	{
+		return getPersistenceService(DefaultJasperReportsContext.getInstance(), repositoryServiceType, resourceType);
 	}
 }

@@ -156,6 +156,7 @@ public class JRDesignDataset extends JRBaseDataset
 	/**
 	 * An array containing the built-in parameters that can be found and used in any report dataset.
 	 */
+	@SuppressWarnings("deprecation")
 	private static final Object[] BUILT_IN_PARAMETERS = new Object[] { 
 		JRParameter.REPORT_CONTEXT, ReportContext.class, 
 		JRParameter.REPORT_PARAMETERS_MAP, java.util.Map.class, 

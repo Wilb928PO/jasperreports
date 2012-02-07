@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRAbstractExporter;
 import net.sf.jasperreports.engine.JRAnchor;
 import net.sf.jasperreports.engine.JRException;
@@ -76,6 +77,7 @@ import net.sf.jasperreports.engine.JRRenderable;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.JRWrappingSvgRenderer;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.TabStop;
 import net.sf.jasperreports.engine.type.HyperlinkTargetEnum;
 import net.sf.jasperreports.engine.type.HyperlinkTypeEnum;
@@ -167,6 +169,24 @@ public class JRXmlExporter extends JRAbstractExporter
 	
 	protected JRXmlExporterContext exporterContext = new ExporterContext();
 
+
+	/**
+	 * @deprecated Replaced by {@link #JRXmlExporter(JasperReportsContext)}.
+	 */
+	public JRXmlExporter()
+	{
+		this(DefaultJasperReportsContext.getInstance());
+	}
+
+	
+	/**
+	 *
+	 */
+	public JRXmlExporter(JasperReportsContext jasperReportsContext)
+	{
+		super(jasperReportsContext);
+	}
+	
 
 	/**
 	 *

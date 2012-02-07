@@ -110,7 +110,7 @@ public class SpiderChartApp extends AbstractSampleApp
 			throw new JRException(e);
 		}
 		
-		JasperFillManager.fillReportToFile("build/reports/SpiderChart.jasper", null, cds);
+		JasperFillManager.getInstance(getJasperReportsContext()).fillToFile("build/reports/SpiderChart.jasper", null, cds);
 		System.err.println("Filling time : " + (System.currentTimeMillis() - start));
 	}
 	
@@ -121,7 +121,7 @@ public class SpiderChartApp extends AbstractSampleApp
 	public void print() throws JRException
 	{
 		long start = System.currentTimeMillis();
-		JasperPrintManager.printReport("build/reports/SpiderChart.jrprint", true);
+		JasperPrintManager.getInstance(getJasperReportsContext()).print("build/reports/SpiderChart.jrprint", true);
 		System.err.println("Printing time : " + (System.currentTimeMillis() - start));
 	}
 	
@@ -132,7 +132,7 @@ public class SpiderChartApp extends AbstractSampleApp
 	public void pdf() throws JRException
 	{
 		long start = System.currentTimeMillis();
-		JasperExportManager.exportReportToPdfFile("build/reports/SpiderChart.jrprint");
+		JasperExportManager.getInstance(getJasperReportsContext()).exportToPdfFile("build/reports/SpiderChart.jrprint");
 		System.err.println("PDF creation time : " + (System.currentTimeMillis() - start));
 	}
 	
@@ -143,7 +143,7 @@ public class SpiderChartApp extends AbstractSampleApp
 	public void xml() throws JRException
 	{
 		long start = System.currentTimeMillis();
-		JasperExportManager.exportReportToXmlFile("build/reports/SpiderChart.jrprint", false);
+		JasperExportManager.getInstance(getJasperReportsContext()).exportToXmlFile("build/reports/SpiderChart.jrprint", false);
 		System.err.println("XML creation time : " + (System.currentTimeMillis() - start));
 	}
 	
@@ -154,7 +154,7 @@ public class SpiderChartApp extends AbstractSampleApp
 	public void xmlEmbed() throws JRException
 	{
 		long start = System.currentTimeMillis();
-		JasperExportManager.exportReportToXmlFile("build/reports/SpiderChart.jrprint", true);
+		JasperExportManager.getInstance(getJasperReportsContext()).exportToXmlFile("build/reports/SpiderChart.jrprint", true);
 		System.err.println("XML creation time : " + (System.currentTimeMillis() - start));
 	}
 	
@@ -165,7 +165,7 @@ public class SpiderChartApp extends AbstractSampleApp
 	public void html() throws JRException
 	{
 		long start = System.currentTimeMillis();
-		JasperExportManager.exportReportToHtmlFile("build/reports/SpiderChart.jrprint");
+		JasperExportManager.getInstance(getJasperReportsContext()).exportToHtmlFile("build/reports/SpiderChart.jrprint");
 		System.err.println("HTML creation time : " + (System.currentTimeMillis() - start));
 	}
 	
@@ -182,7 +182,7 @@ public class SpiderChartApp extends AbstractSampleApp
 
 		File destFile = new File(sourceFile.getParent(), jasperPrint.getName() + ".rtf");
 		
-		JRRtfExporter exporter = new JRRtfExporter();
+		JRRtfExporter exporter = new JRRtfExporter(getJasperReportsContext());
 		
 		exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
 		exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, destFile.toString());
@@ -205,7 +205,7 @@ public class SpiderChartApp extends AbstractSampleApp
 
 		File destFile = new File(sourceFile.getParent(), jasperPrint.getName() + ".xls");
 		
-		JRXlsExporter exporter = new JRXlsExporter();
+		JRXlsExporter exporter = new JRXlsExporter(getJasperReportsContext());
 		
 		exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
 		exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, destFile.toString());
@@ -229,7 +229,7 @@ public class SpiderChartApp extends AbstractSampleApp
 
 		File destFile = new File(sourceFile.getParent(), jasperPrint.getName() + ".jxl.xls");
 		
-		JExcelApiExporter exporter = new JExcelApiExporter();
+		JExcelApiExporter exporter = new JExcelApiExporter(getJasperReportsContext());
 		
 		exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
 		exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, destFile.toString());
@@ -253,7 +253,7 @@ public class SpiderChartApp extends AbstractSampleApp
 
 		File destFile = new File(sourceFile.getParent(), jasperPrint.getName() + ".csv");
 		
-		JRCsvExporter exporter = new JRCsvExporter();
+		JRCsvExporter exporter = new JRCsvExporter(getJasperReportsContext());
 		
 		exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
 		exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, destFile.toString());
@@ -276,7 +276,7 @@ public class SpiderChartApp extends AbstractSampleApp
 
 		File destFile = new File(sourceFile.getParent(), jasperPrint.getName() + ".odt");
 		
-		JROdtExporter exporter = new JROdtExporter();
+		JROdtExporter exporter = new JROdtExporter(getJasperReportsContext());
 		
 		exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
 		exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, destFile.toString());
@@ -299,7 +299,7 @@ public class SpiderChartApp extends AbstractSampleApp
 
 		File destFile = new File(sourceFile.getParent(), jasperPrint.getName() + ".ods");
 		
-		JROdsExporter exporter = new JROdsExporter();
+		JROdsExporter exporter = new JROdsExporter(getJasperReportsContext());
 		
 		exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
 		exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, destFile.toString());
@@ -323,7 +323,7 @@ public class SpiderChartApp extends AbstractSampleApp
 
 		File destFile = new File(sourceFile.getParent(), jasperPrint.getName() + ".docx");
 		
-		JRDocxExporter exporter = new JRDocxExporter();
+		JRDocxExporter exporter = new JRDocxExporter(getJasperReportsContext());
 		
 		exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
 		exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, destFile.toString());
@@ -346,7 +346,7 @@ public class SpiderChartApp extends AbstractSampleApp
 
 		File destFile = new File(sourceFile.getParent(), jasperPrint.getName() + ".xlsx");
 		
-		JRXlsxExporter exporter = new JRXlsxExporter();
+		JRXlsxExporter exporter = new JRXlsxExporter(getJasperReportsContext());
 		
 		exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
 		exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, destFile.toString());
@@ -370,7 +370,7 @@ public class SpiderChartApp extends AbstractSampleApp
 
 		File destFile = new File(sourceFile.getParent(), jasperPrint.getName() + ".pptx");
 		
-		JRPptxExporter exporter = new JRPptxExporter();
+		JRPptxExporter exporter = new JRPptxExporter(getJasperReportsContext());
 		
 		exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
 		exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, destFile.toString());
@@ -393,7 +393,7 @@ public class SpiderChartApp extends AbstractSampleApp
 
 		File destFile = new File(sourceFile.getParent(), jasperPrint.getName() + ".x.html");
 		
-		JRXhtmlExporter exporter = new JRXhtmlExporter();
+		JRXhtmlExporter exporter = new JRXhtmlExporter(getJasperReportsContext());
 		
 		exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
 		exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, destFile.toString());

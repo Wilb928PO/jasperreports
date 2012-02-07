@@ -53,6 +53,7 @@ import net.sf.jasperreports.engine.JRPrintHyperlinkParameters;
 import net.sf.jasperreports.engine.JRPropertiesMap;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JRSortField;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.ReportContext;
 import net.sf.jasperreports.engine.base.JRBasePrintHyperlink;
 import net.sf.jasperreports.engine.design.JRDesignComponentElement;
@@ -263,7 +264,7 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 				velocityContext.put("backgroundColor", JRColorUtil.getColorHexa(element.getBackcolor()));
 			}
 
-			String sortField = getCurrentSortField(reportContext, tableUUID, sortDatasetName, sortColumnName, sortColumnType);
+			String sortField = getCurrentSortField(context.getExporter().getJasperReportsContext(), reportContext, tableUUID, sortDatasetName, sortColumnName, sortColumnType);
 			if (sortField != null) 
 			{
 				String[] sortActionData = HeaderToolbarElementUtils.extractColumnInfo(sortField);
@@ -286,7 +287,7 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 			String filterTypeOperatorValue = "";
 			boolean isFiltered = false;
 			boolean enableFilterEndParameter = false;
-			List<DatasetFilter> fieldFilters = getExistingFiltersForField(reportContext, tableUUID, sortColumnName);
+			List<DatasetFilter> fieldFilters = getExistingFiltersForField(context.getExporter().getJasperReportsContext(), reportContext, tableUUID, sortColumnName);
 
 			if (fieldFilters.size() > 0) {
 				FieldFilter ff = (FieldFilter)fieldFilters.get(0);
@@ -316,7 +317,7 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 			velocityContext.put("filterToRemoveParamName", FilterData.FIELD_NAME);
 			velocityContext.put("filterToRemoveParamvalue", sortColumnName);
 			
-			String filtersJsonString = JacksonUtil.getEscapedJsonString(fieldFilters);
+			String filtersJsonString = JacksonUtil.getInstance(context.getExporter().getJasperReportsContext()).getEscapedJsonString(fieldFilters);
 			if (log.isDebugEnabled()) {
 				log.debug("filtersJsonString: " + filtersJsonString);
 			}
@@ -329,9 +330,9 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 			
 			// begin:temp
 			velocityContext.put("sortAscHref", sortAscHref);
-			velocityContext.put("sortAscData", JacksonUtil.getEscapedJsonString(sortAscData));
+			velocityContext.put("sortAscData", JacksonUtil.getInstance(context.getExporter().getJasperReportsContext()).getEscapedJsonString(sortAscData));
 			velocityContext.put("sortDescHref", sortDescHref);
-			velocityContext.put("sortDescData", JacksonUtil.getEscapedJsonString(sortDescData));
+			velocityContext.put("sortDescData", JacksonUtil.getInstance(context.getExporter().getJasperReportsContext()).getEscapedJsonString(sortDescData));
 			
 			velocityContext.put("sortAscSrc", imagesResourcePath + sortAscSrc);
 			velocityContext.put("sortAscHoverSrc", imagesResourcePath + sortAscHoverSrc);
@@ -409,7 +410,14 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 		return context.getHyperlinkURL(hyperlink);
 	}
 
-	private String getCurrentSortField(ReportContext reportContext, String uuid, String sortDatasetName, String sortColumnName, String sortColumnType) 
+	private String getCurrentSortField(
+		JasperReportsContext jasperReportsContext,
+		ReportContext reportContext, 
+		String uuid, 
+		String sortDatasetName, 
+		String sortColumnName, 
+		String sortColumnType
+		) 
 	{
 //		String currentSortDataset = (String) reportContext.getParameterValue(
 //				HeaderToolbarElement.REQUEST_PARAMETER_DATASET_RUN);
@@ -423,9 +431,9 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 //		@SuppressWarnings("unchecked")
 //		List<JRSortField> existingFields = (List<JRSortField>) reportContext.getParameterValue(currentTableSortFieldsParam);
 
-		JasperDesignCache cache = JasperDesignCache.getInstance(reportContext);
+		JasperDesignCache cache = JasperDesignCache.getInstance(jasperReportsContext, reportContext);
 		SortAction action = new SortAction();
-		action.init(reportContext);
+		action.init(jasperReportsContext, reportContext);
 		CommandTarget target = action.getCommandTarget(UUID.fromString(uuid));
 		if (target != null)
 		{
@@ -481,11 +489,16 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 		return result;
 	}
 	
-	private List<DatasetFilter> getExistingFiltersForField(ReportContext reportContext, String uuid, String filterFieldName) {
-		
-		JasperDesignCache cache = JasperDesignCache.getInstance(reportContext);
+	private List<DatasetFilter> getExistingFiltersForField(
+		JasperReportsContext jasperReportsContext, 
+		ReportContext reportContext, 
+		String uuid, 
+		String filterFieldName
+		) 
+	{
+		JasperDesignCache cache = JasperDesignCache.getInstance(jasperReportsContext, reportContext);
 		FilterAction action = new FilterAction();
-		action.init(reportContext);
+		action.init(jasperReportsContext, reportContext);
 		CommandTarget target = action.getCommandTarget(UUID.fromString(uuid));
 		List<DatasetFilter> result = new ArrayList<DatasetFilter>();
 		if (target != null)

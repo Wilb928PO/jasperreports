@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRAbstractExporter;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExporterParameter;
@@ -68,6 +69,7 @@ import net.sf.jasperreports.engine.JRRenderable;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JRWrappingSvgRenderer;
 import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.base.JRBaseLineBox;
 import net.sf.jasperreports.engine.export.CutsInfo;
 import net.sf.jasperreports.engine.export.ExporterFilter;
@@ -127,17 +129,28 @@ public abstract class JROpenDocumentExporter extends JRAbstractExporter
 	 */
 	protected Map<String,String> fontMap;
 
-	protected LinkedList<Color> backcolorStack;
+	protected LinkedList<Color> backcolorStack = new LinkedList<Color>();
 	protected Color backcolor;
 
 	protected StyleCache styleCache;
 
 	protected ExporterNature nature;
 
+	/**
+	 * @deprecated Replaced by {@link #JROpenDocumentExporter(JasperReportsContext)}.
+	 */
 	public JROpenDocumentExporter()
 	{
-		backcolorStack = new LinkedList<Color>();
-		backcolor = null;
+		this(DefaultJasperReportsContext.getInstance());
+	}
+
+
+	/**
+	 *
+	 */
+	public JROpenDocumentExporter(JasperReportsContext jasperReportsContext)
+	{
+		super(jasperReportsContext);
 	}
 
 

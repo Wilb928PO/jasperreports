@@ -56,6 +56,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import net.sf.jasperreports.crosstabs.JRCellContents;
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRAbstractExporter;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExporterParameter;
@@ -82,6 +83,7 @@ import net.sf.jasperreports.engine.JRRenderable;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JRWrappingSvgRenderer;
 import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.base.JRBasePrintFrame;
 import net.sf.jasperreports.engine.fonts.FontFamily;
 import net.sf.jasperreports.engine.fonts.FontInfo;
@@ -233,10 +235,10 @@ public class JRHtmlExporter extends JRAbstractExporter
 	 */
 	protected Map<String,String> fontMap;
 
-	private LinkedList<Color> backcolorStack;
+	private LinkedList<Color> backcolorStack = new LinkedList<Color>();
 	private Color backcolor;
 
-	protected JRHyperlinkTargetProducerFactory targetProducerFactory = new DefaultHyperlinkTargetProducerFactory();		
+	protected JRHyperlinkTargetProducerFactory targetProducerFactory;		
 
 	protected boolean hyperlinkStarted;
 	protected int thDepth;
@@ -245,10 +247,23 @@ public class JRHtmlExporter extends JRAbstractExporter
 
 	protected JRHtmlExporterContext exporterContext = new ExporterContext();
 
+	/**
+	 * @deprecated Replaced by {@link #JRHtmlExporter(JasperReportsContext)}.
+	 */
 	public JRHtmlExporter()
 	{
-		backcolorStack = new LinkedList<Color>();
-		backcolor = null;
+		this(DefaultJasperReportsContext.getInstance());
+	}
+
+
+	/**
+	 *
+	 */
+	public JRHtmlExporter(JasperReportsContext jasperReportsContext)
+	{
+		super(jasperReportsContext);
+
+		targetProducerFactory = new DefaultHyperlinkTargetProducerFactory(jasperReportsContext);		
 	}
 
 

@@ -91,7 +91,7 @@ public class AlterDesignApp extends AbstractSampleApp
 		style.setFontSize(16);
 		style.setItalic(true);
 
-		JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, null, (JRDataSource)null);
+		JasperPrint jasperPrint = JasperFillManager.getInstance(getJasperReportsContext()).fill(jasperReport, null, (JRDataSource)null);
 		
 		File destFile = new File(sourceFile.getParent(), jasperReport.getName() + ".jrprint");
 		JRSaver.saveObject(jasperPrint, destFile);
@@ -106,7 +106,7 @@ public class AlterDesignApp extends AbstractSampleApp
 	public void print() throws JRException
 	{
 		long start = System.currentTimeMillis();
-		JasperPrintManager.printReport("build/reports/AlterDesignReport.jrprint", true);
+		JasperPrintManager.getInstance(getJasperReportsContext()).print("build/reports/AlterDesignReport.jrprint", true);
 		System.err.println("Printing time : " + (System.currentTimeMillis() - start));
 	}
 
@@ -117,7 +117,7 @@ public class AlterDesignApp extends AbstractSampleApp
 	public void pdf() throws JRException
 	{
 		long start = System.currentTimeMillis();
-		JasperExportManager.exportReportToPdfFile("build/reports/AlterDesignReport.jrprint");
+		JasperExportManager.getInstance(getJasperReportsContext()).exportToPdfFile("build/reports/AlterDesignReport.jrprint");
 		System.err.println("PDF creation time : " + (System.currentTimeMillis() - start));
 	}
 

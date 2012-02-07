@@ -117,7 +117,7 @@ public final class ChartConverter extends ElementConverter
 			themeName = JRProperties.getProperty(reportConverter.getReport(), JRChart.PROPERTY_CHART_THEME);
 		}
 		
-		ChartTheme theme = ChartUtil.getChartTheme(themeName);
+		ChartTheme theme = ChartUtil.getInstance(reportConverter.getJasperReportsContext()).getTheme(themeName);
 		
 		ChartContext chartContext = new ConvertChartContext(chart);
 		

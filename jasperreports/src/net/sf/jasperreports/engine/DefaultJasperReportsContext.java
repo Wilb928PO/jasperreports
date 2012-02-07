@@ -21,68 +21,69 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with JasperReports. If not, see <http://www.gnu.org/licenses/>.
  */
-package net.sf.jasperreports.repo;
+package net.sf.jasperreports.engine;
 
-import java.io.File;
-import java.io.InputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-
+import net.sf.jasperreports.extensions.ExtensionsEnvironment;
 
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id: FileRepositoryService.java 4882 2012-01-09 14:54:19Z teodord $
+ * @version $Id: JRCloneable.java 4595 2011-09-08 15:55:10Z teodord $
  */
-public class WebFileRepositoryService extends FileRepositoryService
+public class DefaultJasperReportsContext implements JasperReportsContext
 {
-	private String root;
-	private static String applicationRealPath;
-	private String realRoot;
-	
 	/**
-	 * 
+	 *
 	 */
-	public WebFileRepositoryService(String root, boolean resolveAbsolutePath)
-	{
-		super(root, resolveAbsolutePath);
-		
-		this.root = root;
-	}
+	private static final DefaultJasperReportsContext INSTANCE = new DefaultJasperReportsContext();
 	
+	private Map<String, Object> values = new HashMap<String, Object>();
+
 	/**
-	 * 
+	 *
 	 */
-	public static void setApplicationRealPath(String appRealPath)
+	private DefaultJasperReportsContext()
 	{
-		applicationRealPath = appRealPath;
-	}
-	
-	/**
-	 * 
-	 */
-	public static String getApplicationRealPath()
-	{
-		return applicationRealPath;
 	}
 
-	@Override
-	public String getRoot()
+	/**
+	 *
+	 */
+	public static DefaultJasperReportsContext getInstance()
 	{
-		if (realRoot == null && applicationRealPath != null)
-		{
-			realRoot = new File(new File(applicationRealPath), root).getAbsolutePath();
-		}
-		return realRoot;
+		return INSTANCE;
 	}
 
-	@Override
-	public InputStream getInputStream(String uri)
+	/**
+	 *
+	 */
+	public Object getValue(String key)
 	{
-		if (getRoot() != null)
-		{
-			return super.getInputStream(uri);
-		}
-		
-		return null;
+		return values.get(key);
 	}
+
+	/**
+	 *
+	 */
+	public void setValue(String key, Object value)
+	{
+		values.put(key, value);
+	}
+	
+	/**
+	 * Returns a list of extension objects for a specific extension type.
+	 * 
+	 * @param extensionType the extension type
+	 * @param <T> generic extension type
+	 * @return a list of extension objects
+	 */
+	public <T> List<T> getExtensions(Class<T> extensionType)
+	{
+		return ExtensionsEnvironment.getExtensionsRegistry().getExtensions(extensionType);
+	}
+	
 }

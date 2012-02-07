@@ -28,6 +28,7 @@ import java.util.Map;
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRValueParameter;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.util.JRProperties;
 
 
@@ -75,6 +76,7 @@ public interface JRQueryExecuterFactory
 	 * This method is called at fill time for reports/datasets having a query supported by
 	 * this factory.
 	 * 
+	 * @param jasperReportsContext the JasperReportsContext
 	 * @param dataset the dataset containing the query, fields, etc
 	 * @param parameters map of value parameters (instances of {@link JRValueParameter JRValueParameter})
 	 * 	indexed by name
@@ -82,7 +84,17 @@ public interface JRQueryExecuterFactory
 	 * @return a query executer
 	 * @throws JRException
 	 */
-	public JRQueryExecuter createQueryExecuter(JRDataset dataset, Map<String,? extends JRValueParameter> parameters) throws JRException;
+	public JRQueryExecuter createQueryExecuter(
+		JasperReportsContext jasperReportsContext, 
+		JRDataset dataset, 
+		Map<String,? extends JRValueParameter> parameters
+		) throws JRException;
+
+	
+	/**
+	 * @deprecated To be removed.
+	 */
+	public JRQueryExecuter createQueryExecuter(JRDataset dataset, Map<String,? extends JRValueParameter> parameters) throws JRException;//FIXMECONTEXT can we remove this completely?
 
 	
 	/**

@@ -54,6 +54,7 @@ import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
 
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRAbstractExporter;
 import net.sf.jasperreports.engine.JRBoxContainer;
 import net.sf.jasperreports.engine.JRException;
@@ -81,6 +82,7 @@ import net.sf.jasperreports.engine.JRRenderable;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JRWrappingSvgRenderer;
 import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.base.JRBasePrintText;
 import net.sf.jasperreports.engine.fonts.FontFamily;
 import net.sf.jasperreports.engine.fonts.FontInfo;
@@ -205,16 +207,31 @@ public class JRXhtmlExporter extends JRAbstractExporter
 	 */
 	protected Map<String,String> fontMap;
 
-	protected JRHyperlinkTargetProducerFactory targetProducerFactory = new DefaultHyperlinkTargetProducerFactory();		
+	protected JRHyperlinkTargetProducerFactory targetProducerFactory;		
 
 	protected boolean hyperlinkStarted;	
 	
 	protected JRHtmlExporterContext exporterContext = new ExporterContext();
 
+	/**
+	 * @deprecated Replaced by {@link #JRXhtmlExporter(JasperReportsContext)}.
+	 */
 	public JRXhtmlExporter()
 	{
+		this(DefaultJasperReportsContext.getInstance());
 	}
 
+	
+	/**
+	 *
+	 */
+	public JRXhtmlExporter(JasperReportsContext jasperReportsContext)
+	{
+		super(jasperReportsContext);
+
+		targetProducerFactory = new DefaultHyperlinkTargetProducerFactory(jasperReportsContext);		
+	}
+	
 
 	/**
 	 *

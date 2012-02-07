@@ -62,7 +62,7 @@ public class BeanShellApp extends AbstractSampleApp
 	public void fill() throws JRException
 	{
 		long start = System.currentTimeMillis();
-		JasperFillManager.fillReportToFile("build/reports/BeanShellReport.jasper", null, new JREmptyDataSource());
+		JasperFillManager.getInstance(getJasperReportsContext()).fillToFile("build/reports/BeanShellReport.jasper", null, new JREmptyDataSource());
 		System.err.println("Filling time : " + (System.currentTimeMillis() - start));
 	}
 	
@@ -73,7 +73,7 @@ public class BeanShellApp extends AbstractSampleApp
 	public void pdf() throws JRException
 	{
 		long start = System.currentTimeMillis();
-		JasperExportManager.exportReportToPdfFile("build/reports/BeanShellReport.jrprint");
+		JasperExportManager.getInstance(getJasperReportsContext()).exportToPdfFile("build/reports/BeanShellReport.jrprint");
 		System.err.println("PDF creation time : " + (System.currentTimeMillis() - start));
 	}
 

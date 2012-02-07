@@ -31,12 +31,14 @@ import java.sql.SQLException;
 
 import edu.stanford.ejalbert.BrowserLauncher;
 
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperPrintManager;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.export.JExcelApiExporter;
 import net.sf.jasperreports.engine.export.JRCsvExporter;
 import net.sf.jasperreports.engine.export.JRRtfExporter;
@@ -102,17 +104,17 @@ public class OFCApp
 			long start = System.currentTimeMillis();
 			if (TASK_FILL.equals(taskName))
 			{
-				JasperFillManager.fillReportToFile(fileName, null, getConnection());
+				JasperFillManager.getInstance(getJasperReportsContext()).fillToFile(fileName, null, getConnection());
 				System.err.println("Filling time : " + (System.currentTimeMillis() - start));
 			}
 			else if (TASK_PRINT.equals(taskName))
 			{
-				JasperPrintManager.printReport(fileName, true);
+				JasperPrintManager.getInstance(getJasperReportsContext()).print(fileName, true);
 				System.err.println("Printing time : " + (System.currentTimeMillis() - start));
 			}
 			else if (TASK_PDF.equals(taskName))
 			{
-				JasperExportManager.exportReportToPdfFile(fileName);
+				JasperExportManager.getInstance(getJasperReportsContext()).exportToPdfFile(fileName);
 				System.err.println("PDF creation time : " + (System.currentTimeMillis() - start));
 			}
 			else if (TASK_RTF.equals(taskName))
@@ -123,7 +125,7 @@ public class OFCApp
 		
 				File destFile = new File(sourceFile.getParent(), jasperPrint.getName() + ".rtf");
 				
-				JRRtfExporter exporter = new JRRtfExporter();
+				JRRtfExporter exporter = new JRRtfExporter(getJasperReportsContext());
 				
 				exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
 				exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, destFile.toString());
@@ -134,17 +136,17 @@ public class OFCApp
 			}
 			else if (TASK_XML.equals(taskName))
 			{
-				JasperExportManager.exportReportToXmlFile(fileName, false);
+				JasperExportManager.getInstance(getJasperReportsContext()).exportToXmlFile(fileName, false);
 				System.err.println("XML creation time : " + (System.currentTimeMillis() - start));
 			}
 			else if (TASK_XML_EMBED.equals(taskName))
 			{
-				JasperExportManager.exportReportToXmlFile(fileName, true);
+				JasperExportManager.getInstance(getJasperReportsContext()).exportToXmlFile(fileName, true);
 				System.err.println("XML creation time : " + (System.currentTimeMillis() - start));
 			}
 			else if (TASK_HTML.equals(taskName))
 			{
-				JasperExportManager.exportReportToHtmlFile(fileName);
+				JasperExportManager.getInstance(getJasperReportsContext()).exportToHtmlFile(fileName);
 				System.err.println("HTML creation time : " + (System.currentTimeMillis() - start));
 			}
 			else if (TASK_XLS.equals(taskName))
@@ -155,7 +157,7 @@ public class OFCApp
 		
 				File destFile = new File(sourceFile.getParent(), jasperPrint.getName() + ".xls");
 				
-				JRXlsExporter exporter = new JRXlsExporter();
+				JRXlsExporter exporter = new JRXlsExporter(getJasperReportsContext());
 				
 				exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
 				exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, destFile.toString());
@@ -173,7 +175,7 @@ public class OFCApp
 
 				File destFile = new File(sourceFile.getParent(), jasperPrint.getName() + ".jxl.xls");
 
-				JExcelApiExporter exporter = new JExcelApiExporter();
+				JExcelApiExporter exporter = new JExcelApiExporter(getJasperReportsContext());
 
 				exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
 				exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, destFile.toString());
@@ -191,7 +193,7 @@ public class OFCApp
 		
 				File destFile = new File(sourceFile.getParent(), jasperPrint.getName() + ".csv");
 				
-				JRCsvExporter exporter = new JRCsvExporter();
+				JRCsvExporter exporter = new JRCsvExporter(getJasperReportsContext());
 				
 				exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
 				exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, destFile.toString());
@@ -208,7 +210,7 @@ public class OFCApp
 		
 				File destFile = new File(sourceFile.getParent(), jasperPrint.getName() + ".odt");
 				
-				JROdtExporter exporter = new JROdtExporter();
+				JROdtExporter exporter = new JROdtExporter(getJasperReportsContext());
 				
 				exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
 				exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, destFile.toString());
@@ -225,7 +227,7 @@ public class OFCApp
 		
 				File destFile = new File(sourceFile.getParent(), jasperPrint.getName() + ".ods");
 				
-				JROdsExporter exporter = new JROdsExporter();
+				JROdsExporter exporter = new JROdsExporter(getJasperReportsContext());
 				
 				exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
 				exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, destFile.toString());
@@ -242,7 +244,7 @@ public class OFCApp
 		
 				File destFile = new File(sourceFile.getParent(), jasperPrint.getName() + ".docx");
 				
-				JRDocxExporter exporter = new JRDocxExporter();
+				JRDocxExporter exporter = new JRDocxExporter(getJasperReportsContext());
 				
 				exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
 				exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, destFile.toString());
@@ -259,7 +261,7 @@ public class OFCApp
 		
 				File destFile = new File(sourceFile.getParent(), jasperPrint.getName() + ".xlsx");
 				
-				JRXlsxExporter exporter = new JRXlsxExporter();
+				JRXlsxExporter exporter = new JRXlsxExporter(getJasperReportsContext());
 				
 				exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
 				exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, destFile.toString());
@@ -277,7 +279,7 @@ public class OFCApp
 		
 				File destFile = new File(sourceFile.getParent(), jasperPrint.getName() + ".pptx");
 				
-				JRPptxExporter exporter = new JRPptxExporter();
+				JRPptxExporter exporter = new JRPptxExporter(getJasperReportsContext());
 				
 				exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
 				exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, destFile.toString());
@@ -294,7 +296,7 @@ public class OFCApp
 		
 				File destFile = new File(sourceFile.getParent(), jasperPrint.getName() + ".x.html");
 				
-				JRXhtmlExporter exporter = new JRXhtmlExporter();
+				JRXhtmlExporter exporter = new JRXhtmlExporter(getJasperReportsContext());
 				
 				exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
 				exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, destFile.toString());
@@ -311,7 +313,7 @@ public class OFCApp
 		
 				File destFile = new File(sourceFile.getParent(), jasperPrint.getName() + ".xml4swf");
 				
-				JRXml4SwfExporter exporter = new JRXml4SwfExporter();
+				JRXml4SwfExporter exporter = new JRXml4SwfExporter(getJasperReportsContext());
 				
 				exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
 				exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, destFile.toString());
@@ -418,7 +420,11 @@ public class OFCApp
 		System.out.println( "\tTasks : fill | print | pdf | xml | xmlEmbed | html | rtf | xls | jxl | csv | odt | ods | docx | xlsx | pptx | xhtml | xml4swf | viewHtml" );
 	}
 
-
+	private static JasperReportsContext getJasperReportsContext()
+	{
+		return DefaultJasperReportsContext.getInstance();
+	}
+	
 	private static Connection getConnection() throws ClassNotFoundException, SQLException
 	{
 		//Change these settings according to your local configuration

@@ -30,6 +30,7 @@ import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRResultSetDataSource;
 import net.sf.jasperreports.engine.JRValueParameter;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.util.JRProperties;
 
 /**
@@ -41,7 +42,7 @@ import net.sf.jasperreports.engine.util.JRProperties;
  * @version $Id$
  * @see net.sf.jasperreports.engine.query.JRJdbcQueryExecuter
  */
-public class JRJdbcQueryExecuterFactory implements JRQueryExecuterFactory
+public class JRJdbcQueryExecuterFactory extends JRAbstractQueryExecuterFactory
 {	
 	/**
 	 * Property specifying the ResultSet fetch size.
@@ -120,9 +121,13 @@ public class JRJdbcQueryExecuterFactory implements JRQueryExecuterFactory
 		Arrays.sort(queryParameterClassNames);
 	}
 	
-	public JRQueryExecuter createQueryExecuter(JRDataset dataset, Map<String,? extends JRValueParameter> parameters) throws JRException
+	public JRQueryExecuter createQueryExecuter(
+		JasperReportsContext jasperReportsContext,
+		JRDataset dataset, 
+		Map<String,? extends JRValueParameter> parameters
+		) throws JRException
 	{
-		return new JRJdbcQueryExecuter(dataset, parameters);
+		return new JRJdbcQueryExecuter(jasperReportsContext, dataset, parameters);
 	}
 
 	public Object[] getBuiltinParameters()

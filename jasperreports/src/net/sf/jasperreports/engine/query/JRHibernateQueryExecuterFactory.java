@@ -28,6 +28,7 @@ import java.util.Map;
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRValueParameter;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.util.JRProperties;
 
 /**
@@ -39,7 +40,7 @@ import net.sf.jasperreports.engine.util.JRProperties;
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
-public class JRHibernateQueryExecuterFactory implements JRQueryExecuterFactory
+public class JRHibernateQueryExecuterFactory extends JRAbstractQueryExecuterFactory
 {
 
 	/**
@@ -131,9 +132,13 @@ public class JRHibernateQueryExecuterFactory implements JRQueryExecuterFactory
 		return HIBERNATE_BUILTIN_PARAMETERS;
 	}
 
-	public JRQueryExecuter createQueryExecuter(JRDataset dataset, Map<String, ? extends JRValueParameter> parameters) throws JRException
+	public JRQueryExecuter createQueryExecuter(
+		JasperReportsContext jasperReportsContext, 
+		JRDataset dataset, 
+		Map<String, ? extends JRValueParameter> parameters
+		) throws JRException
 	{
-		return new JRHibernateQueryExecuter(dataset, parameters);
+		return new JRHibernateQueryExecuter(jasperReportsContext, dataset, parameters);
 	}
 
 	/**

@@ -429,6 +429,11 @@ public class JRFillContext
 		return fillerIdSeq.incrementAndGet();
 	}
 
+	public ReportContext getReportContext()
+	{
+		return reportContext;
+	}
+
 	public void setReportContext(ReportContext reportContext)
 	{
 		this.reportContext = reportContext;

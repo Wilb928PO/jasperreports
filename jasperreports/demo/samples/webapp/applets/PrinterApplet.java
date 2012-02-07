@@ -27,6 +27,7 @@ import java.net.URL;
 
 import javax.swing.JOptionPane;
 
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperPrintManager;
 import net.sf.jasperreports.engine.util.JRLoader;
@@ -178,7 +179,7 @@ public class PrinterApplet extends javax.swing.JApplet
 							{
 								try 
 								{
-									JasperPrintManager.printReport(print, true);
+									JasperPrintManager.getInstance(DefaultJasperReportsContext.getInstance()).print(print, true);
 								}
 								catch (Exception e) 
 								{

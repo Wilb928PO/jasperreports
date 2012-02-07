@@ -32,16 +32,18 @@ import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JRValueParameter;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.data.JRJpaDataSource;
 import net.sf.jasperreports.engine.util.JRProperties;
-import net.sf.jasperreports.engine.util.JRStringUtil;
 import net.sf.jasperreports.engine.util.JRProperties.PropertySuffix;
+import net.sf.jasperreports.engine.util.JRStringUtil;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -104,7 +106,8 @@ import org.apache.commons.logging.LogFactory;
  * @version $Id$
  * @see net.sf.jasperreports.engine.query.JRJpaQueryExecuterFactory
  */
-public class JRJpaQueryExecuter extends JRAbstractQueryExecuter {
+public class JRJpaQueryExecuter extends JRAbstractQueryExecuter 
+{
 
 	private static final Log log = LogFactory.getLog(JRJpaQueryExecuter.class);
 	
@@ -113,8 +116,16 @@ public class JRJpaQueryExecuter extends JRAbstractQueryExecuter {
 	private EntityManager em;
 	private Query query;
 	
-	public JRJpaQueryExecuter(JRDataset dataset, Map<String,? extends JRValueParameter> parameters) {
-		super(dataset, parameters);
+	/**
+	 * 
+	 */
+	public JRJpaQueryExecuter(
+		JasperReportsContext jasperReportsContext, 
+		JRDataset dataset, 
+		Map<String,? extends JRValueParameter> parameters
+		) 
+	{
+		super(jasperReportsContext, dataset, parameters);
 		
 		em = (EntityManager)getParameterValue(JRJpaQueryExecuterFactory.PARAMETER_JPA_ENTITY_MANAGER);
 		reportMaxCount = (Integer)getParameterValue(JRParameter.REPORT_MAX_COUNT);
@@ -124,6 +135,14 @@ public class JRJpaQueryExecuter extends JRAbstractQueryExecuter {
 		}
 	
 		parseQuery();
+	}
+	
+	/**
+	 * @deprecated Replaced by {@link #JRJpaQueryExecuter(JasperReportsContext, JRDataset, Map)}.
+	 */
+	public JRJpaQueryExecuter(JRDataset dataset, Map<String,? extends JRValueParameter> parameters) 
+	{
+		this(DefaultJasperReportsContext.getInstance(), dataset, parameters);
 	}
 	
 	public JRDataSource createDatasource() throws JRException {

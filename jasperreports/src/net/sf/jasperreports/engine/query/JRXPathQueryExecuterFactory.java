@@ -28,6 +28,7 @@ import java.util.Map;
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRValueParameter;
+import net.sf.jasperreports.engine.JasperReportsContext;
 
 /**
  * XPath query executer factory.
@@ -38,7 +39,7 @@ import net.sf.jasperreports.engine.JRValueParameter;
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
-public class JRXPathQueryExecuterFactory implements JRQueryExecuterFactory
+public class JRXPathQueryExecuterFactory extends JRAbstractQueryExecuterFactory
 {
 	/**
 	 * Built-in parameter holding the value of the org.w3c.dom.Document used to run the XPath query.
@@ -78,10 +79,13 @@ public class JRXPathQueryExecuterFactory implements JRQueryExecuterFactory
 		return XPATH_BUILTIN_PARAMETERS;
 	}
 
-	public JRQueryExecuter createQueryExecuter(JRDataset dataset, Map<String,? extends JRValueParameter> parameters)
-			throws JRException
+	public JRQueryExecuter createQueryExecuter(
+		JasperReportsContext jasperReportsContext, 
+		JRDataset dataset, 
+		Map<String,? extends JRValueParameter> parameters
+		) throws JRException
 	{
-		return new JRXPathQueryExecuter(dataset, parameters);
+		return new JRXPathQueryExecuter(jasperReportsContext, dataset, parameters);
 	}
 
 	public boolean supportsQueryParameterType(String className)

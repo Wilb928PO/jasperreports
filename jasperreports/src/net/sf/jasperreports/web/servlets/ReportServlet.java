@@ -26,9 +26,7 @@ package net.sf.jasperreports.web.servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -42,7 +40,6 @@ import net.sf.jasperreports.engine.ReportContext;
 import net.sf.jasperreports.engine.export.JRHtmlExporterParameter;
 import net.sf.jasperreports.engine.export.JRXhtmlExporter;
 import net.sf.jasperreports.engine.util.JRProperties;
-import net.sf.jasperreports.repo.WebFileRepositoryService;
 import net.sf.jasperreports.web.WebReportContext;
 import net.sf.jasperreports.web.actions.AbstractAction;
 import net.sf.jasperreports.web.actions.Action;
@@ -59,7 +56,7 @@ import org.apache.velocity.VelocityContext;
  * @author Teodor Danciu (teodord@users.sourceforge.net)
  * @version $Id$
  */
-public class ReportServlet extends HttpServlet
+public class ReportServlet extends AbstractServlet
 {
 	private static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
 	
@@ -88,17 +85,6 @@ public class ReportServlet extends HttpServlet
 	public static final String REQUEST_PARAMETER_TOOLBAR_ID = "jr.toolbar";
 	public static final String REQUEST_PARAMETER_PAGE = "jr.page";
 	public static final String REQUEST_PARAMETER_PAGE_TIMESTAMP = "jr.pagetimestamp";
-
-
-	/**
-	 * 
-	 */
-	public void init(ServletConfig config) throws ServletException 
-	{
-		super.init(config);
-		
-		WebFileRepositoryService.setApplicationRealPath(config.getServletContext().getRealPath("/"));
-	}
 
 
 	/**
@@ -191,7 +177,7 @@ public class ReportServlet extends HttpServlet
 
 			Action action = getAction(webReportContext, request.getParameter(REQUEST_PARAMETER_ACTION));
 
-			Controller controller = new Controller();
+			Controller controller = new Controller(getJasperReportsContext());
 			
 			controller.runReport(webReportContext, action);
 		}
@@ -213,7 +199,7 @@ public class ReportServlet extends HttpServlet
 		// if the page count is null, it means that the fill is not yet done but there is at least a page
 		boolean hasPages = pageCount == null || pageCount > 0;//FIXMEJIVE we should call pageStatus here
 		
-		JRXhtmlExporter exporter = new JRXhtmlExporter();
+		JRXhtmlExporter exporter = new JRXhtmlExporter(getJasperReportsContext());
 
 		ReportPageStatus pageStatus;
 		if (hasPages)
@@ -351,10 +337,10 @@ public class ReportServlet extends HttpServlet
 	private Action getAction(ReportContext webReportContext, String jsonData)
 	//private Action getAction(ReportContext webReportContext, String reportUri, String jsonData)
 	{
-		AbstractAction result = (AbstractAction)JacksonUtil.load(jsonData, AbstractAction.class);
+		AbstractAction result = (AbstractAction)JacksonUtil.getInstance(getJasperReportsContext()).load(jsonData, AbstractAction.class);
 		if (result != null) 
 		{
-			result.init(webReportContext);//, reportUri);
+			result.init(getJasperReportsContext(), webReportContext);//, reportUri);
 		}
 		return result;
 	}

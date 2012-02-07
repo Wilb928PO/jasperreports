@@ -68,6 +68,7 @@ import net.sf.jasperreports.engine.JRVirtualizable;
 import net.sf.jasperreports.engine.JRVirtualizer;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.PrintElementVisitor;
 import net.sf.jasperreports.engine.ReportContext;
 import net.sf.jasperreports.engine.base.JRBasePrintPage;
@@ -91,9 +92,8 @@ import net.sf.jasperreports.engine.util.JRGraphEnvInitializer;
 import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.engine.util.JRStyledTextParser;
 import net.sf.jasperreports.engine.util.LinkedMap;
+import net.sf.jasperreports.engine.util.LocalJasperReportsContext;
 import net.sf.jasperreports.engine.util.UniformPrintElementVisitor;
-import net.sf.jasperreports.repo.RepositoryUtil;
-import net.sf.jasperreports.repo.SimpleRepositoryContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -213,13 +213,7 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 	protected JRVirtualizationContext virtualizationContext;
 	protected ElementEvaluationVirtualizationListener virtualizationListener;
 
-	protected ClassLoader reportClassLoader;
-
 	protected FormatFactory formatFactory;
-
-	protected URLStreamHandlerFactory urlHandlerFactory;
-
-	protected FileResolver fileResolver;
 
 	protected JRFillContext fillContext;
 
@@ -260,6 +254,11 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 	protected Map<String,JRFillDataset> datasetMap;
 
 	/**
+	 *
+	 */
+	protected JasperReportsContext jasperReportsContext;
+
+	/**
 	 * The report.
 	 */
 	protected JasperReport jasperReport;
@@ -297,20 +296,32 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 
 	protected boolean isLastPageFooter;
 
-	protected JRBaseFiller(JasperReport jasperReport, JREvaluator initEvaluator, JRFillSubreport parentElement) throws JRException
+	/**
+	 *
+	 */
+	protected JRBaseFiller(
+		JasperReportsContext jasperReportsContext, 
+		JasperReport jasperReport, 
+		JREvaluator initEvaluator, 
+		JRFillSubreport parentElement
+		) throws JRException
 	{
-		this(jasperReport, (DatasetExpressionEvaluator) initEvaluator, parentElement);
+		this(jasperReportsContext, jasperReport, (DatasetExpressionEvaluator) initEvaluator, parentElement);
 	}
 
 	/**
 	 *
 	 */
-	protected JRBaseFiller(JasperReport jasperReport, 
-			DatasetExpressionEvaluator initEvaluator, 
-			JRFillSubreport parentElement) throws JRException
+	protected JRBaseFiller(
+		JasperReportsContext jasperReportsContext, 
+		JasperReport jasperReport, 
+		DatasetExpressionEvaluator initEvaluator, 
+		JRFillSubreport parentElement
+		) throws JRException
 	{
 		JRGraphEnvInitializer.initializeGraphEnv();
 
+		this.jasperReportsContext = jasperReportsContext;
 		this.jasperReport = jasperReport;
 
 		/*   */
@@ -363,7 +374,7 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 		
 		if (initEvaluator == null)
 		{
-			calculator = JRFillDataset.createCalculator(jasperReport, jasperReport.getMainDataset());
+			calculator = JRFillDataset.createCalculator(jasperReportsContext, jasperReport, jasperReport.getMainDataset());
 		}
 		else
 		{
@@ -796,6 +807,8 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 
 	public JasperPrint fill(Map<String,Object> parameterValues) throws JRException
 	{
+		setParametersToContext(parameterValues);
+		
 		if (parameterValues == null)
 		{
 			parameterValues = new HashMap<String,Object>();
@@ -807,12 +820,6 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 		}
 
 		fillingThread = Thread.currentThread();
-		
-		RepositoryUtil.setRepositoryContext(new SimpleRepositoryContext(parameterValues));
-
-		reportClassLoader = (ClassLoader)parameterValues.get(JRParameter.REPORT_CLASS_LOADER);
-		urlHandlerFactory = (URLStreamHandlerFactory)parameterValues.get(JRParameter.REPORT_URL_HANDLER_FACTORY);
-		fileResolver = (FileResolver)parameterValues.get(JRParameter.REPORT_FILE_RESOLVER);
 		
 		try
 		{
@@ -896,11 +903,39 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 
 			//kill the subreport filler threads
 			killSubfillerThreads();
-
-			RepositoryUtil.revertRepositoryContext();
 		}
 	}
 
+	@SuppressWarnings("deprecation")
+	private void setParametersToContext(Map<String,Object> parameterValues)
+	{
+		if (
+			parameterValues.containsKey(JRParameter.REPORT_CLASS_LOADER)
+			|| parameterValues.containsKey(JRParameter.REPORT_URL_HANDLER_FACTORY)
+			|| parameterValues.containsKey(JRParameter.REPORT_FILE_RESOLVER)
+			)
+		{
+			LocalJasperReportsContext localJasperReportsContext = new LocalJasperReportsContext(jasperReportsContext);
+
+			if (parameterValues.containsKey(JRParameter.REPORT_CLASS_LOADER))
+			{
+				localJasperReportsContext.setClassLoader((ClassLoader)parameterValues.get(JRParameter.REPORT_CLASS_LOADER));
+			}
+
+			if (parameterValues.containsKey(JRParameter.REPORT_URL_HANDLER_FACTORY))
+			{
+				localJasperReportsContext.setURLStreamHandlerFactory((URLStreamHandlerFactory)parameterValues.get(JRParameter.REPORT_URL_HANDLER_FACTORY));
+			}
+
+			if (parameterValues.containsKey(JRParameter.REPORT_FILE_RESOLVER))
+			{
+				localJasperReportsContext.setFileResolver((FileResolver)parameterValues.get(JRParameter.REPORT_FILE_RESOLVER));
+			}
+			
+			jasperReportsContext = localJasperReportsContext;
+		}
+	}
+		
 	public void addPrintStyle(JRStyle style) throws JRException
 	{
 		jasperPrint.addStyle(style, true);
@@ -1075,7 +1110,7 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 				{
 					//template not yet loaded
 					JRTemplate includedTemplate = JRFillReportTemplate.loadTemplate(
-							location, fillContext);
+							location, this);
 					collectStyles(includedTemplate, externalStyles, 
 							loadedLocations, templateParentLocations);
 					

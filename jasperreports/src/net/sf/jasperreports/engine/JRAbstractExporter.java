@@ -28,6 +28,7 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URL;
+import java.net.URLStreamHandlerFactory;
 import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -53,6 +54,7 @@ import net.sf.jasperreports.engine.export.data.NumberTextValue;
 import net.sf.jasperreports.engine.export.data.StringTextValue;
 import net.sf.jasperreports.engine.export.data.TextValue;
 import net.sf.jasperreports.engine.util.DefaultFormatFactory;
+import net.sf.jasperreports.engine.util.FileResolver;
 import net.sf.jasperreports.engine.util.FormatFactory;
 import net.sf.jasperreports.engine.util.JRClassLoader;
 import net.sf.jasperreports.engine.util.JRDataUtils;
@@ -62,8 +64,7 @@ import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.engine.util.JRProperties.PropertySuffix;
 import net.sf.jasperreports.engine.util.JRStyledText;
 import net.sf.jasperreports.engine.util.JRStyledTextParser;
-import net.sf.jasperreports.repo.RepositoryUtil;
-import net.sf.jasperreports.repo.SimpleRepositoryContext;
+import net.sf.jasperreports.engine.util.LocalJasperReportsContext;
 
 
 /**
@@ -478,6 +479,11 @@ public abstract class JRAbstractExporter implements JRExporter
 	// this would make the applet require logging library
 	//private final static Log log = LogFactory.getLog(JRAbstractExporter.class);
 
+	/**
+	 *
+	 */
+	protected JasperReportsContext jasperReportsContext;
+
 	private ParameterResolver parameterResolver;
 	
 	/**
@@ -495,12 +501,6 @@ public abstract class JRAbstractExporter implements JRExporter
 	protected int endPageIndex;
 	protected int globalOffsetX;
 	protected int globalOffsetY;
-//	protected ClassLoader classLoader;
-//	protected boolean classLoaderSet;
-//	protected URLStreamHandlerFactory urlHandlerFactory;
-//	protected boolean urlHandlerFactorySet;
-//	protected FileResolver fileResolver;
-//	protected boolean fileResolverSet;
 	protected ExporterFilter filter;
 
 	/**
@@ -528,10 +528,20 @@ public abstract class JRAbstractExporter implements JRExporter
 	
 	
 	/**
-	 *
+	 * @deprecated Replaced by {@link #JRAbstractExporter(JasperReportsContext)}.
 	 */
 	protected JRAbstractExporter()
 	{
+		this(DefaultJasperReportsContext.getInstance());
+	}
+	
+	
+	/**
+	 *
+	 */
+	protected JRAbstractExporter(JasperReportsContext jasperReportsContext)
+	{
+		this.jasperReportsContext = jasperReportsContext;
 	}
 	
 	
@@ -674,6 +684,15 @@ public abstract class JRAbstractExporter implements JRExporter
 	/**
 	 *
 	 */
+	public JasperReportsContext getJasperReportsContext()
+	{
+		return jasperReportsContext;
+	}
+
+	
+	/**
+	 *
+	 */
 	public void setReportContext(ReportContext reportContext)
 	{
 		this.reportContext = reportContext;
@@ -736,39 +755,34 @@ public abstract class JRAbstractExporter implements JRExporter
 	/**
 	 *
 	 */
+	@SuppressWarnings("deprecation")
 	protected void setExportContext()
 	{
-//		classLoaderSet = false;
-//		urlHandlerFactorySet = false;
-//		fileResolverSet = false;
-//		
-//		classLoader = (ClassLoader)parameters.get(JRExporterParameter.CLASS_LOADER);
-//		if (classLoader != null)
-//		{
-//			JRResourcesUtil.setThreadClassLoader(classLoader);
-//			classLoaderSet = true;
-//		}
-//
-//		urlHandlerFactory = (URLStreamHandlerFactory) parameters.get(JRExporterParameter.URL_HANDLER_FACTORY);
-//		if (urlHandlerFactory != null)
-//		{
-//			JRResourcesUtil.setThreadURLHandlerFactory(urlHandlerFactory);
-//			urlHandlerFactorySet = true;
-//		}
-//
-//		fileResolver = (FileResolver) parameters.get(JRExporterParameter.FILE_RESOLVER);
-//		if (fileResolver != null)
-//		{
-//			JRResourcesUtil.setThreadFileResolver(fileResolver);
-//			fileResolverSet = true;
-//		}
+		if (
+			parameters.containsKey(JRExporterParameter.CLASS_LOADER)
+			|| parameters.containsKey(JRExporterParameter.URL_HANDLER_FACTORY)
+			|| parameters.containsKey(JRExporterParameter.FILE_RESOLVER)
+			)
+		{
+			LocalJasperReportsContext localJasperReportsContext = new LocalJasperReportsContext(jasperReportsContext);
 
-		Map<String, Object> contextParamValues = new HashMap<String, Object>(3);
-		contextParamValues.put(JRParameter.REPORT_CLASS_LOADER, parameters.get(JRExporterParameter.CLASS_LOADER));
-		contextParamValues.put(JRParameter.REPORT_URL_HANDLER_FACTORY, parameters.get(JRExporterParameter.URL_HANDLER_FACTORY));
-		contextParamValues.put(JRParameter.REPORT_FILE_RESOLVER, parameters.get(JRExporterParameter.FILE_RESOLVER));
+			if (parameters.containsKey(JRExporterParameter.CLASS_LOADER))
+			{
+				localJasperReportsContext.setClassLoader((ClassLoader)parameters.get(JRExporterParameter.CLASS_LOADER));
+			}
 
-		RepositoryUtil.setRepositoryContext(new SimpleRepositoryContext(contextParamValues));
+			if (parameters.containsKey(JRExporterParameter.URL_HANDLER_FACTORY))
+			{
+				localJasperReportsContext.setURLStreamHandlerFactory((URLStreamHandlerFactory)parameters.get(JRExporterParameter.URL_HANDLER_FACTORY));
+			}
+
+			if (parameters.containsKey(JRExporterParameter.FILE_RESOLVER))
+			{
+				localJasperReportsContext.setFileResolver((FileResolver)parameters.get(JRExporterParameter.FILE_RESOLVER));
+			}
+			
+			jasperReportsContext = localJasperReportsContext;
+		}
 		
 		JRFontUtil.resetThreadMissingFontsCache();
 	}
@@ -779,22 +793,6 @@ public abstract class JRAbstractExporter implements JRExporter
 	 */
 	protected void resetExportContext()
 	{
-//		if (classLoaderSet)
-//		{
-//			JRResourcesUtil.resetClassLoader();
-//		}
-//		
-//		if (urlHandlerFactorySet)
-//		{
-//			JRResourcesUtil.resetThreadURLHandlerFactory();
-//		}
-//		
-//		if (fileResolverSet)
-//		{
-//			JRResourcesUtil.resetThreadFileResolver();
-//		}
-
-		RepositoryUtil.revertRepositoryContext();
 	}
 
 	
@@ -1335,7 +1333,7 @@ public abstract class JRAbstractExporter implements JRExporter
 		hyperlinkProducerFactory = (JRHyperlinkProducerFactory) parameters.get(JRExporterParameter.HYPERLINK_PRODUCER_FACTORY);
 		if (hyperlinkProducerFactory == null)
 		{
-			hyperlinkProducerFactory = new DefaultHyperlinkProducerFactory();//FIXME use singleton cache? for target producer too;
+			hyperlinkProducerFactory = new DefaultHyperlinkProducerFactory(jasperReportsContext);//FIXME use singleton cache? for target producer too;
 		}
 	}
 	

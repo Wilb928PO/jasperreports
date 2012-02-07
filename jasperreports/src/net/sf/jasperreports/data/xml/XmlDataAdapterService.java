@@ -30,8 +30,10 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import net.sf.jasperreports.data.AbstractDataAdapterService;
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRParameter;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.data.JRXmlDataSource;
 import net.sf.jasperreports.engine.query.JRXPathQueryExecuterFactory;
 import net.sf.jasperreports.engine.util.JRXmlUtils;
@@ -50,9 +52,27 @@ public class XmlDataAdapterService extends AbstractDataAdapterService
 
 	private static final Log log = LogFactory.getLog(XmlDataAdapterService.class);
 	
-	public XmlDataAdapterService(XmlDataAdapter xmlDataAdapter) 
+	protected JasperReportsContext jasperReportsContext;
+
+	/**
+	 * 
+	 */
+	public XmlDataAdapterService(
+		JasperReportsContext jasperReportsContext,
+		XmlDataAdapter xmlDataAdapter
+		) 
 	{
 		super(xmlDataAdapter);
+		
+		this.jasperReportsContext = jasperReportsContext;
+	}
+	
+	/**
+	 * @deprecated Replaced by {@link #XmlDataAdapterService(JasperReportsContext, XmlDataAdapter)}.
+	 */
+	public XmlDataAdapterService(XmlDataAdapter xmlDataAdapter) 
+	{
+		this(DefaultJasperReportsContext.getInstance(), xmlDataAdapter);
 	}
 	
 	public XmlDataAdapter getXmlDataAdapter()
@@ -78,7 +98,7 @@ public class XmlDataAdapterService extends AbstractDataAdapterService
 				else
 				{
 				*/
-					InputStream dataStream = RepositoryUtil.getInputStream(xmlDataAdapter.getFileName());
+					InputStream dataStream = RepositoryUtil.getInstance(jasperReportsContext).getInputStream2(xmlDataAdapter.getFileName());
 					try
 					{
 						Document document = JRXmlUtils.parse(dataStream);

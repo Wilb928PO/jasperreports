@@ -23,6 +23,7 @@
  */
 package net.sf.jasperreports.repo;
 
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRPropertiesMap;
 import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.extensions.DefaultExtensionsRegistry;
@@ -54,6 +55,6 @@ public class FileRepositoryServiceExtensionsRegistryFactory implements Extension
 		String root = JRProperties.getProperty(properties, PROPERTY_FILE_REPOSITORY_ROOT);
 		boolean resolveAbsolutePath = JRProperties.getBooleanProperty(properties, PROPERTY_FILE_REPOSITORY_RESOLVE_ABSOLUTE_PATH, false);
 
-		return new SingletonExtensionRegistry<RepositoryService>(RepositoryService.class, new FileRepositoryService(root, resolveAbsolutePath));
+		return new SingletonExtensionRegistry<RepositoryService>(RepositoryService.class, new FileRepositoryService(DefaultJasperReportsContext.getInstance(), root, resolveAbsolutePath));
 	}
 }

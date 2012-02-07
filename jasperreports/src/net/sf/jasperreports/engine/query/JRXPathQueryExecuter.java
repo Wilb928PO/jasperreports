@@ -27,10 +27,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRValueParameter;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.data.JRXmlDataSource;
 
 import org.apache.commons.logging.Log;
@@ -56,9 +58,16 @@ public class JRXPathQueryExecuter extends JRAbstractQueryExecuter
 	
 	private final Document document;
 	
-	public JRXPathQueryExecuter(JRDataset dataset, Map<String,? extends JRValueParameter> parametersMap)
+	/**
+	 * 
+	 */
+	public JRXPathQueryExecuter(
+		JasperReportsContext jasperReportsContext,
+		JRDataset dataset, 
+		Map<String,? extends JRValueParameter> parametersMap
+		)
 	{
-		super(dataset, parametersMap);
+		super(jasperReportsContext, dataset, parametersMap);
 				
 		document = (Document) getParameterValue(JRXPathQueryExecuterFactory.PARAMETER_XML_DATA_DOCUMENT);
 
@@ -68,6 +77,14 @@ public class JRXPathQueryExecuter extends JRAbstractQueryExecuter
 		}
 
 		parseQuery();
+	}
+
+	/**
+	 * @deprecated Replaced by {@link #JRXPathQueryExecuter(JasperReportsContext, JRDataset, Map)}.
+	 */
+	public JRXPathQueryExecuter(JRDataset dataset, Map<String,? extends JRValueParameter> parametersMap)
+	{
+		this(DefaultJasperReportsContext.getInstance(), dataset, parametersMap);
 	}
 
 	protected String getParameterReplacement(String parameterName)

@@ -36,12 +36,14 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import jxl.Workbook;
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JRValueParameter;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.data.JRXlsDataSource;
 import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.engine.util.JRProperties.PropertySuffix;
@@ -61,8 +63,24 @@ public class JRXlsQueryExecuter extends JRAbstractQueryExecuter {
 	
 	private JRXlsDataSource datasource;
 	
-	protected JRXlsQueryExecuter(JRDataset dataset, Map<String,? extends JRValueParameter> parametersMap) {
-		super(dataset, parametersMap);
+	/**
+	 * 
+	 */
+	protected JRXlsQueryExecuter(
+		JasperReportsContext jasperReportsContext, 
+		JRDataset dataset, 
+		Map<String,? extends JRValueParameter> parametersMap
+		) 
+	{
+		super(jasperReportsContext, dataset, parametersMap);
+	}
+
+	/**
+	 * @deprecated Replaced by {@link #JRXlsQueryExecuter(JasperReportsContext, JRDataset, Map)}.
+	 */
+	protected JRXlsQueryExecuter(JRDataset dataset, Map<String,? extends JRValueParameter> parametersMap) 
+	{
+		super(DefaultJasperReportsContext.getInstance(), dataset, parametersMap);
 	}
 
 	public JRDataSource createDatasource() throws JRException {
@@ -81,7 +99,7 @@ public class JRXlsQueryExecuter extends JRAbstractQueryExecuter {
 					} else {
 						String xlsSource = getStringParameterOrProperty(JRXlsQueryExecuterFactory.XLS_SOURCE);
 						if (xlsSource != null) {
-							datasource = new JRXlsDataSource(xlsSource);
+							datasource = new JRXlsDataSource(jasperReportsContext, xlsSource);
 						} else {
 							if (log.isWarnEnabled()){
 								log.warn("No XLS source was provided.");

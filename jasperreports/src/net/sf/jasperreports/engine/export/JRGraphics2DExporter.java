@@ -40,10 +40,12 @@ import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.util.List;
 
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRAbstractExporter;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JRPrintPage;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.export.draw.FrameDrawer;
 import net.sf.jasperreports.engine.export.legacy.BorderOffset;
 import net.sf.jasperreports.engine.util.JRGraphEnvInitializer;
@@ -104,10 +106,21 @@ public class JRGraphics2DExporter extends JRAbstractExporter
 	protected JRGraphics2DExporterContext exporterContext = new ExporterContext();
 	
 	/**
-	 *
+	 * @deprecated Replaced by {@link #JRGraphics2DExporter(JasperReportsContext)}.
 	 */
 	public JRGraphics2DExporter() throws JRException
 	{
+		this(DefaultJasperReportsContext.getInstance());
+	}
+	
+
+	/**
+	 *
+	 */
+	public JRGraphics2DExporter(JasperReportsContext jasperReportsContext) throws JRException
+	{
+		super(jasperReportsContext);
+		
 		JRGraphEnvInitializer.initializeGraphEnv();
 	}
 	

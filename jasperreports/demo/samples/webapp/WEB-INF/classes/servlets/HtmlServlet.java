@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JRRuntimeException;
@@ -82,13 +83,13 @@ public class HtmlServlet extends HttpServlet
 			parameters.put("BaseDir", reportFile.getParentFile());
 						
 			JasperPrint jasperPrint = 
-				JasperFillManager.fillReport(
+				JasperFillManager.getInstance(DefaultJasperReportsContext.getInstance()).fill(
 					jasperReport, 
 					parameters, 
 					new WebappDataSource()
 					);
 						
-			JRHtmlExporter exporter = new JRHtmlExporter();
+			JRHtmlExporter exporter = new JRHtmlExporter(DefaultJasperReportsContext.getInstance());
 		
 			request.getSession().setAttribute(ImageServlet.DEFAULT_JASPER_PRINT_SESSION_ATTRIBUTE, jasperPrint);
 			

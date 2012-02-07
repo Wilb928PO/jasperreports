@@ -59,7 +59,7 @@ public abstract class AbstractTableAction extends AbstractAction
 	 */
 	public CommandTarget getCommandTarget(UUID uuid)
 	{
-		JasperDesignCache cache = JasperDesignCache.getInstance(getReportContext());
+		JasperDesignCache cache = JasperDesignCache.getInstance(getJasperReportsContext(), getReportContext());
 
 		Map<String, JasperDesignReportResource> cachedResources = cache.getCachedResources();
 		Set<String> uris = cachedResources.keySet();

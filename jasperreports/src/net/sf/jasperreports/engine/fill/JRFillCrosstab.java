@@ -358,7 +358,7 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab, JROrigi
 	{
 		try
 		{
-			JREvaluator evaluator = JasperCompileManager.loadEvaluator(jasperReport, parentCrosstab);
+			JREvaluator evaluator = JasperCompileManager.getInstance(filler.jasperReportsContext).getEvaluator(jasperReport, parentCrosstab);
 			crosstabEvaluator = new JRCrosstabExpressionEvaluator(evaluator);
 		}
 		catch (JRException e)

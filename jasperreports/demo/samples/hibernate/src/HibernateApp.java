@@ -112,7 +112,7 @@ public class HibernateApp extends AbstractSampleApp
 		{
 			File reportFile = files[i];
 			long start = System.currentTimeMillis();
-			JasperFillManager.fillReportToFile(reportFile.getAbsolutePath(), params);
+			JasperFillManager.getInstance(getJasperReportsContext()).fillToFile(reportFile.getAbsolutePath(), params);
 			System.err.println("Report : " + reportFile + ". Filling time : " + (System.currentTimeMillis() - start));
 		}
 		
@@ -131,7 +131,7 @@ public class HibernateApp extends AbstractSampleApp
 		{
 			File reportFile = files[i];
 			long start = System.currentTimeMillis();
-			JasperPrintManager.printReport(reportFile.getAbsolutePath(), true);
+			JasperPrintManager.getInstance(getJasperReportsContext()).print(reportFile.getAbsolutePath(), true);
 			System.err.println("Report : " + reportFile + ". Printing time : " + (System.currentTimeMillis() - start));
 		}
 	}
@@ -147,7 +147,7 @@ public class HibernateApp extends AbstractSampleApp
 		{
 			File reportFile = files[i];
 			long start = System.currentTimeMillis();
-			JasperExportManager.exportReportToPdfFile(reportFile.getAbsolutePath());
+			JasperExportManager.getInstance(getJasperReportsContext()).exportToPdfFile(reportFile.getAbsolutePath());
 			System.err.println("Report : " + reportFile + ". PDF creation time : " + (System.currentTimeMillis() - start));
 		}
 	}
@@ -168,7 +168,7 @@ public class HibernateApp extends AbstractSampleApp
 
 			File destFile = new File(sourceFile.getParent(), jasperPrint.getName() + ".rtf");
 		
-			JRRtfExporter exporter = new JRRtfExporter();
+			JRRtfExporter exporter = new JRRtfExporter(getJasperReportsContext());
 		
 			exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
 			exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, destFile.toString());
@@ -190,7 +190,7 @@ public class HibernateApp extends AbstractSampleApp
 		{
 			File reportFile = files[i];
 			long start = System.currentTimeMillis();
-			JasperExportManager.exportReportToXmlFile(reportFile.getAbsolutePath(), false);
+			JasperExportManager.getInstance(getJasperReportsContext()).exportToXmlFile(reportFile.getAbsolutePath(), false);
 			System.err.println("Report : " + reportFile + ". XML creation time : " + (System.currentTimeMillis() - start));
 		}
 	}
@@ -206,7 +206,7 @@ public class HibernateApp extends AbstractSampleApp
 		{
 			File reportFile = files[i];
 			long start = System.currentTimeMillis();
-			JasperExportManager.exportReportToXmlFile(reportFile.getAbsolutePath(), true);
+			JasperExportManager.getInstance(getJasperReportsContext()).exportToXmlFile(reportFile.getAbsolutePath(), true);
 			System.err.println("Report : " + reportFile + ". XML creation time : " + (System.currentTimeMillis() - start));
 		}
 	}
@@ -222,7 +222,7 @@ public class HibernateApp extends AbstractSampleApp
 		{
 			File reportFile = files[i];
 			long start = System.currentTimeMillis();
-			JasperExportManager.exportReportToHtmlFile(reportFile.getAbsolutePath());
+			JasperExportManager.getInstance(getJasperReportsContext()).exportToHtmlFile(reportFile.getAbsolutePath());
 			System.err.println("Report : " + reportFile + ". HTML creation time : " + (System.currentTimeMillis() - start));
 		}
 	}
@@ -243,7 +243,7 @@ public class HibernateApp extends AbstractSampleApp
 
 			File destFile = new File(sourceFile.getParent(), jasperPrint.getName() + ".xls");
 		
-			JRXlsExporter exporter = new JRXlsExporter();
+			JRXlsExporter exporter = new JRXlsExporter(getJasperReportsContext());
 		
 			exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
 			exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, destFile.toString());
@@ -271,7 +271,7 @@ public class HibernateApp extends AbstractSampleApp
 
 			File destFile = new File(sourceFile.getParent(), jasperPrint.getName() + ".jxl.xls");
 
-			JExcelApiExporter exporter = new JExcelApiExporter();
+			JExcelApiExporter exporter = new JExcelApiExporter(getJasperReportsContext());
 
 			exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
 			exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, destFile.toString());
@@ -299,7 +299,7 @@ public class HibernateApp extends AbstractSampleApp
 
 			File destFile = new File(sourceFile.getParent(), jasperPrint.getName() + ".csv");
 		
-			JRCsvExporter exporter = new JRCsvExporter();
+			JRCsvExporter exporter = new JRCsvExporter(getJasperReportsContext());
 		
 			exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
 			exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, destFile.toString());
@@ -326,7 +326,7 @@ public class HibernateApp extends AbstractSampleApp
 
 			File destFile = new File(sourceFile.getParent(), jasperPrint.getName() + ".odt");
 		
-			JROdtExporter exporter = new JROdtExporter();
+			JROdtExporter exporter = new JROdtExporter(getJasperReportsContext());
 		
 			exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
 			exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, destFile.toString());
@@ -353,7 +353,7 @@ public class HibernateApp extends AbstractSampleApp
 
 			File destFile = new File(sourceFile.getParent(), jasperPrint.getName() + ".ods");
 		
-			JROdsExporter exporter = new JROdsExporter();
+			JROdsExporter exporter = new JROdsExporter(getJasperReportsContext());
 		
 			exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
 			exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, destFile.toString());
@@ -381,7 +381,7 @@ public class HibernateApp extends AbstractSampleApp
 
 			File destFile = new File(sourceFile.getParent(), jasperPrint.getName() + ".docx");
 		
-			JRDocxExporter exporter = new JRDocxExporter();
+			JRDocxExporter exporter = new JRDocxExporter(getJasperReportsContext());
 		
 			exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
 			exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, destFile.toString());
@@ -408,7 +408,7 @@ public class HibernateApp extends AbstractSampleApp
 
 			File destFile = new File(sourceFile.getParent(), jasperPrint.getName() + ".xlsx");
 		
-			JRXlsxExporter exporter = new JRXlsxExporter();
+			JRXlsxExporter exporter = new JRXlsxExporter(getJasperReportsContext());
 		
 			exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
 			exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, destFile.toString());
@@ -436,7 +436,7 @@ public class HibernateApp extends AbstractSampleApp
 
 			File destFile = new File(sourceFile.getParent(), jasperPrint.getName() + ".pptx");
 		
-			JRPptxExporter exporter = new JRPptxExporter();
+			JRPptxExporter exporter = new JRPptxExporter(getJasperReportsContext());
 		
 			exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
 			exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, destFile.toString());
@@ -463,7 +463,7 @@ public class HibernateApp extends AbstractSampleApp
 
 			File destFile = new File(sourceFile.getParent(), jasperPrint.getName() + ".x.html");
 		
-			JRXhtmlExporter exporter = new JRXhtmlExporter();
+			JRXhtmlExporter exporter = new JRXhtmlExporter(getJasperReportsContext());
 		
 			exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
 			exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, destFile.toString());

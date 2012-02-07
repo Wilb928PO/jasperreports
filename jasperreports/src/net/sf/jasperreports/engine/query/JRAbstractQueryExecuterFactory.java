@@ -21,32 +21,32 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with JasperReports. If not, see <http://www.gnu.org/licenses/>.
  */
-package net.sf.jasperreports.repo;
+package net.sf.jasperreports.engine.query;
 
-import net.sf.jasperreports.engine.JRPropertiesMap;
-import net.sf.jasperreports.extensions.ExtensionsRegistry;
-import net.sf.jasperreports.extensions.ExtensionsRegistryFactory;
-import net.sf.jasperreports.extensions.SingletonExtensionRegistry;
+import java.util.Map;
 
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
+import net.sf.jasperreports.engine.JRDataset;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRValueParameter;
+import net.sf.jasperreports.engine.JasperReportsContext;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id: FileRepositoryServiceExtensionsRegistryFactory.java 4595 2011-09-08 15:55:10Z teodord $
+ * @version $Id: JRCsvQueryExecuterFactory.java 4595 2011-09-08 15:55:10Z teodord $
  */
-public class CachedJasperDesignRepositoryServiceExtensionsRegistryFactory implements ExtensionsRegistryFactory
+public abstract class JRAbstractQueryExecuterFactory implements JRQueryExecuterFactory 
 {
-
-	/**
-	 * 
-	 */
-	private final static ExtensionsRegistry extensionsRegistry = 
-		new SingletonExtensionRegistry<RepositoryService>(RepositoryService.class, CachedJasperDesignRepositoryService.getInstance());
 	
 	/**
-	 * 
+	 * @deprecated Replaced by {@link #createQueryExecuter(JasperReportsContext, JRDataset, Map)}.
 	 */
-	public ExtensionsRegistry createRegistry(String registryId, JRPropertiesMap properties) 
+	public JRQueryExecuter createQueryExecuter(
+		JRDataset dataset, 
+		Map<String, ? extends JRValueParameter> parameters
+		) throws JRException 
 	{
-		return extensionsRegistry;
+		return createQueryExecuter(DefaultJasperReportsContext.getInstance(), dataset, parameters);
 	}
+
 }

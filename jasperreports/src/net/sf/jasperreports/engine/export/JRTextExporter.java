@@ -34,6 +34,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRAbstractExporter;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExporterParameter;
@@ -42,6 +43,7 @@ import net.sf.jasperreports.engine.JRPrintFrame;
 import net.sf.jasperreports.engine.JRPrintPage;
 import net.sf.jasperreports.engine.JRPrintText;
 import net.sf.jasperreports.engine.JRStyledTextAttributeSelector;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.engine.util.JRStyledText;
 
@@ -80,6 +82,24 @@ public class JRTextExporter extends JRAbstractExporter
 	protected String lineSeparator;
 
 	protected static final String systemLineSeparator = System.getProperty("line.separator");
+
+	/**
+	 * @deprecated Replaced by {@link #JRTextExporter(JasperReportsContext)}.
+	 */
+	public JRTextExporter()
+	{
+		this(DefaultJasperReportsContext.getInstance());
+	}
+
+	
+	/**
+	 *
+	 */
+	public JRTextExporter(JasperReportsContext jasperReportsContext)
+	{
+		super(jasperReportsContext);
+	}
+	
 
 	/**
 	 *

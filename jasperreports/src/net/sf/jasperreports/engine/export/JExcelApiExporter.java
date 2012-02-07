@@ -80,6 +80,7 @@ import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 import jxl.write.biff.CellValue;
 import jxl.write.biff.RowsExceededException;
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRCommonGraphicElement;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRFont;
@@ -97,6 +98,7 @@ import net.sf.jasperreports.engine.JRRenderable;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JRWrappingSvgRenderer;
 import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.export.data.BooleanTextValue;
 import net.sf.jasperreports.engine.export.data.DateTextValue;
 import net.sf.jasperreports.engine.export.data.NumberTextValue;
@@ -173,8 +175,8 @@ public class JExcelApiExporter extends JRXlsAbstractExporter
 
 	private Pattern backgroundMode = Pattern.SOLID;
 
-	private Map<String,NumberFormat> numberFormats;
-	private Map<String,DateFormat> dateFormats;
+	private Map<String,NumberFormat> numberFormats = new HashMap<String,NumberFormat>();
+	private Map<String,DateFormat> dateFormats = new HashMap<String,DateFormat>();
 
 	protected Map<Color,Colour> workbookColours = new HashMap<Color,Colour>();
 	protected Map<Colour,RGB> usedColours = new HashMap<Colour,RGB>();
@@ -195,12 +197,24 @@ public class JExcelApiExporter extends JRXlsAbstractExporter
 	protected JExcelApiExporterContext exporterContext = new ExporterContext();
 	
 
+	/**
+	 * @deprecated Replaced by {@link #JExcelApiExporter(JasperReportsContext)}.
+	 */
 	public JExcelApiExporter()
 	{
-		numberFormats = new HashMap<String,NumberFormat>();
-		dateFormats = new HashMap<String,DateFormat>();
+		this(DefaultJasperReportsContext.getInstance());
 	}
 
+	
+	/**
+	 *
+	 */
+	public JExcelApiExporter(JasperReportsContext jasperReportsContext)
+	{
+		super(jasperReportsContext);
+	}
+
+	
 	protected void setParameters()
 	{
 		super.setParameters();

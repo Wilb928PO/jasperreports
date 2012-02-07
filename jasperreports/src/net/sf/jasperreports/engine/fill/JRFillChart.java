@@ -791,7 +791,7 @@ public class JRFillChart extends JRFillElement implements JRChart
 		evaluateProperties(evaluation);
 		evaluateDatasetRun(evaluation);
 
-		ChartTheme theme = ChartUtil.getChartTheme(themeName);
+		ChartTheme theme = ChartUtil.getInstance(filler.jasperReportsContext).getTheme(themeName);
 		
 		if (getChartType() == JRChart.CHART_TYPE_MULTI_AXIS)
 		{

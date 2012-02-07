@@ -91,17 +91,17 @@ public class BatchExportApp extends AbstractSampleApp
 	public void fill() throws JRException
 	{
 		long start = System.currentTimeMillis();
-		JasperFillManager.fillReportToFile(
+		JasperFillManager.getInstance(getJasperReportsContext()).fillToFile(
 			"build/reports/Report1.jasper",
 			null, 
 			new JREmptyDataSource(2)
 			);
-		JasperFillManager.fillReportToFile(
+		JasperFillManager.getInstance(getJasperReportsContext()).fillToFile(
 			"build/reports/Report2.jasper",
 			null, 
 			new JREmptyDataSource(2)
 			);
-		JasperFillManager.fillReportToFile(
+		JasperFillManager.getInstance(getJasperReportsContext()).fillToFile(
 			"build/reports/Report3.jasper",
 			null, 
 			new JREmptyDataSource(2)
@@ -121,7 +121,7 @@ public class BatchExportApp extends AbstractSampleApp
 		jasperPrintList.add(JRLoader.loadObjectFromFile("build/reports/Report2.jrprint"));
 		jasperPrintList.add(JRLoader.loadObjectFromFile("build/reports/Report3.jrprint"));
 		
-		JRPdfExporter exporter = new JRPdfExporter();
+		JRPdfExporter exporter = new JRPdfExporter(getJasperReportsContext());
 		
 		exporter.setParameter(JRExporterParameter.JASPER_PRINT_LIST, jasperPrintList);
 		exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, "build/reports/BatchExportReport.pdf");
@@ -144,7 +144,7 @@ public class BatchExportApp extends AbstractSampleApp
 		jasperPrintList.add(JRLoader.loadObjectFromFile("build/reports/Report2.jrprint"));
 		jasperPrintList.add(JRLoader.loadObjectFromFile("build/reports/Report3.jrprint"));
 		
-		JRHtmlExporter exporter = new JRHtmlExporter();
+		JRHtmlExporter exporter = new JRHtmlExporter(getJasperReportsContext());
 		
 		exporter.setParameter(JRExporterParameter.JASPER_PRINT_LIST, jasperPrintList);
 		exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, "build/reports/BatchExportReport.html");
@@ -166,7 +166,7 @@ public class BatchExportApp extends AbstractSampleApp
 		jasperPrintList.add(JRLoader.loadObjectFromFile("build/reports/Report2.jrprint"));
 		jasperPrintList.add(JRLoader.loadObjectFromFile("build/reports/Report3.jrprint"));
 		
-		JRRtfExporter exporter = new JRRtfExporter();
+		JRRtfExporter exporter = new JRRtfExporter(getJasperReportsContext());
 		
 		exporter.setParameter(JRExporterParameter.JASPER_PRINT_LIST, jasperPrintList);
 		exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, "build/reports/BatchExportReport.rtf");
@@ -188,7 +188,7 @@ public class BatchExportApp extends AbstractSampleApp
 		jasperPrintList.add(JRLoader.loadObjectFromFile("build/reports/Report2.jrprint"));
 		jasperPrintList.add(JRLoader.loadObjectFromFile("build/reports/Report3.jrprint"));
 		
-		JRXlsExporter exporter = new JRXlsExporter();
+		JRXlsExporter exporter = new JRXlsExporter(getJasperReportsContext());
 		
 		exporter.setParameter(JRExporterParameter.JASPER_PRINT_LIST, jasperPrintList);
 		exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, "build/reports/BatchExportReport.xls");
@@ -211,7 +211,7 @@ public class BatchExportApp extends AbstractSampleApp
 		jasperPrintList.add(JRLoader.loadObjectFromFile("build/reports/Report2.jrprint"));
 		jasperPrintList.add(JRLoader.loadObjectFromFile("build/reports/Report3.jrprint"));
 		
-		JExcelApiExporter exporter = new JExcelApiExporter();
+		JExcelApiExporter exporter = new JExcelApiExporter(getJasperReportsContext());
 		
 		exporter.setParameter(JRExporterParameter.JASPER_PRINT_LIST, jasperPrintList);
 		exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, "build/reports/BatchExportReport.jxl.xls");
@@ -234,7 +234,7 @@ public class BatchExportApp extends AbstractSampleApp
 		jasperPrintList.add(JRLoader.loadObjectFromFile("build/reports/Report2.jrprint"));
 		jasperPrintList.add(JRLoader.loadObjectFromFile("build/reports/Report3.jrprint"));
 		
-		JRCsvExporter exporter = new JRCsvExporter();
+		JRCsvExporter exporter = new JRCsvExporter(getJasperReportsContext());
 		
 		exporter.setParameter(JRExporterParameter.JASPER_PRINT_LIST, jasperPrintList);
 		exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, "build/reports/BatchExportReport.csv");
@@ -256,7 +256,7 @@ public class BatchExportApp extends AbstractSampleApp
 		jasperPrintList.add(JRLoader.loadObjectFromFile("build/reports/Report2.jrprint"));
 		jasperPrintList.add(JRLoader.loadObjectFromFile("build/reports/Report3.jrprint"));
 		
-		JROdtExporter exporter = new JROdtExporter();
+		JROdtExporter exporter = new JROdtExporter(getJasperReportsContext());
 		
 		exporter.setParameter(JRExporterParameter.JASPER_PRINT_LIST, jasperPrintList);
 		exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, "build/reports/BatchExportReport.odt");
@@ -278,7 +278,7 @@ public class BatchExportApp extends AbstractSampleApp
 		jasperPrintList.add(JRLoader.loadObjectFromFile("build/reports/Report2.jrprint"));
 		jasperPrintList.add(JRLoader.loadObjectFromFile("build/reports/Report3.jrprint"));
 		
-		JROdsExporter exporter = new JROdsExporter();
+		JROdsExporter exporter = new JROdsExporter(getJasperReportsContext());
 		
 		exporter.setParameter(JRExporterParameter.JASPER_PRINT_LIST, jasperPrintList);
 		exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, "build/reports/BatchExportReport.ods");
@@ -301,7 +301,7 @@ public class BatchExportApp extends AbstractSampleApp
 		jasperPrintList.add(JRLoader.loadObjectFromFile("build/reports/Report2.jrprint"));
 		jasperPrintList.add(JRLoader.loadObjectFromFile("build/reports/Report3.jrprint"));
 		
-		JRDocxExporter exporter = new JRDocxExporter();
+		JRDocxExporter exporter = new JRDocxExporter(getJasperReportsContext());
 		
 		exporter.setParameter(JRExporterParameter.JASPER_PRINT_LIST, jasperPrintList);
 		exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, "build/reports/BatchExportReport.docx");
@@ -323,7 +323,7 @@ public class BatchExportApp extends AbstractSampleApp
 		jasperPrintList.add(JRLoader.loadObjectFromFile("build/reports/Report2.jrprint"));
 		jasperPrintList.add(JRLoader.loadObjectFromFile("build/reports/Report3.jrprint"));
 		
-		JRXlsxExporter exporter = new JRXlsxExporter();
+		JRXlsxExporter exporter = new JRXlsxExporter(getJasperReportsContext());
 		
 		exporter.setParameter(JRExporterParameter.JASPER_PRINT_LIST, jasperPrintList);
 		exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, "build/reports/BatchExportReport.xlsx");
@@ -346,7 +346,7 @@ public class BatchExportApp extends AbstractSampleApp
 		jasperPrintList.add(JRLoader.loadObjectFromFile("build/reports/Report2.jrprint"));
 		jasperPrintList.add(JRLoader.loadObjectFromFile("build/reports/Report3.jrprint"));
 		
-		JRPptxExporter exporter = new JRPptxExporter();
+		JRPptxExporter exporter = new JRPptxExporter(getJasperReportsContext());
 		
 		exporter.setParameter(JRExporterParameter.JASPER_PRINT_LIST, jasperPrintList);
 		exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, "build/reports/BatchExportReport.pptx");
@@ -368,7 +368,7 @@ public class BatchExportApp extends AbstractSampleApp
 		jasperPrintList.add(JRLoader.loadObjectFromFile("build/reports/Report2.jrprint"));
 		jasperPrintList.add(JRLoader.loadObjectFromFile("build/reports/Report3.jrprint"));
 		
-		JRXhtmlExporter exporter = new JRXhtmlExporter();
+		JRXhtmlExporter exporter = new JRXhtmlExporter(getJasperReportsContext());
 		
 		exporter.setParameter(JRExporterParameter.JASPER_PRINT_LIST, jasperPrintList);
 		exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, "build/reports/BatchExportReport.xhtml");

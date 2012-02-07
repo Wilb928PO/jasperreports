@@ -49,6 +49,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRCommonGraphicElement;
 import net.sf.jasperreports.engine.JRCommonText;
 import net.sf.jasperreports.engine.JRException;
@@ -67,6 +68,7 @@ import net.sf.jasperreports.engine.JRPrintText;
 import net.sf.jasperreports.engine.JRRenderable;
 import net.sf.jasperreports.engine.JRWrappingSvgRenderer;
 import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.base.JRBaseFont;
 import net.sf.jasperreports.engine.export.data.BooleanTextValue;
 import net.sf.jasperreports.engine.export.data.DateTextValue;
@@ -170,6 +172,24 @@ public class JRXlsExporter extends JRXlsAbstractExporter
 	protected JRXlsExporterContext exporterContext = new ExporterContext();
 
 	
+	/**
+	 * @deprecated Replaced by {@link #JRXlsExporter(JasperReportsContext)}.
+	 */
+	public JRXlsExporter()
+	{
+		this(DefaultJasperReportsContext.getInstance());
+	}
+
+
+	/**
+	 *
+	 */
+	public JRXlsExporter(JasperReportsContext jasperReportsContext)
+	{
+		super(jasperReportsContext);
+	}
+
+
 	protected void setParameters()
 	{
 		super.setParameters();

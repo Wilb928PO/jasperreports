@@ -29,6 +29,7 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.fill.AsynchronousFillHandle;
 import net.sf.jasperreports.repo.RepositoryUtil;
 import net.sf.jasperreports.web.WebReportContext;
@@ -52,6 +53,21 @@ public class Controller
 	/**
 	 *
 	 */
+	private JasperReportsContext jasperReportsContext;
+
+	
+	/**
+	 *
+	 */
+	public Controller(JasperReportsContext jasperReportsContext)
+	{
+		this.jasperReportsContext = jasperReportsContext;
+	}
+	
+	
+	/**
+	 *
+	 */
 	public void runReport(
 		WebReportContext webReportContext,
 		Action action
@@ -59,8 +75,6 @@ public class Controller
 	{
 		String reportUri = (String)webReportContext.getParameterValue(REQUEST_PARAMETER_REPORT_URI);
 
-		RepositoryUtil.setThreadReportContext(webReportContext);
-		
 		setDataCache(webReportContext);
 		
 		JasperReport jasperReport = null; 
@@ -74,7 +88,7 @@ public class Controller
 				action.run();
 			}
 
-			jasperReport = RepositoryUtil.getReport(reportUri);
+			jasperReport = RepositoryUtil.getInstance(jasperReportsContext).getReport(webReportContext, reportUri);
 		}
 		
 		if (jasperReport == null)
@@ -138,8 +152,12 @@ public class Controller
 		JasperPrintAccessor accessor;
 		if (async)
 		{
-			AsynchronousFillHandle fillHandle = AsynchronousFillHandle.createHandle(
-					jasperReport, webReportContext.getParameterValues());
+			AsynchronousFillHandle fillHandle = 
+				AsynchronousFillHandle.createHandle(
+					jasperReportsContext,
+					jasperReport, 
+					webReportContext.getParameterValues()
+					);
 			AsyncJasperPrintAccessor asyncAccessor = new AsyncJasperPrintAccessor(fillHandle);
 			
 			fillHandle.startFill();
@@ -149,7 +167,7 @@ public class Controller
 		else
 		{
 			JasperPrint jasperPrint = 
-					JasperFillManager.fillReport(
+					JasperFillManager.getInstance(jasperReportsContext).fill(
 						jasperReport, 
 						webReportContext.getParameterValues()
 						);

@@ -34,6 +34,7 @@ package net.sf.jasperreports.engine.export.oasis;
 import java.awt.geom.Dimension2D;
 import java.io.IOException;
 
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRGenericPrintElement;
 import net.sf.jasperreports.engine.JRImageRenderer;
@@ -43,6 +44,7 @@ import net.sf.jasperreports.engine.JRPrintEllipse;
 import net.sf.jasperreports.engine.JRPrintImage;
 import net.sf.jasperreports.engine.JRPrintLine;
 import net.sf.jasperreports.engine.JRRenderable;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.base.JRBaseLineBox;
 import net.sf.jasperreports.engine.export.ExporterFilter;
 import net.sf.jasperreports.engine.export.ExporterNature;
@@ -95,6 +97,24 @@ public class JROdsExporter extends JROpenDocumentExporter
 		}
 	}
 	
+	/**
+	 * @deprecated Replaced by {@link #JROdsExporter(JasperReportsContext)}.
+	 */
+	public JROdsExporter()
+	{
+		this(DefaultJasperReportsContext.getInstance());
+	}
+
+
+	/**
+	 *
+	 */
+	public JROdsExporter(JasperReportsContext jasperReportsContext)
+	{
+		super(jasperReportsContext);
+	}
+
+
 	/**
 	 *
 	 * @see net.sf.jasperreports.engine.export.oasis.JROpenDocumentExporter#getExporterNature(net.sf.jasperreports.engine.export.ExporterFilter)

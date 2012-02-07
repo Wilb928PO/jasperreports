@@ -31,10 +31,12 @@ import java.util.TimeZone;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRValueParameter;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.data.JaxenXmlDataSource;
 import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.engine.util.JRProperties.PropertySuffix;
@@ -66,9 +68,16 @@ public class JaxenXPathQueryExecuter extends JRAbstractQueryExecuter
 	
 	private Map<String, String> namespacesMap;
 	
-	public JaxenXPathQueryExecuter(JRDataset dataset, Map<String,? extends JRValueParameter> parametersMap)
+	/**
+	 * 
+	 */
+	public JaxenXPathQueryExecuter(
+		JasperReportsContext jasperReportsContext,
+		JRDataset dataset, 
+		Map<String,? extends JRValueParameter> parametersMap
+		)
 	{
-		super(dataset, parametersMap);
+		super(jasperReportsContext, dataset, parametersMap);
 				
 		document = (Document) getParameterValue(JaxenXPathQueryExecuterFactory.PARAMETER_XML_DATA_DOCUMENT);
 		documentBuilderFactory = (DocumentBuilderFactory) getParameterValue(JaxenXPathQueryExecuterFactory.PARAMETER_DOCUMENT_BUILDER_FACTORY);
@@ -80,6 +89,14 @@ public class JaxenXPathQueryExecuter extends JRAbstractQueryExecuter
 		}
 
 		parseQuery();
+	}
+
+	/**
+	 * @deprecated Replaced by {@link #JaxenXPathQueryExecuter(JasperReportsContext, JRDataset, Map)}.
+	 */
+	public JaxenXPathQueryExecuter(JRDataset dataset, Map<String,? extends JRValueParameter> parametersMap)
+	{
+		this(DefaultJasperReportsContext.getInstance(), dataset, parametersMap);
 	}
 
 	protected String getParameterReplacement(String parameterName)

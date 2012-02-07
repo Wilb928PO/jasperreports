@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -312,7 +313,7 @@ public class JRAntXmlExportTask extends MatchingTask
 
 					JasperPrint jasperPrint = (JasperPrint)JRLoader.loadObjectFromFile(srcFileName);
 					
-					JasperExportManager.exportReportToXmlFile(jasperPrint, destFileName, false);
+					JasperExportManager.getInstance(DefaultJasperReportsContext.getInstance()).exportToXmlFile(jasperPrint, destFileName, false);
 					
 					System.out.println("OK.");
 				}

@@ -92,6 +92,12 @@ public interface JRExporter
 	/**
 	 *
 	 */
+	public JasperReportsContext getJasperReportsContext();
+
+	
+	/**
+	 *
+	 */
 	public void setReportContext(ReportContext reportContext);
 
 	

@@ -30,7 +30,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.query.JRXPathQueryExecuterFactory;
 import net.sf.jasperreports.engine.util.JRXmlUtils;
 import net.sf.jasperreports.repo.RepositoryUtil;
@@ -49,9 +51,23 @@ public class RemoteXmlDataAdapterService extends XmlDataAdapterService
 	
 	public static final String XML_URL = "XML_URL";
 
+	/**
+	 * 
+	 */
+	public RemoteXmlDataAdapterService(
+		JasperReportsContext jasperReportsContext,
+		RemoteXmlDataAdapter remoteXmlDataAdapter
+		) 
+	{
+		super(jasperReportsContext, remoteXmlDataAdapter);
+	}
+	
+	/**
+	 * @deprecated Replaced by {@link #RemoteXmlDataAdapterService(JasperReportsContext, RemoteXmlDataAdapter)}. 
+	 */
 	public RemoteXmlDataAdapterService(RemoteXmlDataAdapter remoteXmlDataAdapter) 
 	{
-		super(remoteXmlDataAdapter);
+		this(DefaultJasperReportsContext.getInstance(), remoteXmlDataAdapter);
 	}
 	
 	public RemoteXmlDataAdapter getRemoteXmlDataAdapter() 
@@ -78,7 +94,7 @@ public class RemoteXmlDataAdapterService extends XmlDataAdapterService
 				}
 				else 
 				{
-					InputStream dataStream = RepositoryUtil.getInputStream(remoteXmlDataAdapter.getFileName());
+					InputStream dataStream = RepositoryUtil.getInstance(jasperReportsContext).getInputStream2(remoteXmlDataAdapter.getFileName());
 					try
 					{
 						Document document = JRXmlUtils.parse(dataStream);

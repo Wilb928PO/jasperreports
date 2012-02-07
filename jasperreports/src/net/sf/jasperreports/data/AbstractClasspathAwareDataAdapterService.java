@@ -53,7 +53,7 @@ public abstract class AbstractClasspathAwareDataAdapterService extends AbstractD
 	 */
 	protected ClassLoader getClassLoader()
 	{
-		FileResolver fileResolver = JRResourcesUtil.getFileResolver(null);
+		FileResolver fileResolver = null;//FIXMECONTEXT JRResourcesUtil.getFileResolver(null);
 		if (fileResolver == null)
 		{
 			SimpleFileResolver sfr = new SimpleFileResolver(new File("."));//FIXMEREPO

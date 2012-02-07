@@ -31,12 +31,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JRValueParameter;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.data.JRHibernateIterateDataSource;
 import net.sf.jasperreports.engine.data.JRHibernateListDataSource;
 import net.sf.jasperreports.engine.data.JRHibernateScrollDataSource;
@@ -92,9 +94,15 @@ public class JRHibernateQueryExecuter extends JRAbstractQueryExecuter
 	private boolean isClearCache;
 
 	
-	public JRHibernateQueryExecuter(JRDataset dataset, Map<String, ? extends JRValueParameter> parameters)
+	/**
+	 * 
+	 */
+	public JRHibernateQueryExecuter(
+		JasperReportsContext jasperReportsContext, 
+		JRDataset dataset, Map<String, ? extends JRValueParameter> parameters
+		)
 	{
-		super(dataset, parameters);
+		super(jasperReportsContext, dataset, parameters);
 		
 		session = (Session) getParameterValue(JRHibernateQueryExecuterFactory.PARAMETER_HIBERNATE_SESSION);
 		reportMaxCount = (Integer) getParameterValue(JRParameter.REPORT_MAX_COUNT);
@@ -108,6 +116,15 @@ public class JRHibernateQueryExecuter extends JRAbstractQueryExecuter
 		}
 		
 		parseQuery();
+	}
+	
+	
+	/**
+	 * @deprecated Replaced by {@link #JRHibernateQueryExecuter(JasperReportsContext, JRDataset, Map)}. 
+	 */
+	public JRHibernateQueryExecuter(JRDataset dataset, Map<String, ? extends JRValueParameter> parameters)
+	{
+		this(DefaultJasperReportsContext.getInstance(), dataset, parameters);
 	}
 	
 	

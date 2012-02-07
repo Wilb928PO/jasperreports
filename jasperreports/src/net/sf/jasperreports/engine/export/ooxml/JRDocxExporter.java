@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRAbstractExporter;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExporterParameter;
@@ -63,6 +64,7 @@ import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.JRWrappingSvgRenderer;
 import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.base.JRBaseLineBox;
 import net.sf.jasperreports.engine.export.CutsInfo;
 import net.sf.jasperreports.engine.export.ElementGridCell;
@@ -145,7 +147,7 @@ public class JRDocxExporter extends JRAbstractExporter
 	 */
 	protected Map<String,String> fontMap;
 
-	protected LinkedList<Color> backcolorStack;
+	protected LinkedList<Color> backcolorStack = new LinkedList<Color>();
 	protected Color backcolor;
 
 	private DocxRunHelper runHelper;
@@ -178,10 +180,21 @@ public class JRDocxExporter extends JRAbstractExporter
 	}
 	
 	
+	/**
+	 * @deprecated Replaced by {@link #JRDocxExporter(JasperReportsContext)}.
+	 */
 	public JRDocxExporter()
 	{
-		backcolorStack = new LinkedList<Color>();
-		backcolor = null;
+		this(DefaultJasperReportsContext.getInstance());
+	}
+
+
+	/**
+	 *
+	 */
+	public JRDocxExporter(JasperReportsContext jasperReportsContext)
+	{
+		super(jasperReportsContext);
 	}
 
 

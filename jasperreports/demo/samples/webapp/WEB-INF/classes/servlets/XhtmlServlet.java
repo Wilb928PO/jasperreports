@@ -35,14 +35,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.export.JRXhtmlExporter;
 import net.sf.jasperreports.engine.export.JRHtmlExporterParameter;
+import net.sf.jasperreports.engine.export.JRXhtmlExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.j2ee.servlets.ImageServlet;
 import datasource.WebappDataSource;
@@ -82,13 +83,13 @@ public class XhtmlServlet extends HttpServlet
 			parameters.put("BaseDir", reportFile.getParentFile());
 						
 			JasperPrint jasperPrint = 
-				JasperFillManager.fillReport(
+				JasperFillManager.getInstance(DefaultJasperReportsContext.getInstance()).fill(
 					jasperReport, 
 					parameters, 
 					new WebappDataSource()
 					);
 						
-			JRXhtmlExporter exporter = new JRXhtmlExporter();
+			JRXhtmlExporter exporter = new JRXhtmlExporter(DefaultJasperReportsContext.getInstance());
 		
 			request.getSession().setAttribute(ImageServlet.DEFAULT_JASPER_PRINT_SESSION_ATTRIBUTE, jasperPrint);
 			

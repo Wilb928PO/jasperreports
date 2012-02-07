@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -76,7 +77,7 @@ public class FillServlet extends HttpServlet
 			parameters.put("BaseDir", reportFile.getParentFile());
 						
 			JasperPrint jasperPrint = 
-				JasperFillManager.fillReport(
+				JasperFillManager.getInstance(DefaultJasperReportsContext.getInstance()).fill(
 					reportFileName, 
 					parameters, 
 					new WebappDataSource()

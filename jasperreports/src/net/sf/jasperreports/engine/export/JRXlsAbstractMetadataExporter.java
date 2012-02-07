@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Set;
 
 import net.sf.jasperreports.charts.type.EdgeEnum;
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRGenericPrintElement;
 import net.sf.jasperreports.engine.JRPen;
@@ -50,6 +51,7 @@ import net.sf.jasperreports.engine.JRPrintPage;
 import net.sf.jasperreports.engine.JRPrintRectangle;
 import net.sf.jasperreports.engine.JRPrintText;
 import net.sf.jasperreports.engine.JRStyledTextAttributeSelector;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.base.JRBasePrintText;
 import net.sf.jasperreports.engine.type.HorizontalAlignEnum;
 import net.sf.jasperreports.engine.type.RotationEnum;
@@ -73,6 +75,24 @@ public abstract class JRXlsAbstractMetadataExporter extends JRXlsAbstractExporte
 	boolean hasDefinedColumns;
 	Map<String, Object> currentRow;	
 	Map<String, Object> repeatedValues;	
+
+	/**
+	 * @deprecated Replaced by {@link #JRXlsAbstractMetadataExporter(JasperReportsContext)}.
+	 */
+	public JRXlsAbstractMetadataExporter()
+	{
+		this(DefaultJasperReportsContext.getInstance());
+	}
+
+
+	/**
+	 *
+	 */
+	public JRXlsAbstractMetadataExporter(JasperReportsContext jasperReportsContext)
+	{
+		super(jasperReportsContext);
+	}
+
 
 	@Override
 	protected void setParameters() {

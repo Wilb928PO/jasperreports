@@ -44,6 +44,7 @@ import net.sf.jasperreports.engine.JRPrintHyperlinkParameter;
 import net.sf.jasperreports.engine.JRPrintHyperlinkParameters;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JRSortField;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.ReportContext;
 import net.sf.jasperreports.engine.base.JRBaseFont;
 import net.sf.jasperreports.engine.base.JRBasePrintHyperlink;
@@ -204,7 +205,7 @@ public class SortElementHtmlHandler extends BaseElementHtmlHandler
 				velocityContext.put("backgroundColor", JRColorUtil.getColorHexa(element.getBackcolor()));
 			}
 
-			String sortField = getCurrentSortField(reportContext, element.getUUID().toString(), sortDatasetName, sortColumnName, sortColumnType);
+			String sortField = getCurrentSortField(context.getExporter().getJasperReportsContext(), reportContext, element.getUUID().toString(), sortDatasetName, sortColumnName, sortColumnType);
 			if (sortField == null) 
 			{
 				velocityContext.put("sortHref", getSortLink(context, sortColumnName, sortColumnType, SortElement.SORT_ORDER_ASC, sortDatasetName));
@@ -329,7 +330,7 @@ public class SortElementHtmlHandler extends BaseElementHtmlHandler
 		return context.getHyperlinkURL(hyperlink);
 	}
 
-	private String getCurrentSortField(ReportContext reportContext, String uuid, String sortDatasetName, String sortColumnName, String sortColumnType) 
+	private String getCurrentSortField(JasperReportsContext jasperReportsContext, ReportContext reportContext, String uuid, String sortDatasetName, String sortColumnName, String sortColumnType) 
 	{
 //		String currentSortDataset = (String) reportContext.getParameterValue(
 //				SortElement.REQUEST_PARAMETER_DATASET_RUN);
@@ -343,9 +344,9 @@ public class SortElementHtmlHandler extends BaseElementHtmlHandler
 //		@SuppressWarnings("unchecked")
 //		List<JRSortField> existingFields = (List<JRSortField>) reportContext.getParameterValue(currentTableSortFieldsParam);
 
-		JasperDesignCache cache = JasperDesignCache.getInstance(reportContext);
+		JasperDesignCache cache = JasperDesignCache.getInstance(jasperReportsContext, reportContext);
 		SortAction action = new SortAction();
-		action.init(reportContext);
+		action.init(jasperReportsContext, reportContext);
 		CommandTarget target = action.getCommandTarget(UUID.fromString(uuid));
 		if (target != null)
 		{

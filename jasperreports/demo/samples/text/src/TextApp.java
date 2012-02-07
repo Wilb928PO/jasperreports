@@ -78,7 +78,7 @@ public class TextApp extends AbstractSampleApp
 		parameters.put("FilterClause", "'Boston', 'Chicago', 'Oslo'");
 		parameters.put("OrderClause", "City");
 
-		JasperFillManager.fillReportToFile("build/reports/TextReport.jasper", parameters, getDemoHsqldbConnection());
+		JasperFillManager.getInstance(getJasperReportsContext()).fillToFile("build/reports/TextReport.jasper", parameters, getDemoHsqldbConnection());
 		System.err.println("Filling time : " + (System.currentTimeMillis() - start));
 	}
 	
@@ -89,7 +89,7 @@ public class TextApp extends AbstractSampleApp
 	public void print() throws JRException
 	{
 		long start = System.currentTimeMillis();
-		JasperPrintManager.printReport("build/reports/TextReport.jrprint", true);
+		JasperPrintManager.getInstance(getJasperReportsContext()).print("build/reports/TextReport.jrprint", true);
 		System.err.println("Printing time : " + (System.currentTimeMillis() - start));
 	}
 	
@@ -100,7 +100,7 @@ public class TextApp extends AbstractSampleApp
 	public void text() throws JRException
 	{
 		long start = System.currentTimeMillis();
-		JRTextExporter exporter = new JRTextExporter();
+		JRTextExporter exporter = new JRTextExporter(getJasperReportsContext());
 		File sourceFile = new File("build/reports/TextReport.jrprint");
 		JasperPrint jasperPrint = (JasperPrint)JRLoader.loadObject(sourceFile);
 		File destFile = new File(sourceFile.getParent(), jasperPrint.getName() + ".txt");
@@ -119,7 +119,7 @@ public class TextApp extends AbstractSampleApp
 	public void pdf() throws JRException
 	{
 		long start = System.currentTimeMillis();
-		JasperExportManager.exportReportToPdfFile("build/reports/TextReport.jrprint");
+		JasperExportManager.getInstance(getJasperReportsContext()).exportToPdfFile("build/reports/TextReport.jrprint");
 		System.err.println("PDF creation time : " + (System.currentTimeMillis() - start));
 	}
 	
@@ -136,7 +136,7 @@ public class TextApp extends AbstractSampleApp
 
 		File destFile = new File(sourceFile.getParent(), jasperPrint.getName() + ".jrpxml");
 		
-		JRXmlExporter exporter = new JRXmlExporter();
+		JRXmlExporter exporter = new JRXmlExporter(getJasperReportsContext());
 		
 		exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
 		exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, destFile.toString());

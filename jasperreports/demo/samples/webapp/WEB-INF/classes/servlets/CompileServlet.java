@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 
@@ -59,7 +60,7 @@ public class CompileServlet extends HttpServlet
 
 		try
 		{
-			JasperCompileManager.compileReportToFile(context.getRealPath("/reports/WebappReport.jrxml"));
+			JasperCompileManager.getInstance(DefaultJasperReportsContext.getInstance()).compileToFile(context.getRealPath("/reports/WebappReport.jrxml"));
 		}
 		catch (JRException e)
 		{

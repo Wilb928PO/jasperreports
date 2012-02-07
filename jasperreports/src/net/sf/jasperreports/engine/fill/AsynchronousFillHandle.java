@@ -29,10 +29,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.JasperReportsContext;
 
 /**
  * Class used to perform report filling asychronously.
@@ -45,6 +47,7 @@ import net.sf.jasperreports.engine.JasperReport;
  */
 public class AsynchronousFillHandle
 {	
+	protected final JasperReportsContext jasperReportsContext;
 	protected final JasperReport jasperReport;
 	protected final Map<String,Object> parameters;
 	protected final JRDataSource dataSource;
@@ -62,43 +65,48 @@ public class AsynchronousFillHandle
 	protected String threadName;
 	
 	protected AsynchronousFillHandle (
-			JasperReport jasperReport,
-			Map<String,Object> parameters,
-			JRDataSource dataSource
-			) throws JRException
+		JasperReportsContext jasperReportsContext,
+		JasperReport jasperReport,
+		Map<String,Object> parameters,
+		JRDataSource dataSource
+		) throws JRException
 	{
-		this(jasperReport, parameters, dataSource, null);
+		this(jasperReportsContext, jasperReport, parameters, dataSource, null);
 	}
 	
 	protected AsynchronousFillHandle (
-			JasperReport jasperReport,
-			Map<String,Object> parameters,
-			Connection conn
-			) throws JRException
+		JasperReportsContext jasperReportsContext,
+		JasperReport jasperReport,
+		Map<String,Object> parameters,
+		Connection conn
+		) throws JRException
 	{
-		this(jasperReport, parameters, null, conn);
+		this(jasperReportsContext, jasperReport, parameters, null, conn);
 	}
 	
 	protected AsynchronousFillHandle (
-			JasperReport jasperReport,
-			Map<String,Object> parameters
-			) throws JRException
+		JasperReportsContext jasperReportsContext,
+		JasperReport jasperReport,
+		Map<String,Object> parameters
+		) throws JRException
 	{
-		this(jasperReport, parameters, null, null);
+		this(jasperReportsContext, jasperReport, parameters, null, null);
 	}
 	
 	protected AsynchronousFillHandle (
-			JasperReport jasperReport,
-			Map<String,Object> parameters,
-			JRDataSource dataSource,
-			Connection conn
-			) throws JRException
+		JasperReportsContext jasperReportsContext,
+		JasperReport jasperReport,
+		Map<String,Object> parameters,
+		JRDataSource dataSource,
+		Connection conn
+		) throws JRException
 	{
+		this.jasperReportsContext = jasperReportsContext;
 		this.jasperReport = jasperReport;
 		this.parameters = parameters;
 		this.dataSource = dataSource;
 		this.conn = conn;
-		this.filler = JRFiller.createFiller(jasperReport);
+		this.filler = JRFiller.createFiller(jasperReportsContext, jasperReport);
 		this.listeners = new ArrayList<AsynchronousFilllListener>();
 		lock = this;
 	}
@@ -291,6 +299,7 @@ public class AsynchronousFillHandle
 	/**
 	 * Creates an asychronous filling handle.
 	 * 
+	 * @param jasperReportsContext the context
 	 * @param jasperReport the report
 	 * @param parameters the parameter map
 	 * @param dataSource the data source
@@ -298,20 +307,20 @@ public class AsynchronousFillHandle
 	 * @throws JRException
 	 */
 	public static AsynchronousFillHandle createHandle(
+		JasperReportsContext jasperReportsContext,
 		JasperReport jasperReport,
 		Map<String,Object> parameters,
 		JRDataSource dataSource
 		) throws JRException
 	{
-		AsynchronousFillHandle filler = new AsynchronousFillHandle(jasperReport, parameters, dataSource);
-		
-		return filler;
+		return new AsynchronousFillHandle(jasperReportsContext, jasperReport, parameters, dataSource);
 	}
 
 
 	/**
 	 * Creates an asychronous filling handle.
 	 * 
+	 * @param jasperReportsContext the context
 	 * @param jasperReport the report
 	 * @param parameters the parameter map
 	 * @param conn the connection
@@ -319,33 +328,70 @@ public class AsynchronousFillHandle
 	 * @throws JRException
 	 */
 	public static AsynchronousFillHandle createHandle(
+		JasperReportsContext jasperReportsContext,
 		JasperReport jasperReport,
 		Map<String,Object> parameters,
 		Connection conn
 		) throws JRException
 	{
-		AsynchronousFillHandle filler = new AsynchronousFillHandle(jasperReport, parameters, conn);
-		
-		return filler;
+		return new AsynchronousFillHandle(jasperReportsContext, jasperReport, parameters, conn);
 	}
 
 
 	/**
 	 * Creates an asychronous filling handle.
 	 * 
+	 * @param jasperReportsContext the context
 	 * @param jasperReport the report
 	 * @param parameters the parameter map
 	 * @return the handle
 	 * @throws JRException
 	 */
 	public static AsynchronousFillHandle createHandle(
+		JasperReportsContext jasperReportsContext,
 		JasperReport jasperReport,
 		Map<String,Object> parameters
 		) throws JRException
 	{
-		AsynchronousFillHandle filler = new AsynchronousFillHandle(jasperReport, parameters);
-		
-		return filler;
+		return new AsynchronousFillHandle(jasperReportsContext, jasperReport, parameters);
+	}
+	
+	
+	/**
+	 * @deprecated Replaced by {@link #createHandle(JasperReportsContext, JasperReport, Map, JRDataSource)}.
+	 */
+	public static AsynchronousFillHandle createHandle(
+		JasperReport jasperReport,
+		Map<String,Object> parameters,
+		JRDataSource dataSource
+		) throws JRException
+	{
+		return createHandle(DefaultJasperReportsContext.getInstance(), jasperReport, parameters, dataSource);
+	}
+
+
+	/**
+	 * @deprecated Replaced by {@link #createHandle(JasperReportsContext, JasperReport, Map, Connection)}.
+	 */
+	public static AsynchronousFillHandle createHandle(
+		JasperReport jasperReport,
+		Map<String,Object> parameters,
+		Connection conn
+		) throws JRException
+	{
+		return createHandle(DefaultJasperReportsContext.getInstance(), jasperReport, parameters, conn);
+	}
+
+
+	/**
+	 * @deprecated Replaced by {@link #createHandle(JasperReportsContext, JasperReport, Map)}.
+	 */
+	public static AsynchronousFillHandle createHandle(
+		JasperReport jasperReport,
+		Map<String,Object> parameters
+		) throws JRException
+	{
+		return createHandle(DefaultJasperReportsContext.getInstance(), jasperReport, parameters);
 	}
 	
 	

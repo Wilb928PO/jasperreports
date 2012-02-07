@@ -35,19 +35,21 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.apache.poi.ss.usermodel.Workbook;
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JRValueParameter;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.data.JRXlsxDataSource;
 import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.engine.util.JRProperties.PropertySuffix;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.poi.ss.usermodel.Workbook;
 
 /**
  * XLS query executer implementation.
@@ -61,8 +63,24 @@ public class JRXlsxQueryExecuter extends JRAbstractQueryExecuter {
 	
 	private JRXlsxDataSource datasource;
 	
-	protected JRXlsxQueryExecuter(JRDataset dataset, Map<String,? extends JRValueParameter> parametersMap) {
-		super(dataset, parametersMap);
+	/**
+	 * 
+	 */
+	protected JRXlsxQueryExecuter(
+		JasperReportsContext jasperReportsContext, 
+		JRDataset dataset, 
+		Map<String,? extends JRValueParameter> parametersMap
+		) 
+	{
+		super(jasperReportsContext, dataset, parametersMap);
+	}
+
+	/**
+	 * @deprecated Replaced by {@link #JRXlsxQueryExecuter(JasperReportsContext, JRDataset, Map)}.
+	 */
+	protected JRXlsxQueryExecuter(JRDataset dataset, Map<String,? extends JRValueParameter> parametersMap) 
+	{
+		this(DefaultJasperReportsContext.getInstance(), dataset, parametersMap);
 	}
 
 	public JRDataSource createDatasource() throws JRException {
@@ -81,7 +99,7 @@ public class JRXlsxQueryExecuter extends JRAbstractQueryExecuter {
 					} else {
 						String xlsxSource = getStringParameterOrProperty(JRXlsxQueryExecuterFactory.XLSX_SOURCE);
 						if (xlsxSource != null) {
-							datasource = new JRXlsxDataSource(xlsxSource);
+							datasource = new JRXlsxDataSource(jasperReportsContext, xlsxSource);
 						} else {
 							if (log.isWarnEnabled()){
 								log.warn("No XLS source was provided.");

@@ -10,7 +10,6 @@ import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.util.JRSaver;
 import net.sf.jasperreports.repo.JasperDesignCache;
 import net.sf.jasperreports.repo.JasperDesignReportResource;
-import net.sf.jasperreports.repo.WebFileRepositoryService;
 
 
 
@@ -26,7 +25,7 @@ public class SaveAction extends AbstractAction {
 	public void performAction() 
 	{
 //		JasperDesign jasperDesign = getJasperDesign();
-		JasperDesignCache cache = JasperDesignCache.getInstance(getReportContext());
+		JasperDesignCache cache = JasperDesignCache.getInstance(getJasperReportsContext(), getReportContext());
 		Map<String, JasperDesignReportResource> cachedResources = cache.getCachedResources();
 		for (String uri : cachedResources.keySet())
 		{
@@ -35,7 +34,7 @@ public class SaveAction extends AbstractAction {
 			if (jasperDesign != null)
 			{
 				JasperReport jasperReport = resource.getReport();
-				String appRealPath = WebFileRepositoryService.getApplicationRealPath();
+				String appRealPath = null;//FIXMECONTEXT WebFileRepositoryService.getApplicationRealPath();
 				try
 				{
 					JRSaver.saveObject(jasperReport, new File(new File(new File(appRealPath), "WEB-INF/repository"), uri));//FIXMEJIVE harcoded

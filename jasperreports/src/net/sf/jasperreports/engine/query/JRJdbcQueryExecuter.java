@@ -40,6 +40,7 @@ import java.util.TimeZone;
 
 import javax.sql.rowset.CachedRowSet;
 
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
@@ -48,6 +49,7 @@ import net.sf.jasperreports.engine.JRPropertiesHolder;
 import net.sf.jasperreports.engine.JRResultSetDataSource;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JRValueParameter;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.util.JRProperties;
 
 import org.apache.commons.logging.Log;
@@ -108,9 +110,16 @@ public class JRJdbcQueryExecuter extends JRAbstractQueryExecuter
 	private TimeZone timeZone;
 	private boolean timeZoneOverride;
 	
-	public JRJdbcQueryExecuter(JRDataset dataset, Map<String,? extends JRValueParameter> parameters)
+	/**
+	 * 
+	 */
+	public JRJdbcQueryExecuter(
+		JasperReportsContext jasperReportsContext, 
+		JRDataset dataset, 
+		Map<String,? extends JRValueParameter> parameters
+		)
 	{
-		super(dataset, parameters);
+		super(jasperReportsContext, dataset, parameters);
 		
 		connection = (Connection) getParameterValue(JRParameter.REPORT_CONNECTION);
 		if (connection == null)
@@ -128,6 +137,14 @@ public class JRJdbcQueryExecuter extends JRAbstractQueryExecuter
 		registerFunctions();
 		
 		parseQuery();		
+	}
+
+	/**
+	 * @deprecated Replaced by {@link #JRJdbcQueryExecuter(JasperReportsContext, JRDataset, Map)}.
+	 */
+	public JRJdbcQueryExecuter(JRDataset dataset, Map<String,? extends JRValueParameter> parameters)
+	{
+		this(DefaultJasperReportsContext.getInstance(), dataset, parameters);
 	}
 
 	

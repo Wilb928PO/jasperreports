@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.util.JRProperties;
@@ -407,7 +408,7 @@ public class JRAntCompileTask extends MatchingTask
 				try
 				{
 					System.out.print("File : " + srcFileName + " ... ");
-					JasperCompileManager.compileReportToFile(srcFileName, destFileName);
+					JasperCompileManager.getInstance(DefaultJasperReportsContext.getInstance()).compileToFile(srcFileName, destFileName);
 					System.out.println("OK.");
 				}
 				catch(JRException e)

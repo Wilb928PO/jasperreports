@@ -28,6 +28,7 @@ import java.util.Map;
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRValueParameter;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.util.JRProperties;
 
 /**
@@ -39,7 +40,8 @@ import net.sf.jasperreports.engine.util.JRProperties;
  * @author Marcel Overdijk (marceloverdijk@hotmail.com)
  * @version $Id$
  */
-public class JRJpaQueryExecuterFactory implements JRQueryExecuterFactory {
+public class JRJpaQueryExecuterFactory extends JRAbstractQueryExecuterFactory 
+{
 
 	/**
 	 * EJBQL query language.
@@ -81,8 +83,13 @@ public class JRJpaQueryExecuterFactory implements JRQueryExecuterFactory {
 	 */
 	public static final String PROPERTY_JPA_QUERY_HINT_PREFIX = JRProperties.PROPERTY_PREFIX + "ejbql.query.hint.";
 	
-	public JRQueryExecuter createQueryExecuter(JRDataset dataset, Map<String,? extends JRValueParameter> parameters) throws JRException {
-		return new JRJpaQueryExecuter(dataset, parameters);
+	public JRQueryExecuter createQueryExecuter(
+		JasperReportsContext jasperReportsContext,
+		JRDataset dataset, 
+		Map<String,? extends JRValueParameter> parameters
+		) throws JRException 
+	{
+		return new JRJpaQueryExecuter(jasperReportsContext, dataset, parameters);
 	}
 
 	/**

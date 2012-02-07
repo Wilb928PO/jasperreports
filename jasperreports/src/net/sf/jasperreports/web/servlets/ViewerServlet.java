@@ -29,15 +29,12 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.sf.jasperreports.engine.JRConstants;
 import net.sf.jasperreports.engine.util.JRProperties;
-import net.sf.jasperreports.repo.WebFileRepositoryService;
 import net.sf.jasperreports.web.WebReportContext;
 import net.sf.jasperreports.web.util.JacksonUtil;
 import net.sf.jasperreports.web.util.VelocityUtil;
@@ -51,7 +48,7 @@ import org.apache.velocity.VelocityContext;
  * @author Teodor Danciu (teodord@users.sourceforge.net)
  * @version $Id: ReportServlet.java 4938 2012-01-26 17:03:20Z narcism $
  */
-public class ViewerServlet extends HttpServlet
+public class ViewerServlet extends AbstractServlet
 {
 	private static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
 	
@@ -66,16 +63,6 @@ public class ViewerServlet extends HttpServlet
 	private static final String RESOURCE_VIEWER_TOOLBAR_JS = "net/sf/jasperreports/web/servlets/resources/jasperreports-reportViewerToolbar.js";
 
 	public static final String REQUEST_PARAMETER_REPORT_URI = "jr.uri";
-	
-	/**
-	 * 
-	 */
-	public void init(ServletConfig config) throws ServletException 
-	{
-		super.init(config);
-		
-		WebFileRepositoryService.setApplicationRealPath(config.getServletContext().getRealPath("/"));
-	}
 	
 
 	/**
@@ -187,7 +174,7 @@ public class ViewerServlet extends HttpServlet
 //		paramsMap.put(ReportServlet.REQUEST_PARAMETER_TOOLBAR_ID, toolbarId);
 		
 		bodyContext.put("reportUrl", request.getContextPath() + ReportServlet.PATH);
-		bodyContext.put("jsonParamsObject", JacksonUtil.getEscapedJsonString(paramsMap));
+		bodyContext.put("jsonParamsObject", JacksonUtil.getInstance(getJasperReportsContext()).getEscapedJsonString(paramsMap));
 		bodyContext.put("toolbarId", toolbarId);
 		
 		return VelocityUtil.processTemplate(TEMPLATE_BODY, bodyContext);

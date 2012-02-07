@@ -37,12 +37,14 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JRValueParameter;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.data.JRCsvDataSource;
 import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.engine.util.JRProperties.PropertySuffix;
@@ -56,14 +58,34 @@ import org.apache.commons.logging.LogFactory;
  * @author Narcis Marcu (narcism@users.sourceforge.net)
  * @version $Id$
  */
-public class JRCsvQueryExecuter extends JRAbstractQueryExecuter {
+public class JRCsvQueryExecuter extends JRAbstractQueryExecuter 
+{
 	
 	private static final Log log = LogFactory.getLog(JRCsvQueryExecuter.class);
 	
 	private JRCsvDataSource datasource;
 	
-	protected JRCsvQueryExecuter(JRDataset dataset, Map<String, ? extends JRValueParameter> parametersMap) {
-		super(dataset, parametersMap);
+	/**
+	 * 
+	 */
+	protected JRCsvQueryExecuter(
+		JasperReportsContext jasperReportsContext,
+		JRDataset dataset, 
+		Map<String, ? extends JRValueParameter> parametersMap
+		) 
+	{
+		super(jasperReportsContext, dataset, parametersMap);
+	}
+
+	/**
+	 * @deprecated Replaced by {@link #JRCsvQueryExecuter(JasperReportsContext, JRDataset, Map)}. 
+	 */
+	protected JRCsvQueryExecuter(
+		JRDataset dataset, 
+		Map<String, ? extends JRValueParameter> parametersMap
+		) 
+	{
+		this(DefaultJasperReportsContext.getInstance(), dataset, parametersMap);
 	}
 
 	public JRDataSource createDatasource() throws JRException {
@@ -101,9 +123,9 @@ public class JRCsvQueryExecuter extends JRAbstractQueryExecuter {
 							String csvSource = getStringParameterOrProperty(JRCsvQueryExecuterFactory.CSV_SOURCE);
 							if (csvSource != null) {
 								if (csvCharset != null) {
-									datasource = new JRCsvDataSource(csvSource, csvCharset);
+									datasource = new JRCsvDataSource(jasperReportsContext, csvSource, csvCharset);
 								} else {
-									datasource = new JRCsvDataSource(csvSource);
+									datasource = new JRCsvDataSource(jasperReportsContext, csvSource);
 								}
 							} else {
 								if (log.isWarnEnabled()){

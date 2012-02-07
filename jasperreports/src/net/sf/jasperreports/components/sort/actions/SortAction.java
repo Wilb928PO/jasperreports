@@ -36,7 +36,7 @@ public class SortAction extends AbstractAction
 			CommandTarget target = getCommandTarget(UUID.fromString(sortData.getUuid()));
 			if (target != null)
 			{
-				JasperDesignCache cache = JasperDesignCache.getInstance(getReportContext());
+				JasperDesignCache cache = JasperDesignCache.getInstance(getJasperReportsContext(), getReportContext());
 
 				JasperDesign jasperDesign = cache.getJasperDesign(target.getUri());
 				JRDesignDataset dataset = (JRDesignDataset)jasperDesign.getMainDataset();
@@ -48,6 +48,7 @@ public class SortAction extends AbstractAction
 				commandStack.execute(
 					new ResetInCacheCommand(
 						new SortCommand(dataset, sortData),
+						getJasperReportsContext(),
 						getReportContext(),
 						target.getUri()
 						)
@@ -61,7 +62,7 @@ public class SortAction extends AbstractAction
 	 */
 	public CommandTarget getCommandTarget(UUID uuid)
 	{
-		JasperDesignCache cache = JasperDesignCache.getInstance(getReportContext());
+		JasperDesignCache cache = JasperDesignCache.getInstance(getJasperReportsContext(), getReportContext());
 
 		Map<String, JasperDesignReportResource> cachedResources = cache.getCachedResources();
 		Set<String> uris = cachedResources.keySet();

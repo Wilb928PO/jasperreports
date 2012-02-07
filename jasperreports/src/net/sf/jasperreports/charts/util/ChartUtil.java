@@ -32,15 +32,16 @@ import java.util.StringTokenizer;
 
 import net.sf.jasperreports.charts.ChartTheme;
 import net.sf.jasperreports.charts.ChartThemeBundle;
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRPrintHyperlink;
 import net.sf.jasperreports.engine.JRPrintImageArea;
 import net.sf.jasperreports.engine.JRPrintImageAreaHyperlink;
 import net.sf.jasperreports.engine.JRRuntimeException;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.fill.DefaultChartTheme;
 import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.engine.util.JRSingletonCache;
-import net.sf.jasperreports.extensions.ExtensionsEnvironment;
 
 import org.jfree.chart.ChartRenderingInfo;
 import org.jfree.chart.JFreeChart;
@@ -54,13 +55,42 @@ import org.jfree.chart.entity.EntityCollection;
  */
 public final class ChartUtil
 {
-
 	/**
 	 *
 	 */
 	private static final JRSingletonCache<ChartRendererFactory> CHART_RENDERER_FACTORY_CACHE = 
 			new JRSingletonCache<ChartRendererFactory>(ChartRendererFactory.class);
 
+	private JasperReportsContext jasperReportsContext;
+
+
+	/**
+	 *
+	 */
+	private ChartUtil(JasperReportsContext jasperReportsContext)
+	{
+		this.jasperReportsContext = jasperReportsContext;
+	}
+	
+	
+	/**
+	 *
+	 */
+	private static ChartUtil getDefaultInstance()
+	{
+		return new ChartUtil(DefaultJasperReportsContext.getInstance());
+	}
+	
+	
+	/**
+	 *
+	 */
+	public static ChartUtil getInstance(JasperReportsContext jasperReportsContext)
+	{
+		return new ChartUtil(jasperReportsContext);
+	}
+	
+	
 	/**
 	 * 
 	 */
@@ -146,14 +176,14 @@ public final class ChartUtil
 	/**
 	 * 
 	 */
-	public static ChartTheme getChartTheme(String themeName)
+	public ChartTheme getTheme(String themeName)
 	{
 		if (themeName == null)
 		{
 			return new DefaultChartTheme();
 		}
 
-		List<ChartThemeBundle> themeBundles = ExtensionsEnvironment.getExtensionsRegistry().getExtensions(ChartThemeBundle.class);
+		List<ChartThemeBundle> themeBundles = jasperReportsContext.getExtensions(ChartThemeBundle.class);
 		for (Iterator<ChartThemeBundle> it = themeBundles.iterator(); it.hasNext();)
 		{
 			ChartThemeBundle bundle = it.next();
@@ -164,6 +194,14 @@ public final class ChartUtil
 			}
 		}
 		throw new JRRuntimeException("Chart theme '" + themeName + "' not found.");
+	}
+
+	/**
+	 * @deprecated Replaced by {@link #getTheme(String)}.
+	 */
+	public static ChartTheme getChartTheme(String themeName)
+	{
+		return getDefaultInstance().getTheme(themeName);
 	}
 
 	/**
@@ -189,10 +227,5 @@ public final class ChartUtil
 		}
 		
 		return chartRendererFactory;
-	}
-
-
-	private ChartUtil()
-	{
 	}
 }

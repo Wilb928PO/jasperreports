@@ -60,6 +60,8 @@ import net.sf.jasperreports.data.xml.XmlDataAdapter;
 import net.sf.jasperreports.data.xml.XmlDataAdapterService;
 import net.sf.jasperreports.data.xmla.XmlaDataAdapter;
 import net.sf.jasperreports.data.xmla.XmlaDataAdapterService;
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
+import net.sf.jasperreports.engine.JasperReportsContext;
 
 
 /**
@@ -85,7 +87,7 @@ public class DefaultDataAdapterServiceFactory implements DataAdapterServiceFacto
 	/**
 	 *
 	 */
-	public DataAdapterService getDataAdapterService(DataAdapter dataAdapter)
+	public DataAdapterService getDataAdapterService(JasperReportsContext jasperReportsContext, DataAdapter dataAdapter)
 	{
 		DataAdapterService dataAdapterService = null;
 		
@@ -127,15 +129,15 @@ public class DefaultDataAdapterServiceFactory implements DataAdapterServiceFacto
 		}
 		else if (dataAdapter instanceof RemoteXmlDataAdapter)
 		{
-			dataAdapterService = new RemoteXmlDataAdapterService((RemoteXmlDataAdapter)dataAdapter);
+			dataAdapterService = new RemoteXmlDataAdapterService(jasperReportsContext, (RemoteXmlDataAdapter)dataAdapter);
 		}
 		else if (dataAdapter instanceof XmlDataAdapter)
 		{
-			dataAdapterService = new XmlDataAdapterService((XmlDataAdapter)dataAdapter);
+			dataAdapterService = new XmlDataAdapterService(jasperReportsContext, (XmlDataAdapter)dataAdapter);
 		}
 		else if (dataAdapter instanceof JsonDataAdapter)
 		{
-			dataAdapterService = new JsonDataAdapterService((JsonDataAdapter)dataAdapter);
+			dataAdapterService = new JsonDataAdapterService(jasperReportsContext, (JsonDataAdapter)dataAdapter);
 		}
 		else if (dataAdapter instanceof HibernateDataAdapter)
 		{
@@ -163,6 +165,14 @@ public class DefaultDataAdapterServiceFactory implements DataAdapterServiceFacto
 		}
 		
 		return dataAdapterService;
+	}
+	
+	/**
+	 * @deprecated Replaced by {@link #getDataAdapterService(JasperReportsContext, DataAdapter)}.
+	 */
+	public DataAdapterService getDataAdapterService(DataAdapter dataAdapter)
+	{
+		return getDataAdapterService(DefaultJasperReportsContext.getInstance(), dataAdapter);
 	}
   
 }

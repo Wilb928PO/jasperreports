@@ -211,7 +211,7 @@ public class JRExporterParameter
 
 
 	/**
-	 * 
+	 * @deprecated Replaced by {@link JasperReportsContext}.
 	 */
 	public static final JRExporterParameter CLASS_LOADER = new JRExporterParameter("Class Loader");
 
@@ -222,12 +222,14 @@ public class JRExporterParameter
 	 * The values should be of type {@link java.net.URLStreamHandlerFactory java.net.URLStreamHandlerFactory}.
 	 * 
 	 * @see net.sf.jasperreports.engine.util.JRResourcesUtil#createURL(String, java.net.URLStreamHandlerFactory)
+	 * @deprecated Replaced by {@link JasperReportsContext}.
 	 */
 	public static final JRExporterParameter URL_HANDLER_FACTORY = new JRExporterParameter("URL Handler Factory");
 
 	
 	/**
 	 * The {@link net.sf.jasperreports.engine.util.FileResolver FileResolver} instance to be used while exporting the report.
+	 * @deprecated Replaced by {@link JasperReportsContext}.
 	 */
 	public static final JRExporterParameter FILE_RESOLVER = new JRExporterParameter("File REsolver");
 

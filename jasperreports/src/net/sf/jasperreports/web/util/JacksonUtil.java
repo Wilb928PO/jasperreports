@@ -26,8 +26,9 @@ package net.sf.jasperreports.web.util;
 import java.io.IOException;
 import java.util.List;
 
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRRuntimeException;
-import net.sf.jasperreports.extensions.ExtensionsEnvironment;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.web.actions.AbstractAction;
 
 import org.codehaus.jackson.JsonGenerationException;
@@ -48,26 +49,46 @@ public class JacksonUtil
 	/**
 	 * 
 	 */
-	private static volatile ObjectMapper objectMapper;
+	private static final String OBJECT_MAPPER_CONTEXT_KEY = "net.sf.jasperreports.jackson.object.mapper";
 	
-	private static ObjectMapper getObjectMapper()
-	{
-		if (objectMapper != null)
-		{
-			return objectMapper;
-		}
-		
-		synchronized (JacksonUtil.class)
-		{
-			// double check
-			if (objectMapper != null)
-			{
-				return objectMapper;
-			}
-			
-			ObjectMapper mapper = new ObjectMapper();
+	private JasperReportsContext jasperReportsContext;
 
-			List<JacksonMapping> jacksonMappings = ExtensionsEnvironment.getExtensionsRegistry().getExtensions(JacksonMapping.class);
+
+	/**
+	 *
+	 */
+	private JacksonUtil(JasperReportsContext jasperReportsContext)
+	{
+		this.jasperReportsContext = jasperReportsContext;
+	}
+	
+	
+	/**
+	 *
+	 */
+	private static JacksonUtil getDefaultInstance()
+	{
+		return new JacksonUtil(DefaultJasperReportsContext.getInstance());
+	}
+	
+	
+	/**
+	 *
+	 */
+	public static JacksonUtil getInstance(JasperReportsContext jasperReportsContext)
+	{
+		return new JacksonUtil(jasperReportsContext);
+	}
+	
+	
+	private ObjectMapper getObjectMapper()
+	{
+		ObjectMapper mapper = (ObjectMapper)jasperReportsContext.getValue(OBJECT_MAPPER_CONTEXT_KEY);
+		if (mapper == null)
+		{
+			mapper = new ObjectMapper();
+
+			List<JacksonMapping> jacksonMappings = jasperReportsContext.getExtensions(JacksonMapping.class);
 			for (JacksonMapping jacksonMapping : jacksonMappings)
 			{
 				register(mapper, jacksonMapping);
@@ -75,10 +96,9 @@ public class JacksonUtil
 
 			mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
 			
-			objectMapper = mapper;
+			jasperReportsContext.setValue(OBJECT_MAPPER_CONTEXT_KEY, mapper);
 		}
-		
-		return objectMapper;
+		return mapper;
 	}
 	
 	
@@ -102,7 +122,7 @@ public class JacksonUtil
 	/**
 	 *
 	 */
-	public static Object load(String jsonData, Class<?> clazz)
+	public Object load(String jsonData, Class<?> clazz)
 	{
 		Object result = null;
 		if (jsonData != null) 
@@ -133,7 +153,7 @@ public class JacksonUtil
 	/**
 	 * 
 	 */
-	public static String getJsonString(Object object) 
+	public String getJsonString(Object object) 
 	{
 		ObjectMapper mapper = getObjectMapper();
 		try 
@@ -158,7 +178,8 @@ public class JacksonUtil
 	/**
 	 * 
 	 */
-	public static String getEscapedJsonString(Object object){
+	public String getEscapedJsonString(Object object)
+	{
 		return getJsonString(object).replaceAll("\\\"", "\\\\\\\"");
 	}
 }

@@ -54,7 +54,7 @@ public class DrawVisitor extends UniformElementVisitor
 	protected PrintDrawVisitor drawVisitor;
 	
 	/**
-	 *
+	 * @deprecated Replaced by {@link #DrawVisitor(ReportConverter, Graphics2D)}.
 	 */
 	public DrawVisitor(JRReport report, Graphics2D grx)
 	{

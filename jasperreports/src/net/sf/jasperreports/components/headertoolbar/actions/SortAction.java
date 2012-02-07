@@ -46,7 +46,7 @@ public class SortAction extends AbstractTableAction
 				
 				String datasetName = datasetRun.getDatasetName();
 				
-				JasperDesignCache cache = JasperDesignCache.getInstance(getReportContext());
+				JasperDesignCache cache = JasperDesignCache.getInstance(getJasperReportsContext(), getReportContext());
 
 				JasperDesign jasperDesign = cache.getJasperDesign(target.getUri());
 				JRDesignDataset dataset = (JRDesignDataset)jasperDesign.getDatasetMap().get(datasetName);
@@ -58,6 +58,7 @@ public class SortAction extends AbstractTableAction
 				commandStack.execute(
 					new ResetInCacheCommand(
 						new SortCommand(dataset, sortData),
+						getJasperReportsContext(),
 						getReportContext(), 
 						target.getUri()
 						)

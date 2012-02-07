@@ -1,5 +1,6 @@
 package net.sf.jasperreports.web.actions;
 
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.ReportContext;
 import net.sf.jasperreports.web.commands.CommandStack;
 
@@ -10,6 +11,7 @@ public abstract class AbstractAction implements Action {
 	
 	private static final String PARAM_COMMAND_STACK = "net.sf.jasperreports.command.stack";
 	
+	private JasperReportsContext jasperReportsContext;
 	private ReportContext reportContext;
 //	private String reportUri;
 //	private JasperDesign jasperDesign;
@@ -18,8 +20,9 @@ public abstract class AbstractAction implements Action {
 	public AbstractAction(){
 	}
 	
-	public void init(ReportContext reportContext)//, String reportUri) 
+	public void init(JasperReportsContext jasperReportsContext, ReportContext reportContext)//, String reportUri) 
 	{
+		this.jasperReportsContext = jasperReportsContext;
 		this.reportContext = reportContext;
 //		this.reportUri = reportUri;
 		
@@ -35,6 +38,10 @@ public abstract class AbstractAction implements Action {
 //	public JasperDesign getJasperDesign() {
 //		return jasperDesign;
 //	}
+	
+	public JasperReportsContext getJasperReportsContext() {
+		return jasperReportsContext;
+	}
 	
 	public ReportContext getReportContext() {
 		return reportContext;

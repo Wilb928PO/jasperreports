@@ -56,6 +56,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRAbstractExporter;
 import net.sf.jasperreports.engine.JRAnchor;
 import net.sf.jasperreports.engine.JRException;
@@ -77,6 +78,7 @@ import net.sf.jasperreports.engine.JRPrintRectangle;
 import net.sf.jasperreports.engine.JRPrintText;
 import net.sf.jasperreports.engine.JRRenderable;
 import net.sf.jasperreports.engine.JRRuntimeException;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.base.JRBaseFont;
 import net.sf.jasperreports.engine.base.JRBasePrintText;
 import net.sf.jasperreports.engine.export.legacy.BorderOffset;
@@ -218,6 +220,24 @@ public class JRPdfExporter extends JRAbstractExporter
 	
 	protected JRPdfExporterContext exporterContext = new ExporterContext();
 	
+	/**
+	 * @deprecated Replaced by {@link #JRPdfExporter(JasperReportsContext)}.
+	 */
+	public JRPdfExporter()
+	{
+		this(DefaultJasperReportsContext.getInstance());
+	}
+
+	
+	/**
+	 *
+	 */
+	public JRPdfExporter(JasperReportsContext jasperReportsContext)
+	{
+		super(jasperReportsContext);
+	}
+	
+
 	/**
 	 *
 	 */
@@ -570,7 +590,7 @@ public class JRPdfExporter extends JRAbstractExporter
 					pdfDictionary.put(PdfName.INFO, new PdfString("sRGB IEC61966-2.1"));
 					pdfDictionary.put(PdfName.S, PdfName.GTS_PDFA1);
 					
-					InputStream iccIs = RepositoryUtil.getInputStream(iccProfilePath);
+					InputStream iccIs = RepositoryUtil.getInstance(jasperReportsContext).getInputStream2(iccProfilePath);
 					PdfICCBased pdfICCBased = new PdfICCBased(ICC_Profile.getInstance(iccIs));
 					pdfICCBased.remove(PdfName.ALTERNATE);
 					pdfDictionary.put(PdfName.DESTOUTPUTPROFILE, pdfWriter.addToBody(pdfICCBased).getIndirectReference());
@@ -1964,7 +1984,7 @@ public class JRPdfExporter extends JRAbstractExporter
 
 			try
 			{
-				bytes = RepositoryUtil.getBytes(pdfFont.getPdfFontName());
+				bytes = RepositoryUtil.getInstance(jasperReportsContext).getBytes2(pdfFont.getPdfFontName());
 			}
 			catch(JRException e)
 			{

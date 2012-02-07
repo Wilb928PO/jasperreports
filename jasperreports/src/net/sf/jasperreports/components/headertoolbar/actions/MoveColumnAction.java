@@ -48,6 +48,7 @@ public class MoveColumnAction extends AbstractTableAction
 				commandStack.execute(
 					new ResetInCacheCommand(
 						new MoveColumnCommand(table, moveColumnData), 
+						getJasperReportsContext(),
 						getReportContext(), 
 						target.getUri()
 						)

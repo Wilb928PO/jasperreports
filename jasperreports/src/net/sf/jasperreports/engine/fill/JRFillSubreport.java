@@ -323,7 +323,7 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 				}
 				else if (source instanceof java.lang.String)
 				{
-					report = RepositoryUtil.getReport((String)source);
+					report = RepositoryUtil.getInstance(filler.jasperReportsContext).getReport(filler.getFillContext().getReportContext(), (String)source);
 //						(JasperReport)JRLoader.loadObjectFromLocation(
 //							(String)source, 
 //							filler.reportClassLoader,
@@ -429,7 +429,7 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 
 	protected DatasetExpressionEvaluator createEvaluator() throws JRException
 	{
-		return JasperCompileManager.loadEvaluator(jasperReport);
+		return JasperCompileManager.getInstance(filler.jasperReportsContext).getEvaluator(jasperReport);
 	}
 
 
@@ -444,12 +444,12 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 		{
 			case HORIZONTAL :
 			{
-				subreportFiller = new JRHorizontalFiller(jasperReport, evaluator, this);
+				subreportFiller = new JRHorizontalFiller(filler.jasperReportsContext, jasperReport, evaluator, this);
 				break;
 			}
 			case VERTICAL :
 			{
-				subreportFiller = new JRVerticalFiller(jasperReport, evaluator, this);
+				subreportFiller = new JRVerticalFiller(filler.jasperReportsContext, jasperReport, evaluator, this);
 				break;
 			}
 			default :
@@ -625,24 +625,6 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 			parameterValues.put(JRParameter.REPORT_FORMAT_FACTORY, filler.getFormatFactory());
 		}
 
-		if (!parameterValues.containsKey(JRParameter.REPORT_CLASS_LOADER) &&
-				filler.reportClassLoader != null)
-		{
-			parameterValues.put(JRParameter.REPORT_CLASS_LOADER, filler.reportClassLoader);
-		}
-
-		if (!parameterValues.containsKey(JRParameter.REPORT_URL_HANDLER_FACTORY) &&
-				filler.urlHandlerFactory != null)
-		{
-			parameterValues.put(JRParameter.REPORT_URL_HANDLER_FACTORY, filler.urlHandlerFactory);
-		}
-		
-		if (!parameterValues.containsKey(JRParameter.REPORT_FILE_RESOLVER) &&
-				filler.fileResolver != null)
-		{
-			parameterValues.put(JRParameter.REPORT_FILE_RESOLVER, filler.fileResolver);
-		}
-		
 		if (!parameterValues.containsKey(JRParameter.REPORT_CONTEXT))
 		{
 			ReportContext context = (ReportContext) filler.getMainDataset().getParameterValue(
