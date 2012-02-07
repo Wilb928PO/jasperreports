@@ -10,13 +10,16 @@
 				filters: {
 					filterContainerId: "jasperreports_filters"
 				},
-				dragStarted: false,
-				canDrop: false,
-				draggedColumnHeaderClass: null,
-				dragTableFrameUuid: null,
-				cursorInsideMaskPosition: null,
-				moveColumnActionData: null,
-				dragMaskPosition: null
+				drag: {
+					dragStarted: false,
+					canDrop: false,
+					draggedColumnHeaderClass: null,
+					dragTableFrameUuid: null,
+					cursorInsideMaskPosition: null,
+					moveColumnActionData: null,
+					dragMaskPosition: null,
+					whichTableFrameIndex: null
+				}
 	};
 	
 	/**
@@ -269,13 +272,14 @@
 			);
 			
 			jQuery('.jrPage').live('mousemove', function(event) {
-				var tht = global.jasperreports.tableheadertoolbar;
+				var dragObj = global.jasperreports.tableheadertoolbar.drag;
 				
-				if (tht.dragStarted) {
-					var currentDraggedColumnHeader = tht.draggedColumnHeaderClass,
-						tableFrame = jQuery('.jrtableframe[data-uuid=' + tht.dragTableFrameUuid + ']'), // find tableFrame by uuid
+				if (dragObj.dragStarted) {
+					var currentDraggedColumnHeader = dragObj.draggedColumnHeaderClass,
+						tableFrameElement = jQuery('.jrtableframe[data-uuid=' + dragObj.dragTableFrameUuid + ']').get(dragObj.whichTableFrameIndex), // find tableFrame by uuid
+						tableFrame = jQuery(tableFrameElement),
 						arrHeaderData = tableFrame.data('cachedHeaderData'),
-						centerOfHeaderMaskPos = event.pageX - tableFrame.offset().left + tht.cursorInsideMaskPosition,
+						centerOfHeaderMaskPos = event.pageX - tableFrame.offset().left + dragObj.cursorInsideMaskPosition,
 						currentHeader = jQuery(currentDraggedColumnHeader, tableFrame),
 						currentColPosition = jQuery('.columnHeader', tableFrame).index(currentHeader),
 						hd;
@@ -285,12 +289,12 @@
 						if (centerOfHeaderMaskPos <= hd.maxRight) {
 							
 							if (currentDraggedColumnHeader == hd.headerClass) {
-								tht.canDrop = false;
+								dragObj.canDrop = false;
 							} else {
-								tht.canDrop = true;
-								tht.moveColumnActionData = {actionName: 'move',
+								dragObj.canDrop = true;
+								dragObj.moveColumnActionData = {actionName: 'move',
 															moveColumnData: {
-															uuid: tht.dragTableFrameUuid,
+															uuid: dragObj.dragTableFrameUuid,
 															columnToMoveIndex: currentColPosition,
 															columnToMoveNewIndex: i,
 														}};
@@ -322,6 +326,7 @@
 		            	
 		            	headerToolbarMask.data('columnHeaderClass', headerNameSel);
 		            	headerToolbarMask.data('tableFrameUuid', parentFrame.attr('data-uuid'));
+		            	headerToolbarMask.data('tableFrameIndex', jQuery('.jrtableframe[data-uuid=' + parentFrame.attr('data-uuid') + ']').index(parentFrame));
 		            	
 		            	// determine left and right columns
 		            	var leftColName = self.prev('.columnHeader').attr('data-popupColumn'),
@@ -383,41 +388,44 @@
 			            	
 			            	headerToolbarMask.draggable({
 			            		start: function(event, ui) {
-			            			var tht = global.jasperreports.tableheadertoolbar,
+			            			var dragObj = global.jasperreports.tableheadertoolbar.drag,
 			            				self = jQuery(this);
 			            			
 			            			self.prev().hide();
 			            			
-			            			tht.dragStarted = true;
-			            			tht.draggedColumnHeaderClass = self.data('columnHeaderClass');
-			            			tht.dragTableFrameUuid = self.data('tableFrameUuid');
-			            			tht.cursorInsideMaskPosition = self.width()/2 - (event.originalEvent.pageX - self.offset().left);	// relative to the middle
-			            			tht.dragMaskPosition = self.position();
+			            			dragObj.dragStarted = true;
+			            			dragObj.draggedColumnHeaderClass = self.data('columnHeaderClass');
+			            			dragObj.dragTableFrameUuid = self.data('tableFrameUuid');
+			            			dragObj.cursorInsideMaskPosition = self.width()/2 - (event.originalEvent.pageX - self.offset().left);	// relative to the middle
+			            			dragObj.dragMaskPosition = self.position();
+			            			
+			            			// which table frame with same uuid
+			            			dragObj.whichTableFrameIndex =  self.data('tableFrameIndex');
 			            		},
 			            		drag: function(event, ui) {
 			            		},
 			            		stop: function(event, ui) {
 			            			var	self = jQuery(this),
-			            				tht = global.jasperreports.tableheadertoolbar;
+			            				dragObj = global.jasperreports.tableheadertoolbar.drag;
 			            			
-			            			tht.dragStarted = false;
+			            			dragObj.dragStarted = false;
 			            			
-			            			if (tht.canDrop) {
+			            			if (dragObj.canDrop) {
 						            	var	gm = global.jasperreports.global,
 					            			resizeActionLink = self.attr('data-resizeAction'),
 				                	    	toolbarId = self.closest('.mainReportDiv').find('.toolbarDiv').attr('id'),
 				                	    	ctx = gm.getToolbarExecutionContext(self, 
 				                	    										resizeActionLink, 
-				                	    										'jr.action=' + gm.toJsonString(tht.moveColumnActionData), 
+				                	    										'jr.action=' + gm.toJsonString(dragObj.moveColumnActionData), 
 				                	    										js.highlightColumn, 
-				                	    										[tht.draggedColumnHeaderClass, tht.dragTableFrameUuid, toolbarId], 
+				                	    										[dragObj.draggedColumnHeaderClass, dragObj.dragTableFrameUuid, dragObj.whichTableFrameIndex, toolbarId], 
 				                	    										true);
 				                        if (ctx) {
 				                            ctx.run();
 				                        }
 			            			} else {
 			            				// move mask back to its place
-			            				self.animate(tht.dragMaskPosition, function() {
+			            				self.animate(dragObj.dragMaskPosition, function() {
 			            					// show the toolbar
 			            					jQuery(this).prev().show();
 			            				});
@@ -482,11 +490,11 @@
 		
 	};
 	
-	js.highlightColumn = function (columnHeaderClass, tableFrameUuid, toolbarId) {
+	js.highlightColumn = function (columnHeaderClass, tableFrameUuid, tableFrameIndex, toolbarId) {
 		var jvt = global.jasperreports.reportviewertoolbar;
 		jvt.performAction(toolbarId);
 		
-		var tableFrame = jQuery('.jrtableframe[data-uuid=' + tableFrameUuid + ']');
+		var tableFrame = jQuery('.jrtableframe[data-uuid=' + tableFrameUuid + ']').get(tableFrameIndex);
 		jQuery(columnHeaderClass, tableFrame).trigger('click').trigger('highlight');
 	};
 	
