@@ -29,14 +29,14 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.fill.AsynchronousFillHandle;
 import net.sf.jasperreports.engine.fill.AsynchronousFilllListener;
+import net.sf.jasperreports.engine.fill.FillHandle;
 import net.sf.jasperreports.engine.fill.FillListener;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Generated report accessor used for asynchronous report executions that publishes pages
@@ -50,22 +50,22 @@ public class AsyncJasperPrintAccessor implements JasperPrintAccessor, Asynchrono
 
 	private static final Log log = LogFactory.getLog(AsyncJasperPrintAccessor.class);
 	
-	private final AsynchronousFillHandle fillHandle;
+	private final FillHandle fillHandle;
 	private final Lock lock;
 	private final Condition pageCondition;
 	private final Map<Integer, Long> trackedPages = new HashMap<Integer, Long>();
 	
 	private volatile boolean done;
-	private volatile Throwable error;
+	private Throwable error;
 	private volatile JasperPrint jasperPrint;
-	private volatile int pageCount;
+	private int pageCount;
 	
 	/**
 	 * Create a report accessor.
 	 * 
 	 * @param fillHandle the asynchronous fill handle used by this accessor
 	 */
-	public AsyncJasperPrintAccessor(AsynchronousFillHandle fillHandle)
+	public AsyncJasperPrintAccessor(FillHandle fillHandle)
 	{
 		this.fillHandle = fillHandle;
 		lock = new ReentrantLock();
@@ -77,68 +77,113 @@ public class AsyncJasperPrintAccessor implements JasperPrintAccessor, Asynchrono
 	
 	public ReportPageStatus pageStatus(int pageIdx, Long pageTimestamp)
 	{
-		if (done)
+		if (!done)
 		{
-			return pageIdx < pageCount ? ReportPageStatus.PAGE_FINAL : ReportPageStatus.NO_SUCH_PAGE;
+			lock.lock();
+			try
+			{
+				// wait until the page is available
+				while (!done && pageIdx >= pageCount)
+				{
+					if (log.isDebugEnabled())
+					{
+						log.debug("waiting for page " + pageIdx);
+					}
+					
+					pageCondition.await();
+				}
+			}
+			catch (InterruptedException e)
+			{
+				throw new JRRuntimeException(e);
+			}
+			finally
+			{
+				lock.unlock();
+			}
 		}
 		
-		lock.lock();
-		try
+		if (error != null)
 		{
-			while (!done && pageIdx >= pageCount)
-			{
-				pageCondition.await();
-			}
-			
-			if (error != null)
-			{
-				return ReportPageStatus.error(error);
-			}
-			
-			if (pageIdx >= pageCount)
-			{
-				return ReportPageStatus.NO_SUCH_PAGE;
-			}
-			
-			if (fillHandle.isPageFinal(pageIdx))
-			{
-				trackedPages.remove(pageIdx);
-				return ReportPageStatus.PAGE_FINAL;
-			}
-			
-			long timestamp;
-			boolean modified;
-			
-			Long lastUpdate = trackedPages.get(pageIdx);
-			if (lastUpdate == null)
-			{
-				// we don't know when exactly the page was modified, using current time
-				timestamp = System.currentTimeMillis();
-				modified = true;
-			}
-			else
-			{
-				timestamp = lastUpdate;
-				modified = pageTimestamp == null || pageTimestamp < lastUpdate;
-			}
-			
-			ReportPageStatus status = ReportPageStatus.nonFinal(timestamp, modified);
-			// add the page to the tracked map so that we catch updates
-			trackedPages.put(pageIdx, timestamp);
-			return status;
+			return ReportPageStatus.error(error);
 		}
-		catch (InterruptedException e)
+		
+		if (pageIdx >= pageCount)
 		{
-			throw new JRRuntimeException(e);
+			return ReportPageStatus.NO_SUCH_PAGE;
 		}
-		finally
+		
+		if (done || fillHandle.isPageFinal(pageIdx))
 		{
-			lock.unlock();
+			trackedPages.remove(pageIdx);
+			return ReportPageStatus.PAGE_FINAL;
 		}
+		
+		long timestamp;
+		boolean modified;
+		
+		Long lastUpdate = trackedPages.get(pageIdx);
+		if (lastUpdate == null)
+		{
+			// we don't know when exactly the page was modified, using current time
+			timestamp = System.currentTimeMillis();
+			modified = true;
+		}
+		else
+		{
+			timestamp = lastUpdate;
+			modified = pageTimestamp == null || pageTimestamp < lastUpdate;
+		}
+		
+		ReportPageStatus status = ReportPageStatus.nonFinal(timestamp, modified);
+		// add the page to the tracked map so that we catch updates
+		trackedPages.put(pageIdx, timestamp);
+		return status;
 	}
 
 	public JasperPrint getJasperPrint()
 	{
+		return jasperPrint;
+	}
+
+	public JasperPrint getFinalJasperPrint()
+	{
+		if (!done)
+		{
+			lock.lock();
+			try
+			{
+				// wait until the report generation is done
+				while (!done)
+				{
+					if (log.isDebugEnabled())
+					{
+						log.debug("waiting for report end");
+					}
+					
+					pageCondition.await();
+				}
+			}
+			catch (InterruptedException e)
+			{
+				throw new JRRuntimeException(e);
+			}
+			finally
+			{
+				lock.unlock();
+			}
+		}
+		
+		if (error != null)
+		{
+			throw new JRRuntimeException("Error occured during report generation", error);
+		}
+		
+		if (jasperPrint == null)
+		{
+			throw new JRRuntimeException("No JasperPrint generated");
+		}
+		
 		return jasperPrint;
 	}
 
@@ -154,6 +199,11 @@ public class AsyncJasperPrintAccessor implements JasperPrintAccessor, Asynchrono
 
 	public void reportFinished(JasperPrint jasperPrint)
 	{
+		if (log.isDebugEnabled())
+		{
+			log.debug("report finished");
+		}
+		
 		lock.lock();
 		try
 		{
@@ -166,7 +216,7 @@ public class AsyncJasperPrintAccessor implements JasperPrintAccessor, Asynchrono
 			done = true;
 			trackedPages.clear();
 			
-			pageCondition.signal();
+			pageCondition.signalAll();
 		}
 		finally
 		{
@@ -178,16 +228,19 @@ public class AsyncJasperPrintAccessor implements JasperPrintAccessor, Asynchrono
 	{
 		if (log.isDebugEnabled())
 		{
-			log.debug("Report cancelled");
+			log.debug("report cancelled");
 		}
 		
 		lock.lock();
 		try
 		{
 			done = true;
+
+			// store an error as cancelled status
+			error = new JRRuntimeException("Report generation cancelled");
 			
 			// signal to pageStatus
-			pageCondition.signal();
+			pageCondition.signalAll();
 		}
 		finally
 		{
@@ -206,7 +259,7 @@ public class AsyncJasperPrintAccessor implements JasperPrintAccessor, Asynchrono
 			done = true;
 			
 			// signal to pageStatus
-			pageCondition.signal();
+			pageCondition.signalAll();
 		}
 		finally
 		{
@@ -216,6 +269,11 @@ public class AsyncJasperPrintAccessor implements JasperPrintAccessor, Asynchrono
 
 	public void pageGenerated(JasperPrint jasperPrint, int pageIndex)
 	{
+		if (log.isDebugEnabled())
+		{
+			log.debug("page " + pageIndex + " generated");
+		}
+		
 		lock.lock();
 		try
 		{
@@ -226,7 +284,7 @@ public class AsyncJasperPrintAccessor implements JasperPrintAccessor, Asynchrono
 			
 			pageCount = pageIndex + 1;
 			
-			pageCondition.signal();
+			pageCondition.signalAll();
 		}
 		finally
 		{
@@ -236,6 +294,11 @@ public class AsyncJasperPrintAccessor implements JasperPrintAccessor, Asynchrono
 
 	public void pageUpdated(JasperPrint jasperPrint, int pageIndex)
 	{
+		if (log.isDebugEnabled())
+		{
+			log.debug("page " + pageIndex + " updated");
+		}
+		
 		lock.lock();
 		try
 		{

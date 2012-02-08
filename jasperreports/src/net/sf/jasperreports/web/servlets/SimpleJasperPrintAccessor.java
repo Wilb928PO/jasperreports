@@ -23,6 +23,9 @@
  */
 package net.sf.jasperreports.web.servlets;
 
+import java.io.Serializable;
+
+import net.sf.jasperreports.engine.JRConstants;
 import net.sf.jasperreports.engine.JasperPrint;
 
 /**
@@ -31,8 +34,10 @@ import net.sf.jasperreports.engine.JasperPrint;
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
-public class SimpleJasperPrintAccessor implements JasperPrintAccessor
+public class SimpleJasperPrintAccessor implements JasperPrintAccessor, Serializable
 {
+
+	private static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
 
 	private final JasperPrint jasperPrint;
 	
@@ -52,6 +57,11 @@ public class SimpleJasperPrintAccessor implements JasperPrintAccessor
 	}
 
 	public JasperPrint getJasperPrint()
+	{
+		return jasperPrint;
+	}
+
+	public JasperPrint getFinalJasperPrint()
 	{
 		return jasperPrint;
 	}

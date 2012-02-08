@@ -24,15 +24,12 @@
 package net.sf.jasperreports.engine.fill;
 
 import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
 
 import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.JasperReportsContext;
 
@@ -45,23 +42,10 @@ import net.sf.jasperreports.engine.JasperReportsContext;
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
-public class AsynchronousFillHandle
+public class AsynchronousFillHandle extends BaseFillHandle
 {	
-	protected final JasperReportsContext jasperReportsContext;
-	protected final JasperReport jasperReport;
-	protected final Map<String,Object> parameters;
-	protected final JRDataSource dataSource;
-	protected final Connection conn;
-	protected final JRBaseFiller filler;
-	protected final List<AsynchronousFilllListener> listeners;
 	protected Thread fillThread;
-	protected boolean started;
-	protected boolean running;
-	protected boolean cancelled;
-	protected final Object lock;
-	
 	protected Integer priority;
-	
 	protected String threadName;
 	
 	protected AsynchronousFillHandle (
@@ -101,200 +85,39 @@ public class AsynchronousFillHandle
 		Connection conn
 		) throws JRException
 	{
-		this.jasperReportsContext = jasperReportsContext;
-		this.jasperReport = jasperReport;
-		this.parameters = parameters;
-		this.dataSource = dataSource;
-		this.conn = conn;
-		this.filler = JRFiller.createFiller(jasperReportsContext, jasperReport);
-		this.listeners = new ArrayList<AsynchronousFilllListener>();
-		lock = this;
+		super(jasperReportsContext, jasperReport, parameters, dataSource, conn);
 	}
-
 	
 	/**
-	 * Adds a listener to the filling process.
-	 * 
-	 * @param listener the listener to be added
+	 * Returns an executor that creates a new thread to perform the report execution.
 	 */
-	public void addListener(AsynchronousFilllListener listener)
+	@Override
+	protected Executor getReportExecutor()
 	{
-		listeners.add(listener);
+		return new ThreadExecutor();
 	}
 
-	/**
-	 * Adds a fill listener to the filling process.
-	 * 
-	 * The fill listener is notified of intermediate events that occur
-	 * during the report generation.
-	 * 
-	 * @param listener the listener to add
-	 */
-	public void addFillListener(FillListener listener)
+	protected class ThreadExecutor implements Executor
 	{
-		filler.addFillListener(listener);
-	}
-
-
-	/**
-	 * Removes a listener from the filling process.
-	 * 
-	 * @param listener the listener to be removed
-	 * @return <tt>true</tt> if the listener was found and removed
-	 */
-	public boolean removeListener(AsynchronousFilllListener listener)
-	{
-		return listeners.remove(listener);
-	}
-
-	
-	protected class ReportFiller implements Runnable
-	{
-		public void run()
+		public void execute(Runnable command)
 		{
-			synchronized (lock)
+			if (threadName == null)
 			{
-				running = true;
+				fillThread = new Thread(command);
+			}
+			else
+			{
+				fillThread = new Thread(command, threadName);
 			}
 			
-			try
+			if (priority != null)
 			{
-				JasperPrint print;
-				if (conn != null)
-				{
-					print = filler.fill(parameters, conn);
-				}
-				else if (dataSource != null)
-				{
-					print = filler.fill(parameters, dataSource);
-				}
-				else
-				{
-					print = filler.fill(parameters);
-				}
-				
-				notifyFinish(print);
-			}
-			catch (Exception e)
-			{
-				synchronized (lock)
-				{
-					if (cancelled)
-					{
-						notifyCancel();
-					}
-					else
-					{
-						notifyError(e);
-					}
-				}
-			}
-			finally
-			{
-				synchronized (lock)
-				{
-					running = false;
-				}
-			}
-		}
-	}
-	
-	
-	/**
-	 * Starts the filling process asychronously.
-	 * <p>
-	 * The filling is launched on a new thread and the method exits
-	 * after the thread is started.
-	 * <p>
-	 * When the filling finishes either in success or failure, the listeners
-	 * are notified.  
-	 */
-	public void startFill()
-	{
-		synchronized (lock)
-		{
-			if (started)
-			{
-				throw new IllegalStateException("Fill already started.");
-			}
-
-			started = true;
-		}
-		
-		ReportFiller reportFiller = new ReportFiller();
-		
-		//FIXME configure a task executer here
-		if (threadName == null)
-		{
-			fillThread = new Thread(reportFiller);
-		}
-		else
-		{
-			fillThread = new Thread(reportFiller, threadName);
-		}
-		
-		if (priority != null)
-		{
-			fillThread.setPriority(priority.intValue());
-		}
-		
-		fillThread.start();
-	}
-
-	
-	/**
-	 * Cancels the fill started by the handle.
-	 * <p>
-	 * The method sends a cancel signal to the filling process.
-	 * When the filling process will end, the listeners will be notified 
-	 * that the filling has been cancelled.
-	 * 
-	 * @throws JRException
-	 */
-	public void cancellFill() throws JRException
-	{
-		synchronized (lock)
-		{
-			if (!running)
-			{
-				throw new IllegalStateException("Fill not running.");
+				fillThread.setPriority(priority.intValue());
 			}
 			
-			filler.cancelFill();
-			cancelled = true;
+			fillThread.start();
 		}
 	}
-	
-	
-	protected void notifyFinish(JasperPrint print)
-	{
-		for (Iterator<AsynchronousFilllListener> i = listeners.iterator(); i.hasNext();)
-		{
-			AsynchronousFilllListener listener = i.next();
-			listener.reportFinished(print);
-		}
-	}
-	
-	
-	protected void notifyCancel()
-	{
-		for (Iterator<AsynchronousFilllListener> i = listeners.iterator(); i.hasNext();)
-		{
-			AsynchronousFilllListener listener =  i.next();
-			listener.reportCancelled();
-		}
-	}
-	
-	
-	protected void notifyError(Throwable e)
-	{
-		for (Iterator<AsynchronousFilllListener> i = listeners.iterator(); i.hasNext();)
-		{
-			AsynchronousFilllListener listener = i.next();
-			listener.reportFillError(e);
-		}
-	}
-
 
 	/**
 	 * Creates an asychronous filling handle.
@@ -430,18 +253,5 @@ public class AsynchronousFillHandle
 				fillThread.setName(name);
 			}
 		}
-	}
-	
-	/**
-	 * Determines wheter a page generated by the fill process is final or not.
-	 * 
-	 * @param pageIdx the page index
-	 * @return whether the page at the specified index is final or can be subject to 
-	 * future changes
-	 * @see FillListener#pageUpdated(JasperPrint, int)
-	 */
-	public boolean isPageFinal(int pageIdx)
-	{
-		return filler.isPageFinal(pageIdx);
 	}
 }

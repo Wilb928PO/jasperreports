@@ -48,14 +48,21 @@ public interface JasperPrintAccessor
 	/**
 	 * Returns the generated report.
 	 * 
-	 * @return
+	 * @return the generated report
 	 */
 	JasperPrint getJasperPrint();
 	
 	/**
+	 * Returns the generated report, ensuring before that the report generation has ended.
+	 * 
+	 * @return the final generated report
+	 */
+	JasperPrint getFinalJasperPrint();
+	
+	/**
 	 * Returns the total number of pages in the report, or <code>null</code> if not yet known.
 	 * 
-	 * @return
+	 * @return the total number of pages in the report if known
 	 */
 	Integer getTotalPageCount();
 	
