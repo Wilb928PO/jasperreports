@@ -38,6 +38,7 @@ import java.util.TimeZone;
 import net.sf.jasperreports.data.cache.DataCacheHandler;
 import net.sf.jasperreports.data.cache.DataCollector;
 import net.sf.jasperreports.engine.DatasetFilter;
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.EvaluationType;
 import net.sf.jasperreports.engine.JRAbstractScriptlet;
 import net.sf.jasperreports.engine.JRDataSource;
@@ -420,7 +421,7 @@ public class JRFillDataset implements JRDataset, DatasetFillContext
 	 */
 	public void createCalculator(JasperReport jasperReport) throws JRException
 	{
-		setCalculator(createCalculator(filler.jasperReportsContext, jasperReport, this));
+		setCalculator(createCalculator(getJRContext(), jasperReport, this));
 	}
 
 	protected void setCalculator(JRCalculator calculator)
@@ -471,7 +472,7 @@ public class JRFillDataset implements JRDataset, DatasetFillContext
 		
 		scriptlets = new ArrayList<JRAbstractScriptlet>();
 		
-		List<ScriptletFactory> factories = filler.jasperReportsContext.getExtensions(ScriptletFactory.class);
+		List<ScriptletFactory> factories = getJRContext().getExtensions(ScriptletFactory.class);
 		for (Iterator<ScriptletFactory> it = factories.iterator(); it.hasNext();)
 		{
 			ScriptletFactory factory = it.next();
@@ -762,7 +763,7 @@ public class JRFillDataset implements JRDataset, DatasetFillContext
 	 */
 	public void contributeParameters(Map<String,Object> parameterValues) throws JRException
 	{
-		parameterContributors = getParameterContributors(new ParameterContributorContext(filler.jasperReportsContext, this, parameterValues));//FIXMEJIVE null?
+		parameterContributors = getParameterContributors(new ParameterContributorContext(getJRContext(), this, parameterValues));
 		if (parameterContributors != null)
 		{
 			for(ParameterContributor contributor : parameterContributors)
@@ -772,6 +773,12 @@ public class JRFillDataset implements JRDataset, DatasetFillContext
 		}
 	}
 
+	protected JasperReportsContext getJRContext()
+	{
+		return filler == null
+				? DefaultJasperReportsContext.getInstance()//FIXMECONTEXT set the context somehow
+				: filler.jasperReportsContext;
+	}
 	
 	/**
 	 * 
@@ -794,7 +801,7 @@ public class JRFillDataset implements JRDataset, DatasetFillContext
 	private List<ParameterContributor> getParameterContributors(ParameterContributorContext context) throws JRException
 	{
 		List<ParameterContributor> allContributors = null;
-		List<?> factories = filler.jasperReportsContext.getExtensions(ParameterContributorFactory.class);
+		List<?> factories = getJRContext().getExtensions(ParameterContributorFactory.class);
 		if (factories != null && factories.size() > 0)
 		{
 			allContributors = new ArrayList<ParameterContributor>();
@@ -844,7 +851,7 @@ public class JRFillDataset implements JRDataset, DatasetFillContext
 			}
 			
 			JRQueryExecuterFactory queryExecuterFactory = JRQueryExecuterUtils.getQueryExecuterFactory(query.getLanguage());
-			queryExecuter = queryExecuterFactory.createQueryExecuter(filler.jasperReportsContext, parent, parametersMap);
+			queryExecuter = queryExecuterFactory.createQueryExecuter(getJRContext(), parent, parametersMap);
 			filler.fillContext.setRunningQueryExecuter(queryExecuter);
 			
 			return queryExecuter.createDatasource();
