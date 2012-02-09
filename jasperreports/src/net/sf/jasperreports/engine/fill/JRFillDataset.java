@@ -65,7 +65,7 @@ import net.sf.jasperreports.engine.ParameterContributorFactory;
 import net.sf.jasperreports.engine.data.IndexedDataSource;
 import net.sf.jasperreports.engine.design.JRDesignVariable;
 import net.sf.jasperreports.engine.query.JRQueryExecuter;
-import net.sf.jasperreports.engine.query.JRQueryExecuterFactory;
+import net.sf.jasperreports.engine.query.QueryExecuterFactory;
 import net.sf.jasperreports.engine.scriptlets.ScriptletFactory;
 import net.sf.jasperreports.engine.scriptlets.ScriptletFactoryContext;
 import net.sf.jasperreports.engine.type.CalculationEnum;
@@ -468,7 +468,7 @@ public class JRFillDataset implements JRDataset, DatasetFillContext
 	 */
 	protected List<JRAbstractScriptlet> createScriptlets(Map<String,Object> parameterValues) throws JRException
 	{
-		ScriptletFactoryContext context = new ScriptletFactoryContext(filler.getJasperReportsContext(), this, parameterValues);
+		ScriptletFactoryContext context = new ScriptletFactoryContext(getJasperReportsContext(), this, parameterValues);
 		
 		scriptlets = new ArrayList<JRAbstractScriptlet>();
 		
@@ -850,7 +850,7 @@ public class JRFillDataset implements JRDataset, DatasetFillContext
 				log.debug("Fill " + filler.fillerId + ": Creating " + query.getLanguage() + " query executer");
 			}
 			
-			JRQueryExecuterFactory queryExecuterFactory = JRQueryExecuterUtils.getQueryExecuterFactory(query.getLanguage());
+			QueryExecuterFactory queryExecuterFactory = JRQueryExecuterUtils.getInstance(getJasperReportsContext()).getExecuterFactory(query.getLanguage());
 			queryExecuter = queryExecuterFactory.createQueryExecuter(getJasperReportsContext(), parent, parametersMap);
 			filler.fillContext.setRunningQueryExecuter(queryExecuter);
 			

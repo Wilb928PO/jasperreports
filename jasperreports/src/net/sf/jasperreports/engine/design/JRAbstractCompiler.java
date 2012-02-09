@@ -265,7 +265,7 @@ public abstract class JRAbstractCompiler implements JRCompiler
 	
 	private void verifyDesign(JasperDesign jasperDesign, JRExpressionCollector expressionCollector) throws JRException
 	{
-		Collection<JRValidationFault> brokenRules = JRVerifier.verifyDesign(jasperDesign, expressionCollector);
+		Collection<JRValidationFault> brokenRules = JRVerifier.verifyDesign(jasperReportsContext, jasperDesign, expressionCollector);
 		if (brokenRules != null && brokenRules.size() > 0)
 		{
 			throw new JRValidationException(brokenRules);

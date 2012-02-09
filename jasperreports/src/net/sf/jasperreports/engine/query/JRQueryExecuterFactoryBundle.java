@@ -23,30 +23,24 @@
  */
 package net.sf.jasperreports.engine.query;
 
-import java.util.Map;
-
-import net.sf.jasperreports.engine.DefaultJasperReportsContext;
-import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRValueParameter;
-import net.sf.jasperreports.engine.JasperReportsContext;
+
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id: JRCsvQueryExecuterFactory.java 4595 2011-09-08 15:55:10Z teodord $
+ * @version $Id: QueryExecuterFactoryBundle.java 4595 2011-09-08 15:55:10Z teodord $
  */
-public abstract class JRAbstractQueryExecuterFactory implements QueryExecuterFactory 
+public interface JRQueryExecuterFactoryBundle
 {
-	
+
 	/**
-	 * @deprecated Replaced by {@link #createQueryExecuter(JasperReportsContext, JRDataset, Map)}.
+	 * 
 	 */
-	public JRQueryExecuter createQueryExecuter(
-		JRDataset dataset, 
-		Map<String, ? extends JRValueParameter> parameters
-		) throws JRException 
-	{
-		return createQueryExecuter(DefaultJasperReportsContext.getInstance(), dataset, parameters);
-	}
+	public String[] getLanguages();
+
+	/**
+	 * 
+	 */
+	public QueryExecuterFactory getQueryExecuterFactory(String language) throws JRException;
 
 }

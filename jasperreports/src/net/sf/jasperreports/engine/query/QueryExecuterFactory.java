@@ -27,7 +27,9 @@ import java.util.Map;
 
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.JRValueParameter;
+import net.sf.jasperreports.engine.JasperReportsContext;
 
 
 /**
@@ -38,11 +40,11 @@ import net.sf.jasperreports.engine.JRValueParameter;
  * Query executer factory instances must be thread-safe as they are cached and used as singletons.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
+ * @version $Id: JRQueryExecuterFactory.java 4988 2012-02-09 10:48:26Z teodord $
  * @see net.sf.jasperreports.engine.query.JRQueryExecuter
- * @deprecated Replaced by {@link QueryExecuterFactory}.
  */
-public interface JRQueryExecuterFactory
+@SuppressWarnings("deprecation")
+public interface QueryExecuterFactory extends JRQueryExecuterFactory
 {
 
 	
@@ -51,9 +53,8 @@ public interface JRQueryExecuterFactory
 	 * <p/>
 	 * To obtain query executer factories, a property having the query language appended to this prefix is used 
 	 * to get the query executer factory name.
-	 * @deprecated Replaced by {@link QueryExecuterFactory#QUERY_EXECUTER_FACTORY_PREFIX}.
 	 */
-	public static final String QUERY_EXECUTER_FACTORY_PREFIX = QueryExecuterFactory.QUERY_EXECUTER_FACTORY_PREFIX;
+	public static final String QUERY_EXECUTER_FACTORY_PREFIX = JRPropertiesUtil.PROPERTY_PREFIX + "query.executer.factory.";
 
 	
 	/**
@@ -83,9 +84,12 @@ public interface JRQueryExecuterFactory
 	 * 
 	 * @return a query executer
 	 * @throws JRException
-	 * @deprecated Replaced by {@link QueryExecuterFactory#createQueryExecuter(net.sf.jasperreports.engine.JasperReportsContext, JRDataset, Map)}.
 	 */
-	public JRQueryExecuter createQueryExecuter(JRDataset dataset, Map<String,? extends JRValueParameter> parameters) throws JRException;
+	public JRQueryExecuter createQueryExecuter(
+		JasperReportsContext jasperReportsContext, 
+		JRDataset dataset, 
+		Map<String,? extends JRValueParameter> parameters
+		) throws JRException;
 
 	
 	/**
