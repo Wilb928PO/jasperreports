@@ -135,7 +135,7 @@
 
 	<target name="jasperreportsAntCleanJar">
 		<ant antfile="${jasperreports.ant.file}" target="clean" inheritall="false"/>
-		<ant antfile="${jasperreports.ant.file}" target="plainjar" inheritall="false"/>
+		<ant antfile="${jasperreports.ant.file}" target="jar" inheritall="false"/>
 	</target>
 
 	<target name="copyWarToTomcat" depends="clean, war">
