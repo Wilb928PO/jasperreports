@@ -58,6 +58,7 @@ import net.sf.jasperreports.engine.JROrigin;
 import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JRPrintElement;
 import net.sf.jasperreports.engine.JRPrintPage;
+import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.JRReportTemplate;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JRStyle;
@@ -89,7 +90,6 @@ import net.sf.jasperreports.engine.util.FileResolver;
 import net.sf.jasperreports.engine.util.FormatFactory;
 import net.sf.jasperreports.engine.util.JRDataUtils;
 import net.sf.jasperreports.engine.util.JRGraphEnvInitializer;
-import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.engine.util.JRStyledTextParser;
 import net.sf.jasperreports.engine.util.LinkedMap;
 import net.sf.jasperreports.engine.util.LocalJasperReportsContext;
@@ -256,7 +256,8 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 	/**
 	 *
 	 */
-	protected JasperReportsContext jasperReportsContext;
+	private JasperReportsContext jasperReportsContext;
+	private JRPropertiesUtil propertiesUtil;
 
 	/**
 	 * The report.
@@ -321,7 +322,8 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 	{
 		JRGraphEnvInitializer.initializeGraphEnv();
 
-		this.jasperReportsContext = jasperReportsContext;
+		setJasperReportsContext(jasperReportsContext);
+		
 		this.jasperReport = jasperReport;
 
 		/*   */
@@ -369,7 +371,7 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 
 		jasperPrint = new JasperPrint();
 		
-		JRProperties.transferProperties(jasperReport, jasperPrint, 
+		getPropertiesUtil().transferProperties(jasperReport, jasperPrint, 
 				JasperPrint.PROPERTIES_PRINT_TRANSFER_PREFIX);
 		
 		if (initEvaluator == null)
@@ -674,6 +676,31 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 	/**
 	 *
 	 */
+	public JasperReportsContext getJasperReportsContext()
+	{
+		return jasperReportsContext;
+	}
+
+	/**
+	 *
+	 */
+	protected void setJasperReportsContext(JasperReportsContext jasperReportsContext)
+	{
+		this.jasperReportsContext = jasperReportsContext;
+		this.propertiesUtil = JRPropertiesUtil.getInstance(jasperReportsContext);
+	}
+
+	/**
+	 *
+	 */
+	public JRPropertiesUtil getPropertiesUtil()
+	{
+		return propertiesUtil;
+	}
+
+	/**
+	 *
+	 */
 	public JRStyledTextParser getStyledTextParser()
 	{
 		return styledTextParser;
@@ -932,7 +959,7 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 				localJasperReportsContext.setFileResolver((FileResolver)parameterValues.get(JRParameter.REPORT_FILE_RESOLVER));
 			}
 			
-			jasperReportsContext = localJasperReportsContext;
+			setJasperReportsContext(localJasperReportsContext);
 		}
 	}
 		
@@ -1296,7 +1323,7 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 					JRVirtualPrintPage.PROPERTY_VIRTUAL_PAGE_ELEMENT_SIZE);
 			if (pageSizeProp != null)
 			{
-				virtualPageSize = JRProperties.asInteger(pageSizeProp);
+				virtualPageSize = JRPropertiesUtil.asInteger(pageSizeProp);
 			}
 		}
 		

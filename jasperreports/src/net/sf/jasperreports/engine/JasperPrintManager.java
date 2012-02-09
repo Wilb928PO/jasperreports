@@ -29,7 +29,6 @@ import java.io.InputStream;
 import net.sf.jasperreports.engine.export.JRPrintServiceExporter;
 import net.sf.jasperreports.engine.print.JRPrinterAWT;
 import net.sf.jasperreports.engine.util.JRLoader;
-import net.sf.jasperreports.engine.util.JRProperties;
 
 
 /**
@@ -107,7 +106,7 @@ public final class JasperPrintManager
 		) throws JRException
 	{
 		//artf1936
-		boolean checkAvailablePrinters = JRProperties.getBooleanProperty(jasperPrint, PROPERTY_CHECK_AVAILABLE_PRINTERS, true);
+		boolean checkAvailablePrinters = JRPropertiesUtil.getInstance(jasperReportsContext).getBooleanProperty(jasperPrint, PROPERTY_CHECK_AVAILABLE_PRINTERS, true);
 		if (checkAvailablePrinters && !(unixSunJDK || JRPrintServiceExporter.checkAvailablePrinters())) 
 		{
 			throw new JRException("No printer available.");
@@ -440,7 +439,7 @@ public final class JasperPrintManager
 	 * <p/>
 	 * This property is by default set to <code>true</code>.
 	 */
-	public static final String PROPERTY_CHECK_AVAILABLE_PRINTERS = JRProperties.PROPERTY_PREFIX + "awt.check.available.printers";
+	public static final String PROPERTY_CHECK_AVAILABLE_PRINTERS = JRPropertiesUtil.PROPERTY_PREFIX + "awt.check.available.printers";
 
 	/* http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6604109 (artf2423) workaround */
 	protected static final boolean unixSunJDK;

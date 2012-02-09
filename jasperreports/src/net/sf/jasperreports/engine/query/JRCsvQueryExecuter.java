@@ -43,11 +43,10 @@ import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.JRParameter;
+import net.sf.jasperreports.engine.JRPropertiesUtil.PropertySuffix;
 import net.sf.jasperreports.engine.JRValueParameter;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.data.JRCsvDataSource;
-import net.sf.jasperreports.engine.util.JRProperties;
-import net.sf.jasperreports.engine.util.JRProperties.PropertySuffix;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -123,9 +122,9 @@ public class JRCsvQueryExecuter extends JRAbstractQueryExecuter
 							String csvSource = getStringParameterOrProperty(JRCsvQueryExecuterFactory.CSV_SOURCE);
 							if (csvSource != null) {
 								if (csvCharset != null) {
-									datasource = new JRCsvDataSource(jasperReportsContext, csvSource, csvCharset);
+									datasource = new JRCsvDataSource(getJasperReportsContext(), csvSource, csvCharset);
 								} else {
-									datasource = new JRCsvDataSource(jasperReportsContext, csvSource);
+									datasource = new JRCsvDataSource(getJasperReportsContext(), csvSource);
 								}
 							} else {
 								if (log.isWarnEnabled()){
@@ -151,7 +150,7 @@ public class JRCsvQueryExecuter extends JRAbstractQueryExecuter
 				if(columnNamesArray != null) {
 					columnNamesList = Arrays.asList(columnNamesArray);
 				} else {
-					List<PropertySuffix> properties = JRProperties.getAllProperties(dataset, JRCsvQueryExecuterFactory.CSV_COLUMN_NAMES);
+					List<PropertySuffix> properties = getPropertiesUtil().getAllProperties(dataset, JRCsvQueryExecuterFactory.CSV_COLUMN_NAMES);
 					if (properties != null && !properties.isEmpty()) {
 						columnNamesList = new ArrayList<String>();
 						for(int i = 0; i < properties.size(); i++) {

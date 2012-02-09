@@ -24,6 +24,7 @@
 package net.sf.jasperreports.engine.util.xml;
 
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.engine.util.JRSingletonCache;
 
@@ -46,7 +47,7 @@ public final class JRXPathExecuterUtils
 	/**
 	 * Property that holds the {@link JRXPathExecuterFactory XPath executer factory} class name.
 	 */
-	public static final String PROPERTY_XPATH_EXECUTER_FACTORY = JRProperties.PROPERTY_PREFIX + "xpath.executer.factory";
+	public static final String PROPERTY_XPATH_EXECUTER_FACTORY = JRPropertiesUtil.PROPERTY_PREFIX + "xpath.executer.factory";
 	
 	private static final JRSingletonCache<JRXPathExecuterFactory> cache = 
 			new JRSingletonCache<JRXPathExecuterFactory>(JRXPathExecuterFactory.class);

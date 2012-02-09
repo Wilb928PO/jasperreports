@@ -27,9 +27,9 @@ import java.util.Map;
 
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.JRValueParameter;
 import net.sf.jasperreports.engine.JasperReportsContext;
-import net.sf.jasperreports.engine.util.JRProperties;
 
 /**
  * Java Persistence API query executer factory for EJBQL queries.
@@ -76,12 +76,12 @@ public class JRJpaQueryExecuterFactory extends JRAbstractQueryExecuterFactory
 	 * <p/>
 	 * By default, all the rows are retrieved (no result pagination is performed).
 	 */
-	public static final String PROPERTY_JPA_QUERY_PAGE_SIZE = JRProperties.PROPERTY_PREFIX + "ejbql.query.page.size";
+	public static final String PROPERTY_JPA_QUERY_PAGE_SIZE = JRPropertiesUtil.PROPERTY_PREFIX + "ejbql.query.page.size";
 
 	/**
 	 * Property specifying the prefix for EJBQL query hints.
 	 */
-	public static final String PROPERTY_JPA_QUERY_HINT_PREFIX = JRProperties.PROPERTY_PREFIX + "ejbql.query.hint.";
+	public static final String PROPERTY_JPA_QUERY_HINT_PREFIX = JRPropertiesUtil.PROPERTY_PREFIX + "ejbql.query.hint.";
 	
 	public JRQueryExecuter createQueryExecuter(
 		JasperReportsContext jasperReportsContext,

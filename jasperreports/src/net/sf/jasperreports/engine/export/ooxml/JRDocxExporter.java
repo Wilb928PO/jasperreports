@@ -59,6 +59,7 @@ import net.sf.jasperreports.engine.JRPrintLine;
 import net.sf.jasperreports.engine.JRPrintPage;
 import net.sf.jasperreports.engine.JRPrintRectangle;
 import net.sf.jasperreports.engine.JRPrintText;
+import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.JRRenderable;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JRStyle;
@@ -80,7 +81,6 @@ import net.sf.jasperreports.engine.export.OccupiedGridCell;
 import net.sf.jasperreports.engine.export.zip.FileBufferedZipEntry;
 import net.sf.jasperreports.engine.type.LineDirectionEnum;
 import net.sf.jasperreports.engine.type.ModeEnum;
-import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.engine.util.JRStringUtil;
 import net.sf.jasperreports.engine.util.JRStyledText;
 import net.sf.jasperreports.engine.util.JRTextAttribute;
@@ -104,15 +104,15 @@ public class JRDocxExporter extends JRAbstractExporter
 	 * The exporter key, as used in
 	 * {@link GenericElementHandlerEnviroment#getHandler(net.sf.jasperreports.engine.JRGenericElementType, String)}.
 	 */
-	public static final String DOCX_EXPORTER_KEY = JRProperties.PROPERTY_PREFIX + "docx";
+	public static final String DOCX_EXPORTER_KEY = JRPropertiesUtil.PROPERTY_PREFIX + "docx";
 	
-	protected static final String DOCX_EXPORTER_PROPERTIES_PREFIX = JRProperties.PROPERTY_PREFIX + "export.docx.";
+	protected static final String DOCX_EXPORTER_PROPERTIES_PREFIX = JRPropertiesUtil.PROPERTY_PREFIX + "export.docx.";
 
 	/**
 	 * This property is used to mark text elements as being hidden either for printing or on-screen display.
 	 * @see JRProperties
 	 */
-	public static final String PROPERTY_HIDDEN_TEXT = JRProperties.PROPERTY_PREFIX + "export.docx.hidden.text";
+	public static final String PROPERTY_HIDDEN_TEXT = JRPropertiesUtil.PROPERTY_PREFIX + "export.docx.hidden.text";
 
 	/**
 	 *
@@ -748,7 +748,7 @@ public class JRDocxExporter extends JRAbstractExporter
 				text.getStyle(), 
 				styledText, 
 				getTextLocale(text),
-				JRProperties.getBooleanProperty(text, PROPERTY_HIDDEN_TEXT, false),
+				getPropertiesUtil().getBooleanProperty(text, PROPERTY_HIDDEN_TEXT, false),
 				startedHyperlink
 				);
 		}

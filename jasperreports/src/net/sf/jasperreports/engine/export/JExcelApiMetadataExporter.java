@@ -96,6 +96,7 @@ import net.sf.jasperreports.engine.JRPrintImage;
 import net.sf.jasperreports.engine.JRPrintLine;
 import net.sf.jasperreports.engine.JRPrintRectangle;
 import net.sf.jasperreports.engine.JRPrintText;
+import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.JRRenderable;
 import net.sf.jasperreports.engine.JRWrappingSvgRenderer;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -116,7 +117,6 @@ import net.sf.jasperreports.engine.type.RotationEnum;
 import net.sf.jasperreports.engine.type.VerticalAlignEnum;
 import net.sf.jasperreports.engine.util.JRFontUtil;
 import net.sf.jasperreports.engine.util.JRImageLoader;
-import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.engine.util.JRStyledText;
 
 import org.apache.commons.collections.ReferenceMap;
@@ -138,24 +138,24 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter
 	 * <p/>
 	 * This property is by default not set (<code>false</code>).
 	 * 
-	 * @see JRProperties
+	 * @see JRPropertiesUtil
 	 */
-	public static final String PROPERTY_USE_TEMP_FILE = JRProperties.PROPERTY_PREFIX + "export.jxl.use.temp.file";
+	public static final String PROPERTY_USE_TEMP_FILE = JRPropertiesUtil.PROPERTY_PREFIX + "export.jxl.use.temp.file";
 
 	/**
 	 * Boolean property specifying whether the cell format pattern is user-defined.
 	 * When set to true, the exporter will assume that the specified pattern is well defined. 
 	 * If the pattern is invalid, it won't be taken into account by the Excel file viewer.
 	 * 
-	 * @see JRProperties
+	 * @see JRPropertiesUtil
 	 */
-	public static final String PROPERTY_COMPLEX_FORMAT = JRProperties.PROPERTY_PREFIX + "export.jxl.cell.complex.format";
+	public static final String PROPERTY_COMPLEX_FORMAT = JRPropertiesUtil.PROPERTY_PREFIX + "export.jxl.cell.complex.format";
 
 	/**
 	 * The exporter key, as used in
 	 * {@link GenericElementHandlerEnviroment#getHandler(net.sf.jasperreports.engine.JRGenericElementType, String)}.
 	 */
-	public static final String JXL_EXPORTER_KEY = JRProperties.PROPERTY_PREFIX + "jxl";
+	public static final String JXL_EXPORTER_KEY = JRPropertiesUtil.PROPERTY_PREFIX + "jxl";
 	
 
 	protected static final Colour WHITE = Colour.WHITE;
@@ -234,14 +234,14 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter
 		nature = new JExcelApiExporterNature(filter, isIgnoreGraphics, isIgnorePageMargins);
 		
 		useTempFile = 
-			JRProperties.getBooleanProperty(
+			JRPropertiesUtil.getInstance(jasperReportsContext).getBooleanProperty(
 				jasperPrint,
 				PROPERTY_USE_TEMP_FILE,
 				false
 				);
 		
 		complexFormat = 
-			JRProperties.getBooleanProperty(
+			JRPropertiesUtil.getInstance(jasperReportsContext).getBooleanProperty(
 				jasperPrint,
 				PROPERTY_COMPLEX_FORMAT,
 				false
@@ -440,7 +440,7 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter
 		
 		if (currentColumnName != null && currentColumnName.length() > 0) 
 		{
-			boolean repeatValue = JRProperties.getBooleanProperty(line, JRXlsAbstractMetadataExporterParameter.PROPERTY_REPEAT_VALUE, false);
+			boolean repeatValue = JRPropertiesUtil.getInstance(jasperReportsContext).getBooleanProperty(line, JRXlsAbstractMetadataExporterParameter.PROPERTY_REPEAT_VALUE, false);
 			
 			setColumnName(currentColumnName);
 			setColumnWidth(columnNamesMap.get(currentColumnName), line.getWidth());
@@ -503,7 +503,7 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter
 		
 		if (currentColumnName != null && currentColumnName.length() > 0) 
 		{
-			boolean repeatValue = JRProperties.getBooleanProperty(element, JRXlsAbstractMetadataExporterParameter.PROPERTY_REPEAT_VALUE, false);
+			boolean repeatValue = JRPropertiesUtil.getInstance(jasperReportsContext).getBooleanProperty(element, JRXlsAbstractMetadataExporterParameter.PROPERTY_REPEAT_VALUE, false);
 			
 			setColumnName(currentColumnName);
 			setColumnWidth(columnNamesMap.get(currentColumnName), element.getWidth());
@@ -542,7 +542,7 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter
 		if (currentColumnName != null && currentColumnName.length() > 0) 
 		{
 			String currentColumnData = textElement.getPropertiesMap().getProperty(JRXlsAbstractMetadataExporterParameter.PROPERTY_DATA);
-			boolean repeatValue = JRProperties.getBooleanProperty(textElement, JRXlsAbstractMetadataExporterParameter.PROPERTY_REPEAT_VALUE, false);
+			boolean repeatValue = JRPropertiesUtil.getInstance(jasperReportsContext).getBooleanProperty(textElement, JRXlsAbstractMetadataExporterParameter.PROPERTY_REPEAT_VALUE, false);
 			
 			setColumnName(currentColumnName);
 			setColumnWidth(columnNamesMap.get(currentColumnName), textElement.getWidth());
@@ -1033,7 +1033,7 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter
 		String currentColumnName = element.getPropertiesMap().getProperty(JRXlsAbstractMetadataExporterParameter.PROPERTY_COLUMN_NAME);
 		if (currentColumnName != null && currentColumnName.length() > 0) 
 		{
-			boolean repeatValue = JRProperties.getBooleanProperty(element, JRXlsAbstractMetadataExporterParameter.PROPERTY_REPEAT_VALUE, false);
+			boolean repeatValue = JRPropertiesUtil.getInstance(jasperReportsContext).getBooleanProperty(element, JRXlsAbstractMetadataExporterParameter.PROPERTY_REPEAT_VALUE, false);
 			
 			setColumnName(currentColumnName);
 			setColumnWidth(columnNamesMap.get(currentColumnName), element.getWidth());
@@ -1147,7 +1147,7 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter
 				{
 					case CLIP:
 					{
-						int dpi = JRProperties.getIntegerProperty(JRRenderable.PROPERTY_IMAGE_DPI, 72);
+						int dpi = getPropertiesUtil().getIntegerProperty(JRRenderable.PROPERTY_IMAGE_DPI, 72);
 						double scale = dpi/72d;
 						
 						BufferedImage bi = 
@@ -1977,14 +1977,14 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter
 		sheets.setHeaderMargin(0.0);
 		sheets.setFooterMargin(0.0);
 
-		String fitWidth = JRProperties.getProperty(jasperPrint, PROPERTY_FIT_WIDTH);
+		String fitWidth = getPropertiesUtil().getProperty(jasperPrint, PROPERTY_FIT_WIDTH);
 		if(fitWidth != null && fitWidth.length() > 0)
 		{
 			sheets.setFitWidth(Integer.valueOf(fitWidth));
 			sheets.setFitToPages(true);
 		}
 		
-		String fitHeight = JRProperties.getProperty(jasperPrint, PROPERTY_FIT_HEIGHT);
+		String fitHeight = getPropertiesUtil().getProperty(jasperPrint, PROPERTY_FIT_HEIGHT);
 		if(fitHeight != null && fitHeight.length() > 0)
 		{
 			sheets.setFitHeight(Integer.valueOf(fitHeight));
@@ -2272,7 +2272,7 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter
 		String currentColumnName = element.getPropertiesMap().getProperty(JRXlsAbstractMetadataExporterParameter.PROPERTY_COLUMN_NAME);
 		if(currentColumnName != null && currentColumnName.length() > 0)
 		{
-			boolean repeatValue = JRProperties.getBooleanProperty(element, JRXlsAbstractMetadataExporterParameter.PROPERTY_REPEAT_VALUE, false);
+			boolean repeatValue = JRPropertiesUtil.getInstance(jasperReportsContext).getBooleanProperty(element, JRXlsAbstractMetadataExporterParameter.PROPERTY_REPEAT_VALUE, false);
 			int colIndex = columnNamesMap.get(currentColumnName);
 			
 			setColumnName(currentColumnName);
@@ -2334,7 +2334,7 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter
 			{
 				// we make this test to avoid reaching the global default value of the property directly
 				// and thus skipping the report level one, if present
-				return JRProperties.getBooleanProperty(element, PROPERTY_COMPLEX_FORMAT, complexFormat);
+				return JRPropertiesUtil.getInstance(jasperReportsContext).getBooleanProperty(element, PROPERTY_COMPLEX_FORMAT, complexFormat);
 			}
 		return complexFormat;
 	}

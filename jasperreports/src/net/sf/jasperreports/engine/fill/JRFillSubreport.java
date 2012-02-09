@@ -63,7 +63,6 @@ import net.sf.jasperreports.engine.design.JRVerifier;
 import net.sf.jasperreports.engine.type.CalculationEnum;
 import net.sf.jasperreports.engine.type.ModeEnum;
 import net.sf.jasperreports.engine.util.JRLoader;
-import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.engine.util.JRSingletonCache;
 import net.sf.jasperreports.engine.util.JRStyleResolver;
 import net.sf.jasperreports.repo.RepositoryUtil;
@@ -323,7 +322,7 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 				}
 				else if (source instanceof java.lang.String)
 				{
-					report = RepositoryUtil.getInstance(filler.jasperReportsContext).getReport(filler.getFillContext().getReportContext(), (String)source);
+					report = RepositoryUtil.getInstance(filler.getJasperReportsContext()).getReport(filler.getFillContext().getReportContext(), (String)source);
 //						(JasperReport)JRLoader.loadObjectFromLocation(
 //							(String)source, 
 //							filler.reportClassLoader,
@@ -429,7 +428,7 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 
 	protected DatasetExpressionEvaluator createEvaluator() throws JRException
 	{
-		return JasperCompileManager.getInstance(filler.jasperReportsContext).getEvaluator(jasperReport);
+		return JasperCompileManager.getInstance(filler.getJasperReportsContext()).getEvaluator(jasperReport);
 	}
 
 
@@ -444,12 +443,12 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 		{
 			case HORIZONTAL :
 			{
-				subreportFiller = new JRHorizontalFiller(filler.jasperReportsContext, jasperReport, evaluator, this);
+				subreportFiller = new JRHorizontalFiller(filler.getJasperReportsContext(), jasperReport, evaluator, this);
 				break;
 			}
 			case VERTICAL :
 			{
-				subreportFiller = new JRVerticalFiller(filler.jasperReportsContext, jasperReport, evaluator, this);
+				subreportFiller = new JRVerticalFiller(filler.getJasperReportsContext(), jasperReport, evaluator, this);
 				break;
 			}
 			default :
@@ -1145,9 +1144,9 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 		return null;
 	}
 	
-	protected static JRSubreportRunnerFactory getRunnerFactory() throws JRException
+	protected JRSubreportRunnerFactory getRunnerFactory() throws JRException
 	{
-		String factoryClassName = JRProperties.getProperty(JRSubreportRunnerFactory.SUBREPORT_RUNNER_FACTORY);
+		String factoryClassName = filler.getPropertiesUtil().getProperty(JRSubreportRunnerFactory.SUBREPORT_RUNNER_FACTORY);
 		if (factoryClassName == null)
 		{
 			throw new JRException("Property \"" + JRSubreportRunnerFactory.SUBREPORT_RUNNER_FACTORY + "\" must be set");

@@ -27,9 +27,9 @@ import java.util.Map;
 
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.JRValueParameter;
 import net.sf.jasperreports.engine.JasperReportsContext;
-import net.sf.jasperreports.engine.util.JRProperties;
 
 /**
  * Query executer factory for HQL queries that uses Hibernate 3.
@@ -78,7 +78,7 @@ public class JRHibernateQueryExecuterFactory extends JRAbstractQueryExecuterFact
 	 * 	<li><em>scroll</em> - the query will be run by calling <code>org.hibernate.Query.scroll()</code></li>
 	 * </ul>
 	 */
-	public static final String PROPERTY_HIBERNATE_QUERY_RUN_TYPE = JRProperties.PROPERTY_PREFIX + "hql.query.run.type";
+	public static final String PROPERTY_HIBERNATE_QUERY_RUN_TYPE = JRPropertiesUtil.PROPERTY_PREFIX + "hql.query.run.type";
 	
 	/**
 	 * Property specifying the number of result rows to be retrieved at once when the execution type is <em>list</em>.
@@ -87,7 +87,7 @@ public class JRHibernateQueryExecuterFactory extends JRAbstractQueryExecuterFact
 	 * <p/>
 	 * By default, all the rows are retrieved (no result pagination is performed).
 	 */
-	public static final String PROPERTY_HIBERNATE_QUERY_LIST_PAGE_SIZE = JRProperties.PROPERTY_PREFIX + "hql.query.list.page.size";
+	public static final String PROPERTY_HIBERNATE_QUERY_LIST_PAGE_SIZE = JRPropertiesUtil.PROPERTY_PREFIX + "hql.query.list.page.size";
 	
 	/**
 	 * Property specifying whether hibernate session cache should be cleared between two consecutive fetches when using pagination.
@@ -96,13 +96,13 @@ public class JRHibernateQueryExecuterFactory extends JRAbstractQueryExecuterFact
 	 * <p/>
 	 * @see net.sf.jasperreports.engine.query.JRHibernateQueryExecuterFactory#PROPERTY_HIBERNATE_QUERY_LIST_PAGE_SIZE
 	 */
-	public static final String PROPERTY_HIBERNATE_CLEAR_CACHE = JRProperties.PROPERTY_PREFIX + "hql.clear.cache";
+	public static final String PROPERTY_HIBERNATE_CLEAR_CACHE = JRPropertiesUtil.PROPERTY_PREFIX + "hql.clear.cache";
 	
 	/**
 	 * Property specifying whether field descriptions should be used to determine the mapping between the fields
 	 * and the query return values.
 	 */
-	public static final String PROPERTY_HIBERNATE_FIELD_MAPPING_DESCRIPTIONS = JRProperties.PROPERTY_PREFIX + "hql.field.mapping.descriptions";
+	public static final String PROPERTY_HIBERNATE_FIELD_MAPPING_DESCRIPTIONS = JRPropertiesUtil.PROPERTY_PREFIX + "hql.field.mapping.descriptions";
 	
 	/**
 	 * Value of the {@link #PROPERTY_HIBERNATE_QUERY_RUN_TYPE PROPERTY_HIBERNATE_QUERY_RUN_TYPE} property

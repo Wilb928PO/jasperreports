@@ -69,11 +69,11 @@ import net.sf.jasperreports.engine.JRChartPlot.JRSeriesColor;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRFont;
+import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.base.JRBaseFont;
 import net.sf.jasperreports.engine.type.ModeEnum;
 import net.sf.jasperreports.engine.util.JRFontUtil;
-import net.sf.jasperreports.engine.util.JRProperties;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -149,12 +149,12 @@ public class DefaultChartTheme implements ChartTheme
 	/**
 	 *
 	 */
-	public static final String PROPERTY_DIAL_VALUE_DISPLAY_VISIBLE = JRProperties.PROPERTY_PREFIX + "chart.dial.value.display.visible";
-	public static final String PROPERTY_DIAL_LABEL = JRProperties.PROPERTY_PREFIX + "chart.dial.label";
-	public static final String PROPERTY_RANGE_AXIS_TICK_COUNT = JRProperties.PROPERTY_PREFIX + "chart.range.axis.tick.count";
-	public static final String PROPERTY_RANGE_AXIS_TICK_INTERVAL = JRProperties.PROPERTY_PREFIX + "chart.range.axis.tick.interval";
-	public static final String PROPERTY_DOMAIN_AXIS_TICK_COUNT = JRProperties.PROPERTY_PREFIX + "chart.domain.axis.tick.count";
-	public static final String PROPERTY_DOMAIN_AXIS_TICK_INTERVAL = JRProperties.PROPERTY_PREFIX + "chart.domain.axis.tick.interval";
+	public static final String PROPERTY_DIAL_VALUE_DISPLAY_VISIBLE = JRPropertiesUtil.PROPERTY_PREFIX + "chart.dial.value.display.visible";
+	public static final String PROPERTY_DIAL_LABEL = JRPropertiesUtil.PROPERTY_PREFIX + "chart.dial.label";
+	public static final String PROPERTY_RANGE_AXIS_TICK_COUNT = JRPropertiesUtil.PROPERTY_PREFIX + "chart.range.axis.tick.count";
+	public static final String PROPERTY_RANGE_AXIS_TICK_INTERVAL = JRPropertiesUtil.PROPERTY_PREFIX + "chart.range.axis.tick.interval";
+	public static final String PROPERTY_DOMAIN_AXIS_TICK_COUNT = JRPropertiesUtil.PROPERTY_PREFIX + "chart.domain.axis.tick.count";
+	public static final String PROPERTY_DOMAIN_AXIS_TICK_INTERVAL = JRPropertiesUtil.PROPERTY_PREFIX + "chart.domain.axis.tick.interval";
 
 	/**
 	 *

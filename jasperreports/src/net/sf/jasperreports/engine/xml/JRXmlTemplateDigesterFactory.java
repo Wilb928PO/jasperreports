@@ -136,7 +136,7 @@ public class JRXmlTemplateDigesterFactory implements ErrorHandler
 
 	protected void configureDigester(Digester digester) throws SAXException, ParserConfigurationException 
 	{
-		boolean validating = JRProperties.getBooleanProperty(JRProperties.COMPILER_XML_VALIDATION);
+		boolean validating = JRProperties.getBooleanProperty(JRReportSaxParserFactory.COMPILER_XML_VALIDATION);
 		
 		digester.setErrorHandler(this);
 		digester.setValidating(validating);

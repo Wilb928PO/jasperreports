@@ -37,10 +37,10 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRPrintHyperlink;
 import net.sf.jasperreports.engine.JRPrintImageArea;
 import net.sf.jasperreports.engine.JRPrintImageAreaHyperlink;
+import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.fill.DefaultChartTheme;
-import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.engine.util.JRSingletonCache;
 
 import org.jfree.chart.ChartRenderingInfo;
@@ -207,11 +207,11 @@ public final class ChartUtil
 	/**
 	 * 
 	 */
-	public static ChartRendererFactory getChartRendererFactory(String renderType)
+	public ChartRendererFactory getRendererFactory(String renderType)
 	{
 		ChartRendererFactory chartRendererFactory = null;
 
-		String factoryClass = JRProperties.getProperty(ChartRendererFactory.PROPERTY_CHART_RENDERER_FACTORY_PREFIX + renderType);
+		String factoryClass = JRPropertiesUtil.getInstance(jasperReportsContext).getProperty(ChartRendererFactory.PROPERTY_CHART_RENDERER_FACTORY_PREFIX + renderType);
 		if (factoryClass == null)
 		{
 			throw new JRRuntimeException("No chart renderer factory specifyed for '" + renderType + "' render type.");
@@ -227,5 +227,13 @@ public final class ChartUtil
 		}
 		
 		return chartRendererFactory;
+	}
+
+	/**
+	 * @deprecated Replaced by {@link #getRendererFactory(String)}.
+	 */
+	public static ChartRendererFactory getChartRendererFactory(String renderType)
+	{
+		return getDefaultInstance().getRendererFactory(renderType);
 	}
 }

@@ -40,6 +40,7 @@ public class SimpleJasperReportsContext implements JasperReportsContext
 	private JasperReportsContext parent;
 	
 	private Map<String, Object> values = new HashMap<String, Object>();
+	private Map<String, String> properties;
 
 	/**
 	 *
@@ -97,4 +98,60 @@ public class SimpleJasperReportsContext implements JasperReportsContext
 		return null;
 	}
 	
+	/**
+	 * Returns the value of the property.
+	 * 
+	 * @param key the key
+	 * @return the property value
+	 */
+	public String getProperty(String key)
+	{
+		if (parent == null)
+		{
+			if (properties == null)
+			{
+				return null;
+			}
+			else
+			{
+				return properties.get(key);
+			}
+		}
+		else
+		{
+			if (properties != null && properties.containsKey(key))
+			{
+				return properties.get(key);
+			}
+			else
+			{
+				return parent.getProperty(key);
+			}
+		}
+	}
+	
+	/**
+	 * 
+	 */
+	public void setProperty(String key, String value)
+	{
+		if (properties == null)
+		{
+			properties = new HashMap<String, String>();
+		}
+		
+		properties.put(key, value);
+	}
+	
+	/**
+	 * 
+	 */
+	public Map<String, String> getProperties()
+	{
+		if (parent != null)
+		{
+			return parent.getProperties();
+		}
+		return null;
+	}
 }

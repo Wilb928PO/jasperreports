@@ -76,6 +76,8 @@ import net.sf.jasperreports.engine.JRPrintLine;
 import net.sf.jasperreports.engine.JRPrintPage;
 import net.sf.jasperreports.engine.JRPrintRectangle;
 import net.sf.jasperreports.engine.JRPrintText;
+import net.sf.jasperreports.engine.JRPropertiesUtil;
+import net.sf.jasperreports.engine.JRPropertiesUtil.PropertySuffix;
 import net.sf.jasperreports.engine.JRRenderable;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JasperReportsContext;
@@ -93,8 +95,6 @@ import net.sf.jasperreports.engine.util.BreakIteratorSplitCharacter;
 import net.sf.jasperreports.engine.util.JRFontUtil;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.engine.util.JRPdfaIccProfileNotFoundException;
-import net.sf.jasperreports.engine.util.JRProperties;
-import net.sf.jasperreports.engine.util.JRProperties.PropertySuffix;
 import net.sf.jasperreports.engine.util.JRStyledText;
 import net.sf.jasperreports.engine.util.JRTextAttribute;
 import net.sf.jasperreports.repo.RepositoryUtil;
@@ -140,13 +140,23 @@ public class JRPdfExporter extends JRAbstractExporter
 
 	private static final Log log = LogFactory.getLog(JRPdfExporter.class);
 	
-	public static final String PDF_EXPORTER_PROPERTIES_PREFIX = JRProperties.PROPERTY_PREFIX + "export.pdf.";
+	public static final String PDF_EXPORTER_PROPERTIES_PREFIX = JRPropertiesUtil.PROPERTY_PREFIX + "export.pdf.";
+
+	/**
+	 * Prefix of properties that specify font files for the PDF exporter.
+	 */
+	public static final String PDF_FONT_FILES_PREFIX = PDF_EXPORTER_PROPERTIES_PREFIX + "font.";
+	
+	/**
+	 * Prefix of properties that specify font directories for the PDF exporter.
+	 */
+	public static final String PDF_FONT_DIRS_PREFIX = PDF_EXPORTER_PROPERTIES_PREFIX + "fontdir.";
 
 	/**
 	 * The exporter key, as used in
 	 * {@link GenericElementHandlerEnviroment#getHandler(net.sf.jasperreports.engine.JRGenericElementType, String)}.
 	 */
-	public static final String PDF_EXPORTER_KEY = JRProperties.PROPERTY_PREFIX + "pdf";
+	public static final String PDF_EXPORTER_KEY = JRPropertiesUtil.PROPERTY_PREFIX + "pdf";
 	
 	private static final String EMPTY_BOOKMARK_TITLE = "";
 
@@ -378,7 +388,7 @@ public class JRPdfExporter extends JRAbstractExporter
 				);
 			
 			// no export param for this
-			collapseMissingBookmarkLevels = JRProperties.getBooleanProperty(jasperPrint, 
+			collapseMissingBookmarkLevels = JRPropertiesUtil.getInstance(jasperReportsContext).getBooleanProperty(jasperPrint, 
 					JRPdfExporterParameter.PROPERTY_COLLAPSE_MISSING_BOOKMARK_LEVELS, false);
 
 			OutputStream os = (OutputStream)parameters.get(JRExporterParameter.OUTPUT_STREAM);
@@ -441,7 +451,7 @@ public class JRPdfExporter extends JRAbstractExporter
 		if (useFillSplitCharacterParam == null)
 		{
 			useFillSplitCharacter = 
-				JRProperties.getBooleanProperty(
+				JRPropertiesUtil.getInstance(jasperReportsContext).getBooleanProperty(
 					jasperPrint.getPropertiesMap(),
 					JRPdfExporterParameter.PROPERTY_FORCE_LINEBREAK_POLICY,
 					false
@@ -644,7 +654,7 @@ public class JRPdfExporter extends JRAbstractExporter
 				document.setPageSize(pageSize);
 				
 				BorderOffset.setLegacy(
-					JRProperties.getBooleanProperty(jasperPrint, BorderOffset.PROPERTY_LEGACY_BORDER_OFFSET, false)
+					JRPropertiesUtil.getInstance(jasperReportsContext).getBooleanProperty(jasperPrint, BorderOffset.PROPERTY_LEGACY_BORDER_OFFSET, false)
 					);
 
 				List<JRPrintPage> pages = jasperPrint.getPages();
@@ -2445,12 +2455,12 @@ public class JRPdfExporter extends JRAbstractExporter
 	{
 		if (!fontsRegistered)
 		{
-			List<PropertySuffix> fontFiles = JRProperties.getProperties(JRProperties.PDF_FONT_FILES_PREFIX);
+			List<PropertySuffix> fontFiles = JRPropertiesUtil.getInstance(DefaultJasperReportsContext.getInstance()).getProperties(PDF_FONT_FILES_PREFIX);//FIXMECONTEXT no default here and below
 			if (!fontFiles.isEmpty())
 			{
 				for (Iterator<PropertySuffix> i = fontFiles.iterator(); i.hasNext();)
 				{
-					JRProperties.PropertySuffix font = i.next();
+					JRPropertiesUtil.PropertySuffix font = i.next();
 					String file = font.getValue();
 					if (file.toLowerCase().endsWith(".ttc"))
 					{
@@ -2464,12 +2474,12 @@ public class JRPdfExporter extends JRAbstractExporter
 				}
 			}
 
-			List<PropertySuffix> fontDirs = JRProperties.getProperties(JRProperties.PDF_FONT_DIRS_PREFIX);
+			List<PropertySuffix> fontDirs = JRPropertiesUtil.getInstance(DefaultJasperReportsContext.getInstance()).getProperties(PDF_FONT_DIRS_PREFIX);
 			if (!fontDirs.isEmpty())
 			{
 				for (Iterator<PropertySuffix> i = fontDirs.iterator(); i.hasNext();)
 				{
-					JRProperties.PropertySuffix dir = i.next();
+					JRPropertiesUtil.PropertySuffix dir = i.next();
 					FontFactory.registerDirectory(dir.getValue());
 				}
 			}

@@ -100,6 +100,7 @@ import net.sf.jasperreports.crosstabs.xml.JRCrosstabGroupFactory;
 import net.sf.jasperreports.crosstabs.xml.JRCrosstabMeasureFactory;
 import net.sf.jasperreports.crosstabs.xml.JRCrosstabParameterFactory;
 import net.sf.jasperreports.crosstabs.xml.JRCrosstabRowGroupFactory;
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRAnchor;
 import net.sf.jasperreports.engine.JRBand;
 import net.sf.jasperreports.engine.JRBreak;
@@ -150,6 +151,7 @@ import net.sf.jasperreports.engine.JRSubreportReturnValue;
 import net.sf.jasperreports.engine.JRTextElement;
 import net.sf.jasperreports.engine.JRTextField;
 import net.sf.jasperreports.engine.JRVariable;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.component.Component;
 import net.sf.jasperreports.engine.component.ComponentKey;
 import net.sf.jasperreports.engine.component.ComponentXmlWriter;
@@ -194,7 +196,15 @@ public class JRXmlWriter extends JRXmlBaseWriter
 	/**
 	 *
 	 */
+	private JasperReportsContext jasperReportsContext;
+
+	/**
+	 * @deprecated To be removed.
+	 */
 	private JRReport report;
+	/**
+	 * @deprecated To be removed.
+	 */
 	private String encoding;
 
 	private XmlWriterVisitor xmlWriterVisitor = new XmlWriterVisitor(this);
@@ -202,6 +212,15 @@ public class JRXmlWriter extends JRXmlBaseWriter
 
 	/**
 	 *
+	 */
+	public JRXmlWriter(JasperReportsContext jasperReportsContext)
+	{
+		this.jasperReportsContext = jasperReportsContext;
+	}
+
+
+	/**
+	 * @deprecated To be removed.
 	 */
 	protected JRXmlWriter(JRReport report, String encoding)
 	{
@@ -213,13 +232,12 @@ public class JRXmlWriter extends JRXmlBaseWriter
 	/**
 	 *
 	 */
-	public static String writeReport(JRReport report, String encoding)
+	public String write(JRReport report, String encoding)
 	{
-		JRXmlWriter writer = new JRXmlWriter(report, encoding);
 		StringWriter buffer = new StringWriter();
 		try
 		{
-			writer.writeReport(buffer);
+			writeReport(report, encoding, buffer);
 		}
 		catch (IOException e)
 		{
@@ -233,7 +251,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 	/**
 	 *
 	 */
-	public static void writeReport(
+	public void write(
 		JRReport report,
 		String destFileName,
 		String encoding
@@ -245,8 +263,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 		{
 			fos = new FileOutputStream(destFileName);
 			Writer out = new OutputStreamWriter(fos, encoding);
-			JRXmlWriter writer = new JRXmlWriter(report, encoding);
-			writer.writeReport(out);
+			writeReport(report, encoding, out);
 		}
 		catch (IOException e)
 		{
@@ -271,7 +288,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 	/**
 	 *
 	 */
-	public static void writeReport(
+	public void write(
 		JRReport report,
 		OutputStream outputStream,
 		String encoding
@@ -280,8 +297,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 		try
 		{
 			Writer out = new OutputStreamWriter(outputStream, encoding);
-			JRXmlWriter writer = new JRXmlWriter(report, encoding);
-			writer.writeReport(out);
+			writeReport(report, encoding, out);
 		}
 		catch (Exception e)
 		{
@@ -291,9 +307,44 @@ public class JRXmlWriter extends JRXmlBaseWriter
 
 
 	/**
+	 * @deprecated Replaced by {@link #write(JRReport, String)}.
+	 */
+	public static String writeReport(JRReport report, String encoding)
+	{
+		return new JRXmlWriter(DefaultJasperReportsContext.getInstance()).write(report, encoding);
+	}
+
+
+	/**
+	 * @deprecated Replaced by {@link #write(JRReport, String, String)}.
+	 */
+	public static void writeReport(
+		JRReport report,
+		String destFileName,
+		String encoding
+		) throws JRException
+	{
+		new JRXmlWriter(DefaultJasperReportsContext.getInstance()).write(report, destFileName, encoding);
+	}
+
+
+	/**
+	 * @deprecated Replaced by {@link #write(JRReport, OutputStream, String)}.
+	 */
+	public static void writeReport(
+		JRReport report,
+		OutputStream outputStream,
+		String encoding
+		) throws JRException
+	{
+			new JRXmlWriter(DefaultJasperReportsContext.getInstance()).write(report, outputStream, encoding);
+	}
+
+
+	/**
 	 *
 	 */
-	protected void writeReport(Writer out) throws IOException
+	protected void writeReport(JRReport report, String encoding, Writer out) throws IOException
 	{
 		useWriter(new JRXmlWriteHelper(out));
 
@@ -343,7 +394,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 			}
 		}
 
-		writeTemplates();
+		writeTemplates(report);
 
 		/*   */
 		JRStyle[] styles = report.getStyles();
@@ -443,6 +494,15 @@ public class JRXmlWriter extends JRXmlBaseWriter
 	}
 
 
+	/**
+	 * @deprecated Replaced by {@link #writeReport(JRReport, Writer)}.
+	 */
+	protected void writeReport(Writer out) throws IOException
+	{
+		writeReport(report, encoding, out);
+	}
+
+
 	private void writeProperties(JRPropertiesHolder propertiesHolder) throws IOException
 	{
 		if (propertiesHolder.hasProperties())
@@ -467,7 +527,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 	}
 
 
-	protected void writeTemplates() throws IOException
+	protected void writeTemplates(JRReport report) throws IOException
 	{
 		JRReportTemplate[] templates = report.getTemplates();
 		if (templates != null)
@@ -478,6 +538,15 @@ public class JRXmlWriter extends JRXmlBaseWriter
 				writeTemplate(template);
 			}
 		}
+	}
+
+
+	/**
+	 * @deprecated Replaced by {@link #writeTemplates(JRReport)}.
+	 */
+	protected void writeTemplates() throws IOException
+	{
+		writeTemplates(report);
 	}
 
 

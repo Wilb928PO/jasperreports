@@ -23,7 +23,6 @@
  */
 package net.sf.jasperreports.engine;
 
-import net.sf.jasperreports.engine.util.JRProperties;
 
 
 /**
@@ -178,9 +177,9 @@ public class JRExporterParameter
 	/**
 	 * Property whose value is used as default for the {@link #CHARACTER_ENCODING CHARACTER_ENCODING} export parameter.
 	 * 
-	 * @see JRProperties
+	 * @see JRPropertiesUtil
 	 */
-	public static final String PROPERTY_CHARACTER_ENCODING = JRProperties.PROPERTY_PREFIX + "export.character.encoding";
+	public static final String PROPERTY_CHARACTER_ENCODING = JRPropertiesUtil.PROPERTY_PREFIX + "export.character.encoding";
 
 
 	/**
@@ -257,7 +256,7 @@ public class JRExporterParameter
 	 * This property cannot be used as a report export hint.
 	 */
 	public static final String PROPERTY_EXPORT_PARAMETERS_OVERRIDE_REPORT_HINTS = 
-		JRProperties.PROPERTY_PREFIX + "export.parameters.override.report.hints";
+		JRPropertiesUtil.PROPERTY_PREFIX + "export.parameters.override.report.hints";
 	
 	/**
 	 * Export parameter that can override the 
@@ -286,8 +285,8 @@ public class JRExporterParameter
 	 * <p>
 	 * The property itself defaults to <code>false</code>.
 	 * </p>
-	 * @see JRProperties
+	 * @see JRPropertiesUtil
 	 */
-	public static final String PROPERTY_IGNORE_PAGE_MARGINS = JRProperties.PROPERTY_PREFIX + "export.ignore.page.margins";
+	public static final String PROPERTY_IGNORE_PAGE_MARGINS = JRPropertiesUtil.PROPERTY_PREFIX + "export.ignore.page.margins";
 
 }

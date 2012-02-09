@@ -68,6 +68,7 @@ import net.sf.jasperreports.engine.JRPrintLine;
 import net.sf.jasperreports.engine.JRPrintPage;
 import net.sf.jasperreports.engine.JRPrintRectangle;
 import net.sf.jasperreports.engine.JRPrintText;
+import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.JRRenderable;
 import net.sf.jasperreports.engine.JRWrappingSvgRenderer;
 import net.sf.jasperreports.engine.JasperReportsContext;
@@ -82,7 +83,6 @@ import net.sf.jasperreports.engine.type.OrientationEnum;
 import net.sf.jasperreports.engine.type.RunDirectionEnum;
 import net.sf.jasperreports.engine.util.FileBufferedWriter;
 import net.sf.jasperreports.engine.util.JRFontUtil;
-import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.engine.util.JRStyledText;
 
 import org.apache.commons.logging.Log;
@@ -99,7 +99,7 @@ public class JRRtfExporter extends JRAbstractExporter
 {
 	private static final Log log = LogFactory.getLog(JRRtfExporter.class);
 	
-	private static final String RTF_EXPORTER_PROPERTIES_PREFIX = JRProperties.PROPERTY_PREFIX + "export.rtf.";
+	private static final String RTF_EXPORTER_PROPERTIES_PREFIX = JRPropertiesUtil.PROPERTY_PREFIX + "export.rtf.";
 	
 	private static final int LINE_SPACING_FACTOR = 240; //(int)(240 * 2/3f);
 
@@ -107,7 +107,7 @@ public class JRRtfExporter extends JRAbstractExporter
 	 * The exporter key, as used in
 	 * {@link GenericElementHandlerEnviroment#getHandler(net.sf.jasperreports.engine.JRGenericElementType, String)}.
 	 */
-	public static final String RTF_EXPORTER_KEY = JRProperties.PROPERTY_PREFIX + "rtf";
+	public static final String RTF_EXPORTER_KEY = JRPropertiesUtil.PROPERTY_PREFIX + "rtf";
 	
 	/**
 	 *

@@ -21,30 +21,30 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with JasperReports. If not, see <http://www.gnu.org/licenses/>.
  */
-package net.sf.jasperreports.charts.util;
 
-import java.awt.geom.Rectangle2D;
+/*
+ * Contributors:
+ * Henri Chen - henrichen@users.sourceforge.net
+ * Kees Kuip  - keeskuip@users.sourceforge.net
+ */
+package net.sf.jasperreports.ant;
 
-import net.sf.jasperreports.engine.JRPropertiesUtil;
-import net.sf.jasperreports.engine.JRRenderable;
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
+import net.sf.jasperreports.engine.SimpleJasperReportsContext;
 
-import org.jfree.chart.JFreeChart;
+import org.apache.tools.ant.taskdefs.MatchingTask;
 
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
+ * @version $Id: JRAntCompileTask.java 4979 2012-02-07 16:07:16Z teodord $
  */
-public interface ChartRendererFactory
+public class JRBaseAntTask extends MatchingTask
 {
-	/**
-	 * 
-	 */
-	public static final String PROPERTY_CHART_RENDERER_FACTORY_PREFIX = JRPropertiesUtil.PROPERTY_PREFIX + "chart.renderer.factory.";
 
-	public JRRenderable getRenderer(
-		JFreeChart chart, 
-		ChartHyperlinkProvider chartHyperlinkProvider,
-		Rectangle2D rectangle
-		);
+	/**
+	 *
+	 */
+	protected SimpleJasperReportsContext jasperReportsContext = new SimpleJasperReportsContext(DefaultJasperReportsContext.getInstance());
+	
 }

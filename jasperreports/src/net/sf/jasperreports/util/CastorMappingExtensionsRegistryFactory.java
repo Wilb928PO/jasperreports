@@ -28,8 +28,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.sf.jasperreports.engine.JRPropertiesMap;
-import net.sf.jasperreports.engine.util.JRProperties;
-import net.sf.jasperreports.engine.util.JRProperties.PropertySuffix;
+import net.sf.jasperreports.engine.JRPropertiesUtil;
+import net.sf.jasperreports.engine.JRPropertiesUtil.PropertySuffix;
 import net.sf.jasperreports.extensions.DefaultExtensionsRegistry;
 import net.sf.jasperreports.extensions.ExtensionsRegistry;
 import net.sf.jasperreports.extensions.ExtensionsRegistryFactory;
@@ -53,7 +53,7 @@ public class CastorMappingExtensionsRegistryFactory implements ExtensionsRegistr
 	 */
 	public ExtensionsRegistry createRegistry(String registryId, JRPropertiesMap properties)
 	{
-		List<PropertySuffix> castorMappingProperties = JRProperties.getProperties(properties, CASTOR_MAPPING_PROPERTY_PREFIX);
+		List<PropertySuffix> castorMappingProperties = JRPropertiesUtil.getProperties(properties, CASTOR_MAPPING_PROPERTY_PREFIX);
 		List<CastorMapping> castorMappings = new ArrayList<CastorMapping>();
 		for (Iterator<PropertySuffix> it = castorMappingProperties.iterator(); it.hasNext();)
 		{

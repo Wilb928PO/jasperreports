@@ -42,7 +42,6 @@ import java.util.List;
 import java.util.Map;
 
 import net.sf.jasperreports.engine.type.OrientationEnum;
-import net.sf.jasperreports.engine.util.JRProperties;
 
 
 /**
@@ -64,9 +63,9 @@ public class JasperPrint implements Serializable, JRPropertiesHolder
 	 * Prefix for JasperReports properties that specify properties to be
 	 * transfered from report templates to print objects.
 	 * 
-	 * @see JRProperties#transferProperties(JRPropertiesHolder, JRPropertiesHolder, String)
+	 * @see JRPropertiesUtil#transferProperties(JRPropertiesHolder, JRPropertiesHolder, String)
 	 */
-	public static final String PROPERTIES_PRINT_TRANSFER_PREFIX = JRProperties.PROPERTY_PREFIX + "print.transfer.";
+	public static final String PROPERTIES_PRINT_TRANSFER_PREFIX = JRPropertiesUtil.PROPERTY_PREFIX + "print.transfer.";
 	
 	/**
 	 * A small class for implementing just the style provider functionality.

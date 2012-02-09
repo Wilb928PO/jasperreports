@@ -88,6 +88,7 @@ import net.sf.jasperreports.engine.JRImage;
 import net.sf.jasperreports.engine.JRLineBox;
 import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JRPropertiesMap;
+import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.JRPropertyExpression;
 import net.sf.jasperreports.engine.JRQuery;
 import net.sf.jasperreports.engine.JRQueryChunk;
@@ -188,10 +189,10 @@ public class JRVerifier
 	 * when the report is configured to check for overlaps.
 	 */
 	public static final String PROPERTY_ALLOW_ELEMENT_OVERLAP = 
-		JRProperties.PROPERTY_PREFIX + "allow.element.overlap";
+		JRPropertiesUtil.PROPERTY_PREFIX + "allow.element.overlap";
 	
 	public static final String PROPERTY_ALLOW_ELEMENT_NEGATIVE_WIDTH =
-		JRProperties.PROPERTY_PREFIX + "allow.element.negative.width";
+		JRPropertiesUtil.PROPERTY_PREFIX + "allow.element.negative.width";
 	
 	/**
 	 * Property that determines whether elements positioned at negative Y offsets 
@@ -218,7 +219,7 @@ public class JRVerifier
 	 * @since 3.7.3
 	 */
 	public static final String PROPERTY_ALLOW_ELEMENT_NEGATIVE_Y =
-		JRProperties.PROPERTY_PREFIX + "allow.element.negative.y";
+		JRPropertiesUtil.PROPERTY_PREFIX + "allow.element.negative.y";
 
 	/**
 	 * @deprecated To be removed.
@@ -1274,7 +1275,7 @@ public class JRVerifier
 	{
 		// check whether the element has been marked to allow to overwrite
 		return element.hasProperties()
-			&& JRProperties.asBoolean(element.getPropertiesMap().getProperty(
+			&& JRPropertiesUtil.asBoolean(element.getPropertiesMap().getProperty(
 							PROPERTY_ALLOW_ELEMENT_OVERLAP));
 	}
 	
@@ -2389,7 +2390,7 @@ public class JRVerifier
 			if (properties.containsProperty(PROPERTY_ALLOW_ELEMENT_NEGATIVE_Y))
 			{
 				// use element level property
-				allow = JRProperties.asBoolean(properties.getProperty(
+				allow = JRPropertiesUtil.asBoolean(properties.getProperty(
 						PROPERTY_ALLOW_ELEMENT_NEGATIVE_Y));
 			}
 		}

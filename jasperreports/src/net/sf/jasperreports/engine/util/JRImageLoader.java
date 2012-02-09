@@ -28,6 +28,7 @@ import java.io.InputStream;
 import java.net.URL;
 
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.JRRuntimeException;
 
 
@@ -43,13 +44,13 @@ public final class JRImageLoader
 	 * Configuration property specifying the name of the class implementing the {@link JRImageReader} interface
 	 * to be used by the engine. If not set, the engine will try to an image reader implementation that corresponds to the JVM version.
 	 */
-	public static final String PROPERTY_IMAGE_READER = JRProperties.PROPERTY_PREFIX + "image.reader";
+	public static final String PROPERTY_IMAGE_READER = JRPropertiesUtil.PROPERTY_PREFIX + "image.reader";
 
 	/**
 	 * Configuration property specifying the name of the class implementing the {@link JRImageEncoder} interface
 	 * to be used by the engine. If not set, the engine will try to an image encoder implementation that corresponds to the JVM version.
 	 */
-	public static final String PROPERTY_IMAGE_ENCODER = JRProperties.PROPERTY_PREFIX + "image.encoder";
+	public static final String PROPERTY_IMAGE_ENCODER = JRPropertiesUtil.PROPERTY_PREFIX + "image.encoder";
 
 	public static final String NO_IMAGE_RESOURCE = "net/sf/jasperreports/engine/images/image-16.png";
 	public static final String SUBREPORT_IMAGE_RESOURCE = "net/sf/jasperreports/engine/images/subreport-16.png";

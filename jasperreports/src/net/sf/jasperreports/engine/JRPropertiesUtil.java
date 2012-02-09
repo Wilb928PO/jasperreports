@@ -21,31 +21,21 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with JasperReports. If not, see <http://www.gnu.org/licenses/>.
  */
-package net.sf.jasperreports.engine.util;
+package net.sf.jasperreports.engine;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
-import net.sf.jasperreports.engine.DefaultJasperReportsContext;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRPropertiesHolder;
-import net.sf.jasperreports.engine.JRPropertiesMap;
-import net.sf.jasperreports.engine.JRPropertiesUtil;
-import net.sf.jasperreports.engine.JRRuntimeException;
-import net.sf.jasperreports.engine.design.JRCompiler;
-import net.sf.jasperreports.engine.export.JRPdfExporter;
-import net.sf.jasperreports.engine.xml.JRReportSaxParserFactory;
-import net.sf.jasperreports.engine.xml.PrintSaxParserFactory;
+import net.sf.jasperreports.engine.util.JRLoader;
+
+import org.apache.velocity.texen.util.PropertiesUtil;
 
 /**
  * Class that provides static methods for loading, getting and setting properties.
@@ -62,236 +52,36 @@ import net.sf.jasperreports.engine.xml.PrintSaxParserFactory;
  * </p> 
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
- * @deprecated Replaced by {@link JRPropertiesUtil}.
+ * @version $Id: JRProperties.java 4838 2011-12-06 11:47:15Z lucianc $
  */
-public final class JRProperties
+public final class JRPropertiesUtil
 {
 	/**
-	 * The default properties file.
-	 */
-	protected static final String DEFAULT_PROPERTIES_FILE = "jasperreports.properties";
-	
-	/**
 	 * The prefix used by all properties.
-	 * @deprecated Replaced by {@link JRPropertiesUtil#PROPERTY_PREFIX}.
 	 */
 	public static final String PROPERTY_PREFIX = "net.sf.jasperreports.";
-	
-	/**
-	 * The name of the system property that specifies the properties file name.
-	 * @deprecated Replaced by {@link DefaultJasperReportsContext#PROPERTIES_FILE}.
-	 */
-	public static final String PROPERTIES_FILE = PROPERTY_PREFIX + "properties";
-	
-	/**
-	 * The name of the class to be used for report compilation.
-	 * <p>
-	 * No default value.
-	 * 
-	 * @deprecated Replaced by {@link net.sf.jasperreports.engine.design.JRCompiler#COMPILER_PREFIX}.
-	 */
-	public static final String COMPILER_CLASS = PROPERTY_PREFIX + "compiler.class";
-	
-	/**
-	 * Whether to validate the xml report when compiling.
-	 * <p>
-	 * Defaults to <code>true</code>.
-	 * @deprecated Replaced by {@link JRReportSaxParserFactory#COMPILER_XML_VALIDATION}.
-	 */
-	public static final String COMPILER_XML_VALIDATION = PROPERTY_PREFIX + "compiler.xml.validation";
-	
-	/**
-	 * Whether to keep the java file generated when the report is compiled.
-	 * <p>
-	 * Defaults to <code>false</code>.
-	 * @deprecated Replaced by {@link JRCompiler#COMPILER_KEEP_JAVA_FILE}.
-	 */
-	public static final String COMPILER_KEEP_JAVA_FILE = PROPERTY_PREFIX + "compiler.keep.java.file";
-	
-	/**
-	 * The temporary directory used by the report compiler. 
-	 * <p>
-	 * Defaults to <code>System.getProperty("user.dir")</code>.
-	 * @deprecated Replaced by {@link JRCompiler#COMPILER_TEMP_DIR}.
-	 */
-	public static final String COMPILER_TEMP_DIR = PROPERTY_PREFIX + "compiler.temp.dir";
-	
-	/**
-	 * The classpath used by the report compiler. 
-	 * <p>
-	 * Defaults to <code>System.getProperty("java.class.path")</code>.
-	 * @deprecated Replaced by {@link JRCompiler#COMPILER_CLASSPATH}.
-	 */
-	public static final String COMPILER_CLASSPATH = PROPERTY_PREFIX + "compiler.classpath";
-	
-	/**
-	 * Validation flag used by the XML exporter.
-	 * <p>
-	 * Defaults to <code>true</code>.
-	 * @deprecated Replaced by {@link PrintSaxParserFactory#EXPORT_XML_VALIDATION}.
-	 */
-	public static final String EXPORT_XML_VALIDATION = PROPERTY_PREFIX + "export.xml.validation";
-	
-	/**
-	 * Prefix of properties that specify font files for the PDF exporter.
-	 * @deprecated Replaced by {@link JRPdfExporter#PDF_FONT_FILES_PREFIX}.
-	 */
-	public static final String PDF_FONT_FILES_PREFIX = PROPERTY_PREFIX + "export.pdf.font.";
-	
-	/**
-	 * Prefix of properties that specify font directories for the PDF exporter.
-	 * @deprecated Replaced by {@link JRPdfExporter#PDF_FONT_DIRS_PREFIX}.
-	 */
-	public static final String PDF_FONT_DIRS_PREFIX = PROPERTY_PREFIX + "export.pdf.fontdir.";
-	
-	/**
-	 * @deprecated Replaced by {@link net.sf.jasperreports.engine.query#QUERY_EXECUTER_FACTORY_PREFIX}.
-	 */
-	public static final String QUERY_EXECUTER_FACTORY_PREFIX = PROPERTY_PREFIX + "query.executer.factory.";
-	
-	// FIXME remove volatile after we get rid of restoreProperties()
-	protected static volatile ConcurrentHashMap<String, String> properties;
-	
-	protected static HashMap<String, String> savedProps;
-	
-	static
-	{
-		initProperties();
-	}
+
+	private JasperReportsContext jasperReportsContext;
+
 
 	/**
-	 * Loads the properties. 
+	 *
 	 */
-	protected static void initProperties()
+	private JRPropertiesUtil(JasperReportsContext jasperReportsContext)
 	{
-		try
-		{
-			Properties defaults = getDefaults();
-			String propFile = getSystemProperty(PROPERTIES_FILE);
-			Properties loadedProps;
-			if (propFile == null)
-			{
-				loadedProps = loadProperties(DEFAULT_PROPERTIES_FILE, defaults);
-				if (loadedProps == null)
-				{
-					loadedProps = new Properties(defaults);
-				}
-			}
-			else
-			{
-				loadedProps = loadProperties(propFile, defaults);
-				if (loadedProps == null)
-				{
-					throw new JRRuntimeException("Could not load properties file \"" + propFile + "\"");
-				}
-			}
-
-			//FIXME configurable concurrency level?
-			properties = new ConcurrentHashMap<String, String>();
-			for (Enumeration<?> names = loadedProps.propertyNames(); names.hasMoreElements();)
-			{
-				String name = (String) names.nextElement();
-				String value = loadedProps.getProperty(name);
-				properties.put(name, value);
-			}
-			
-			loadSystemProperties();
-		}
-		catch (JRException e)
-		{
-			throw new JRRuntimeException("Error loading the properties", e);
-		}
+		this.jasperReportsContext = jasperReportsContext;
 	}
 	
-	protected static void loadSystemProperties()
-	{
-		loadSystemProperty("jasper.reports.compiler.class", COMPILER_CLASS);
-		loadSystemProperty("jasper.reports.compile.xml.validation", COMPILER_XML_VALIDATION);
-		loadSystemProperty("jasper.reports.export.xml.validation", EXPORT_XML_VALIDATION);
-		loadSystemProperty("jasper.reports.compile.keep.java.file", COMPILER_KEEP_JAVA_FILE);
-		loadSystemProperty("jasper.reports.compile.temp", COMPILER_TEMP_DIR);
-		loadSystemProperty("jasper.reports.compile.class.path", COMPILER_CLASSPATH);	
-	}
 	
 	/**
-	 * Sets the default properties.
-	 * 
-	 * @return the default properties
+	 *
 	 */
-	protected static Properties getDefaults() throws JRException
+	public static JRPropertiesUtil getInstance(JasperReportsContext jasperReportsContext)
 	{
-		Properties defaults = new Properties();
-		
-		InputStream is = JRProperties.class.getResourceAsStream("/default.jasperreports.properties");
-		
-		if (is == null)
-		{
-			throw new JRException("Default properties file not found.");
-		}
-
-		try
-		{
-			defaults.load(is);
-		}
-		catch (IOException e)
-		{
-			throw new JRException("Failed to load default properties.", e);
-		}
-		finally
-		{
-			try
-			{
-				is.close();
-			}
-			catch (IOException e)
-			{
-			}
-		}
-		
-		String userDir = getSystemProperty("user.dir");
-		if (userDir != null)
-		{
-			defaults.setProperty(COMPILER_TEMP_DIR, userDir);
-		}
-		
-		String classPath = getSystemProperty("java.class.path");
-		if (classPath != null)
-		{
-			defaults.setProperty(COMPILER_CLASSPATH, classPath);
-		}
-
-		return defaults;
+		return new JRPropertiesUtil(jasperReportsContext);
 	}
-
-	/**
-	 * 
-	 */
-	protected static String getSystemProperty(String propertyName)
-	{
-		try
-		{
-			return System.getProperty(propertyName);
-		}
-		catch (SecurityException e)
-		{
-			// This could fail if we are in the applet viewer or some other 
-			// restrictive environment, but it should be safe to simply return null.
-			// We cannot log this properly using a logging API, 
-			// as we want to keep applet JAR dependencies to a minimum.
-			return null;
-		}
-	}
-
-	protected static void loadSystemProperty(String sysKey, String propKey)
-	{
-		String val = getSystemProperty(sysKey);
-		if (val != null)
-		{
-			properties.put(propKey, val);
-		}
-	}
-
+	
+	
 	/**
 	 * Loads a properties file from the classpath.
 	 * 
@@ -350,9 +140,9 @@ public final class JRProperties
 	 * @param key the key
 	 * @return the property value
 	 */
-	public static String getProperty (String key)
+	public String getProperty(String key)
 	{
-		return properties.get(key);
+		return jasperReportsContext.getProperty(key);
 	}
 	
 	/**
@@ -361,9 +151,9 @@ public final class JRProperties
 	 * @param key the key
 	 * @return the property value as a boolean
 	 */
-	public static boolean getBooleanProperty (String key)
+	public boolean getBooleanProperty(String key)
 	{
-		return asBoolean(properties.get(key));
+		return asBoolean(getProperty(key));
 	}
 	
 	/**
@@ -372,9 +162,9 @@ public final class JRProperties
 	 * @param key the key
 	 * @return the property value as an integer
 	 */
-	public static int getIntegerProperty (String key)
+	public int getIntegerProperty (String key)
 	{
-		return asInteger(properties.get(key));
+		return asInteger(getProperty(key));
 	}
 
 	/**
@@ -383,9 +173,9 @@ public final class JRProperties
 	 * @param key the key
 	 * @return the property value as a float
 	 */
-	public static float getFloatProperty (String key)
+	public float getFloatProperty (String key)
 	{
-		return asFloat(properties.get(key));
+		return asFloat(getProperty(key));
 	}
 
 	/**
@@ -422,80 +212,7 @@ public final class JRProperties
 	}
 	
 	/**
-	 * Sets the value of a property.
-	 * 
-	 * @param key the key
-	 * @param value the value
-	 */
-	public static void setProperty (String key, String value)
-	{
-		properties.put(key, value);
-	}
-	
-	/**
-	 * Sets the value of a property.
-	 * 
-	 * @param key the key
-	 * @param value the value
-	 */
-	public static void setProperty (String key, boolean value)
-	{
-		properties.put(key, String.valueOf(value));
-	}
-	
-	/**
-	 * Removes the value set for a property. 
-	 * 
-	 * <p>
-	 * This method removes values set in jasperreports.properties or via the
-	 * {@link #setProperty(String, String) setProperty} method.
-	 * Built-in default property values are not affected; if the property has
-	 * a default value it will be used after calling this method for the
-	 * property.
-	 * </p>
-	 * 
-	 * @param key the property key
-	 */
-	public static void removePropertyValue (String key)
-	{
-		properties.remove(key);
-	}
-	
-	/**
-	 * Saves a copy of the current properties.
-	 * 
-	 * @see #restoreProperties() 
-	 */
-	//FIXME implement per thread properties instead of this
-	public static void backupProperties ()
-	{
-		savedProps = new HashMap<String, String>(properties);
-	}
-	
-	/**
-	 * Restores previously saved properties.
-	 * 
-	 * @see #backupProperties() 
-	 */
-	//FIXME implement per thread properties instead of this
-	public static void restoreProperties ()
-	{
-		if (savedProps != null)
-		{
-			try
-			{
-				ConcurrentHashMap<String, String> newProps = new ConcurrentHashMap<String, String>(savedProps);
-				properties = newProps;
-			}
-			finally
-			{
-				savedProps = null;
-			}
-		}
-	}
-	
-	/**
-	 * Class used by {@link JRProperties#getProperties(String)}.
+	 * Class used by {@link PropertiesUtil#getProperties(String)}.
 	 * 
 	 * @author Lucian Chirita
 	 */
@@ -534,8 +251,10 @@ public final class JRProperties
 	 * @param prefix the key prefix
 	 * @return a list of {@link PropertySuffix PropertySuffix} objects containing the suffix of the key and the value
 	 */
-	public static List<PropertySuffix> getProperties (String prefix)
+	public List<PropertySuffix> getProperties (String prefix)
 	{
+		Map<String, String> properties = jasperReportsContext.getProperties();
+		
 		int prefixLength = prefix.length();
 		List<PropertySuffix> values = new ArrayList<PropertySuffix>();
 		for (Map.Entry<String, String> entry : properties.entrySet())
@@ -576,7 +295,7 @@ public final class JRProperties
 	 * @return a list of {@link PropertySuffix PropertySuffix} objects containing the suffix of the key and the value
 	 * @see #getProperties(JRPropertiesHolder, String)
 	 */
-	public static List<PropertySuffix> getAllProperties(JRPropertiesHolder propertiesHolder, String prefix)
+	public List<PropertySuffix> getAllProperties(JRPropertiesHolder propertiesHolder, String prefix)
 	{
 		return getAllProperties(getOwnProperties(propertiesHolder), prefix);
 	}
@@ -622,7 +341,7 @@ public final class JRProperties
 	 * @return a list of {@link PropertySuffix PropertySuffix} objects containing the suffix of the key and the value
 	 * @see #getProperties(JRPropertiesMap, String)
 	 */
-	public static List<PropertySuffix> getAllProperties(JRPropertiesMap propertiesMap, String prefix)
+	public List<PropertySuffix> getAllProperties(JRPropertiesMap propertiesMap, String prefix)
 	{
 		List<PropertySuffix> own = getProperties(propertiesMap, prefix);
 		List<PropertySuffix> global = getProperties(prefix);
@@ -665,7 +384,7 @@ public final class JRProperties
 	 * @param key the key
 	 * @return the property value
 	 */
-	public static String getProperty (JRPropertiesHolder propertiesHolder, String key)
+	public String getProperty(JRPropertiesHolder propertiesHolder, String key)
 	{
 		String value = null;
 		while (propertiesHolder != null && value == null)
@@ -679,7 +398,7 @@ public final class JRProperties
 		
 		if (value == null)
 		{
-			value = properties.get(key);
+			value = getProperty(key);
 		}
 		
 		return value;
@@ -693,7 +412,7 @@ public final class JRProperties
 	 * @param propertiesHolders the properties holders
 	 * @return the property value
 	 */
-	public static String getProperty (String key, JRPropertiesHolder ... propertiesHolders)
+	public String getProperty(String key, JRPropertiesHolder ... propertiesHolders)
 	{
 		String value = null;
 		main: for (JRPropertiesHolder propertiesHolder : propertiesHolders)
@@ -715,7 +434,7 @@ public final class JRProperties
 		
 		if (value == null)
 		{
-			value = properties.get(key);
+			value = getProperty(key);
 		}
 		
 		return value;
@@ -729,7 +448,7 @@ public final class JRProperties
 	 * @param key the key
 	 * @return the property value
 	 */
-	public static String getProperty (JRPropertiesMap propertiesMap, String key)
+	public String getProperty(JRPropertiesMap propertiesMap, String key)
 	{
 		String value = null;
 		if (propertiesMap != null)
@@ -739,7 +458,7 @@ public final class JRProperties
 		
 		if (value == null)
 		{
-			value = properties.get(key);
+			value = getProperty(key);
 		}
 		
 		return value;
@@ -754,7 +473,7 @@ public final class JRProperties
 	 * @param defaultValue the default value used if the property is not found
 	 * @return the property value
 	 */
-	public static boolean getBooleanProperty (JRPropertiesHolder propertiesHolder, String key, boolean defaultValue)
+	public boolean getBooleanProperty(JRPropertiesHolder propertiesHolder, String key, boolean defaultValue)
 	{
 		String value = getProperty(propertiesHolder, key);
 		
@@ -770,7 +489,7 @@ public final class JRProperties
 	 * @param defaultValue the default value used if the property is not found
 	 * @return the property value
 	 */
-	public static boolean getBooleanProperty (JRPropertiesMap propertiesMap, String key, boolean defaultValue)
+	public boolean getBooleanProperty(JRPropertiesMap propertiesMap, String key, boolean defaultValue)
 	{
 		String value = getProperty(propertiesMap, key);
 		
@@ -786,7 +505,7 @@ public final class JRProperties
 	 * @param defaultValue the default value used if the property is not found
 	 * @return the property value
 	 */
-	public static int getIntegerProperty (JRPropertiesHolder propertiesHolder, String key, int defaultValue)
+	public int getIntegerProperty(JRPropertiesHolder propertiesHolder, String key, int defaultValue)
 	{
 		String value = getProperty(propertiesHolder, key);
 		
@@ -802,7 +521,7 @@ public final class JRProperties
 	 * @param defaultValue the default value used if the property is not found
 	 * @return the property value
 	 */
-	public static int getIntegerProperty (JRPropertiesMap propertiesMap, String key, int defaultValue)
+	public int getIntegerProperty(JRPropertiesMap propertiesMap, String key, int defaultValue)
 	{
 		String value = getProperty(propertiesMap, key);
 		
@@ -816,7 +535,7 @@ public final class JRProperties
 	 * @param defaultValue the default value used if the property is not found
 	 * @return the property value
 	 */
-	public static int getIntegerProperty (String key, int defaultValue)
+	public int getIntegerProperty(String key, int defaultValue)
 	{
 		String value = getProperty(key);
 		
@@ -832,7 +551,7 @@ public final class JRProperties
 	 * @param defaultValue the default value used if the property is not found
 	 * @return the property value
 	 */
-	public static float getFloatProperty (JRPropertiesHolder propertiesHolder, String key, float defaultValue)
+	public float getFloatProperty(JRPropertiesHolder propertiesHolder, String key, float defaultValue)
 	{
 		String value = getProperty(propertiesHolder, key);
 		
@@ -848,7 +567,7 @@ public final class JRProperties
 	 * @param defaultValue the default value used if the property is not found
 	 * @return the property value
 	 */
-	public static float getFloatProperty (JRPropertiesMap propertiesMap, String key, float defaultValue)
+	public float getFloatProperty(JRPropertiesMap propertiesMap, String key, float defaultValue)
 	{
 		String value = getProperty(propertiesMap, key);
 		
@@ -862,7 +581,7 @@ public final class JRProperties
 	 * @param defaultValue the default value used if the property is not found
 	 * @return the property value
 	 */
-	public static float getFloatProperty (String key, float defaultValue)
+	public float getFloatProperty(String key, float defaultValue)
 	{
 		String value = getProperty(key);
 		
@@ -886,9 +605,9 @@ public final class JRProperties
 	 * @param key the key
 	 * @return the property value as a long
 	 */
-	public static long getLongProperty (String key)
+	public long getLongProperty(String key)
 	{
-		return asLong(properties.get(key));
+		return asLong(getProperty(key));
 	}
 
 	/**
@@ -900,7 +619,7 @@ public final class JRProperties
 	 * @param defaultValue the default value used if the property is not found
 	 * @return the property value
 	 */
-	public static long getLongProperty (JRPropertiesMap propertiesMap, String key, int defaultValue)
+	public long getLongProperty(JRPropertiesMap propertiesMap, String key, int defaultValue)
 	{
 		String value = getProperty(propertiesMap, key);
 		
@@ -916,7 +635,7 @@ public final class JRProperties
 	 * @param defaultValue the default value used if the property is not found
 	 * @return the property value
 	 */
-	public static long getLongProperty (JRPropertiesHolder propertiesHolder, String key, int defaultValue)
+	public long getLongProperty(JRPropertiesHolder propertiesHolder, String key, int defaultValue)
 	{
 		String value = getProperty(propertiesHolder, key);
 		
@@ -942,7 +661,7 @@ public final class JRProperties
 	 * @param tranferPropertiesPrefix the prefix of the JasperReports properties
 	 * that specify the object properties to copy 
 	 */
-	public static void transferProperties(JRPropertiesHolder source,
+	public void transferProperties(JRPropertiesHolder source,
 			JRPropertiesHolder destination, String tranferPropertiesPrefix)
 	{
 		if (!source.hasProperties())
@@ -962,7 +681,7 @@ public final class JRProperties
 	 * that specify the object properties to copy 
 	 * @see #transferProperties(JRPropertiesHolder, JRPropertiesHolder, String)
 	 */
-	public static void transferProperties(JRPropertiesMap source,
+	public void transferProperties(JRPropertiesMap source,
 			JRPropertiesHolder destination, String tranferPropertiesPrefix)
 	{
 		if (source == null || !source.hasProperties())
@@ -973,20 +692,20 @@ public final class JRProperties
 		transfer(source, destination, tranferPropertiesPrefix);
 	}
 
-	protected static void transfer(JRPropertiesMap source,
+	protected void transfer(JRPropertiesMap source,
 			JRPropertiesHolder destination, String tranferPropertiesPrefix)
 	{
 		List<PropertySuffix> transferPrefixProps = getProperties(tranferPropertiesPrefix);//FIXME cache this
 		for (Iterator<PropertySuffix> prefixIt = transferPrefixProps.iterator(); prefixIt.hasNext();)
 		{
-			JRProperties.PropertySuffix transferPrefixProp = prefixIt.next();
+			JRPropertiesUtil.PropertySuffix transferPrefixProp = prefixIt.next();
 			String transferPrefix = transferPrefixProp.getValue();
 			if (transferPrefix != null && transferPrefix.length() > 0)
 			{
 				List<PropertySuffix> transferProps = getProperties(source, transferPrefix);
 				for (Iterator<PropertySuffix> propIt = transferProps.iterator(); propIt.hasNext();)
 				{
-					JRProperties.PropertySuffix property = propIt.next();
+					JRPropertiesUtil.PropertySuffix property = propIt.next();
 					String value = property.getValue();
 					destination.getPropertiesMap().setProperty(property.getKey(), value);
 				}
@@ -1001,9 +720,9 @@ public final class JRProperties
 	 * @return the property value as a <code>Character</code>
 	 * @see #asCharacter(String)
 	 */
-	public static Character getCharacterProperty(String key)
+	public Character getCharacterProperty(String key)
 	{
-		return asCharacter(properties.get(key));
+		return asCharacter(getProperty(key));
 	}
 
 	/**
@@ -1015,7 +734,7 @@ public final class JRProperties
 	 * @param key the key
 	 * @return the property value as a <code>Character</code>
 	 */
-	public static Character getCharacterProperty(JRPropertiesMap propertiesMap, String key)
+	public Character getCharacterProperty(JRPropertiesMap propertiesMap, String key)
 	{
 		String value = getProperty(propertiesMap, key);
 		return asCharacter(value);
@@ -1036,10 +755,5 @@ public final class JRProperties
 	{
 		return value == null || value.length() == 0 ? null 
 				: new Character(value.charAt(0));
-	}
-	
-	
-	private JRProperties()
-	{
 	}
 }

@@ -27,10 +27,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.util.JRProperties;
+import net.sf.jasperreports.engine.JRPropertiesUtil;
+import net.sf.jasperreports.engine.JRPropertiesUtil.PropertySuffix;
 import net.sf.jasperreports.engine.util.JRSingletonCache;
-import net.sf.jasperreports.engine.util.JRProperties.PropertySuffix;
 
 
 /**
@@ -62,7 +63,7 @@ public final class DefaultQueryExecuterFactoryBundle implements QueryExecuterFac
 	public String[] getLanguages()
 	{
 		List<String> languages = new ArrayList<String>();
-		List<PropertySuffix> properties = JRProperties.getProperties(JRQueryExecuterFactory.QUERY_EXECUTER_FACTORY_PREFIX);
+		List<PropertySuffix> properties = JRPropertiesUtil.getInstance(DefaultJasperReportsContext.getInstance()).getProperties(JRQueryExecuterFactory.QUERY_EXECUTER_FACTORY_PREFIX);
 		for (Iterator<PropertySuffix> it = properties.iterator(); it.hasNext();)
 		{
 			PropertySuffix property = it.next();
@@ -76,7 +77,7 @@ public final class DefaultQueryExecuterFactoryBundle implements QueryExecuterFac
 	 */
 	public JRQueryExecuterFactory getQueryExecuterFactory(String language) throws JRException
 	{
-		String factoryClassName = JRProperties.getProperty(JRQueryExecuterFactory.QUERY_EXECUTER_FACTORY_PREFIX + language);
+		String factoryClassName = JRPropertiesUtil.getInstance(DefaultJasperReportsContext.getInstance()).getProperty(JRQueryExecuterFactory.QUERY_EXECUTER_FACTORY_PREFIX + language);
 		if (factoryClassName == null)
 		{
 			return null;

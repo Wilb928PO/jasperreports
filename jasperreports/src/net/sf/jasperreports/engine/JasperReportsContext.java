@@ -24,6 +24,7 @@
 package net.sf.jasperreports.engine;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -52,4 +53,17 @@ public interface JasperReportsContext//FIXMECONTEXT extends ExtensionsRegistry
 	 */
 	<T> List<T> getExtensions(Class<T> extensionType);
 	
+	/**
+	 * Returns the value of the property.
+	 * 
+	 * @param key the key
+	 * @return the property value
+	 */
+	public String getProperty(String key);
+
+	/**
+	 * 
+	 */
+	public Map<String, String> getProperties();
+
 }

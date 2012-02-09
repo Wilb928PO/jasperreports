@@ -43,6 +43,7 @@ import net.sf.jasperreports.engine.JRPen;
 import net.sf.jasperreports.engine.JRPrintEllipse;
 import net.sf.jasperreports.engine.JRPrintImage;
 import net.sf.jasperreports.engine.JRPrintLine;
+import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.JRRenderable;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.base.JRBaseLineBox;
@@ -51,7 +52,6 @@ import net.sf.jasperreports.engine.export.ExporterNature;
 import net.sf.jasperreports.engine.export.GenericElementHandlerEnviroment;
 import net.sf.jasperreports.engine.export.JRExporterGridCell;
 import net.sf.jasperreports.engine.type.LineDirectionEnum;
-import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.engine.util.JRStringUtil;
 
 import org.apache.commons.logging.Log;
@@ -69,13 +69,13 @@ public class JROdsExporter extends JROpenDocumentExporter
 {
 	private static final Log log = LogFactory.getLog(JROdsExporter.class);
 	
-	protected static final String ODS_EXPORTER_PROPERTIES_PREFIX = JRProperties.PROPERTY_PREFIX + "export.ods.";
+	protected static final String ODS_EXPORTER_PROPERTIES_PREFIX = JRPropertiesUtil.PROPERTY_PREFIX + "export.ods.";
 	
 	/**
 	 * The exporter key, as used in
 	 * {@link GenericElementHandlerEnviroment#getHandler(net.sf.jasperreports.engine.JRGenericElementType, String)}.
 	 */
-	public static final String ODS_EXPORTER_KEY = JRProperties.PROPERTY_PREFIX + "ods";
+	public static final String ODS_EXPORTER_KEY = JRPropertiesUtil.PROPERTY_PREFIX + "ods";
 	
 	protected class ExporterContext extends BaseExporterContext implements JROdsExporterContext
 	{

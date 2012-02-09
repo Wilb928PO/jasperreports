@@ -91,12 +91,14 @@ import net.sf.jasperreports.crosstabs.type.CrosstabColumnPositionEnum;
 import net.sf.jasperreports.crosstabs.type.CrosstabPercentageEnum;
 import net.sf.jasperreports.crosstabs.type.CrosstabRowPositionEnum;
 import net.sf.jasperreports.crosstabs.type.CrosstabTotalPositionEnum;
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRAnchor;
 import net.sf.jasperreports.engine.JRBand;
 import net.sf.jasperreports.engine.JRBreak;
 import net.sf.jasperreports.engine.JRChart;
 import net.sf.jasperreports.engine.JRChartDataset;
 import net.sf.jasperreports.engine.JRChartPlot;
+import net.sf.jasperreports.engine.JRChartPlot.JRSeriesColor;
 import net.sf.jasperreports.engine.JRChild;
 import net.sf.jasperreports.engine.JRComponentElement;
 import net.sf.jasperreports.engine.JRConditionalStyle;
@@ -147,8 +149,8 @@ import net.sf.jasperreports.engine.JRTextElement;
 import net.sf.jasperreports.engine.JRTextField;
 import net.sf.jasperreports.engine.JRVariable;
 import net.sf.jasperreports.engine.JRVisitor;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.TabStop;
-import net.sf.jasperreports.engine.JRChartPlot.JRSeriesColor;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.query.JRJdbcQueryExecuterFactory;
 import net.sf.jasperreports.engine.type.BreakTypeEnum;
@@ -190,6 +192,11 @@ public class JRApiWriter
 	/**
 	 *
 	 */
+	private JasperReportsContext jasperReportsContext;
+
+	/**
+	 * @deprecated To be removed.
+	 */
 	private JRReport report;
 
 	/**
@@ -207,13 +214,20 @@ public class JRApiWriter
 	
 	private JRApiWriterVisitor apiWriterVisitor = new JRApiWriterVisitor(this);
 
-	//TODO: remove this one below
-	JasperDesign jasperDesign = null;
-
 	private String indent;
+	
 	
 	/**
 	 *
+	 */
+	public JRApiWriter(JasperReportsContext jasperReportsContext)
+	{
+		this.jasperReportsContext = jasperReportsContext;
+	}
+
+	
+	/**
+	 * @deprecated To be removed.
 	 */
 	protected JRApiWriter(JRReport report)
 	{
@@ -224,11 +238,10 @@ public class JRApiWriter
 	/**
 	 *
 	 */
-	public static String writeReport(JRReport report)
+	public String write(JRReport report)
 	{
-		JRApiWriter writer = new JRApiWriter(report);
 		StringWriter buffer = new StringWriter();//FIXME use file buffered writer
-		writer.writeReport(buffer);
+		writeReport(report, buffer);
 		return buffer.toString();
 	}
 
@@ -236,7 +249,7 @@ public class JRApiWriter
 	/**
 	 *
 	 */
-	public static void writeReport(
+	public void write(
 		JRReport report,
 		String destFileName
 		) throws JRException
@@ -250,8 +263,7 @@ public class JRApiWriter
 			? report.getProperty(JRExporterParameter.PROPERTY_CHARACTER_ENCODING)
 			: "UTF-8";//FIXME this is an export time config property
 			Writer out = new OutputStreamWriter(fos, encoding);
-			JRApiWriter writer = new JRApiWriter(report);
-			writer.writeReport(out);
+			writeReport(report, out);
 		}
 		catch (IOException e)
 		{
@@ -276,7 +288,7 @@ public class JRApiWriter
 	/**
 	 *
 	 */
-	public static void writeReport(
+	public void write(
 		JRReport report,
 		OutputStream outputStream
 		) throws JRException
@@ -288,8 +300,7 @@ public class JRApiWriter
 			: "UTF-8";
 			
 			Writer out = new OutputStreamWriter(outputStream, encoding);
-			JRApiWriter writer = new JRApiWriter(report);
-			writer.writeReport(out);
+			writeReport(report, out);
 		}
 		catch (Exception e)
 		{
@@ -299,9 +310,42 @@ public class JRApiWriter
 
 
 	/**
+	 * @deprecated Replaced by {@link #write(JRReport)}.
+	 */
+	public static String writeReport(JRReport report)
+	{
+		return new JRApiWriter(DefaultJasperReportsContext.getInstance()).write(report);
+	}
+
+
+	/**
+	 * @deprecated Replaced by {@link #write(JRReport, String)}.
+	 */
+	public static void writeReport(
+		JRReport report,
+		String destFileName
+		) throws JRException
+	{
+		new JRApiWriter(DefaultJasperReportsContext.getInstance()).write(report, destFileName);
+	}
+
+
+	/**
+	 * @deprecated Replaced by {@link #write(JRReport, OutputStream)}.
+	 */
+	public static void writeReport(
+		JRReport report,
+		OutputStream outputStream
+		) throws JRException
+	{
+		new JRApiWriter(DefaultJasperReportsContext.getInstance()).write(report, outputStream);
+	}
+
+
+	/**
 	 *
 	 */
-	protected void writeReport(Writer aWriter)
+	protected void writeReport(JRReport report, Writer aWriter)
 	{
 		this.writer = aWriter;
 		indent = "";
@@ -514,6 +558,15 @@ public class JRApiWriter
 		
 		flush();//FIXME is this necessary?
 		close();
+	}
+
+
+	/**
+	 * @deprecated Replaced by {@link #writeReport(JRReport, Writer)}.
+	 */
+	protected void writeReport(Writer aWriter)
+	{
+		writeReport(report, aWriter);
 	}
 
 

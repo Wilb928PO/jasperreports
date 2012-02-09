@@ -102,7 +102,6 @@ import net.sf.jasperreports.engine.type.EvaluationTimeEnum;
 import net.sf.jasperreports.engine.type.HyperlinkTypeEnum;
 import net.sf.jasperreports.engine.type.ModeEnum;
 import net.sf.jasperreports.engine.util.JRClassLoader;
-import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.engine.util.JRStringUtil;
 import net.sf.jasperreports.engine.util.JRStyleResolver;
 
@@ -305,13 +304,13 @@ public class JRFillChart extends JRFillElement implements JRChart
 		renderType = chart.getRenderType();
 		if(renderType == null)
 		{
-			renderType = JRProperties.getProperty(getParentProperties(), JRChart.PROPERTY_CHART_RENDER_TYPE);
+			renderType = filler.getPropertiesUtil().getProperty(getParentProperties(), JRChart.PROPERTY_CHART_RENDER_TYPE);
 		}
 		
 		themeName = chart.getTheme();
 		if(themeName == null)
 		{
-			themeName = JRProperties.getProperty(getParentProperties(), JRChart.PROPERTY_CHART_THEME);
+			themeName = filler.getPropertiesUtil().getProperty(getParentProperties(), JRChart.PROPERTY_CHART_THEME);
 		}
 	}
 
@@ -791,7 +790,7 @@ public class JRFillChart extends JRFillElement implements JRChart
 		evaluateProperties(evaluation);
 		evaluateDatasetRun(evaluation);
 
-		ChartTheme theme = ChartUtil.getInstance(filler.jasperReportsContext).getTheme(themeName);
+		ChartTheme theme = ChartUtil.getInstance(filler.getJasperReportsContext()).getTheme(themeName);
 		
 		if (getChartType() == JRChart.CHART_TYPE_MULTI_AXIS)
 		{

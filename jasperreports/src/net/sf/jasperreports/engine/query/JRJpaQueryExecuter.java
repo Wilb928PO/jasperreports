@@ -37,12 +37,12 @@ import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRParameter;
+import net.sf.jasperreports.engine.JRPropertiesUtil;
+import net.sf.jasperreports.engine.JRPropertiesUtil.PropertySuffix;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JRValueParameter;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.data.JRJpaDataSource;
-import net.sf.jasperreports.engine.util.JRProperties;
-import net.sf.jasperreports.engine.util.JRProperties.PropertySuffix;
 import net.sf.jasperreports.engine.util.JRStringUtil;
 
 import org.apache.commons.logging.Log;
@@ -209,7 +209,7 @@ public class JRJpaQueryExecuter extends JRAbstractQueryExecuter
 		// Second, set query hints supplied by report properties which start with JREjbPersistenceQueryExecuterFactory.PROPERTY_JPA_PERSISTENCE_QUERY_HINT_PREFIX
 		// Example: net.sf.jasperreports.ejbql.query.hint.fetchSize
 		// This property will result in a query hint set with the name: fetchSize
-		List<PropertySuffix> properties = JRProperties.getProperties(dataset, 
+		List<PropertySuffix> properties = JRPropertiesUtil.getProperties(dataset, 
 				JRJpaQueryExecuterFactory.PROPERTY_JPA_QUERY_HINT_PREFIX);
 		for (Iterator<PropertySuffix> it = properties.iterator(); it.hasNext();) {
 			PropertySuffix property = it.next();
@@ -233,7 +233,7 @@ public class JRJpaQueryExecuter extends JRAbstractQueryExecuter
 		JRDataSource resDatasource;
 		
 		try {
-			int pageSize = JRProperties.getIntegerProperty(dataset, 
+			int pageSize = getPropertiesUtil().getIntegerProperty(dataset, 
 					JRJpaQueryExecuterFactory.PROPERTY_JPA_QUERY_PAGE_SIZE,
 					0);
 

@@ -78,6 +78,7 @@ import net.sf.jasperreports.engine.JRPrintLine;
 import net.sf.jasperreports.engine.JRPrintPage;
 import net.sf.jasperreports.engine.JRPrintRectangle;
 import net.sf.jasperreports.engine.JRPrintText;
+import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.JRRenderable;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JRWrappingSvgRenderer;
@@ -96,7 +97,6 @@ import net.sf.jasperreports.engine.type.ScaleImageEnum;
 import net.sf.jasperreports.engine.util.JRBoxUtil;
 import net.sf.jasperreports.engine.util.JRColorUtil;
 import net.sf.jasperreports.engine.util.JRFontUtil;
-import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.engine.util.JRStringUtil;
 import net.sf.jasperreports.engine.util.JRStyledText;
 import net.sf.jasperreports.engine.util.JRTextAttribute;
@@ -116,13 +116,13 @@ public class JRXhtmlExporter extends JRAbstractExporter
 {
 	private static final Log log = LogFactory.getLog(JRXhtmlExporter.class);
 	
-	private static final String XHTML_EXPORTER_PROPERTIES_PREFIX = JRProperties.PROPERTY_PREFIX + "export.xhtml.";
+	private static final String XHTML_EXPORTER_PROPERTIES_PREFIX = JRPropertiesUtil.PROPERTY_PREFIX + "export.xhtml.";
 
 	/**
 	 * The exporter key, as used in
 	 * {@link GenericElementHandlerEnviroment#getHandler(net.sf.jasperreports.engine.JRGenericElementType, String)}.
 	 */
-	public static final String XHTML_EXPORTER_KEY = JRProperties.PROPERTY_PREFIX + "xhtml";
+	public static final String XHTML_EXPORTER_KEY = JRPropertiesUtil.PROPERTY_PREFIX + "xhtml";
 	
 	/**
 	 *
@@ -2243,22 +2243,22 @@ public class JRXhtmlExporter extends JRAbstractExporter
 	 */
 	private void appendId(JRPrintElement element) throws IOException
 	{
-		String id = JRProperties.getProperty(element, JRHtmlExporter.PROPERTY_HTML_ID);
+		String id = getPropertiesUtil().getProperty(element, JRHtmlExporter.PROPERTY_HTML_ID);
 		if (id != null)
 		{
 			writer.write(" id=\"" + id + "\"");
 		}
-		String clazz = JRProperties.getProperty(element, JRHtmlExporter.PROPERTY_HTML_CLASS);
+		String clazz = getPropertiesUtil().getProperty(element, JRHtmlExporter.PROPERTY_HTML_CLASS);
 		if (clazz != null)
 		{
 			writer.write(" class=\"" + clazz + "\"");
 		}
-		String popupId = JRProperties.getProperty(element, JRHtmlExporter.PROPERTY_HTML_POPUP_ID);
+		String popupId = getPropertiesUtil().getProperty(element, JRHtmlExporter.PROPERTY_HTML_POPUP_ID);
 		if (popupId != null)
 		{
 			writer.write(" data-popupId=\"" + popupId + "\"");
 		}
-		String popupColumn = JRProperties.getProperty(element, JRHtmlExporter.PROPERTY_HTML_POPUP_COLUMN);
+		String popupColumn = getPropertiesUtil().getProperty(element, JRHtmlExporter.PROPERTY_HTML_POPUP_COLUMN);
 		if (popupColumn != null)
 		{
 			writer.write(" data-popupColumn=\"" + popupColumn + "\"");

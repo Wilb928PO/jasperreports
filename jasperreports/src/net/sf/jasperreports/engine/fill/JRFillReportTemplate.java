@@ -106,19 +106,19 @@ public class JRFillReportTemplate implements JRReportTemplate
 			
 			if (source instanceof String)
 			{
-				template = JRXmlTemplateLoader.getInstance(filler.jasperReportsContext).loadTemplate((String) source);
+				template = JRXmlTemplateLoader.getInstance(filler.getJasperReportsContext()).loadTemplate((String) source);
 			}
 			else if (source instanceof File)
 			{
-				template = JRXmlTemplateLoader.getInstance(filler.jasperReportsContext).loadTemplate((File) source);
+				template = JRXmlTemplateLoader.getInstance(filler.getJasperReportsContext()).loadTemplate((File) source);
 			}
 			else if (source instanceof URL)
 			{
-				template = JRXmlTemplateLoader.getInstance(filler.jasperReportsContext).loadTemplate((URL) source);
+				template = JRXmlTemplateLoader.getInstance(filler.getJasperReportsContext()).loadTemplate((URL) source);
 			}
 			else if (source instanceof InputStream)
 			{
-				template = JRXmlTemplateLoader.getInstance(filler.jasperReportsContext).loadTemplate((InputStream) source);
+				template = JRXmlTemplateLoader.getInstance(filler.getJasperReportsContext()).loadTemplate((InputStream) source);
 			}
 			else
 			{

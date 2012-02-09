@@ -65,6 +65,7 @@ import net.sf.jasperreports.engine.JRPrintHyperlink;
 import net.sf.jasperreports.engine.JRPrintImage;
 import net.sf.jasperreports.engine.JRPrintLine;
 import net.sf.jasperreports.engine.JRPrintText;
+import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.JRRenderable;
 import net.sf.jasperreports.engine.JRWrappingSvgRenderer;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -84,7 +85,6 @@ import net.sf.jasperreports.engine.type.OrientationEnum;
 import net.sf.jasperreports.engine.type.RunDirectionEnum;
 import net.sf.jasperreports.engine.util.JRFontUtil;
 import net.sf.jasperreports.engine.util.JRImageLoader;
-import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.engine.util.JRStyledText;
 
 import org.apache.commons.collections.ReferenceMap;
@@ -125,7 +125,7 @@ public class JRXlsExporter extends JRXlsAbstractExporter
 	 * The exporter key, as used in
 	 * {@link GenericElementHandlerEnviroment#getHandler(net.sf.jasperreports.engine.JRGenericElementType, String)}.
 	 */
-	public static final String XLS_EXPORTER_KEY = JRProperties.PROPERTY_PREFIX + "xls";
+	public static final String XLS_EXPORTER_KEY = JRPropertiesUtil.PROPERTY_PREFIX + "xls";
 	
 	private static Map<Color,HSSFColor> hssfColorsCache = new ReferenceMap();
 
@@ -261,14 +261,14 @@ public class JRXlsExporter extends JRXlsAbstractExporter
 			sheet.setMargin((short)3, LengthUtil.inchNoRound(isIgnorePageMargins ? 0 : jasperPrint.getBottomMargin()));
 		}
 
-		String fitWidth = JRProperties.getProperty(jasperPrint, PROPERTY_FIT_WIDTH);
+		String fitWidth = getPropertiesUtil().getProperty(jasperPrint, PROPERTY_FIT_WIDTH);
 		if(fitWidth != null && fitWidth.length() > 0)
 		{
 			sheet.getPrintSetup().setFitWidth(Short.valueOf(fitWidth));
 			sheet.setAutobreaks(true);
 		}
 		
-		String fitHeight = JRProperties.getProperty(jasperPrint, PROPERTY_FIT_HEIGHT);
+		String fitHeight = getPropertiesUtil().getProperty(jasperPrint, PROPERTY_FIT_HEIGHT);
 		if(fitHeight != null && fitHeight.length() > 0)
 		{
 			sheet.getPrintSetup().setFitHeight(Short.valueOf(fitHeight));
@@ -1327,7 +1327,7 @@ public class JRXlsExporter extends JRXlsAbstractExporter
 				{
 					case CLIP:
 					{
-						int dpi = JRProperties.getIntegerProperty(JRRenderable.PROPERTY_IMAGE_DPI, 72);
+						int dpi = getPropertiesUtil().getIntegerProperty(JRRenderable.PROPERTY_IMAGE_DPI, 72);
 						double scale = dpi/72d;
 						
 						BufferedImage bi = 

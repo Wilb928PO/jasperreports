@@ -86,6 +86,7 @@ import net.sf.jasperreports.engine.JRPrintHyperlink;
 import net.sf.jasperreports.engine.JRPrintImage;
 import net.sf.jasperreports.engine.JRPrintImageAreaHyperlink;
 import net.sf.jasperreports.engine.JRPrintPage;
+import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.JRRenderable;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -97,7 +98,6 @@ import net.sf.jasperreports.engine.print.JRPrinterAWT;
 import net.sf.jasperreports.engine.type.HyperlinkTypeEnum;
 import net.sf.jasperreports.engine.util.JRClassLoader;
 import net.sf.jasperreports.engine.util.JRLoader;
-import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.engine.util.LocalJasperReportsContext;
 import net.sf.jasperreports.engine.util.SimpleFileResolver;
 import net.sf.jasperreports.engine.xml.JRPrintXmlLoader;
@@ -128,7 +128,7 @@ public class JRViewer extends javax.swing.JPanel implements JRHyperlinkListener
 	 * By default, this property is set to 0.
 	 * </p>
 	 */
-	public static final String VIEWER_RENDER_BUFFER_MAX_SIZE = JRProperties.PROPERTY_PREFIX + "viewer.render.buffer.max.size";
+	public static final String VIEWER_RENDER_BUFFER_MAX_SIZE = JRPropertiesUtil.PROPERTY_PREFIX + "viewer.render.buffer.max.size";
 
 	/**
 	 *
@@ -1636,7 +1636,7 @@ public class JRViewer extends javax.swing.JPanel implements JRHyperlinkListener
 		pnlPage.setMinimumSize(dim);
 		pnlPage.setPreferredSize(dim);
 
-		long maxImageSize = JRProperties.getLongProperty(VIEWER_RENDER_BUFFER_MAX_SIZE);
+		long maxImageSize = JRPropertiesUtil.getInstance(jasperReportsContext).getLongProperty(VIEWER_RENDER_BUFFER_MAX_SIZE);
 		boolean renderImage;
 		if (maxImageSize <= 0)
 		{

@@ -21,30 +21,46 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with JasperReports. If not, see <http://www.gnu.org/licenses/>.
  */
-package net.sf.jasperreports.charts.util;
 
-import java.awt.geom.Rectangle2D;
+/*
+ * Contributors:
+ * Greg Hilton 
+ */
+
+package net.sf.jasperreports.engine.export;
 
 import net.sf.jasperreports.engine.JRPropertiesUtil;
-import net.sf.jasperreports.engine.JRRenderable;
-
-import org.jfree.chart.JFreeChart;
-
+import net.sf.jasperreports.engine.JasperReportsContext;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
+ * @version $Id: JRXlsAbstractExporterNature.java 4751 2011-10-27 10:38:29Z shertage $
  */
-public interface ChartRendererFactory
+public abstract class AbstractExporterNature implements ExporterNature
 {
+	protected final JasperReportsContext jasperReportsContext;
+	protected final JRPropertiesUtil propertiesUtil;
+	protected ExporterFilter filter;
+
 	/**
 	 * 
 	 */
-	public static final String PROPERTY_CHART_RENDERER_FACTORY_PREFIX = JRPropertiesUtil.PROPERTY_PREFIX + "chart.renderer.factory.";
-
-	public JRRenderable getRenderer(
-		JFreeChart chart, 
-		ChartHyperlinkProvider chartHyperlinkProvider,
-		Rectangle2D rectangle
-		);
+	protected AbstractExporterNature(
+		JasperReportsContext jasperReportsContext,
+		ExporterFilter filter 
+		)
+	{
+		this.jasperReportsContext = jasperReportsContext;
+		this.propertiesUtil = JRPropertiesUtil.getInstance(jasperReportsContext);
+		this.filter = filter;
+	}
+	
+	/**
+	 *
+	 */
+	public JRPropertiesUtil getPropertiesUtil()
+	{
+		return propertiesUtil;
+	}
+	
 }

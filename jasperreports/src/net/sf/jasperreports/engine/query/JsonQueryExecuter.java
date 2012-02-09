@@ -84,7 +84,7 @@ public class JsonQueryExecuter extends JRAbstractQueryExecuter
 		} else {
 			String jsonSource = getStringParameterOrProperty(JsonQueryExecuterFactory.JSON_SOURCE);
 			if (jsonSource != null) {
-					datasource = new JsonDataSource(jasperReportsContext, jsonSource, getQueryString());
+					datasource = new JsonDataSource(getJasperReportsContext(), jsonSource, getQueryString());
 			} else {
 				if (log.isWarnEnabled()) {
 					log.warn("No JSON source was provided.");

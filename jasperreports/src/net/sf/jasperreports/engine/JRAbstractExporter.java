@@ -41,6 +41,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
+import net.sf.jasperreports.engine.JRPropertiesUtil.PropertySuffix;
 import net.sf.jasperreports.engine.export.DefaultHyperlinkProducerFactory;
 import net.sf.jasperreports.engine.export.ExporterFilter;
 import net.sf.jasperreports.engine.export.ExporterFilterFactory;
@@ -60,8 +61,6 @@ import net.sf.jasperreports.engine.util.JRClassLoader;
 import net.sf.jasperreports.engine.util.JRDataUtils;
 import net.sf.jasperreports.engine.util.JRFontUtil;
 import net.sf.jasperreports.engine.util.JRLoader;
-import net.sf.jasperreports.engine.util.JRProperties;
-import net.sf.jasperreports.engine.util.JRProperties.PropertySuffix;
 import net.sf.jasperreports.engine.util.JRStyledText;
 import net.sf.jasperreports.engine.util.JRStyledTextParser;
 import net.sf.jasperreports.engine.util.LocalJasperReportsContext;
@@ -79,7 +78,7 @@ public abstract class JRAbstractExporter implements JRExporter
 	 * @see #PROPERTY_SUFFIX_DEFAULT_FILTER_FACTORY
 	 */
 	public static final String PROPERTY_DEFAULT_FILTER_FACTORY = 
-		JRProperties.PROPERTY_PREFIX + "export.default.filter.factory";
+		JRPropertiesUtil.PROPERTY_PREFIX + "export.default.filter.factory";
 
 	/**
 	 * The suffix applied to properties that give the default filter factory for
@@ -150,7 +149,7 @@ public abstract class JRAbstractExporter implements JRExporter
 			else
 			{
 				return 
-					JRProperties.getProperty(
+					getPropertiesUtil().getProperty(
 						jasperPrint.getPropertiesMap(),
 						property
 						);
@@ -166,7 +165,7 @@ public abstract class JRAbstractExporter implements JRExporter
 			}
 			else
 			{
-				List<PropertySuffix> properties = JRProperties.getProperties(jasperPrint.getPropertiesMap(), propertyPrefix);
+				List<PropertySuffix> properties = JRPropertiesUtil.getProperties(jasperPrint.getPropertiesMap(), propertyPrefix);
 				if (properties != null)
 				{
 					values = new String[properties.size()];
@@ -186,7 +185,7 @@ public abstract class JRAbstractExporter implements JRExporter
 				String value = (String)parameters.get(parameter);
 				if (value == null)
 				{
-					return JRProperties.getProperty(property);
+					return getPropertiesUtil().getProperty(property);
 				}
 				else
 				{
@@ -196,7 +195,7 @@ public abstract class JRAbstractExporter implements JRExporter
 			else
 			{
 				return
-					JRProperties.getProperty(
+					getPropertiesUtil().getProperty(
 						jasperPrint.getPropertiesMap(),
 						property
 						);
@@ -210,7 +209,7 @@ public abstract class JRAbstractExporter implements JRExporter
 				Boolean booleanValue = (Boolean)parameters.get(parameter);
 				if (booleanValue == null)
 				{
-					return JRProperties.getBooleanProperty(property);
+					return getPropertiesUtil().getBooleanProperty(property);
 				}
 				else
 				{
@@ -220,7 +219,7 @@ public abstract class JRAbstractExporter implements JRExporter
 			else
 			{
 				return 
-					JRProperties.getBooleanProperty(
+					getPropertiesUtil().getBooleanProperty(
 						jasperPrint.getPropertiesMap(),
 						property,
 						defaultValue
@@ -235,7 +234,7 @@ public abstract class JRAbstractExporter implements JRExporter
 				Integer integerValue = (Integer)parameters.get(parameter);
 				if (integerValue == null)
 				{
-					return JRProperties.getIntegerProperty(property);
+					return getPropertiesUtil().getIntegerProperty(property);
 				}
 				else
 				{
@@ -245,7 +244,7 @@ public abstract class JRAbstractExporter implements JRExporter
 			else
 			{
 				return 
-					JRProperties.getIntegerProperty(
+					getPropertiesUtil().getIntegerProperty(
 						jasperPrint.getPropertiesMap(),
 						property,
 						defaultValue
@@ -260,7 +259,7 @@ public abstract class JRAbstractExporter implements JRExporter
 				Float floatValue = (Float)parameters.get(parameter);
 				if (floatValue == null)
 				{
-					return JRProperties.getFloatProperty(property);
+					return getPropertiesUtil().getFloatProperty(property);
 				}
 				else
 				{
@@ -270,7 +269,7 @@ public abstract class JRAbstractExporter implements JRExporter
 			else
 			{
 				return 
-					JRProperties.getFloatProperty(
+					getPropertiesUtil().getFloatProperty(
 						jasperPrint.getPropertiesMap(),
 						property,
 						defaultValue
@@ -287,7 +286,7 @@ public abstract class JRAbstractExporter implements JRExporter
 			}
 			else
 			{
-				return JRProperties.getCharacterProperty(
+				return getPropertiesUtil().getCharacterProperty(
 						jasperPrint.getPropertiesMap(), property);
 			}
 		}
@@ -310,7 +309,7 @@ public abstract class JRAbstractExporter implements JRExporter
 				
 				if (value == null)
 				{
-					value = JRProperties.getProperty(property);
+					value = getPropertiesUtil().getProperty(property);
 				}
 			}
 			return value;
@@ -322,7 +321,7 @@ public abstract class JRAbstractExporter implements JRExporter
 			JRPropertiesMap hintsMap = jasperPrint.getPropertiesMap();
 			if (hintsMap != null)
 			{
-				List<PropertySuffix> properties = JRProperties.getProperties(hintsMap, propertyPrefix);
+				List<PropertySuffix> properties = JRPropertiesUtil.getProperties(hintsMap, propertyPrefix);
 				if (properties != null)
 				{
 					values = new String[properties.size()];
@@ -354,7 +353,7 @@ public abstract class JRAbstractExporter implements JRExporter
 			
 			if (value == null)
 			{
-				value = JRProperties.getProperty(property);
+				value = getPropertiesUtil().getProperty(property);
 			}
 			
 			return value;
@@ -369,11 +368,11 @@ public abstract class JRAbstractExporter implements JRExporter
 				String prop = hintsMap.getProperty(property);
 				if (prop == null)
 				{
-					value = JRProperties.getBooleanProperty(property);
+					value = getPropertiesUtil().getBooleanProperty(property);
 				}
 				else
 				{
-					value = JRProperties.asBoolean(prop);
+					value = JRPropertiesUtil.asBoolean(prop);
 				}
 			}
 			else
@@ -381,7 +380,7 @@ public abstract class JRAbstractExporter implements JRExporter
 				Boolean param = (Boolean) parameters.get(parameter);
 				if (param == null)
 				{
-					value = JRProperties.getBooleanProperty(property);
+					value = getPropertiesUtil().getBooleanProperty(property);
 				}
 				else
 				{
@@ -400,11 +399,11 @@ public abstract class JRAbstractExporter implements JRExporter
 				String prop = hintsMap.getProperty(property);
 				if (prop == null)
 				{
-					value = JRProperties.getIntegerProperty(property);
+					value = getPropertiesUtil().getIntegerProperty(property);
 				}
 				else
 				{
-					value = JRProperties.asInteger(prop);
+					value = JRPropertiesUtil.asInteger(prop);
 				}
 			}
 			else
@@ -412,7 +411,7 @@ public abstract class JRAbstractExporter implements JRExporter
 				Integer param = (Integer) parameters.get(parameter);
 				if (param == null)
 				{
-					value = JRProperties.getIntegerProperty(property);
+					value = getPropertiesUtil().getIntegerProperty(property);
 				}
 				else
 				{
@@ -431,11 +430,11 @@ public abstract class JRAbstractExporter implements JRExporter
 				String prop = hintsMap.getProperty(property);
 				if (prop == null)
 				{
-					value = JRProperties.getFloatProperty(property);
+					value = getPropertiesUtil().getFloatProperty(property);
 				}
 				else
 				{
-					value = JRProperties.asFloat(prop);
+					value = JRPropertiesUtil.asFloat(prop);
 				}
 			}
 			else
@@ -443,7 +442,7 @@ public abstract class JRAbstractExporter implements JRExporter
 				Float param = (Float) parameters.get(parameter);
 				if (param == null)
 				{
-					value = JRProperties.getFloatProperty(property);
+					value = getPropertiesUtil().getFloatProperty(property);
 				}
 				else
 				{
@@ -460,7 +459,7 @@ public abstract class JRAbstractExporter implements JRExporter
 			if (hintsMap != null && hintsMap.containsProperty(property))
 			{
 				String prop = hintsMap.getProperty(property);
-				value = JRProperties.asCharacter(prop);
+				value = JRPropertiesUtil.asCharacter(prop);
 			}
 			else
 			{
@@ -468,7 +467,7 @@ public abstract class JRAbstractExporter implements JRExporter
 				
 				if (value == null)
 				{
-					value = JRProperties.getCharacterProperty(property);
+					value = getPropertiesUtil().getCharacterProperty(property);
 				}
 			}
 			return value;
@@ -483,6 +482,7 @@ public abstract class JRAbstractExporter implements JRExporter
 	 *
 	 */
 	protected JasperReportsContext jasperReportsContext;
+	private JRPropertiesUtil propertiesUtil;
 
 	private ParameterResolver parameterResolver;
 	
@@ -598,7 +598,7 @@ public abstract class JRAbstractExporter implements JRExporter
 			Boolean param = (Boolean) parameters.get(JRExporterParameter.PARAMETERS_OVERRIDE_REPORT_HINTS);
 			if (param == null)
 			{
-				parametersOverrideHints = JRProperties.getBooleanProperty(JRExporterParameter.PROPERTY_EXPORT_PARAMETERS_OVERRIDE_REPORT_HINTS);
+				parametersOverrideHints = getPropertiesUtil().getBooleanProperty(JRExporterParameter.PROPERTY_EXPORT_PARAMETERS_OVERRIDE_REPORT_HINTS);
 			}
 			else
 			{
@@ -705,6 +705,19 @@ public abstract class JRAbstractExporter implements JRExporter
 	public ReportContext getReportContext()
 	{
 		return reportContext;
+	}
+
+	
+	/**
+	 *
+	 */
+	public JRPropertiesUtil getPropertiesUtil()
+	{
+		if (propertiesUtil == null)
+		{
+			propertiesUtil = JRPropertiesUtil.getInstance(jasperReportsContext);
+		}
+		return propertiesUtil;
 	}
 
 	
@@ -1307,13 +1320,13 @@ public abstract class JRAbstractExporter implements JRExporter
 		//then the global exporter specific property
 		if (defaultFilterClassName == null)
 		{
-			defaultFilterClassName = JRProperties.getProperty(exportDefaultFactoryProperty);
+			defaultFilterClassName = getPropertiesUtil().getProperty(exportDefaultFactoryProperty);
 		}
 		
 		//and finally the global generic property
 		if (defaultFilterClassName == null)
 		{
-			defaultFilterClassName = JRProperties.getProperty(PROPERTY_DEFAULT_FILTER_FACTORY);
+			defaultFilterClassName = getPropertiesUtil().getProperty(PROPERTY_DEFAULT_FILTER_FACTORY);
 		}
 		
 		ExporterFilterFactory defaultFactory = ExporterFilterFactoryUtil.getFilterFactory(defaultFilterClassName);

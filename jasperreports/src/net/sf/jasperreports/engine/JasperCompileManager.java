@@ -26,6 +26,7 @@ package net.sf.jasperreports.engine;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Constructor;
 import java.util.Collection;
 
 import net.sf.jasperreports.crosstabs.JRCrosstab;
@@ -39,7 +40,6 @@ import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.fill.JREvaluator;
 import net.sf.jasperreports.engine.util.JRClassLoader;
 import net.sf.jasperreports.engine.util.JRLoader;
-import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.engine.util.JRSaver;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import net.sf.jasperreports.engine.xml.JRXmlWriter;
@@ -350,7 +350,7 @@ public final class JasperCompileManager
 		String destFileName
 		) throws JRException
 	{
-		JRXmlWriter.writeReport(
+		new JRXmlWriter(jasperReportsContext).write(
 			report,
 			destFileName,
 			"UTF-8"
@@ -389,7 +389,7 @@ public final class JasperCompileManager
 		OutputStream outputStream
 		) throws JRException
 	{
-		JRXmlWriter.writeReport(
+		new JRXmlWriter(jasperReportsContext).write(
 			report, 
 			outputStream,
 			"UTF-8"
@@ -407,7 +407,7 @@ public final class JasperCompileManager
 	 */
 	public String writeToXml(JRReport report)
 	{
-		return JRXmlWriter.writeReport(report, "UTF-8");
+		return new JRXmlWriter(jasperReportsContext).write(report, "UTF-8");
 	}
 
 
@@ -607,14 +607,14 @@ public final class JasperCompileManager
 	/**
 	 *
 	 */
-	private static JRCompiler getJavaCompiler()
+	private JRCompiler getJavaCompiler()
 	{
 		JRCompiler compiler = null;
 
 		try 
 		{
 			JRClassLoader.loadClassForRealName("org.eclipse.jdt.internal.compiler.Compiler");
-			compiler = new JRJdtCompiler();
+			compiler = new JRJdtCompiler(jasperReportsContext);
 		}
 		catch (Exception e)
 		{
@@ -625,7 +625,7 @@ public final class JasperCompileManager
 			try 
 			{
 				JRClassLoader.loadClassForRealName("com.sun.tools.javac.Main");
-				compiler = new JRJdk13Compiler();
+				compiler = new JRJdk13Compiler(jasperReportsContext);
 			}
 			catch (Exception e)
 			{
@@ -634,7 +634,7 @@ public final class JasperCompileManager
 
 		if (compiler == null)
 		{
-			compiler = new JRJavacCompiler();
+			compiler = new JRJavacCompiler(jasperReportsContext);
 		}
 		
 		return compiler;
@@ -644,7 +644,7 @@ public final class JasperCompileManager
 	/**
 	 *
 	 */
-	private static JRCompiler getCompiler(JasperReport jasperReport) throws JRException
+	private JRCompiler getCompiler(JasperReport jasperReport) throws JRException
 	{
 		JRCompiler compiler = null;
 		
@@ -687,7 +687,8 @@ public final class JasperCompileManager
 
 		try
 		{
-			compiler = (JRCompiler)compilerClass.newInstance();
+			Constructor  constructor = compilerClass.getConstructor(JasperReportsContext.class);
+			compiler = (JRCompiler)constructor.newInstance(jasperReportsContext);
 		}
 		catch (Exception e)
 		{
@@ -702,7 +703,7 @@ public final class JasperCompileManager
 	/**
 	 *
 	 */
-	private static JRCompiler getCompiler(JasperDesign jasperDesign) throws JRException
+	private JRCompiler getCompiler(JasperDesign jasperDesign) throws JRException
 	{
 		JRCompiler compiler = null;
 
@@ -710,7 +711,7 @@ public final class JasperCompileManager
 		if (compilerClassName == null || compilerClassName.trim().length() == 0)
 		{
 			String language = jasperDesign.getLanguage();
-			compilerClassName = JRProperties.getProperty(JRCompiler.COMPILER_PREFIX + language);
+			compilerClassName = JRPropertiesUtil.getInstance(jasperReportsContext).getProperty(JRCompiler.COMPILER_PREFIX + language);
 			if (compilerClassName == null || compilerClassName.trim().length() == 0)
 			{
 				if (JRReport.LANGUAGE_JAVA.equals(language))
@@ -742,8 +743,8 @@ public final class JasperCompileManager
 	 *
 	 */
 	@SuppressWarnings("deprecation")
-	private static String getCompilerClassProperty()
+	private String getCompilerClassProperty()
 	{
-		return JRProperties.getProperty(JRProperties.COMPILER_CLASS);
+		return JRPropertiesUtil.getInstance(jasperReportsContext).getProperty(JRCompiler.COMPILER_CLASS);
 	}
 }

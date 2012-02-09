@@ -47,6 +47,7 @@ import net.sf.jasperreports.engine.JRGroup;
 import net.sf.jasperreports.engine.JRPrintElement;
 import net.sf.jasperreports.engine.JRPrintFrame;
 import net.sf.jasperreports.engine.JRPrintPage;
+import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.JRReport;
 import net.sf.jasperreports.engine.JRReportTemplate;
 import net.sf.jasperreports.engine.JRRuntimeException;
@@ -64,7 +65,6 @@ import net.sf.jasperreports.engine.type.LineStyleEnum;
 import net.sf.jasperreports.engine.type.PrintOrderEnum;
 import net.sf.jasperreports.engine.type.RunDirectionEnum;
 import net.sf.jasperreports.engine.util.JRExpressionUtil;
-import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.engine.xml.JRXmlTemplateLoader;
 
 import org.apache.commons.collections.SequencedHashMap;
@@ -138,7 +138,7 @@ public class ReportConverter
 		//jasperPrint.setLocaleCode(JRDataUtils.getLocaleCode(Locale.getDefault()));
 		//jasperPrint.setTimeZoneId(JRDataUtils.getTimeZoneId(TimeZone.getDefault()));
 		//FIXMEFONT the locale is important for font
-		//jasperPrint.setLocaleCode(report.getProperty(JRProperties.PROPERTY_PREFIX + "locale"));
+		//jasperPrint.setLocaleCode(report.getProperty(JRPropertiesUtil.PROPERTY_PREFIX + "locale"));
 		//JRStyledTextAttributeSelector.setLocale(locale);
 		jasperPrint.setName(report.getName());
 		jasperPrint.setOrientation(report.getOrientationValue());
@@ -149,7 +149,7 @@ public class ReportConverter
 		jasperPrint.setBottomMargin(report.getBottomMargin());
 		jasperPrint.setRightMargin(report.getRightMargin());
 		
-		JRProperties.transferProperties(report, jasperPrint, JasperPrint.PROPERTIES_PRINT_TRANSFER_PREFIX);
+		JRPropertiesUtil.getInstance(jasperReportsContext).transferProperties(report, jasperPrint, JasperPrint.PROPERTIES_PRINT_TRANSFER_PREFIX);
 
 		setStyles(report);
 

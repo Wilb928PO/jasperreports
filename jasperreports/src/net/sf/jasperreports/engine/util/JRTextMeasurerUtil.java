@@ -26,6 +26,7 @@ package net.sf.jasperreports.engine.util;
 import net.sf.jasperreports.engine.JRCommonText;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRPropertiesHolder;
+import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.fill.JRTextMeasurer;
 import net.sf.jasperreports.engine.fill.JRTextMeasurerFactory;
@@ -64,7 +65,7 @@ public final class JRTextMeasurerUtil
 	 * @see JRTextMeasurerFactory
 	 */
 	public static final String PROPERTY_TEXT_MEASURER_FACTORY = 
-		JRProperties.PROPERTY_PREFIX + "text.measurer.factory";
+		JRPropertiesUtil.PROPERTY_PREFIX + "text.measurer.factory";
 	
 	private static final JRSingletonCache<JRTextMeasurerFactory> cache = 
 			new JRSingletonCache<JRTextMeasurerFactory>(JRTextMeasurerFactory.class);

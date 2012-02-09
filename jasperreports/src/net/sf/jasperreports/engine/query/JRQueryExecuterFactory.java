@@ -27,9 +27,9 @@ import java.util.Map;
 
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.JRValueParameter;
 import net.sf.jasperreports.engine.JasperReportsContext;
-import net.sf.jasperreports.engine.util.JRProperties;
 
 
 /**
@@ -53,7 +53,7 @@ public interface JRQueryExecuterFactory
 	 * To obtain query executer factories, a property having the query language appended to this prefix is used 
 	 * to get the query executer factory name.
 	 */
-	public static final String QUERY_EXECUTER_FACTORY_PREFIX = JRProperties.PROPERTY_PREFIX + "query.executer.factory.";
+	public static final String QUERY_EXECUTER_FACTORY_PREFIX = JRPropertiesUtil.PROPERTY_PREFIX + "query.executer.factory.";
 
 	
 	/**

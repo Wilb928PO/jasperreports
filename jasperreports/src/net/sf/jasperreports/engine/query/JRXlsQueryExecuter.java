@@ -42,11 +42,10 @@ import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.JRParameter;
+import net.sf.jasperreports.engine.JRPropertiesUtil.PropertySuffix;
 import net.sf.jasperreports.engine.JRValueParameter;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.data.JRXlsDataSource;
-import net.sf.jasperreports.engine.util.JRProperties;
-import net.sf.jasperreports.engine.util.JRProperties.PropertySuffix;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -99,7 +98,7 @@ public class JRXlsQueryExecuter extends JRAbstractQueryExecuter {
 					} else {
 						String xlsSource = getStringParameterOrProperty(JRXlsQueryExecuterFactory.XLS_SOURCE);
 						if (xlsSource != null) {
-							datasource = new JRXlsDataSource(jasperReportsContext, xlsSource);
+							datasource = new JRXlsDataSource(getJasperReportsContext(), xlsSource);
 						} else {
 							if (log.isWarnEnabled()){
 								log.warn("No XLS source was provided.");
@@ -126,7 +125,7 @@ public class JRXlsQueryExecuter extends JRAbstractQueryExecuter {
 					columnNamesList = Arrays.asList(columnNamesArray);
 				} else {
 					String propertiesPrefix = JRXlsQueryExecuterFactory.XLS_COLUMN_NAMES;
-					List<PropertySuffix> properties = JRProperties.getAllProperties(dataset, propertiesPrefix);
+					List<PropertySuffix> properties = getPropertiesUtil().getAllProperties(dataset, propertiesPrefix);
 					if (properties != null && !properties.isEmpty()) {
 						columnNamesList = new ArrayList<String>();
 						for(int i = 0; i < properties.size(); i++) {
@@ -172,7 +171,7 @@ public class JRXlsQueryExecuter extends JRAbstractQueryExecuter {
 					columnIndexesList = Arrays.asList(columnIndexesArray);
 				} else {
 					String propertiesPrefix = JRXlsQueryExecuterFactory.XLS_COLUMN_INDEXES;
-					List<PropertySuffix> properties = JRProperties.getAllProperties(dataset, propertiesPrefix);
+					List<PropertySuffix> properties = getPropertiesUtil().getAllProperties(dataset, propertiesPrefix);
 					if (properties != null && !properties.isEmpty()) {
 						columnIndexesList = new ArrayList<Integer>();
 						for(int i = 0; i < properties.size(); i++) {
