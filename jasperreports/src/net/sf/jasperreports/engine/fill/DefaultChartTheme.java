@@ -605,7 +605,7 @@ public class DefaultChartTheme implements ChartTheme
 				evaluateTextExpression(((JRAreaPlot)getPlot()).getCategoryAxisLabelExpression()),
 				evaluateTextExpression(((JRAreaPlot)getPlot()).getValueAxisLabelExpression()),
 				(CategoryDataset)getDataset(),
-				getPlot().getOrientation(),
+				getPlot().getOrientationValue().getOrientation(),
 				isShowLegend(),
 				true,
 				false);
@@ -640,7 +640,7 @@ public class DefaultChartTheme implements ChartTheme
 					evaluateTextExpression(((JRBar3DPlot)getPlot()).getCategoryAxisLabelExpression()),
 					evaluateTextExpression(((JRBar3DPlot)getPlot()).getValueAxisLabelExpression()),
 					(CategoryDataset)getDataset(),
-					getPlot().getOrientation(),
+					getPlot().getOrientationValue().getOrientation(),
 					isShowLegend(),
 					true,
 					false );
@@ -732,7 +732,7 @@ public class DefaultChartTheme implements ChartTheme
 				evaluateTextExpression(((JRBarPlot)getPlot()).getCategoryAxisLabelExpression()),
 				evaluateTextExpression(((JRBarPlot)getPlot()).getValueAxisLabelExpression()),
 				(CategoryDataset)getDataset(),
-				getPlot().getOrientation(),
+				getPlot().getOrientationValue().getOrientation(),
 				isShowLegend(),
 				true,
 				false
@@ -823,7 +823,7 @@ public class DefaultChartTheme implements ChartTheme
 				evaluateTextExpression(((JRBubblePlot)getPlot()).getXAxisLabelExpression()),
 				evaluateTextExpression(((JRBubblePlot)getPlot()).getYAxisLabelExpression()),
 				 (XYZDataset)getDataset(),
-				 getPlot().getOrientation(),
+				 getPlot().getOrientationValue().getOrientation(),
 				 isShowLegend(),
 				 true,
 				 false);
@@ -953,7 +953,7 @@ public class DefaultChartTheme implements ChartTheme
 				evaluateTextExpression( ((JRLinePlot)getPlot()).getCategoryAxisLabelExpression()),
 				evaluateTextExpression(((JRLinePlot)getPlot()).getValueAxisLabelExpression()),
 				(CategoryDataset)getDataset(),
-				getPlot().getOrientation(),
+				getPlot().getOrientationValue().getOrientation(),
 				isShowLegend(),
 				true,
 				false);
@@ -1179,7 +1179,7 @@ public class DefaultChartTheme implements ChartTheme
 				evaluateTextExpression(((JRScatterPlot)getPlot()).getXAxisLabelExpression()),
 				evaluateTextExpression(((JRScatterPlot)getPlot()).getYAxisLabelExpression() ),
 				(XYDataset)getDataset(),
-				getPlot().getOrientation(),
+				getPlot().getOrientationValue().getOrientation(),
 				isShowLegend(),
 				true,
 				false);
@@ -1226,7 +1226,7 @@ public class DefaultChartTheme implements ChartTheme
 				evaluateTextExpression(((JRBar3DPlot)getPlot()).getCategoryAxisLabelExpression()),
 				evaluateTextExpression(((JRBar3DPlot)getPlot()).getValueAxisLabelExpression()),
 				(CategoryDataset)getDataset(),
-				getPlot().getOrientation(),
+				getPlot().getOrientationValue().getOrientation(),
 				isShowLegend(),
 				true,
 				false
@@ -1280,7 +1280,7 @@ public class DefaultChartTheme implements ChartTheme
 				evaluateTextExpression(((JRBarPlot)getPlot()).getCategoryAxisLabelExpression()),
 				evaluateTextExpression(((JRBarPlot)getPlot()).getValueAxisLabelExpression()),
 				(CategoryDataset)getDataset(),
-				getPlot().getOrientation(),
+				getPlot().getOrientationValue().getOrientation(),
 				isShowLegend(),
 				true,
 				false
@@ -1336,7 +1336,7 @@ public class DefaultChartTheme implements ChartTheme
 				evaluateTextExpression(((JRAreaPlot)getPlot()).getCategoryAxisLabelExpression()),
 				evaluateTextExpression(((JRAreaPlot)getPlot()).getValueAxisLabelExpression()),
 				(CategoryDataset)getDataset(),
-				getPlot().getOrientation(),
+				getPlot().getOrientationValue().getOrientation(),
 				isShowLegend(),
 				true,
 				false
@@ -1375,7 +1375,7 @@ public class DefaultChartTheme implements ChartTheme
 				evaluateTextExpression(((JRAreaPlot)getPlot()).getCategoryAxisLabelExpression() ),
 				evaluateTextExpression(((JRAreaPlot)getPlot()).getValueAxisLabelExpression()),
 				(XYDataset)getDataset(),
-				getPlot().getOrientation(),
+				getPlot().getOrientationValue().getOrientation(),
 				isShowLegend(),
 				true,
 				false
@@ -1424,7 +1424,7 @@ public class DefaultChartTheme implements ChartTheme
 				isDate,
 				evaluateTextExpression(((JRBarPlot)getPlot()).getValueAxisLabelExpression()),
 				tmpDataset,
-				getPlot().getOrientation(),
+				getPlot().getOrientationValue().getOrientation(),
 				isShowLegend(),
 				true,
 				false
@@ -1489,7 +1489,7 @@ public class DefaultChartTheme implements ChartTheme
 				evaluateTextExpression(linePlot.getCategoryAxisLabelExpression()),
 				evaluateTextExpression(linePlot.getValueAxisLabelExpression() ),
 				(XYDataset)getDataset(),
-				linePlot.getOrientation(),
+				linePlot.getOrientationValue().getOrientation(),
 				isShowLegend(),
 				true,
 				false);

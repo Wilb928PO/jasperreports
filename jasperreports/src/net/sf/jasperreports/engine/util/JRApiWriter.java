@@ -75,7 +75,6 @@ import net.sf.jasperreports.charts.JRXyDataset;
 import net.sf.jasperreports.charts.JRXySeries;
 import net.sf.jasperreports.charts.JRXyzDataset;
 import net.sf.jasperreports.charts.JRXyzSeries;
-import net.sf.jasperreports.charts.type.PlotOrientationEnum;
 import net.sf.jasperreports.charts.util.JRMeterInterval;
 import net.sf.jasperreports.crosstabs.JRCellContents;
 import net.sf.jasperreports.crosstabs.JRCrosstab;
@@ -1956,9 +1955,9 @@ public class JRApiWriter
 		{
 			write( plotName + ".setBackcolor({0});\n", plot.getOwnBackcolor());
 
-			if (plot.getOrientation() != null && plot.getOrientation() != PlotOrientation.VERTICAL)
+			if (plot.getOrientationValue() != null && plot.getOrientationValue().getOrientation() != PlotOrientation.VERTICAL)
 			{
-				write( plotName + ".setOrientation(PlotOrientation.{0});\n", PlotOrientationEnum.getByValue(plot.getOrientation()).name());
+				write( plotName + ".setOrientation(PlotOrientation.{0});\n", plot.getOrientationValue());
 			}
 
 			write( plotName + ".setBackgroundAlpha({0});\n", plot.getBackgroundAlphaFloat());

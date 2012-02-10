@@ -1663,7 +1663,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 	{
 		writer.startElement(JRXmlConstants.ELEMENT_plot);
 		writer.addAttribute(JRXmlConstants.ATTRIBUTE_backcolor, plot.getOwnBackcolor());
-		writer.addAttribute(JRXmlConstants.ATTRIBUTE_orientation, PlotOrientationEnum.getByValue(plot.getOrientation()), PlotOrientationEnum.VERTICAL);
+		writer.addAttribute(JRXmlConstants.ATTRIBUTE_orientation, plot.getOrientationValue(), PlotOrientationEnum.VERTICAL);
 		writer.addAttribute(JRXmlConstants.ATTRIBUTE_backgroundAlpha, plot.getBackgroundAlphaFloat());
 		writer.addAttribute(JRXmlConstants.ATTRIBUTE_foregroundAlpha, plot.getForegroundAlphaFloat());
 		writer.addAttribute(JRXmlConstants.ATTRIBUTE_labelRotation, plot.getLabelRotationDouble());
