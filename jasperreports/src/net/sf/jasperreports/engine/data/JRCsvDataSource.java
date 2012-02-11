@@ -46,6 +46,7 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JasperReportsContext;
+import net.sf.jasperreports.engine.util.FormatUtils;
 import net.sf.jasperreports.repo.RepositoryUtil;
 
 import org.apache.commons.logging.Log;
@@ -280,7 +281,7 @@ public class JRCsvDataSource extends JRAbstractTextDataSource// implements JRDat
 				{
 					if (numberFormat != null)
 					{
-						return getFormattedNumber(numberFormat, fieldValue, valueClass);
+						return FormatUtils.getFormattedNumber(numberFormat, fieldValue, valueClass);
 					}
 					else 
 					{
@@ -290,7 +291,7 @@ public class JRCsvDataSource extends JRAbstractTextDataSource// implements JRDat
 				else if (Date.class.isAssignableFrom(valueClass)){
 					if (dateFormat != null)
 					{
-						return getFormattedDate(dateFormat, fieldValue, valueClass);
+						return FormatUtils.getFormattedDate(dateFormat, fieldValue, valueClass);
 					} 
 					else
 					{

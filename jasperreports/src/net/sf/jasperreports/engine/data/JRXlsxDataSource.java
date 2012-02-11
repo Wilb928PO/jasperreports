@@ -43,6 +43,7 @@ import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.JRRewindableDataSource;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JasperReportsContext;
+import net.sf.jasperreports.engine.util.FormatUtils;
 import net.sf.jasperreports.repo.RepositoryUtil;
 
 import org.apache.poi.ss.usermodel.Cell;
@@ -227,7 +228,7 @@ public class JRXlsxDataSource extends JRAbstractTextDataSource implements JRRewi
 			{
 				if (numberFormat != null)
 				{
-					return getFormattedNumber(numberFormat, String.valueOf(cell.getNumericCellValue()), valueClass);
+					return FormatUtils.getFormattedNumber(numberFormat, String.valueOf(cell.getNumericCellValue()), valueClass);
 				}
 				else 
 				{
@@ -237,7 +238,7 @@ public class JRXlsxDataSource extends JRAbstractTextDataSource implements JRRewi
 			else if (Date.class.isAssignableFrom(valueClass)){
 				if (dateFormat != null)
 				{
-					return getFormattedDate(dateFormat, String.valueOf(cell.getDateCellValue()), valueClass);
+					return FormatUtils.getFormattedDate(dateFormat, String.valueOf(cell.getDateCellValue()), valueClass);
 				} 
 				else
 				{
