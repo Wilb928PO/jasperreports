@@ -575,7 +575,7 @@ public class JExcelApiExporter extends JRXlsAbstractExporter
 			String textStr = styledText.getText();
 
 			String href = null;
-			JRHyperlinkProducer customHandler = getCustomHandler(text);
+			JRHyperlinkProducer customHandler = getHyperlinkProducer(text);
 			if (customHandler == null)
 			{
 				switch (text.getHyperlinkTypeValue())

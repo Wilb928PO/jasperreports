@@ -1404,7 +1404,7 @@ public class JRXhtmlExporter extends JRAbstractExporter
 	protected String getHyperlinkURL(JRPrintHyperlink link)
 	{
 		String href = null;
-		JRHyperlinkProducer customHandler = getCustomHandler(link);		
+		JRHyperlinkProducer customHandler = getHyperlinkProducer(link);		
 		if (customHandler == null)
 		{
 			switch(link.getHyperlinkTypeValue())

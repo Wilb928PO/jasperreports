@@ -1541,7 +1541,7 @@ public class JRRtfExporter extends JRAbstractExporter
 		String hlfr = null;
 		String hlsrc = null;
 		
-		JRHyperlinkProducer customHandler = getCustomHandler(link);
+		JRHyperlinkProducer customHandler = getHyperlinkProducer(link);
 		if (customHandler == null)
 		{
 			switch(link.getHyperlinkTypeValue())
