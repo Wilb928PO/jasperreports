@@ -408,7 +408,7 @@ public class JRAntApiWriteTask extends JRBaseAntTask
 					Class<?> reportCreatorClass = JRClassLoader.loadClassFromFile(null, new File(srcFileName));
 					ReportCreator reportCreator = (ReportCreator)reportCreatorClass.newInstance();
 					JasperDesign jasperDesign = reportCreator.create();
-					JRXmlWriter.writeReport(jasperDesign, destFileName, "UTF-8");
+					new JRXmlWriter(jasperReportsContext).write(jasperDesign, destFileName, "UTF-8");
 
 					System.out.println("OK.");
 				}

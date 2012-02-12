@@ -70,6 +70,7 @@ import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JRWrappingSvgRenderer;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReportsContext;
+import net.sf.jasperreports.engine.Renderable;
 import net.sf.jasperreports.engine.base.JRBaseLineBox;
 import net.sf.jasperreports.engine.export.CutsInfo;
 import net.sf.jasperreports.engine.export.ExporterFilter;
@@ -365,7 +366,7 @@ public abstract class JROpenDocumentExporter extends JRAbstractExporter
 				JRPrintElementIndex imageIndex = it.next();
 
 				JRPrintImage image = getImage(jasperPrintList, imageIndex);
-				JRRenderable renderer = image.getRenderer();
+				Renderable renderer = image.getRenderable();
 				if (renderer.getType() == JRRenderable.TYPE_SVG)
 				{
 					renderer =
@@ -379,7 +380,7 @@ public abstract class JROpenDocumentExporter extends JRAbstractExporter
 				oasisZip.addEntry(//FIXMEODT optimize with a different implementation of entry
 					new FileBufferedZipEntry(
 						"Pictures/" + getImageName(imageIndex),
-						renderer.getImageData()
+						renderer.getImageData(jasperReportsContext)
 						)
 					);
 			}

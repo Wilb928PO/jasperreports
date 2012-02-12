@@ -140,7 +140,7 @@ public class XmlDataAdapterService extends AbstractDataAdapterService
 			}
 			else
 			{
-				JRXmlDataSource ds = new JRXmlDataSource(xmlDataAdapter.getFileName(), xmlDataAdapter.getSelectExpression()); 
+				JRXmlDataSource ds = new JRXmlDataSource(jasperReportsContext, xmlDataAdapter.getFileName(), xmlDataAdapter.getSelectExpression()); 
 
 				Locale locale = xmlDataAdapter.getLocale();
 				if (locale != null) {

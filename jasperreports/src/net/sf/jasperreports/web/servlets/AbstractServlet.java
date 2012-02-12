@@ -43,7 +43,7 @@ public class AbstractServlet extends HttpServlet
 	/**
 	 *
 	 */
-	public static JasperReportsContext getJasperReportsContext()
+	public JasperReportsContext getJasperReportsContext()
 	{
 		return jasperReportsContext;
 	}

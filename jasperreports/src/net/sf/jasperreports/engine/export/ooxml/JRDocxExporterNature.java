@@ -74,7 +74,7 @@ public class JRDocxExporterNature extends JROfficeOpenXmlExporterNature
 		if (element instanceof JRGenericPrintElement)
 		{
 			JRGenericPrintElement genericElement = (JRGenericPrintElement) element;
-			GenericElementHandler handler = GenericElementHandlerEnviroment.getHandler(
+			GenericElementHandler handler = GenericElementHandlerEnviroment.getInstance(jasperReportsContext).getElementHandler(
 					genericElement.getGenericType(), JRDocxExporter.DOCX_EXPORTER_KEY);
 			if (handler == null || !handler.toExport(genericElement))
 			{

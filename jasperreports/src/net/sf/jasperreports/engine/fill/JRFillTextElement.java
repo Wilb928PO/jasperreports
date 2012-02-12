@@ -114,7 +114,7 @@ public abstract class JRFillTextElement extends JRFillElement implements JRTextE
 
 	private void createTextMeasurer()
 	{
-		textMeasurer = JRTextMeasurerUtil.createTextMeasurer(this);
+		textMeasurer = JRTextMeasurerUtil.getInstance(filler.getJasperReportsContext()).createTextMeasurer(this);
 	}
 
 	protected void ensureTextMeasurer()

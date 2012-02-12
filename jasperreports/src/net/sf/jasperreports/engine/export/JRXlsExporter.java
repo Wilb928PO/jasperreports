@@ -55,7 +55,6 @@ import net.sf.jasperreports.engine.JRCommonText;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRFont;
 import net.sf.jasperreports.engine.JRGenericPrintElement;
-import net.sf.jasperreports.engine.JRImageRenderer;
 import net.sf.jasperreports.engine.JRLineBox;
 import net.sf.jasperreports.engine.JRPen;
 import net.sf.jasperreports.engine.JRPrintElement;
@@ -70,6 +69,8 @@ import net.sf.jasperreports.engine.JRRenderable;
 import net.sf.jasperreports.engine.JRWrappingSvgRenderer;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReportsContext;
+import net.sf.jasperreports.engine.Renderable;
+import net.sf.jasperreports.engine.RenderableUtil;
 import net.sf.jasperreports.engine.base.JRBaseFont;
 import net.sf.jasperreports.engine.export.data.BooleanTextValue;
 import net.sf.jasperreports.engine.export.data.DateTextValue;
@@ -194,7 +195,7 @@ public class JRXlsExporter extends JRXlsAbstractExporter
 	{
 		super.setParameters();
 
-		nature = new JRXlsExporterNature(filter, isIgnoreGraphics, isIgnorePageMargins);
+		nature = new JRXlsExporterNature(jasperReportsContext, filter, isIgnoreGraphics, isIgnorePageMargins);
 		
 		password = 
 			getStringParameter(
@@ -1230,7 +1231,7 @@ public class JRXlsExporter extends JRXlsAbstractExporter
 			int availableImageHeight = element.getHeight() - topPadding - bottomPadding;
 			availableImageHeight = availableImageHeight < 0 ? 0 : availableImageHeight;
 
-			JRRenderable renderer = element.getRenderer();
+			Renderable renderer = element.getRenderable();
 
 			if (
 				renderer != null &&
@@ -1242,10 +1243,10 @@ public class JRXlsExporter extends JRXlsAbstractExporter
 				{
 					// Image renderers are all asked for their image data and dimension at some point.
 					// Better to test and replace the renderer now, in case of lazy load error.
-					renderer = JRImageRenderer.getOnErrorRendererForImageData(renderer, element.getOnErrorTypeValue());
+					renderer = RenderableUtil.getInstance(jasperReportsContext).getOnErrorRendererForImageData(renderer, element.getOnErrorTypeValue());
 					if (renderer != null)
 					{
-						renderer = JRImageRenderer.getOnErrorRendererForDimension(renderer, element.getOnErrorTypeValue());
+						renderer = RenderableUtil.getInstance(jasperReportsContext).getOnErrorRendererForDimension(renderer, element.getOnErrorTypeValue());
 					}
 				}
 				else
@@ -1268,7 +1269,7 @@ public class JRXlsExporter extends JRXlsAbstractExporter
 				int normalWidth = availableImageWidth;
 				int normalHeight = availableImageHeight;
 
-				Dimension2D dimension = renderer.getDimension();
+				Dimension2D dimension = renderer.getDimension(jasperReportsContext);
 				if (dimension != null)
 				{
 					normalWidth = (int) dimension.getWidth();
@@ -1349,6 +1350,7 @@ public class JRXlsExporter extends JRXlsAbstractExporter
 							);
 
 						renderer.render(
+							jasperReportsContext,
 							grx,
 							new Rectangle(
 								(int) (xalignFactor * (availableImageWidth - normalWidth)),
@@ -1363,7 +1365,7 @@ public class JRXlsExporter extends JRXlsAbstractExporter
 						bottomOffset = bottomPadding;
 						rightOffset = rightPadding;
 
-						imageData = JRImageLoader.loadImageDataFromAWTImage(bi, JRRenderable.IMAGE_TYPE_PNG);
+						imageData = JRImageLoader.getInstance(jasperReportsContext).loadBytesFromAwtImage(bi, JRRenderable.IMAGE_TYPE_PNG);
 
 						break;
 					}
@@ -1374,7 +1376,7 @@ public class JRXlsExporter extends JRXlsAbstractExporter
 						bottomOffset = bottomPadding;
 						rightOffset = rightPadding;
 
-						imageData = renderer.getImageData();
+						imageData = renderer.getImageData(jasperReportsContext);
 
 						break;
 					}
@@ -1401,7 +1403,7 @@ public class JRXlsExporter extends JRXlsAbstractExporter
 							bottomOffset = bottomPadding + (int) ((1f - yalignFactor) * (availableImageHeight - normalHeight));
 							rightOffset = rightPadding + (int) ((1f - xalignFactor) * (availableImageWidth - normalWidth));
 
-							imageData = renderer.getImageData();
+							imageData = renderer.getImageData(jasperReportsContext);
 						}
 
 						break;
@@ -1568,7 +1570,7 @@ public class JRXlsExporter extends JRXlsAbstractExporter
 	protected void exportGenericElement(JRGenericPrintElement element, JRExporterGridCell gridCell, int colIndex, int rowIndex, int emptyCols, int yCutsRow, JRGridLayout layout) throws JRException
 	{
 		GenericElementXlsHandler handler = (GenericElementXlsHandler) 
-		GenericElementHandlerEnviroment.getHandler(
+			GenericElementHandlerEnviroment.getInstance(getJasperReportsContext()).getElementHandler(
 				element.getGenericType(), XLS_EXPORTER_KEY);
 
 		if (handler != null)

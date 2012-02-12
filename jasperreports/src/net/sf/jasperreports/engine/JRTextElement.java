@@ -23,7 +23,6 @@
  */
 package net.sf.jasperreports.engine;
 
-import net.sf.jasperreports.engine.util.JRProperties;
 
 
 /**
@@ -50,7 +49,7 @@ public interface JRTextElement extends JRElement, JRAlignment, JRFont, JRCommonT
 	 * <ul>
 	 * 	<li>at {@link JRTextElement text element} level</li>
 	 * 	<li>at {@link JRReport report} level</li>
-	 * 	<li>globally in jasperreports.properties or via {@link JRProperties}</li>
+	 * 	<li>globally in jasperreports.properties or via {@link JRPropertiesUtil}</li>
 	 * </ul> 
 	 * </p>
 	 * 

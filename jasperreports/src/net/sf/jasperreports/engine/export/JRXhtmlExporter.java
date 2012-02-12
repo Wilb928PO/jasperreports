@@ -84,6 +84,8 @@ import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JRWrappingSvgRenderer;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReportsContext;
+import net.sf.jasperreports.engine.Renderable;
+import net.sf.jasperreports.engine.RenderableUtil;
 import net.sf.jasperreports.engine.base.JRBasePrintText;
 import net.sf.jasperreports.engine.fonts.FontFamily;
 import net.sf.jasperreports.engine.fonts.FontInfo;
@@ -492,7 +494,7 @@ public class JRXhtmlExporter extends JRAbstractExporter
 						JRPrintElementIndex imageIndex = it.next();
 	
 						JRPrintImage image = getImage(jasperPrintList, imageIndex);
-						JRRenderable renderer = image.getRenderer();
+						Renderable renderer = image.getRenderable();
 						if (renderer.getType() == JRRenderable.TYPE_SVG)
 						{
 							renderer =
@@ -503,7 +505,7 @@ public class JRXhtmlExporter extends JRAbstractExporter
 									);
 						}
 	
-						byte[] imageData = renderer.getImageData();
+						byte[] imageData = renderer.getImageData(jasperReportsContext);
 	
 						File imageFile = new File(imagesDir, getImageName(imageIndex));
 						FileOutputStream fos = null;
@@ -1756,7 +1758,7 @@ public class JRXhtmlExporter extends JRAbstractExporter
 			writer.write("\"></a>");
 		}
 		
-		JRRenderable renderer = image.getRenderer();
+		Renderable renderer = image.getRenderable();
 		JRRenderable originalRenderer = renderer;
 		boolean imageMapRenderer = renderer != null 
 				&& renderer instanceof JRImageMapRenderer
@@ -1815,7 +1817,7 @@ public class JRXhtmlExporter extends JRAbstractExporter
 										ModeEnum.OPAQUE == image.getModeValue() ? image.getBackcolor() : null
 										);
 							}
-							imageNameToImageDataMap.put(imageName, renderer.getImageData());
+							imageNameToImageDataMap.put(imageName, renderer.getImageData(jasperReportsContext));
 						}
 						//END - backward compatibility with the IMAGE_MAP parameter
 					}
@@ -1906,9 +1908,9 @@ public class JRXhtmlExporter extends JRAbstractExporter
 					if (!image.isLazy())
 					{
 						// Image load might fail. 
-						JRRenderable tmpRenderer = 
-							JRImageRenderer.getOnErrorRendererForDimension(renderer, image.getOnErrorTypeValue());
-						Dimension2D dimension = tmpRenderer == null ? null : tmpRenderer.getDimension();
+						Renderable tmpRenderer = 
+							RenderableUtil.getInstance(jasperReportsContext).getOnErrorRendererForDimension(renderer, image.getOnErrorTypeValue());
+						Dimension2D dimension = tmpRenderer == null ? null : tmpRenderer.getDimension(jasperReportsContext);
 						// If renderer was replaced, ignore image dimension.
 						if (tmpRenderer == renderer && dimension != null)
 						{
@@ -1964,9 +1966,9 @@ public class JRXhtmlExporter extends JRAbstractExporter
 					if (!image.isLazy())
 					{
 						// Image load might fail. 
-						JRRenderable tmpRenderer = 
-							JRImageRenderer.getOnErrorRendererForDimension(renderer, image.getOnErrorTypeValue());
-						Dimension2D dimension = tmpRenderer == null ? null : tmpRenderer.getDimension();
+						Renderable tmpRenderer = 
+							RenderableUtil.getInstance(jasperReportsContext).getOnErrorRendererForDimension(renderer, image.getOnErrorTypeValue());
+						Dimension2D dimension = tmpRenderer == null ? null : tmpRenderer.getDimension(jasperReportsContext);
 						// If renderer was replaced, ignore image dimension.
 						if (tmpRenderer == renderer && dimension != null)
 						{
@@ -2359,7 +2361,7 @@ public class JRXhtmlExporter extends JRAbstractExporter
 	protected void exportGenericElement(JRGenericPrintElement element) throws IOException
 	{
 		GenericElementHtmlHandler handler = (GenericElementHtmlHandler) 
-				GenericElementHandlerEnviroment.getHandler(
+				GenericElementHandlerEnviroment.getInstance(getJasperReportsContext()).getElementHandler(
 						element.getGenericType(), XHTML_EXPORTER_KEY);
 		
 		if (handler == null)

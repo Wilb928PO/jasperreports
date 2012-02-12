@@ -306,7 +306,7 @@ public class JRResultSetDataSource implements JRDataSource
 					}
 					else
 					{
-						objValue = JRImageLoader.loadImage(bytes);
+						objValue = JRImageLoader.getInstance(jasperReportsContext).loadAwtImageFromBytes(bytes);
 					}					
 				}
 				else

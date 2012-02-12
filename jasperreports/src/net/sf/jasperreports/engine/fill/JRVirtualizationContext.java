@@ -45,6 +45,7 @@ import net.sf.jasperreports.engine.JRVirtualizationHelper;
 import net.sf.jasperreports.engine.JRVirtualizer;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.PrintElementVisitor;
+import net.sf.jasperreports.engine.Renderable;
 import net.sf.jasperreports.engine.base.JRVirtualPrintPage;
 import net.sf.jasperreports.engine.base.VirtualElementsData;
 import net.sf.jasperreports.engine.util.DeepPrintElementVisitor;
@@ -165,7 +166,7 @@ public class JRVirtualizationContext implements Serializable, VirtualizationList
 	 */
 	public void cacheRenderer(JRPrintImage image)
 	{
-		JRRenderable renderer = image.getRenderer();
+		Renderable renderer = image.getRenderable();
 		if (renderer != null)
 		{
 			cachedRenderers.put(renderer.getId(), renderer);

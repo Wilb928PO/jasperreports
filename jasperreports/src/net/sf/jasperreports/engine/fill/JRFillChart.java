@@ -95,9 +95,9 @@ import net.sf.jasperreports.engine.JRLineBox;
 import net.sf.jasperreports.engine.JRPrintElement;
 import net.sf.jasperreports.engine.JRPrintHyperlinkParameters;
 import net.sf.jasperreports.engine.JRPrintImage;
-import net.sf.jasperreports.engine.JRRenderable;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JRVisitor;
+import net.sf.jasperreports.engine.Renderable;
 import net.sf.jasperreports.engine.type.EvaluationTimeEnum;
 import net.sf.jasperreports.engine.type.HyperlinkTypeEnum;
 import net.sf.jasperreports.engine.type.ModeEnum;
@@ -147,7 +147,7 @@ public class JRFillChart extends JRFillElement implements JRChart
 	protected JRFillChartDataset dataset;
 	protected JRChartPlot plot;
 
-	protected JRRenderable renderer;
+	protected Renderable renderer;
 	private String anchorName;
 	private String hyperlinkReference;
 	private String hyperlinkAnchor;
@@ -667,7 +667,7 @@ public class JRFillChart extends JRFillElement implements JRChart
 	/**
 	 *
 	 */
-	protected JRRenderable getRenderer()
+	protected Renderable getRenderable()
 	{
 		return renderer;
 	}
@@ -770,7 +770,8 @@ public class JRFillChart extends JRFillElement implements JRChart
 		Rectangle2D rectangle = new Rectangle2D.Double(0,0,getWidth(),getHeight());
 
 		renderer = 
-			ChartUtil.getChartRendererFactory(getRenderType()).getRenderer(
+			ChartUtil.getInstance(filler.getJasperReportsContext()).getChartRenderableFactory(getRenderType()).getRenderable(
+				filler.getJasperReportsContext(),
 				chart, 
 				chartHyperlinkProvider,
 				rectangle
@@ -879,7 +880,7 @@ public class JRFillChart extends JRFillElement implements JRChart
 			if (
 				isToPrint &&
 				isRemoveLineWhenBlank() &&
-				getRenderer() == null
+				getRenderable() == null
 				)
 			{
 				isToPrint = false;
@@ -950,7 +951,7 @@ public class JRFillChart extends JRFillElement implements JRChart
 	 */
 	protected void copy(JRPrintImage printImage)
 	{
-		printImage.setRenderer(getRenderer());
+		printImage.setRenderable(getRenderable());
 		printImage.setAnchorName(getAnchorName());
 		printImage.setHyperlinkReference(getHyperlinkReference());
 		printImage.setHyperlinkAnchor(getHyperlinkAnchor());

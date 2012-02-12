@@ -26,27 +26,26 @@ package net.sf.jasperreports.charts.util;
 import java.awt.geom.Rectangle2D;
 
 import net.sf.jasperreports.engine.JRPropertiesUtil;
-import net.sf.jasperreports.engine.JRRenderable;
+import net.sf.jasperreports.engine.JasperReportsContext;
+import net.sf.jasperreports.engine.Renderable;
 
 import org.jfree.chart.JFreeChart;
 
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
- * @deprecated Replaced by {@link ChartRenderableFactory}.
+ * @version $Id: ChartRendererFactory.java 4988 2012-02-09 10:48:26Z teodord $
  */
-public interface ChartRendererFactory
+@SuppressWarnings("deprecation")
+public interface ChartRenderableFactory extends ChartRendererFactory
 {
 	/**
-	 * @deprecated Replaced by {@link ChartRenderableFactory#PROPERTY_CHART_RENDERER_FACTORY_PREFIX}.
+	 * 
 	 */
 	public static final String PROPERTY_CHART_RENDERER_FACTORY_PREFIX = JRPropertiesUtil.PROPERTY_PREFIX + "chart.renderer.factory.";
 
-	/**
-	 * @deprecated Replaced by {@link ChartRenderableFactory#getRenderable(JFreeChart, ChartHyperlinkProvider, Rectangle2D)}. 
-	 */
-	public JRRenderable getRenderer(
+	public Renderable getRenderable(
+		JasperReportsContext jasperReportsContext,
 		JFreeChart chart, 
 		ChartHyperlinkProvider chartHyperlinkProvider,
 		Rectangle2D rectangle

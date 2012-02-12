@@ -38,6 +38,7 @@ import net.sf.jasperreports.engine.JRPrintHyperlinkParameters;
 import net.sf.jasperreports.engine.JRPrintImage;
 import net.sf.jasperreports.engine.JRRenderable;
 import net.sf.jasperreports.engine.PrintElementVisitor;
+import net.sf.jasperreports.engine.Renderable;
 import net.sf.jasperreports.engine.type.HorizontalAlignEnum;
 import net.sf.jasperreports.engine.type.HyperlinkTargetEnum;
 import net.sf.jasperreports.engine.type.HyperlinkTypeEnum;
@@ -65,7 +66,7 @@ public class JRBasePrintImage extends JRBasePrintGraphicElement implements JRPri
 	/**
 	 *
 	 */
-	protected JRRenderable renderer;
+	protected Renderable renderable;
 	protected ScaleImageEnum scaleImageValue;
 	protected Boolean isUsingCache = Boolean.TRUE;
 	protected HorizontalAlignEnum horizontalAlignmentValue;
@@ -107,9 +108,25 @@ public class JRBasePrintImage extends JRBasePrintGraphicElement implements JRPri
 	{
 		return JRStyleResolver.getMode(this, ModeEnum.TRANSPARENT);
 	}
+	
+	/**
+	 *
+	 */
+	public Renderable getRenderable()
+	{
+		return renderable;
+	}
 		
 	/**
 	 *
+	 */
+	public void setRenderable(Renderable renderable)
+	{
+		this.renderable = renderable;
+	}
+		
+	/**
+	 * @deprecated Replaced by {@link #getRenderable()}.
 	 */
 	public JRRenderable getRenderer()
 	{
@@ -117,7 +134,7 @@ public class JRBasePrintImage extends JRBasePrintGraphicElement implements JRPri
 	}
 		
 	/**
-	 *
+	 * @deprecated Replaced by {@link #setRenderable(Renderable)}.
 	 */
 	public void setRenderer(JRRenderable renderer)
 	{
@@ -537,6 +554,10 @@ public class JRBasePrintImage extends JRBasePrintGraphicElement implements JRPri
 	 * @deprecated
 	 */
 	private byte onErrorType;
+	/**
+	 * @deprecated
+	 */
+	private JRRenderable renderer;
 
 	
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
@@ -601,6 +622,18 @@ public class JRBasePrintImage extends JRBasePrintGraphicElement implements JRPri
 		if (linkTarget == null)
 		{
 			 linkTarget = JRHyperlinkHelper.getLinkTarget(HyperlinkTargetEnum.getByValue(hyperlinkTarget));
+		}
+		
+		if (renderer != null && renderable == null)
+		{
+			if (renderer instanceof Renderable)
+			{
+				renderable = (Renderable)renderer;
+			}
+			else
+			{
+				//FIXMECONTEXT
+			}
 		}
 	}
 

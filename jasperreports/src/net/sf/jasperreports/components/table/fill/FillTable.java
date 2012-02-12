@@ -244,7 +244,7 @@ public class FillTable extends BaseFillComponent
 		
 		if (log.isDebugEnabled())
 		{
-			String tableReportXml = JRXmlWriter.writeReport(tableReport, "UTF-8");
+			String tableReportXml = new JRXmlWriter(fillContext.getFiller().getJasperReportsContext()).write(tableReport, "UTF-8");
 			log.debug("Generated table report:\n" + tableReportXml);
 		}
 		

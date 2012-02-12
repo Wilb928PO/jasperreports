@@ -4094,7 +4094,7 @@ public class JRApiWriter
 			Class<?> reportCreatorClass = Class.forName(reportCreatorClassName);
 			ReportCreator reportCreator = (ReportCreator)reportCreatorClass.newInstance();
 			JasperDesign jasperDesign = reportCreator.create();
-			JRXmlWriter.writeReport(jasperDesign, destFileName, "UTF-8");
+			new JRXmlWriter(DefaultJasperReportsContext.getInstance()).write(jasperDesign, destFileName, "UTF-8");
 		}
 		catch (Exception e)
 		{

@@ -21,34 +21,40 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with JasperReports. If not, see <http://www.gnu.org/licenses/>.
  */
-package net.sf.jasperreports.charts.util;
 
+/*
+ * Contributors:
+ * Adrian Jackson - iapetus@users.sourceforge.net
+ * David Taylor - exodussystems@users.sourceforge.net
+ * Lars Kristensen - llk@users.sourceforge.net
+ */
+package net.sf.jasperreports.engine;
+
+import java.awt.Graphics2D;
+import java.awt.geom.Dimension2D;
 import java.awt.geom.Rectangle2D;
-
-import net.sf.jasperreports.engine.JRPropertiesUtil;
-import net.sf.jasperreports.engine.JRRenderable;
-
-import org.jfree.chart.JFreeChart;
 
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
- * @deprecated Replaced by {@link ChartRenderableFactory}.
+ * @version $Id: JRRenderable.java 4988 2012-02-09 10:48:26Z teodord $
  */
-public interface ChartRendererFactory
+public interface Renderable extends JRRenderable
 {
 	/**
-	 * @deprecated Replaced by {@link ChartRenderableFactory#PROPERTY_CHART_RENDERER_FACTORY_PREFIX}.
+	 *
 	 */
-	public static final String PROPERTY_CHART_RENDERER_FACTORY_PREFIX = JRPropertiesUtil.PROPERTY_PREFIX + "chart.renderer.factory.";
+	public Dimension2D getDimension(JasperReportsContext jasperReportsContext) throws JRException;
+
 
 	/**
-	 * @deprecated Replaced by {@link ChartRenderableFactory#getRenderable(JFreeChart, ChartHyperlinkProvider, Rectangle2D)}. 
+	 *
 	 */
-	public JRRenderable getRenderer(
-		JFreeChart chart, 
-		ChartHyperlinkProvider chartHyperlinkProvider,
-		Rectangle2D rectangle
-		);
+	public byte[] getImageData(JasperReportsContext jasperReportsContext) throws JRException;
+
+
+	/**
+	 *
+	 */
+	public void render(JasperReportsContext jasperReportsContext, Graphics2D grx, Rectangle2D rectangle) throws JRException;
 }

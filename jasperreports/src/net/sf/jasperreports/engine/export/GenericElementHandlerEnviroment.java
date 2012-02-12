@@ -114,7 +114,7 @@ public final class GenericElementHandlerEnviroment
 	public GenericElementHandler getElementHandler(JRGenericElementType type,
 			String exporterKey)
 	{
-		Map<String,GenericElementHandlerBundle> handlerBundles = getHandlerBundles();
+		Map<String,GenericElementHandlerBundle> handlerBundles = getBundles();
 		GenericElementHandlerBundle bundle = handlerBundles.get(type.getNamespace());
 		if (bundle == null)
 		{
@@ -134,7 +134,7 @@ public final class GenericElementHandlerEnviroment
 			handlerBundles = (Map<String,GenericElementHandlerBundle>) handlersCache.get(cacheKey);
 			if (handlerBundles == null)
 			{
-				handlerBundles = loadHandlerBundles();
+				handlerBundles = loadBundles();
 				handlersCache.put(cacheKey, handlerBundles);
 			}
 		}

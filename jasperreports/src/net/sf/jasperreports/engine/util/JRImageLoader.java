@@ -24,12 +24,12 @@
 package net.sf.jasperreports.engine.util;
 
 import java.awt.Image;
-import java.io.InputStream;
-import java.net.URL;
 
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.JRRuntimeException;
+import net.sf.jasperreports.engine.JasperReportsContext;
 
 
 /**
@@ -61,13 +61,43 @@ public final class JRImageLoader
 	/**
 	 *
 	 */
-	private static JRImageReader imageReader;
-	private static JRImageEncoder imageEncoder;
-	
+	private JRImageReader imageReader;
+	private JRImageEncoder imageEncoder;
+	private JasperReportsContext jasperReportsContext;
 
-	static
+
+	/**
+	 *
+	 */
+	private JRImageLoader(JasperReportsContext jasperReportsContext)
 	{
-		String readerClassName = JRProperties.getProperty(PROPERTY_IMAGE_READER);
+		this.jasperReportsContext = jasperReportsContext;
+		
+		init();
+	}
+	
+	
+	/**
+	 *
+	 */
+	private static JRImageLoader getDefaultInstance()
+	{
+		return new JRImageLoader(DefaultJasperReportsContext.getInstance());
+	}
+	
+	
+	/**
+	 *
+	 */
+	public static JRImageLoader getInstance(JasperReportsContext jasperReportsContext)
+	{
+		return new JRImageLoader(jasperReportsContext);
+	}
+	
+	
+	private void init()
+	{
+		String readerClassName = JRPropertiesUtil.getInstance(jasperReportsContext).getProperty(PROPERTY_IMAGE_READER);
 		if (readerClassName == null)
 		{
 			imageReader = new JRJdk14ImageReader();
@@ -86,7 +116,7 @@ public final class JRImageLoader
 		}
 
 
-		String encoderClassName = JRProperties.getProperty(PROPERTY_IMAGE_ENCODER);
+		String encoderClassName = JRPropertiesUtil.getInstance(jasperReportsContext).getProperty(PROPERTY_IMAGE_ENCODER);
 		if (encoderClassName == null)
 		{
 			imageEncoder = new JRJdk14ImageEncoder();
@@ -113,7 +143,7 @@ public final class JRImageLoader
 	 * @param imageType the type of the image as specified by one of the constants defined in the JRRenderable interface
 	 * @return the encoded image data
 	 */
-	public static byte[] loadImageDataFromAWTImage(Image image, byte imageType) throws JRException
+	public byte[] loadBytesFromAwtImage(Image image, byte imageType) throws JRException
 	{
 		return imageEncoder.encode(image, imageType);
 	}
@@ -122,48 +152,26 @@ public final class JRImageLoader
 	/**
 	 *
 	 */
-	public static Image loadImage(byte[] bytes) throws JRException
+	public Image loadAwtImageFromBytes(byte[] bytes) throws JRException
 	{
 		return imageReader.readImage(bytes);
 	}
 
 
 	/**
-	 * Loads an image from an specified resource.
-	 * 
-	 * @param image the resource name
-	 * @throws JRException
-	 * @deprecated To be removed in future releases.
+	 * @deprecated Replaced by {@link #loadBytesFromAwtImage(Image, byte)}.
 	 */
-	protected static Image loadImage(String image) throws JRException 
+	public static byte[] loadImageDataFromAWTImage(Image image, byte imageType) throws JRException
 	{
-		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-		URL url = classLoader.getResource(image);
-		if (url == null)
-		{
-			//if (!wasWarning)
-			//{
-			//	if (log.isWarnEnabled())
-			//		log.warn("Failure using Thread.currentThread().getContextClassLoader() in JRImageLoader class. Using JRImageLoader.class.getClassLoader() instead.");
-			//	wasWarning = true;
-			//}
-			classLoader = JRImageLoader.class.getClassLoader();
-		}
-		InputStream is;
-		if (classLoader == null)
-		{
-			is = JRImageLoader.class.getResourceAsStream("/" + image);
-		}
-		else
-		{
-			is = classLoader.getResourceAsStream(image);
-		}
-		
-		return imageReader.readImage(JRLoader.loadBytes(is));
+		return getDefaultInstance().loadBytesFromAwtImage(image, imageType);
 	}
 
 
-	private JRImageLoader()
+	/**
+	 * @deprecated Replaced by {@link #loadAwtImageFromBytes(byte[])}.
+	 */
+	public static Image loadImage(byte[] bytes) throws JRException
 	{
+		return getDefaultInstance().loadAwtImageFromBytes(bytes);
 	}
 }

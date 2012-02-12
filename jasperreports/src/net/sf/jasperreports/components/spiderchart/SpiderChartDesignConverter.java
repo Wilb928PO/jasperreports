@@ -67,7 +67,8 @@ public class SpiderChartDesignConverter implements ComponentDesignConverter
 		printImage.setLinkType(chartSettings.getLinkType());
 		printImage.setOnErrorType(OnErrorTypeEnum.ICON);
 		printImage.setScaleImage(ScaleImageEnum.CLIP);
-		SpiderChartSharedBean spiderchartBean = new SpiderChartSharedBean(
+		SpiderChartSharedBean spiderchartBean = 
+			new SpiderChartSharedBean(
 				chartSettings.getRenderType(),
 				SpiderChartRendererEvaluator.SAMPLE_MAXVALUE,
 				JRExpressionUtil.getExpressionText(chartSettings.getTitleExpression()),
@@ -76,12 +77,15 @@ public class SpiderChartDesignConverter implements ComponentDesignConverter
 				null
 				);
 		
-		printImage.setRenderer(SpiderChartRendererEvaluator.evaluateRenderer(
+		printImage.setRenderable(
+			SpiderChartRendererEvaluator.evaluateRenderable(
+				reportConverter.getJasperReportsContext(),
 				element,
 				spiderchartBean,
 				null,
 				JRPropertiesUtil.getInstance(reportConverter.getJasperReportsContext()).getProperty(reportConverter.getReport(), JRChart.PROPERTY_CHART_RENDER_TYPE),
-				SpiderChartRendererEvaluator.SAMPLE_DATASET));
+				SpiderChartRendererEvaluator.SAMPLE_DATASET)
+				);
 		
 		return printImage;
 	}

@@ -38,8 +38,10 @@ import net.sf.jasperreports.engine.JRPrintHyperlink;
 import net.sf.jasperreports.engine.JRPrintImageArea;
 import net.sf.jasperreports.engine.JRPrintImageAreaHyperlink;
 import net.sf.jasperreports.engine.JRPropertiesUtil;
+import net.sf.jasperreports.engine.JRRenderable;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JasperReportsContext;
+import net.sf.jasperreports.engine.Renderable;
 import net.sf.jasperreports.engine.fill.DefaultChartTheme;
 import net.sf.jasperreports.engine.util.JRSingletonCache;
 
@@ -58,6 +60,7 @@ public final class ChartUtil
 	/**
 	 *
 	 */
+	@SuppressWarnings("deprecation")
 	private static final JRSingletonCache<ChartRendererFactory> CHART_RENDERER_FACTORY_CACHE = 
 			new JRSingletonCache<ChartRendererFactory>(ChartRendererFactory.class);
 
@@ -207,11 +210,9 @@ public final class ChartUtil
 	/**
 	 * 
 	 */
-	public ChartRendererFactory getRendererFactory(String renderType)
+	public ChartRenderableFactory getChartRenderableFactory(String renderType)
 	{
-		ChartRendererFactory chartRendererFactory = null;
-
-		String factoryClass = JRPropertiesUtil.getInstance(jasperReportsContext).getProperty(ChartRendererFactory.PROPERTY_CHART_RENDERER_FACTORY_PREFIX + renderType);
+		String factoryClass = JRPropertiesUtil.getInstance(jasperReportsContext).getProperty(ChartRenderableFactory.PROPERTY_CHART_RENDERER_FACTORY_PREFIX + renderType);
 		if (factoryClass == null)
 		{
 			throw new JRRuntimeException("No chart renderer factory specifyed for '" + renderType + "' render type.");
@@ -219,21 +220,57 @@ public final class ChartUtil
 
 		try
 		{
-			chartRendererFactory = CHART_RENDERER_FACTORY_CACHE.getCachedInstance(factoryClass);
+			@SuppressWarnings("deprecation")
+			ChartRendererFactory factory = CHART_RENDERER_FACTORY_CACHE.getCachedInstance(factoryClass);
+			if (factory instanceof ChartRenderableFactory)
+			{
+				return (ChartRenderableFactory)factory;
+			}
+			
+			return new WrappingChartRenderableFactory(factory); 
 		}
 		catch (JRException e)
 		{
 			throw new JRRuntimeException(e);
 		}
-		
-		return chartRendererFactory;
 	}
 
 	/**
-	 * @deprecated Replaced by {@link #getRendererFactory(String)}.
+	 * @deprecated Replaced by {@link #getChartRenderableFactory(String)}.
 	 */
 	public static ChartRendererFactory getChartRendererFactory(String renderType)
 	{
-		return getDefaultInstance().getRendererFactory(renderType);
+		return getDefaultInstance().getChartRenderableFactory(renderType);
+	}
+
+	/**
+	 * @deprecated To be removed.
+	 */
+	public static class WrappingChartRenderableFactory implements ChartRenderableFactory
+	{
+		private ChartRendererFactory factory;
+		
+		public WrappingChartRenderableFactory(ChartRendererFactory factory)
+		{
+			this.factory = factory;
+		}
+
+		public JRRenderable getRenderer(
+			JFreeChart chart,
+			ChartHyperlinkProvider chartHyperlinkProvider,
+			Rectangle2D rectangle
+			) 
+		{
+			return factory.getRenderer(chart, chartHyperlinkProvider, rectangle);
+		}
+
+		public Renderable getRenderable(
+			JasperReportsContext jasperReportsContext,
+			JFreeChart chart,
+			ChartHyperlinkProvider chartHyperlinkProvider,
+			Rectangle2D rectangle) 
+		{
+			return null;//FIXMECONTEXT wrap renderable
+		}
 	}
 }

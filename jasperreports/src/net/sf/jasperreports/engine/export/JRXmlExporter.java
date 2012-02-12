@@ -79,6 +79,7 @@ import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.JRWrappingSvgRenderer;
 import net.sf.jasperreports.engine.JasperReportsContext;
+import net.sf.jasperreports.engine.Renderable;
 import net.sf.jasperreports.engine.TabStop;
 import net.sf.jasperreports.engine.type.HyperlinkTargetEnum;
 import net.sf.jasperreports.engine.type.HyperlinkTypeEnum;
@@ -819,7 +820,7 @@ public class JRXmlExporter extends JRAbstractExporter
 		exportGraphicElement(image);
 		
 
-		JRRenderable renderer = image.getRenderer();
+		Renderable renderer = image.getRenderable();
 		if (renderer != null)
 		{
 			xmlWriter.startElement(JRXmlConstants.ELEMENT_imageSource);
@@ -845,7 +846,7 @@ public class JRXmlExporter extends JRAbstractExporter
 			{
 				try
 				{
-					ByteArrayInputStream bais = new ByteArrayInputStream(renderer.getImageData());
+					ByteArrayInputStream bais = new ByteArrayInputStream(renderer.getImageData(jasperReportsContext));
 					ByteArrayOutputStream baos = new ByteArrayOutputStream();
 					
 					Base64Encoder encoder = new Base64Encoder(bais, baos);
@@ -867,7 +868,7 @@ public class JRXmlExporter extends JRAbstractExporter
 				else
 				{
 					imageSource = IMAGE_PREFIX + getNextImageId();
-					imageNameToImageDataMap.put(imageSource, renderer.getImageData());
+					imageNameToImageDataMap.put(imageSource, renderer.getImageData(jasperReportsContext));
 					
 					imageSource = new File(imagesDir, imageSource).getPath();
 					rendererToImagePathMap.put(renderer, imageSource);
@@ -1141,7 +1142,7 @@ public class JRXmlExporter extends JRAbstractExporter
 	protected void exportGenericElement(JRGenericPrintElement element) throws IOException
 	{
 		GenericElementXmlHandler handler = (GenericElementXmlHandler) 
-		GenericElementHandlerEnviroment.getHandler(
+		GenericElementHandlerEnviroment.getInstance(jasperReportsContext).getElementHandler(
 				element.getGenericType(), getExporterKey());
 
 		if (handler != null)

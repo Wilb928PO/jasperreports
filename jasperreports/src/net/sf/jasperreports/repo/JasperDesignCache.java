@@ -236,7 +236,7 @@ public class JasperDesignCache
 					ByteArrayOutputStream baos = new ByteArrayOutputStream();
 					try
 					{
-						JRXmlWriter.writeReport(jasperReport, baos, "UTF-8");
+						new JRXmlWriter(jasperReportsContext).write(jasperReport, baos, "UTF-8");
 						bais = new ByteArrayInputStream(baos.toByteArray());
 						jasperDesign = JRXmlLoader.load(bais);
 						resource.setJasperDesign(jasperDesign);

@@ -87,11 +87,11 @@ import net.sf.jasperreports.engine.JRPrintImage;
 import net.sf.jasperreports.engine.JRPrintImageAreaHyperlink;
 import net.sf.jasperreports.engine.JRPrintPage;
 import net.sf.jasperreports.engine.JRPropertiesUtil;
-import net.sf.jasperreports.engine.JRRenderable;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperPrintManager;
 import net.sf.jasperreports.engine.JasperReportsContext;
+import net.sf.jasperreports.engine.Renderable;
 import net.sf.jasperreports.engine.export.JRGraphics2DExporter;
 import net.sf.jasperreports.engine.export.JRGraphics2DExporterParameter;
 import net.sf.jasperreports.engine.print.JRPrinterAWT;
@@ -1735,7 +1735,7 @@ public class JRViewer extends javax.swing.JPanel implements JRHyperlinkListener
 				JRImageMapRenderer imageMap = null;
 				if (element instanceof JRPrintImage)
 				{
-					JRRenderable renderer = ((JRPrintImage) element).getRenderer();
+					Renderable renderer = ((JRPrintImage) element).getRenderable();
 					if (renderer instanceof JRImageMapRenderer)
 					{
 						imageMap = (JRImageMapRenderer) renderer;

@@ -364,7 +364,7 @@ public abstract class JRAbstractCsvExporter extends JRAbstractExporter
 	{
 		if (nature == null)
 		{
-			nature = new JRCsvExporterNature(filter);
+			nature = new JRCsvExporterNature(jasperReportsContext, filter);
 		}
 
 		return nature;

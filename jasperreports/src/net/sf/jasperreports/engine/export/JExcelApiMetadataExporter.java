@@ -85,7 +85,6 @@ import net.sf.jasperreports.engine.JRCommonGraphicElement;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRFont;
 import net.sf.jasperreports.engine.JRGenericPrintElement;
-import net.sf.jasperreports.engine.JRImageRenderer;
 import net.sf.jasperreports.engine.JRLineBox;
 import net.sf.jasperreports.engine.JRPen;
 import net.sf.jasperreports.engine.JRPrintElement;
@@ -101,6 +100,8 @@ import net.sf.jasperreports.engine.JRRenderable;
 import net.sf.jasperreports.engine.JRWrappingSvgRenderer;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReportsContext;
+import net.sf.jasperreports.engine.Renderable;
+import net.sf.jasperreports.engine.RenderableUtil;
 import net.sf.jasperreports.engine.export.data.BooleanTextValue;
 import net.sf.jasperreports.engine.export.data.DateTextValue;
 import net.sf.jasperreports.engine.export.data.NumberTextValue;
@@ -231,7 +232,7 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter
 				JExcelApiExporterParameter.PROPERTY_PASSWORD
 				);
 		
-		nature = new JExcelApiExporterNature(filter, isIgnoreGraphics, isIgnorePageMargins);
+		nature = new JExcelApiExporterNature(jasperReportsContext, filter, isIgnoreGraphics, isIgnorePageMargins);
 		
 		useTempFile = 
 			JRPropertiesUtil.getInstance(jasperReportsContext).getBooleanProperty(
@@ -1054,7 +1055,7 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter
 			int availableImageHeight = element.getHeight() - topPadding - bottomPadding;
 			availableImageHeight = availableImageHeight < 0 ? 0 : availableImageHeight;
 	
-			JRRenderable renderer = element.getRenderer();
+			Renderable renderer = element.getRenderable();
 	
 			if (
 				renderer != null &&
@@ -1066,10 +1067,10 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter
 				{
 					// Image renderers are all asked for their image data and dimension at some point. 
 					// Better to test and replace the renderer now, in case of lazy load error.
-					renderer = JRImageRenderer.getOnErrorRendererForImageData(renderer, element.getOnErrorTypeValue());
+					renderer = RenderableUtil.getInstance(jasperReportsContext).getOnErrorRendererForImageData(renderer, element.getOnErrorTypeValue());
 					if (renderer != null)
 					{
-						renderer = JRImageRenderer.getOnErrorRendererForDimension(renderer, element.getOnErrorTypeValue());
+						renderer = RenderableUtil.getInstance(jasperReportsContext).getOnErrorRendererForDimension(renderer, element.getOnErrorTypeValue());
 					}
 				}
 				else
@@ -1092,7 +1093,7 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter
 				int normalWidth = availableImageWidth;
 				int normalHeight = availableImageHeight;
 	
-				Dimension2D dimension = renderer.getDimension();
+				Dimension2D dimension = renderer.getDimension(jasperReportsContext);
 				if (dimension != null)
 				{
 					normalWidth = (int) dimension.getWidth();
@@ -1169,6 +1170,7 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter
 							);
 						
 						renderer.render(
+							jasperReportsContext,
 							grx, 
 							new Rectangle(
 								(int) (xalignFactor * (availableImageWidth - normalWidth)),
@@ -1178,13 +1180,13 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter
 								)
 							);
 	
-						imageData = JRImageLoader.loadImageDataFromAWTImage(bi, JRRenderable.IMAGE_TYPE_PNG);
+						imageData = JRImageLoader.getInstance(jasperReportsContext).loadBytesFromAwtImage(bi, JRRenderable.IMAGE_TYPE_PNG);
 	
 						break;
 					}
 					case FILL_FRAME:
 					{
-						imageData = renderer.getImageData();
+						imageData = renderer.getImageData(jasperReportsContext);
 	
 						break;
 					}
@@ -1206,7 +1208,7 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter
 								normalHeight = availableImageHeight;
 							}
 	
-							imageData = renderer.getImageData();
+							imageData = renderer.getImageData(jasperReportsContext);
 						}
 	
 						break;
@@ -2280,7 +2282,8 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter
 			setRowHeight(rowIndex, element.getHeight());
 			
 	
-			GenericElementJExcelApiMetadataHandler handler = (GenericElementJExcelApiMetadataHandler)GenericElementHandlerEnviroment.getHandler(
+			GenericElementJExcelApiMetadataHandler handler = 
+				(GenericElementJExcelApiMetadataHandler)GenericElementHandlerEnviroment.getInstance(getJasperReportsContext()).getElementHandler(
 					element.getGenericType(), 
 					JXL_EXPORTER_KEY);
 	

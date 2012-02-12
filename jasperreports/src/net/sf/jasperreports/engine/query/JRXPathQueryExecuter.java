@@ -105,7 +105,7 @@ public class JRXPathQueryExecuter extends JRAbstractQueryExecuter
 		
 		if (document != null && xPath != null)
 		{
-			datasource = new JRXmlDataSource(document, xPath);
+			datasource = new JRXmlDataSource(getJasperReportsContext(), document, xPath);
 			datasource.setLocale((Locale)getParameterValue(JRXPathQueryExecuterFactory.XML_LOCALE, true));
 			datasource.setDatePattern((String)getParameterValue(JRXPathQueryExecuterFactory.XML_DATE_PATTERN, true));
 			datasource.setNumberPattern((String)getParameterValue(JRXPathQueryExecuterFactory.XML_NUMBER_PATTERN, true));

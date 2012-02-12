@@ -104,19 +104,19 @@ public interface JRRenderable extends Serializable
 	public byte getImageType();
 
 	/**
-	 *
+	 * @deprecated Replaced by {@link Renderable#getDimension(JasperReportsContext)}.
 	 */
 	public Dimension2D getDimension() throws JRException;
 
 
 	/**
-	 *
+	 * @deprecated Replaced by {@link Renderable#getImageData(JasperReportsContext)}.
 	 */
 	public byte[] getImageData() throws JRException;
 
 
 	/**
-	 *
+	 * @deprecated Replaced by {@link Renderable#render(JasperReportsContext, Graphics2D, Rectangle2D)}.
 	 */
 	public void render(Graphics2D grx, Rectangle2D rectangle) throws JRException;
 

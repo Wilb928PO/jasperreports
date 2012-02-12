@@ -189,7 +189,7 @@ public class JRXmlTemplateLoader
 	 */
 	public JRTemplate loadTemplate(InputStream data)
 	{
-		JRXmlDigester digester = JRXmlTemplateDigesterFactory.instance().createDigester();
+		JRXmlDigester digester = JRXmlTemplateDigesterFactory.instance().createDigester(jasperReportsContext);
 		try
 		{
 			return (JRTemplate) digester.parse(data);

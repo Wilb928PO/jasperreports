@@ -127,6 +127,7 @@ public class DefaultJasperReportsContext implements JasperReportsContext
 	/**
 	 * 
 	 */
+	@SuppressWarnings("deprecation")
 	protected void loadSystemProperties()
 	{
 		loadSystemProperty("jasper.reports.compiler.class", JRCompiler.COMPILER_CLASS);

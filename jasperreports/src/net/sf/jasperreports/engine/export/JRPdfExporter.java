@@ -81,6 +81,8 @@ import net.sf.jasperreports.engine.JRPropertiesUtil.PropertySuffix;
 import net.sf.jasperreports.engine.JRRenderable;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JasperReportsContext;
+import net.sf.jasperreports.engine.Renderable;
+import net.sf.jasperreports.engine.RenderableUtil;
 import net.sf.jasperreports.engine.base.JRBaseFont;
 import net.sf.jasperreports.engine.base.JRBasePrintText;
 import net.sf.jasperreports.engine.export.legacy.BorderOffset;
@@ -1187,7 +1189,7 @@ public class JRPdfExporter extends JRAbstractExporter
 		int availableImageHeight = printImage.getHeight() - topPadding - bottomPadding;
 		availableImageHeight = (availableImageHeight < 0)?0:availableImageHeight;
 
-		JRRenderable renderer = printImage.getRenderer();
+		Renderable renderer = printImage.getRenderable();
 
 		if (
 			renderer != null &&
@@ -1199,7 +1201,7 @@ public class JRPdfExporter extends JRAbstractExporter
 			{
 				// Image renderers are all asked for their image data at some point. 
 				// Better to test and replace the renderer now, in case of lazy load error.
-				renderer = JRImageRenderer.getOnErrorRendererForImageData(renderer, printImage.getOnErrorTypeValue());
+				renderer = RenderableUtil.getInstance(jasperReportsContext).getOnErrorRendererForImageData(renderer, printImage.getOnErrorTypeValue());
 			}
 		}
 		else
@@ -1231,7 +1233,7 @@ public class JRPdfExporter extends JRAbstractExporter
 						// Image load might fail, from given image data. 
 						// Better to test and replace the renderer now, in case of lazy load error.
 						renderer = 
-							JRImageRenderer.getOnErrorRendererForDimension(
+							RenderableUtil.getInstance(jasperReportsContext).getOnErrorRendererForDimension(
 								renderer, 
 								printImage.getOnErrorTypeValue()
 								);
@@ -1243,7 +1245,7 @@ public class JRPdfExporter extends JRAbstractExporter
 						int normalWidth = availableImageWidth;
 						int normalHeight = availableImageHeight;
 
-						Dimension2D dimension = renderer.getDimension();
+						Dimension2D dimension = renderer.getDimension(jasperReportsContext);
 						if (dimension != null)
 						{
 							normalWidth = (int)dimension.getWidth();
@@ -1266,6 +1268,7 @@ public class JRPdfExporter extends JRAbstractExporter
 							g.fillRect(0, 0, minWidth, minHeight);
 						}
 						renderer.render(
+							jasperReportsContext,
 							g,
 							new java.awt.Rectangle(
 								(xoffset > 0 ? 0 : xoffset),
@@ -1296,21 +1299,22 @@ public class JRPdfExporter extends JRAbstractExporter
 						{
 							try
 							{
-								image = com.lowagie.text.Image.getInstance(renderer.getImageData());
+								image = com.lowagie.text.Image.getInstance(renderer.getImageData(jasperReportsContext));
 								imageTesterPdfContentByte.addImage(image, 10, 0, 0, 10, 0, 0);
 							}
 							catch(Exception e)
 							{
 								JRImageRenderer tmpRenderer = 
 									JRImageRenderer.getOnErrorRendererForImage(
-										JRImageRenderer.getInstance(renderer.getImageData()), 
+										jasperReportsContext,
+										JRImageRenderer.getInstance(renderer.getImageData(jasperReportsContext)), 
 										printImage.getOnErrorTypeValue()
 										);
 								if (tmpRenderer == null)
 								{
 									break;
 								}
-								java.awt.Image awtImage = tmpRenderer.getImage();
+								java.awt.Image awtImage = tmpRenderer.getImage(jasperReportsContext);
 								image = com.lowagie.text.Image.getInstance(awtImage, null);
 							}
 
@@ -1334,21 +1338,22 @@ public class JRPdfExporter extends JRAbstractExporter
 						{
 							try
 							{
-								image = com.lowagie.text.Image.getInstance(renderer.getImageData());
+								image = com.lowagie.text.Image.getInstance(renderer.getImageData(jasperReportsContext));
 								imageTesterPdfContentByte.addImage(image, 10, 0, 0, 10, 0, 0);
 							}
 							catch(Exception e)
 							{
 								JRImageRenderer tmpRenderer = 
 									JRImageRenderer.getOnErrorRendererForImage(
-										JRImageRenderer.getInstance(renderer.getImageData()), 
+										jasperReportsContext,
+										JRImageRenderer.getInstance(renderer.getImageData(jasperReportsContext)), 
 										printImage.getOnErrorTypeValue()
 										);
 								if (tmpRenderer == null)
 								{
 									break;
 								}
-								java.awt.Image awtImage = tmpRenderer.getImage();
+								java.awt.Image awtImage = tmpRenderer.getImage(jasperReportsContext);
 								image = com.lowagie.text.Image.getInstance(awtImage, null);
 							}
 
@@ -1391,7 +1396,7 @@ public class JRPdfExporter extends JRAbstractExporter
 				
 				Rectangle2D clip = null;
 
-				Dimension2D dimension = renderer.getDimension();
+				Dimension2D dimension = renderer.getDimension(jasperReportsContext);
 				if (dimension != null)
 				{
 					normalWidth = dimension.getWidth();
@@ -1462,7 +1467,7 @@ public class JRPdfExporter extends JRAbstractExporter
 
 				Rectangle2D rectangle = new Rectangle2D.Double(0, 0, displayWidth, displayHeight);
 
-				renderer.render(g, rectangle);
+				renderer.render(jasperReportsContext, g, rectangle);
 				g.dispose();
 
 				pdfContentByte.saveState();
@@ -2051,8 +2056,14 @@ public class JRPdfExporter extends JRAbstractExporter
 	{
 		AbstractPdfTextRenderer textRenderer = 
 			text.getLeadingOffset() == 0 
-			? PdfTextRenderer.getInstance() 
-			: SimplePdfTextRenderer.getInstance();//FIXMETAB optimize this
+			? new PdfTextRenderer(
+				jasperReportsContext,
+				getPropertiesUtil().getBooleanProperty(JRStyledText.PROPERTY_AWT_IGNORE_MISSING_FONT)
+				) 
+			: new SimplePdfTextRenderer(
+				jasperReportsContext,
+				getPropertiesUtil().getBooleanProperty(JRStyledText.PROPERTY_AWT_IGNORE_MISSING_FONT)//FIXMECONTEXT replace with getPropertiesUtil in all exporters
+				);//FIXMETAB optimize this
 		
 		textRenderer.initialize(this, pdfContentByte, text, getOffsetX(), getOffsetY());
 		
@@ -2683,7 +2694,7 @@ public class JRPdfExporter extends JRAbstractExporter
 	protected void exportGenericElement(JRGenericPrintElement element)
 	{
 		GenericElementPdfHandler handler = (GenericElementPdfHandler) 
-				GenericElementHandlerEnviroment.getHandler(
+				GenericElementHandlerEnviroment.getInstance(getJasperReportsContext()).getElementHandler(
 						element.getGenericType(), PDF_EXPORTER_KEY);
 		
 		if (handler != null)
