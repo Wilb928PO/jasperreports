@@ -528,20 +528,27 @@
 			jQuery('.sortSymbolImage', popupDiv).bind('click', function(event) {
 				event.preventDefault();
                 var self = jQuery(this);
-                	currentHref = jQuery(this).attr("data-href"),
+//                	currentHref = jQuery(this).attr("data-href"),
+                	currentHref = jQuery.parseJSON(jQuery(this).attr("data-href")),
                 	param = 'jr.action=' + jQuery(this).attr("data-sortdata"),
-                	toolbarId = self.closest('.mainReportDiv').find('.toolbarDiv').attr('id'),
+                	toolbarId = self.closest('.mainReportDiv').find('.toolbarDiv').attr('id');
 //                	ctx = gm.getExecutionContext(this, currentHref, param);
-                	ctx = gm.getToolbarExecutionContext(jQuery('div.columnHeader:first'), // getToolbarExecutionContext(startPoint, requestedUrl, params, callback, arrCallbackArgs, isJSON) 
-                										currentHref, 
-                										param, 
-                										jvt.performAction, 
-    	    											[toolbarId],  
-                										true);
-
-                if (ctx) {
-                    ctx.run();
-                }
+//                	ctx = gm.getToolbarExecutionContext(jQuery('div.columnHeader:first'), // getToolbarExecutionContext(startPoint, requestedUrl, params, callback, arrCallbackArgs, isJSON) 
+//                										currentHref, 
+//                										param, 
+//                										jvt.performAction, 
+//    	    											[toolbarId],  
+//                										true);
+//
+//                if (ctx) {
+//                    ctx.run();
+//                }
+                	
+                currentHref['jr.action'] = jQuery(this).attr("data-sortdata");
+                
+                Report.refreshReport(currentHref);
+                
+                
 			});
 			
 			/**

@@ -23,7 +23,9 @@
  */
 package net.sf.jasperreports.components.headertoolbar;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -77,6 +79,8 @@ import net.sf.jasperreports.web.util.VelocityUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.velocity.VelocityContext;
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 
@@ -238,11 +242,13 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 				velocityContext.put("popupId", popupId);
 			}
 //			String sortAscHref = getSortLink(context, sortColumnName, sortColumnType, HeaderToolbarElement.SORT_ORDER_ASC, sortDatasetName);
-			String sortAscHref = getSortActionLink(context);
+//			String sortAscHref = getSortActionLink(context);
+			String sortAscHref = getSortActionJson(context);
 			SortData sortAscData = new SortData(tableUUID, sortColumnName, sortColumnType, HeaderToolbarElement.SORT_ORDER_ASC, sortDatasetName);
 	
 //			String sortDescHref = getSortLink(context, sortColumnName, sortColumnType, HeaderToolbarElement.SORT_ORDER_DESC, sortDatasetName);
-			String sortDescHref = getSortActionLink(context);
+//			String sortDescHref = getSortActionLink(context);
+			String sortDescHref = getSortActionJson(context);
 			SortData sortDescData = new SortData(tableUUID, sortColumnName, sortColumnType, HeaderToolbarElement.SORT_ORDER_DESC, sortDatasetName);
 	
 			String sortAscSrc = RESOURCE_SORT_DEFAULT_ASC;
@@ -380,6 +386,15 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 		hyperlink.setHyperlinkParameters(parameters);
 		
 		return context.getHyperlinkURL(hyperlink);
+	}
+	
+	private String getSortActionJson(JRHtmlExporterContext context) {
+		ReportContext reportContext = context.getExporter().getReportContext();
+		Map<String, Object> actionParams = new HashMap<String, Object>();
+		actionParams.put(WebReportContext.REQUEST_PARAMETER_REPORT_CONTEXT_ID, reportContext.getId());
+		actionParams.put(ReportServlet.REQUEST_PARAMETER_RUN_REPORT, true);
+		
+		return JacksonUtil.getInstance(context.getExporter().getJasperReportsContext()).getEscapedJsonString(actionParams);
 	}
 	
 	private String getFilterFormActionLink(JRHtmlExporterContext context) {
