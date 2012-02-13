@@ -120,7 +120,7 @@ public class JRTemplatePrintImage extends JRTemplatePrintGraphicElement implemen
 	 */
 	public JRRenderable getRenderer()
 	{
-		return renderer;
+		return getRenderable();
 	}
 		
 	/**
@@ -128,7 +128,7 @@ public class JRTemplatePrintImage extends JRTemplatePrintGraphicElement implemen
 	 */
 	public void setRenderer(JRRenderable renderer)
 	{
-		this.renderer = renderer;
+		this.renderer = renderer;//FIXMECONTEXT
 	}
 		
 	/**

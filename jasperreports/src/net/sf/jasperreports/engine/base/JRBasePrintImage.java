@@ -130,7 +130,7 @@ public class JRBasePrintImage extends JRBasePrintGraphicElement implements JRPri
 	 */
 	public JRRenderable getRenderer()
 	{
-		return renderer;
+		return getRenderable();
 	}
 		
 	/**
@@ -138,7 +138,7 @@ public class JRBasePrintImage extends JRBasePrintGraphicElement implements JRPri
 	 */
 	public void setRenderer(JRRenderable renderer)
 	{
-		this.renderer = renderer;
+		this.renderer = renderer;//FIXMECONTEXT
 	}
 		
 	/**
