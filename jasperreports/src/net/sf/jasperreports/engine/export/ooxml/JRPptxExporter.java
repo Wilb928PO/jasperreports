@@ -304,7 +304,7 @@ public class JRPptxExporter extends JRAbstractExporter
 			return ((GenericElementPptxHandler)GenericElementHandlerEnviroment.getInstance(jasperReportsContext).getElementHandler(
 					genericPrintElement.getGenericType(), 
 					PPTX_EXPORTER_KEY
-					)).getImage(genericPrintElement);
+					)).getImage(jasperReportsContext, genericPrintElement);
 		}
 		
 		return (JRPrintImage) element;

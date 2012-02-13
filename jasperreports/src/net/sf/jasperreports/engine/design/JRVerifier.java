@@ -2473,8 +2473,8 @@ public class JRVerifier
 		
 		if (componentKey != null && component != null)
 		{
-			ComponentCompiler compiler = ComponentsEnvironment.
-				getComponentManager(componentKey).getComponentCompiler();
+			ComponentCompiler compiler = 
+				ComponentsEnvironment.getInstance(jasperReportsContext).getManager(componentKey).getComponentCompiler();
 			pushCurrentComponentElement(element);
 			try
 			{

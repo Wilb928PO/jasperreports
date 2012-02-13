@@ -227,7 +227,7 @@ public class JRXlsxExporter extends JRXlsAbstractExporter
 			return ((GenericElementXlsxHandler)GenericElementHandlerEnviroment.getInstance(jasperReportsContext).getElementHandler(
 					genericPrintElement.getGenericType(), 
 					XLSX_EXPORTER_KEY
-					)).getImage(genericPrintElement);
+					)).getImage(jasperReportsContext, genericPrintElement);
 		}
 		
 		return (JRPrintImage) element;

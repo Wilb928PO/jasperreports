@@ -3028,8 +3028,8 @@ public class JRXmlWriter extends JRXmlBaseWriter
 		
 		ComponentKey componentKey = componentElement.getComponentKey();
 		Component component = componentElement.getComponent();
-		ComponentXmlWriter componentXmlWriter = ComponentsEnvironment.
-			getComponentManager(componentKey).getComponentXmlWriter();
+		ComponentXmlWriter componentXmlWriter = 
+			ComponentsEnvironment.getInstance(jasperReportsContext).getManager(componentKey).getComponentXmlWriter();
 		componentXmlWriter.writeToXml(componentKey, component, this);
 		
 		writer.closeElement();

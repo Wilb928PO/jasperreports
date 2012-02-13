@@ -25,6 +25,8 @@ package net.sf.jasperreports.components.sort;
 
 import java.io.IOException;
 
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.component.Component;
 import net.sf.jasperreports.engine.component.ComponentKey;
 import net.sf.jasperreports.engine.component.ComponentXmlWriter;
@@ -38,7 +40,25 @@ import net.sf.jasperreports.engine.xml.JRXmlWriter;
  * @author Narcis Marcu (narcism@users.sourceforge.net)
  * @version $Id$
  */
-public class SortComponentXmlWriter implements ComponentXmlWriter {
+public class SortComponentXmlWriter implements ComponentXmlWriter 
+{
+	private JasperReportsContext jasperReportsContext;
+	
+	/**
+	 * @deprecated Replaced by {@link #SortComponentXmlWriter(JasperReportsContext)}.
+	 */
+	public SortComponentXmlWriter()
+	{
+		this(DefaultJasperReportsContext.getInstance());
+	}
+
+	/**
+	 * 
+	 */
+	public SortComponentXmlWriter(JasperReportsContext jasperReportsContext)
+	{
+		this.jasperReportsContext = jasperReportsContext;
+	}
 
 	public void writeToXml(ComponentKey componentKey, Component component,
 			JRXmlWriter reportWriter) throws IOException {
@@ -53,8 +73,8 @@ public class SortComponentXmlWriter implements ComponentXmlWriter {
 		JRXmlWriteHelper writer = reportWriter.getXmlWriteHelper();
 		
 		String namespaceURI = componentKey.getNamespace();
-		String schemaLocation = ComponentsEnvironment
-			.getComponentsBundle(namespaceURI).getXmlParser().getPublicSchemaLocation();
+		String schemaLocation = 
+			ComponentsEnvironment.getInstance(jasperReportsContext).getBundle(namespaceURI).getXmlParser().getPublicSchemaLocation();
 		XmlNamespace componentNamespace = new XmlNamespace(namespaceURI, componentKey.getNamespacePrefix(),
 				schemaLocation);
 		
