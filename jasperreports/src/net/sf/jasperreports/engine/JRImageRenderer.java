@@ -412,14 +412,13 @@ public class JRImageRenderer extends JRAbstractRenderer
 	}
 
 
-	/**
-	 * @deprecated Replaced by {@link RenderableService#getImageData(JasperReportsContext))}.
-	 */
-	public byte[] getImageData() throws JRException
+	@Override
+	public byte[] getImageData(JasperReportsContext jasperReportsContext)
+			throws JRException
 	{
 		if (imageData == null)
 		{
-			imageData = RepositoryUtil.getBytes(imageLocation);
+			imageData = RepositoryUtil.getInstance(jasperReportsContext).getBytes2(imageLocation);
 			
 			if(imageData != null) 
 			{
@@ -428,6 +427,15 @@ public class JRImageRenderer extends JRAbstractRenderer
 		}
 
 		return imageData;
+	}
+
+
+	/**
+	 * @deprecated Replaced by {@link RenderableService#getImageData(JasperReportsContext))}.
+	 */
+	public byte[] getImageData() throws JRException
+	{
+		return getImageData(DefaultJasperReportsContext.getInstance());
 	}
 
 
