@@ -71,4 +71,9 @@ public class SimpleJasperPrintAccessor implements JasperPrintAccessor, Serializa
 		return jasperPrint.getPages().size();
 	}
 
+	public boolean isDone()
+	{
+		return true;
+	}
+
 }

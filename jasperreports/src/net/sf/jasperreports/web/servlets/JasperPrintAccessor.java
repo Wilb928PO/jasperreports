@@ -66,4 +66,12 @@ public interface JasperPrintAccessor
 	 */
 	Integer getTotalPageCount();
 	
+	/**
+	 * Determines whether the report generation is done (but not necessarily that 
+	 * it ended successfully).
+	 * 
+	 * @return whether the report generation is done
+	 */
+	boolean isDone();
+	
 }

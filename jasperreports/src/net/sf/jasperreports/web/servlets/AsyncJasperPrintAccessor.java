@@ -189,7 +189,7 @@ public class AsyncJasperPrintAccessor implements JasperPrintAccessor, Asynchrono
 
 	public Integer getTotalPageCount()
 	{
-		if (done)
+		if (done && jasperPrint != null)
 		{
 			return jasperPrint.getPages().size();
 		}
@@ -313,6 +313,11 @@ public class AsyncJasperPrintAccessor implements JasperPrintAccessor, Asynchrono
 		{
 			lock.unlock();
 		}
+	}
+
+	public boolean isDone()
+	{
+		return done;
 	}
 
 }
