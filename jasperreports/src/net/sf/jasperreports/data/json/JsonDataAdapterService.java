@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import net.sf.jasperreports.data.AbstractDataAdapterService;
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JasperReportsContext;
@@ -43,16 +44,12 @@ import net.sf.jasperreports.engine.query.JsonQueryExecuterFactory;
  */
 public class JsonDataAdapterService extends AbstractDataAdapterService 
 {
-	private JasperReportsContext jasperReportsContext;
-
 	/**
 	 * 
 	 */
 	public JsonDataAdapterService(JasperReportsContext jasperReportsContext, JsonDataAdapter jsonDataAdapter) 
 	{
-		super(jsonDataAdapter);
-		
-		this.jasperReportsContext = jasperReportsContext;
+		super(jasperReportsContext, jsonDataAdapter);
 	}
 
 	/**
@@ -60,7 +57,7 @@ public class JsonDataAdapterService extends AbstractDataAdapterService
 	 */
 	public JsonDataAdapterService(JsonDataAdapter jsonDataAdapter) 
 	{
-		super(jsonDataAdapter);
+		super(DefaultJasperReportsContext.getInstance(), jsonDataAdapter);
 	}
 
 	public JsonDataAdapter getJsonDataAdapter() {
@@ -110,7 +107,7 @@ public class JsonDataAdapterService extends AbstractDataAdapterService
 			} else {
 				JsonDataSource ds = 
 					new JsonDataSource(
-						jasperReportsContext,
+						getJasperReportsContext(),
 						jsonDataAdapter.getFileName(),
 						jsonDataAdapter.getSelectExpression()
 						);

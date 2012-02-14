@@ -51,8 +51,6 @@ public class XmlDataAdapterService extends AbstractDataAdapterService
 {
 
 	private static final Log log = LogFactory.getLog(XmlDataAdapterService.class);
-	
-	protected JasperReportsContext jasperReportsContext;
 
 	/**
 	 * 
@@ -62,9 +60,7 @@ public class XmlDataAdapterService extends AbstractDataAdapterService
 		XmlDataAdapter xmlDataAdapter
 		) 
 	{
-		super(xmlDataAdapter);
-		
-		this.jasperReportsContext = jasperReportsContext;
+		super(jasperReportsContext, xmlDataAdapter);
 	}
 	
 	/**
@@ -98,7 +94,7 @@ public class XmlDataAdapterService extends AbstractDataAdapterService
 				else
 				{
 				*/
-					InputStream dataStream = RepositoryUtil.getInstance(jasperReportsContext).getInputStream2(xmlDataAdapter.getFileName());
+					InputStream dataStream = RepositoryUtil.getInstance(getJasperReportsContext()).getInputStream2(xmlDataAdapter.getFileName());
 					try
 					{
 						Document document = JRXmlUtils.parse(dataStream);
@@ -140,7 +136,7 @@ public class XmlDataAdapterService extends AbstractDataAdapterService
 			}
 			else
 			{
-				JRXmlDataSource ds = new JRXmlDataSource(jasperReportsContext, xmlDataAdapter.getFileName(), xmlDataAdapter.getSelectExpression()); 
+				JRXmlDataSource ds = new JRXmlDataSource(getJasperReportsContext(), xmlDataAdapter.getFileName(), xmlDataAdapter.getSelectExpression()); 
 
 				Locale locale = xmlDataAdapter.getLocale();
 				if (locale != null) {
