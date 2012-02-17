@@ -8,11 +8,6 @@
 	color: red;
 }
 
-.selected {
-	background-color: gray;
-	border: 1px solid red;
-}
-
 .dashboardDiv {
 	position: relative;
 	z-index: 2; 
