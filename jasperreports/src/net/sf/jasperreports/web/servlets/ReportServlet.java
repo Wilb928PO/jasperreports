@@ -213,7 +213,7 @@ public class ReportServlet extends AbstractServlet
 			
 			if (pageStatus.getError() != null)
 			{
-				throw new JRRuntimeException("Error occured during report generation", pageStatus.getError());
+				throw new JRRuntimeException("Error occurred during report generation", pageStatus.getError());
 			}
 			
 			if (!pageStatus.pageExists())
