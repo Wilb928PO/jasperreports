@@ -26,9 +26,7 @@ package net.sf.jasperreports.engine.fill;
 import java.io.IOException;
 import java.io.ObjectInputStream.GetField;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -88,8 +86,8 @@ public class JRVirtualizationContext implements Serializable, VirtualizationList
 	 */
 	public JRVirtualizationContext()
 	{
-		cachedRenderers = new ConcurrentHashMap<String,JRRenderable>();
-		cachedTemplates = new ConcurrentHashMap<String,JRTemplateElement>();
+		cachedRenderers = new ConcurrentHashMap<String,JRRenderable>(16, 0.75f, 1);
+		cachedTemplates = new ConcurrentHashMap<String,JRTemplateElement>(16, 0.75f, 1);
 		
 		pageElementSize = JRProperties.getIntegerProperty(JRVirtualPrintPage.PROPERTY_VIRTUAL_PAGE_ELEMENT_SIZE, 0);
 	}
