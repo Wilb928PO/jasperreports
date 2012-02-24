@@ -127,8 +127,8 @@ public class JRXPathQueryExecuter extends JRAbstractQueryExecuter
 			if (datasource != null)
 			{
 				datasource.setLocale((Locale)getParameterValue(JRXPathQueryExecuterFactory.XML_LOCALE, true));
-				datasource.setDatePattern((String)getParameterValue(JRXPathQueryExecuterFactory.XML_DATE_PATTERN, true));
-				datasource.setNumberPattern((String)getParameterValue(JRXPathQueryExecuterFactory.XML_NUMBER_PATTERN, true));
+				datasource.setDatePattern(getStringParameter(JRXPathQueryExecuterFactory.XML_DATE_PATTERN, JRXPathQueryExecuterFactory.PROPERTY_XML_DATE_PATTERN));
+				datasource.setNumberPattern(getStringParameter(JRXPathQueryExecuterFactory.XML_NUMBER_PATTERN, JRXPathQueryExecuterFactory.PROPERTY_XML_NUMBER_PATTERN));
 				datasource.setTimeZone((TimeZone)getParameterValue(JRXPathQueryExecuterFactory.XML_TIME_ZONE, true));
 			}
 		}

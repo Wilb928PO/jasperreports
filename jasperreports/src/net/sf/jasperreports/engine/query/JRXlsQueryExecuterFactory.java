@@ -59,7 +59,7 @@ public class JRXlsQueryExecuterFactory extends JRAbstractQueryExecuterFactory
 	public static final String XLS_FILE = "XLS_FILE";
 	
 	/**
-	 * Built-in parameter holding the value of the <code>java.lang.String</code> source to be used for obtaining the XLS data.
+	 * Built-in parameter/property holding the value of the <code>java.lang.String</code> source to be used for obtaining the XLS data.
 	 */
 	public static final String XLS_SOURCE = JRPropertiesUtil.PROPERTY_PREFIX + "xls.source";
 	

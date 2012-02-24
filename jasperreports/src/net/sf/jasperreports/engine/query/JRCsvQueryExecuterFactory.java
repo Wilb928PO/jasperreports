@@ -44,7 +44,7 @@ public class JRCsvQueryExecuterFactory extends JRAbstractQueryExecuterFactory
 {
 	
 	/**
-	 * Built-in parameter holding the value of the source for the CSV file. 
+	 * Built-in parameter/property holding the value of the source for the CSV file. 
 	 * <p/>
 	 * It can be:
 	 * <ul>
