@@ -30,6 +30,7 @@ package net.sf.jasperreports.engine.data;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import net.sf.jasperreports.engine.DefaultJasperReportsContext;
@@ -41,6 +42,7 @@ import net.sf.jasperreports.engine.design.JRDesignField;
 import net.sf.jasperreports.engine.util.JRXmlUtils;
 import net.sf.jasperreports.engine.util.xml.JRXPathExecuter;
 import net.sf.jasperreports.engine.util.xml.JRXPathExecuterUtils;
+import net.sf.jasperreports.repo.RepositoryUtil;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -142,6 +144,8 @@ public class JRXmlDataSource extends JRAbstractTextDataSource implements JRRewin
 
 	private final JRXPathExecuter xPathExecuter;
 	
+	private InputStream inputStream;
+	private boolean closeInputStream;
 	
 	// -----------------------------------------------------------------
 	// Constructors
@@ -228,6 +232,9 @@ public class JRXmlDataSource extends JRAbstractTextDataSource implements JRRewin
 		) throws JRException 
 	{
 		this(jasperReportsContext, JRXmlUtils.parse(new InputSource(in)), selectExpression);
+		
+		this.inputStream = in;
+		this.closeInputStream = false;
 	}
 
 	/**
@@ -262,9 +269,18 @@ public class JRXmlDataSource extends JRAbstractTextDataSource implements JRRewin
 	 * @see JRXmlDataSource#JRXmlDataSource(String) 
 	 * @see JRXmlDataSource#JRXmlDataSource(Document, String) 
 	 */
-	public JRXmlDataSource(JasperReportsContext jasperReportsContext, String uri, String selectExpression)
-			throws JRException {
-		this(jasperReportsContext, JRXmlUtils.parse(uri), selectExpression);
+	public JRXmlDataSource(
+		JasperReportsContext jasperReportsContext, 
+		String uri, 
+		String selectExpression
+		) throws JRException 
+	{
+		this(
+			jasperReportsContext, 
+			RepositoryUtil.getInstance(jasperReportsContext).getInputStream2(uri), 
+			selectExpression
+			);
+		this.closeInputStream = true;
 	}
 
 	/**
@@ -541,6 +557,24 @@ public class JRXmlDataSource extends JRAbstractTextDataSource implements JRRewin
 		return result.toString();
 	}
 	
+	/**
+	 * Closes the reader. Users of this data source should close it after usage.
+	 */
+	public void close()
+	{
+		try
+		{
+			if (closeInputStream)
+			{
+				inputStream.close();
+			}
+		}
+		catch(IOException e)
+		{
+			//nothing to do
+		}
+	}
+
 	public static void main(String[] args) throws Exception {
 		JRXmlDataSource ds = new JRXmlDataSource(new FileInputStream("northwind.xml"), "/Northwind/Customers");
 		JRDesignField field = new JRDesignField();

@@ -23,6 +23,8 @@
  */
 package net.sf.jasperreports.engine.query;
 
+import java.io.File;
+import java.io.InputStream;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
@@ -56,8 +58,8 @@ public class JRXPathQueryExecuter extends JRAbstractQueryExecuter
 {
 	private static final Log log = LogFactory.getLog(JRXPathQueryExecuter.class);
 	
-	private final Document document;
-	
+	private JRXmlDataSource datasource;
+
 	/**
 	 * 
 	 */
@@ -69,13 +71,6 @@ public class JRXPathQueryExecuter extends JRAbstractQueryExecuter
 	{
 		super(jasperReportsContext, dataset, parametersMap);
 				
-		document = (Document) getParameterValue(JRXPathQueryExecuterFactory.PARAMETER_XML_DATA_DOCUMENT);
-
-		if (document == null)
-		{
-			log.warn("The supplied org.w3c.dom.Document object is null.");
-		}
-
 		parseQuery();
 	}
 
@@ -103,13 +98,39 @@ public class JRXPathQueryExecuter extends JRAbstractQueryExecuter
 			log.debug("XPath query: " + xPath);
 		}
 		
-		if (document != null && xPath != null)
+		if (xPath != null)//FIXME maybe we should create data source with no select expression too
 		{
-			datasource = new JRXmlDataSource(getJasperReportsContext(), document, xPath);
-			datasource.setLocale((Locale)getParameterValue(JRXPathQueryExecuterFactory.XML_LOCALE, true));
-			datasource.setDatePattern((String)getParameterValue(JRXPathQueryExecuterFactory.XML_DATE_PATTERN, true));
-			datasource.setNumberPattern((String)getParameterValue(JRXPathQueryExecuterFactory.XML_NUMBER_PATTERN, true));
-			datasource.setTimeZone((TimeZone)getParameterValue(JRXPathQueryExecuterFactory.XML_TIME_ZONE, true));
+			Document document = (Document) getParameterValue(JRXPathQueryExecuterFactory.PARAMETER_XML_DATA_DOCUMENT);
+			if (document != null) {
+				datasource = new JRXmlDataSource(getJasperReportsContext(), document, xPath);
+			} else {
+				InputStream xmlInputStream = (InputStream) getParameterValue(JRXPathQueryExecuterFactory.XML_INPUT_STREAM);
+				if (xmlInputStream != null) {
+					datasource = new JRXmlDataSource(getJasperReportsContext(), xmlInputStream, xPath);
+				} else {
+					File xmlFile = (File) getParameterValue(JRXPathQueryExecuterFactory.XML_FILE);
+					if (xmlFile != null) {
+						datasource = new JRXmlDataSource(getJasperReportsContext(), xmlFile, xPath);
+					} else {
+						String xmlSource = getStringParameterOrProperty(JRXPathQueryExecuterFactory.XML_SOURCE);
+						if (xmlSource != null) {
+							datasource = new JRXmlDataSource(getJasperReportsContext(), xmlSource, xPath);
+						} else {
+							if (log.isWarnEnabled()){
+								log.warn("No XML source was provided.");
+							}
+						}
+					}
+				}
+			}
+
+			if (datasource != null)
+			{
+				datasource.setLocale((Locale)getParameterValue(JRXPathQueryExecuterFactory.XML_LOCALE, true));
+				datasource.setDatePattern((String)getParameterValue(JRXPathQueryExecuterFactory.XML_DATE_PATTERN, true));
+				datasource.setNumberPattern((String)getParameterValue(JRXPathQueryExecuterFactory.XML_NUMBER_PATTERN, true));
+				datasource.setTimeZone((TimeZone)getParameterValue(JRXPathQueryExecuterFactory.XML_TIME_ZONE, true));
+			}
 		}
 		
 		return datasource;
@@ -117,7 +138,9 @@ public class JRXPathQueryExecuter extends JRAbstractQueryExecuter
 
 	public void close()
 	{
-		//nothing to do
+		if(datasource != null){
+			datasource.close();
+		}
 	}
 
 	public boolean cancelQuery() throws JRException
