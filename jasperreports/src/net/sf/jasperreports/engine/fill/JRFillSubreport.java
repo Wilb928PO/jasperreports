@@ -252,6 +252,7 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 		if (printPage != null)
 		{
 			printElements = printPage.getElements();
+			//FIXME lucianc immediately dispose the page if virtualized
 		}
 		
 		return printElements;

@@ -74,12 +74,29 @@ public class AsyncJasperPrintAccessor implements JasperPrintAccessor, Asynchrono
 		fillHandle.addListener(this);
 		fillHandle.addFillListener(this);
 	}
+
+	protected void lock()
+	{
+		try
+		{
+			lock.lockInterruptibly();
+		}
+		catch (InterruptedException e)
+		{
+			throw new JRRuntimeException("Interrupted while attempting to lock", e);
+		}
+	}
+
+	protected void unlock()
+	{
+		lock.unlock();
+	}
 	
 	public ReportPageStatus pageStatus(int pageIdx, Long pageTimestamp)
 	{
 		if (!done)
 		{
-			lock.lock();
+			lock();
 			try
 			{
 				// wait until the page is available
@@ -99,7 +116,7 @@ public class AsyncJasperPrintAccessor implements JasperPrintAccessor, Asynchrono
 			}
 			finally
 			{
-				lock.unlock();
+				unlock();
 			}
 		}
 		
@@ -150,7 +167,7 @@ public class AsyncJasperPrintAccessor implements JasperPrintAccessor, Asynchrono
 	{
 		if (!done)
 		{
-			lock.lock();
+			lock();
 			try
 			{
 				// wait until the report generation is done
@@ -170,7 +187,7 @@ public class AsyncJasperPrintAccessor implements JasperPrintAccessor, Asynchrono
 			}
 			finally
 			{
-				lock.unlock();
+				unlock();
 			}
 		}
 		
@@ -204,7 +221,7 @@ public class AsyncJasperPrintAccessor implements JasperPrintAccessor, Asynchrono
 			log.debug("report finished");
 		}
 		
-		lock.lock();
+		lock();
 		try
 		{
 			if (this.jasperPrint == null)
@@ -220,7 +237,7 @@ public class AsyncJasperPrintAccessor implements JasperPrintAccessor, Asynchrono
 		}
 		finally
 		{
-			lock.unlock();
+			unlock();
 		}
 	}
 
@@ -231,7 +248,7 @@ public class AsyncJasperPrintAccessor implements JasperPrintAccessor, Asynchrono
 			log.debug("report cancelled");
 		}
 		
-		lock.lock();
+		lock();
 		try
 		{
 			done = true;
@@ -244,7 +261,7 @@ public class AsyncJasperPrintAccessor implements JasperPrintAccessor, Asynchrono
 		}
 		finally
 		{
-			lock.unlock();
+			unlock();
 		}
 	}
 
@@ -252,7 +269,7 @@ public class AsyncJasperPrintAccessor implements JasperPrintAccessor, Asynchrono
 	{
 		log.error("Error during report execution", t);
 		
-		lock.lock();
+		lock();
 		try
 		{
 			error = t;
@@ -263,7 +280,7 @@ public class AsyncJasperPrintAccessor implements JasperPrintAccessor, Asynchrono
 		}
 		finally
 		{
-			lock.unlock();
+			unlock();
 		}
 	}
 
@@ -274,7 +291,7 @@ public class AsyncJasperPrintAccessor implements JasperPrintAccessor, Asynchrono
 			log.debug("page " + pageIndex + " generated");
 		}
 		
-		lock.lock();
+		lock();
 		try
 		{
 			if (this.jasperPrint == null)
@@ -288,7 +305,7 @@ public class AsyncJasperPrintAccessor implements JasperPrintAccessor, Asynchrono
 		}
 		finally
 		{
-			lock.unlock();
+			unlock();
 		}
 	}
 
@@ -299,7 +316,7 @@ public class AsyncJasperPrintAccessor implements JasperPrintAccessor, Asynchrono
 			log.debug("page " + pageIndex + " updated");
 		}
 		
-		lock.lock();
+		lock();
 		try
 		{
 			// update the timestamp if the page is tracked
@@ -311,7 +328,7 @@ public class AsyncJasperPrintAccessor implements JasperPrintAccessor, Asynchrono
 		}
 		finally
 		{
-			lock.unlock();
+			unlock();
 		}
 	}
 
