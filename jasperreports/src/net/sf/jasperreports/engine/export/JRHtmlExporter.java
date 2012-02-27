@@ -145,6 +145,11 @@ public class JRHtmlExporter extends JRAbstractExporter
 	/**
 	 *
 	 */
+	public static final String PROPERTY_HTML_UUID = HTML_EXPORTER_PROPERTIES_PREFIX + "uuid";
+
+	/**
+	 *
+	 */
 	public static final String PROPERTY_HTML_ID = HTML_EXPORTER_PROPERTIES_PREFIX + "id";
 
 	/**

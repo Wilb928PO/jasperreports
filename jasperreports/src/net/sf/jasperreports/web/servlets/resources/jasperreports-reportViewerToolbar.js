@@ -10,7 +10,8 @@
 				undoRedoCounters: {
 					undos: 0,
 					redos: 0
-				}
+				},
+				PARAM_ACTION: 'jr.action'
 	};
 	
 	jvt.init = function(toolbarId) {
@@ -334,6 +335,15 @@
 		
 		jvt.updateToolbarPaginationButtons(jqToolbar);
 		jvt.setAutoRefresh(toolbarId);
+	};
+	
+	jvt.runReport = function(startPoint, requestedUrl, params, callback, arrCallbackArgs, isJSON) {
+		var	gm = global.jasperreports.global,
+			ctx = gm.getToolbarExecutionContext(startPoint, requestedUrl, params, callback, arrCallbackArgs, isJSON);
+	
+	    if (ctx) {
+	        ctx.run();
+	    }
 	};
 
 	global.jasperreports.reportviewertoolbar = jvt;

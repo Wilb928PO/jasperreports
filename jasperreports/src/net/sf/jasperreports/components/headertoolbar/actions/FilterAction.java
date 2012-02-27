@@ -13,6 +13,7 @@ import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.repo.JasperDesignCache;
 import net.sf.jasperreports.web.commands.CommandStack;
 import net.sf.jasperreports.web.commands.CommandTarget;
+import net.sf.jasperreports.web.commands.ResetInCacheCommand;
 
 public class FilterAction extends AbstractTableAction 
 {
@@ -54,9 +55,14 @@ public class FilterAction extends AbstractTableAction
 				CommandStack commandStack = getCommandStack();
 		
 				// execute command
-				commandStack.execute(new FilterCommand(dataset, filterData));
-				
-				cache.resetJasperReport(target.getUri());
+				commandStack.execute(
+					new ResetInCacheCommand(
+						new FilterCommand(dataset, filterData),
+						getJasperReportsContext(),
+						getReportContext(), 
+						target.getUri()
+						)
+					);
 			}
 		}
 	}

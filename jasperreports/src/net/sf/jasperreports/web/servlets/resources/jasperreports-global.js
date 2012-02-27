@@ -242,6 +242,8 @@ jQuery.noConflict();
 		jg.ajaxLoad = function (url, elementToAppendTo, elementToExtract, requestParams, callback, arrCallbackArgs, loadMaskTarget) {
 			jQuery.ajax(url, 
 					{
+						type: 'POST',
+						
 						data: requestParams,
 						
 						success: function(data, textStatus, jqXHR) {
@@ -406,14 +408,14 @@ jQuery.noConflict();
 			
 			if (executionContextElement && executionContextElement.size() > 0) {
 				return new jg.AjaxExecutionContext(
-					null, 
-					requestedUrl, 
+					null,															// contextId
+					requestedUrl, 													// requestUrl
 					jQuery('div.result', executionContextElement).filter(':first'), // target 
-					params,
-					'div.result',
-					callback,
-					arrCallbackArgs,
-					isJSON
+					params,															// requestParams
+					'div.result',													// elementToExtract
+					callback,														// callback
+					arrCallbackArgs,												// arrCallbackArgs
+					isJSON															// isJSON
 				);
 			}
 		};

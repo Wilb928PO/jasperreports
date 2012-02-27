@@ -23,7 +23,6 @@
  */
 package net.sf.jasperreports.components.headertoolbar;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -50,8 +49,6 @@ import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JRGenericPrintElement;
 import net.sf.jasperreports.engine.JRIdentifiable;
 import net.sf.jasperreports.engine.JRParameter;
-import net.sf.jasperreports.engine.JRPrintHyperlinkParameter;
-import net.sf.jasperreports.engine.JRPrintHyperlinkParameters;
 import net.sf.jasperreports.engine.JRPropertiesMap;
 import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.JRRuntimeException;
@@ -79,8 +76,6 @@ import net.sf.jasperreports.web.util.VelocityUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.velocity.VelocityContext;
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 
@@ -204,7 +199,6 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 			
 			velocityContext.put("isFilterable", filterType != null);
 			velocityContext.put("filterDivId", "filter_" + sortDatasetName + "_" + sortColumnName);
-			velocityContext.put("filterFormAction", getFilterFormActionLink(context));
 			velocityContext.put("filterReportUriParamName", ReportServlet.REQUEST_PARAMETER_REPORT_URI);
 			velocityContext.put("filterReportUriParamValue", reportContext.getParameterValue(ReportServlet.REQUEST_PARAMETER_REPORT_URI));
 			velocityContext.put("filterColumnName", sortColumnName);
@@ -231,24 +225,14 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 			velocityContext.put("filterValueEndParamName", FilterData.FIELD_VALUE_END);
 			// end
 			
-			
-
-			
-			
-			velocityContext.put("resizeColumnAction", getResizeColumnLink(context));
+			velocityContext.put("actionBaseUrl", getActionBaseUrl(context));
+			velocityContext.put("actionBaseData", getActionBaseJsonData(context));
 
 			// begin:temp
 			if (popupId != null) {
 				velocityContext.put("popupId", popupId);
 			}
-//			String sortAscHref = getSortLink(context, sortColumnName, sortColumnType, HeaderToolbarElement.SORT_ORDER_ASC, sortDatasetName);
-//			String sortAscHref = getSortActionLink(context);
-			String sortAscHref = getSortActionJson(context);
 			SortData sortAscData = new SortData(tableUUID, sortColumnName, sortColumnType, HeaderToolbarElement.SORT_ORDER_ASC, sortDatasetName);
-	
-//			String sortDescHref = getSortLink(context, sortColumnName, sortColumnType, HeaderToolbarElement.SORT_ORDER_DESC, sortDatasetName);
-//			String sortDescHref = getSortActionLink(context);
-			String sortDescHref = getSortActionJson(context);
 			SortData sortDescData = new SortData(tableUUID, sortColumnName, sortColumnType, HeaderToolbarElement.SORT_ORDER_DESC, sortDatasetName);
 	
 			String sortAscSrc = RESOURCE_SORT_DEFAULT_ASC;
@@ -335,9 +319,7 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 			velocityContext.put("enableFilterEndParameter", enableFilterEndParameter);
 			
 			// begin:temp
-			velocityContext.put("sortAscHref", sortAscHref);
 			velocityContext.put("sortAscData", JacksonUtil.getInstance(context.getExporter().getJasperReportsContext()).getEscapedJsonString(sortAscData));
-			velocityContext.put("sortDescHref", sortDescHref);
 			velocityContext.put("sortDescData", JacksonUtil.getInstance(context.getExporter().getJasperReportsContext()).getEscapedJsonString(sortDescData));
 			
 			velocityContext.put("sortAscSrc", imagesResourcePath + sortAscSrc);
@@ -354,75 +336,19 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 		return htmlFragment;
 	}
 	
-//	private String getSortLink(JRHtmlExporterContext context, String sortColumnName, String sortColumnType, String sortOrder, String sortTableName) {
-//		JRBasePrintHyperlink hyperlink = new JRBasePrintHyperlink();
-//		hyperlink.setLinkType("ReportExecution");
-//		
-//		JRPrintHyperlinkParameters parameters = new JRPrintHyperlinkParameters();
-//		parameters.addParameter(new JRPrintHyperlinkParameter(
-//				HeaderToolbarElement.REQUEST_PARAMETER_SORT_DATA,
-//				String.class.getName(), 
-//				HeaderToolbarElementUtils.packSortColumnInfo(sortColumnName, sortColumnType, sortOrder)));
-//		parameters.addParameter(new JRPrintHyperlinkParameter(HeaderToolbarElement.REQUEST_PARAMETER_DATASET_RUN, String.class.getName(), sortTableName));
-//		
-//		ReportContext reportContext = context.getExporter().getReportContext();
-//		parameters.addParameter(new JRPrintHyperlinkParameter(WebReportContext.REQUEST_PARAMETER_REPORT_CONTEXT_ID, String.class.getName(), reportContext.getId()));
-//		parameters.addParameter(new JRPrintHyperlinkParameter(ReportServlet.REQUEST_PARAMETER_RUN_REPORT, String.class.getName(), "true"));
-//		
-//		hyperlink.setHyperlinkParameters(parameters);
-//		
-//		return context.getHyperlinkURL(hyperlink);
-//	}
-	
-	private String getSortActionLink(JRHtmlExporterContext context) {
+	private String getActionBaseUrl(JRHtmlExporterContext context) {
 		JRBasePrintHyperlink hyperlink = new JRBasePrintHyperlink();
 		hyperlink.setLinkType("ReportExecution");
-		
-		JRPrintHyperlinkParameters parameters = new JRPrintHyperlinkParameters();
-		ReportContext reportContext = context.getExporter().getReportContext();
-		parameters.addParameter(new JRPrintHyperlinkParameter(WebReportContext.REQUEST_PARAMETER_REPORT_CONTEXT_ID, String.class.getName(), reportContext.getId()));
-		parameters.addParameter(new JRPrintHyperlinkParameter(ReportServlet.REQUEST_PARAMETER_RUN_REPORT, String.class.getName(), "true"));
-		
-		hyperlink.setHyperlinkParameters(parameters);
-		
 		return context.getHyperlinkURL(hyperlink);
 	}
-	
-	private String getSortActionJson(JRHtmlExporterContext context) {
+
+	private String getActionBaseJsonData(JRHtmlExporterContext context) {
 		ReportContext reportContext = context.getExporter().getReportContext();
 		Map<String, Object> actionParams = new HashMap<String, Object>();
 		actionParams.put(WebReportContext.REQUEST_PARAMETER_REPORT_CONTEXT_ID, reportContext.getId());
 		actionParams.put(ReportServlet.REQUEST_PARAMETER_RUN_REPORT, true);
 		
 		return JacksonUtil.getInstance(context.getExporter().getJasperReportsContext()).getEscapedJsonString(actionParams);
-	}
-	
-	private String getFilterFormActionLink(JRHtmlExporterContext context) {
-		JRBasePrintHyperlink hyperlink = new JRBasePrintHyperlink();
-		hyperlink.setLinkType("ReportExecution");
-		
-		JRPrintHyperlinkParameters parameters = new JRPrintHyperlinkParameters();
-		ReportContext reportContext = context.getExporter().getReportContext();
-		parameters.addParameter(new JRPrintHyperlinkParameter(WebReportContext.REQUEST_PARAMETER_REPORT_CONTEXT_ID, String.class.getName(), reportContext.getId()));
-		parameters.addParameter(new JRPrintHyperlinkParameter(ReportServlet.REQUEST_PARAMETER_RUN_REPORT, String.class.getName(), "true"));
-		
-		hyperlink.setHyperlinkParameters(parameters);
-		
-		return context.getHyperlinkURL(hyperlink);
-	}
-	
-	private String getResizeColumnLink(JRHtmlExporterContext context) {
-		JRBasePrintHyperlink hyperlink = new JRBasePrintHyperlink();
-		hyperlink.setLinkType("ReportExecution");
-		
-		JRPrintHyperlinkParameters parameters = new JRPrintHyperlinkParameters();
-		ReportContext reportContext = context.getExporter().getReportContext();
-		parameters.addParameter(new JRPrintHyperlinkParameter(WebReportContext.REQUEST_PARAMETER_REPORT_CONTEXT_ID, String.class.getName(), reportContext.getId()));
-		parameters.addParameter(new JRPrintHyperlinkParameter(ReportServlet.REQUEST_PARAMETER_RUN_REPORT, String.class.getName(), "true"));
-		
-		hyperlink.setHyperlinkParameters(parameters);
-		
-		return context.getHyperlinkURL(hyperlink);
 	}
 
 	private String getCurrentSortField(

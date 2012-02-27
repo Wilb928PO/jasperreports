@@ -1,5 +1,5 @@
 /**
- * Defines 'headertoolbar' module in jasperreports namespace
+ * Defines 'tableheadertoolbar' module in jasperreports namespace
  */
 (function(global) {
 	if (typeof global.jasperreports.tableheadertoolbar !== 'undefined') {
@@ -71,35 +71,32 @@
 			
 			jQuery('.submitFilter', filterDiv).bind(('createTouch' in document) ? 'touchend' : 'click', function(event){
 				var self = jQuery(this),
-					params = {},
 					parentForm = self.parent(),
-					currentHref = parentForm.attr("action"),
+					actionBaseUrl = parentForm.attr("action"),
+					params = jQuery.parseJSON(parentForm.attr('data-actionBaseData')),
 					parentFilterDiv = self.closest('.filterdiv'),
-					actionData = jQuery.parseJSON(parentFilterDiv.attr('data-filter')),
-					contextStartPoint = jQuery('.' + parentFilterDiv.attr('data-forsortlink') + ':first');
+					actionData = jQuery.parseJSON(parentFilterDiv.attr('data-filterData')),
+					contextStartPoint = jQuery('.' + parentFilterDiv.attr('data-forsortlink') + ':first'),
+					filterData = {};
 				
 				// extract form params
 				jQuery('.postable', parentForm).each(function(){
 					// prevent disabled inputs to get posted
 					if(!jQuery(this).is(':disabled')) {
-						params[this.name] = this.value;
+						filterData[this.name] = this.value;
 					}
 				});
 				
-				actionData.filterData = params;
-//				var ctx = gm.getExecutionContext(contextStartPoint, currentHref, params);
-				var toolbarId = self.closest('.mainReportDiv').find('.toolbarDiv').attr('id'),
-					ctx = gm.getToolbarExecutionContext(jQuery('div.columnHeader:first'), 
-						currentHref, 
-						'jr.action=' + gm.toJsonString(actionData), 
-						jvt.performAction, 
-						[toolbarId], 
-						true);
+				actionData.filterData = filterData;
+				params[jvt.PARAM_ACTION] = gm.toJsonString(actionData)
 				
-				if (ctx) {
-					parentFilterDiv.hide();
-					ctx.run();
-				}		
+				var toolbarId = self.closest('.mainReportDiv').find('.toolbarDiv').attr('id');
+				jvt.runReport(jQuery('div.columnHeader:first'), 
+							actionBaseUrl,
+							params, 
+							jvt.performAction, 
+							[toolbarId], 
+							true);
 			});
 			
 			// show the second filter value for options containing 'between'
@@ -119,33 +116,30 @@
 			jQuery('.clearFilter', filterDiv).bind(('createTouch' in document) ? 'touchend' : 'click', function(event){
 				var self = jQuery(this),
 					parentForm = self.parent(),
-					currentHref = parentForm.attr("action"),
+					actionBaseUrl = parentForm.attr("action"),
+					params = jQuery.parseJSON(parentForm.attr('data-actionBaseData')),
 					parentFilterDiv = self.closest('.filterdiv'),
-					actionData = jQuery.parseJSON(parentFilterDiv.attr('data-clear')),
-					params = actionData.filterData,
-					contextStartPoint = jQuery('.' + parentFilterDiv.attr('data-forsortlink') + ':first');
+					actionData = jQuery.parseJSON(parentFilterDiv.attr('data-clearData')),
+					contextStartPoint = jQuery('.' + parentFilterDiv.attr('data-forsortlink') + ':first'),
+					filterData = actionData.filterData;
 				
 				// extract form params
 				jQuery('.forClear', parentForm).each(function(){
 					// prevent disabled inputs to get posted
 					if(!jQuery(this).is(':disabled')) {
-						params[this.name] = this.value;
+						filterData[this.name] = this.value;
 					}
 				});
 				
-//				var ctx = gm.getExecutionContext(contextStartPoint, currentHref, params);
-				var toolbarId = self.closest('.mainReportDiv').find('.toolbarDiv').attr('id'),
-					ctx = gm.getToolbarExecutionContext(jQuery('div.columnHeader:first'), 
-							currentHref, 
-							'jr.action=' + gm.toJsonString(actionData), 
+				params[jvt.PARAM_ACTION] = gm.toJsonString(actionData);
+				
+				var toolbarId = self.closest('.mainReportDiv').find('.toolbarDiv').attr('id');
+				jvt.runReport(jQuery('div.columnHeader:first'), 
+							actionBaseUrl, 
+							params, 
 							jvt.performAction, 
 							[toolbarId], 
 							true);
-				
-				if (ctx) {
-					parentFilterDiv.hide();
-					ctx.run();
-				}		
 			});
 		} else {
 			// update existing filter with values from filtersJsonString
@@ -361,19 +355,22 @@
 	            			
 	            			
 	            			// the popup div contains headerToolbar(fixed size) and headerToolbarMask divs
+	            			var lastElemTop = lastElem.position() ? lastElem.position().top : 0,
+	            				lastElemHeight = lastElem.height() ? lastElem.height() : 0,
+	            				headerToolbarMaskHeight = (lastElemTop > 0 && lastElemHeight > 0) ? lastElemTop + lastElemHeight - self.position().top : self.height();
 	            			
 	            			headerToolbarMask.css({
 		            			position: 'absolute',
 		            			'z-index': 999999,
-		            			width: firstElem.width() + 'px',
-		            			height: (lastElem.position().top + lastElem.height() - self.position().top) + 'px',
+		            			width: self.width() + 'px',
+		            			height: headerToolbarMaskHeight + 'px',
 		            			left: '0px',
 		            			top: '0px'
 		            		});
 		            	
 			            	popupDiv.css({
 			                    'z-index': 999998,
-			                    width: firstElem.width() + 'px',
+			                    width: self.width() + 'px',
 			                    left: popupLeft  + 'px',
 			                    top: popupTop + 'px'
 			                });
@@ -406,23 +403,27 @@
 			            		},
 			            		stop: function(event, ui) {
 			            			var	self = jQuery(this),
+			            				jvt = global.jasperreports.reportviewertoolbar;
 			            				dragObj = global.jasperreports.tableheadertoolbar.drag;
 			            			
 			            			dragObj.dragStarted = false;
 			            			
 			            			if (dragObj.canDrop) {
 						            	var	gm = global.jasperreports.global,
-					            			resizeActionLink = self.attr('data-resizeAction'),
-				                	    	toolbarId = self.closest('.mainReportDiv').find('.toolbarDiv').attr('id'),
-				                	    	ctx = gm.getToolbarExecutionContext(self, 
-				                	    										resizeActionLink, 
-				                	    										'jr.action=' + gm.toJsonString(dragObj.moveColumnActionData), 
-				                	    										js.highlightColumn, 
-				                	    										[dragObj.draggedColumnHeaderClass, dragObj.dragTableFrameUuid, dragObj.whichTableFrameIndex, toolbarId], 
-				                	    										true);
-				                        if (ctx) {
-				                            ctx.run();
-				                        }
+						            		parentPopupDiv = self.closest('.popupdiv'),
+						            		actionBaseUrl = parentPopupDiv.attr('data-actionBaseUrl'),
+						            		params = jQuery.parseJSON(parentPopupDiv.attr('data-actionBaseData')),
+					            			resizeActionLink = self.attr('data-actionBaseData'),
+				                	    	toolbarId = self.closest('.mainReportDiv').find('.toolbarDiv').attr('id');
+						            	
+						            	params[jvt.PARAM_ACTION] = gm.toJsonString(dragObj.moveColumnActionData);
+						            	
+				                	   jvt.runReport(self, 
+				                	    			actionBaseUrl,
+				                	    			params, 
+    	    										js.highlightColumn, 
+    	    										[dragObj.draggedColumnHeaderClass, dragObj.dragTableFrameUuid, dragObj.whichTableFrameIndex, toolbarId], 
+    	    										true);
 			            			} else {
 			            				// move mask back to its place
 			            				self.animate(dragObj.dragMaskPosition, function() {
@@ -453,8 +454,8 @@
 			                	    } else if (deltaLeft != 0) {				// deltaLeft > 0 ? 'resize column left positive' : 'resize column left negative'
 			                	    	direction = 'left';
 			                	    }
-			                	    var uuid = jQuery(headerNameSel+':first').parent('.jrtableframe').attr('data-uuid');
-			                	    var actionData = {	actionName: 'resize',
+			                	    var uuid = jQuery(headerNameSel+':first').parent('.jrtableframe').attr('data-uuid'),
+			                	    	actionData = {	actionName: 'resize',
 			                	    					resizeColumnData: {
 			                	    						uuid: uuid,
 			                	    						columnIndex: jQuery('.columnHeader').index(jQuery(headerNameSel+':first')),
@@ -462,20 +463,19 @@
 			                	    						width: self.width()
 			                	    					}
 			                	    	},
-			                	    	resizeActionLink = self.attr('data-resizeAction'),
-			                	    	toolbarId = self.closest('.mainReportDiv').find('.toolbarDiv').attr('id'),
-			                	    	ctx = gm.getToolbarExecutionContext(jQuery('div.columnHeader:first'), 
-			                	    											resizeActionLink, 
-			                	    											'jr.action=' + gm.toJsonString(actionData), 
-			                	    											jvt.performAction, 
-			                	    											[toolbarId], 
-			                	    											true);
-
-			                        if (ctx) {
-			                            ctx.run();
-			                        }
+			                	    	parentPopupDiv = self.closest('.popupdiv'),
+			                        	actionBaseUrl = parentPopupDiv.attr('data-actionBaseUrl'),
+			                        	params = jQuery.parseJSON(parentPopupDiv.attr('data-actionBaseData')),
+			                	    	toolbarId = self.closest('.mainReportDiv').find('.toolbarDiv').attr('id');
 			                	    
+			                	    params[jvt.PARAM_ACTION] = gm.toJsonString(actionData);
 			                	    
+			                	    jvt.runReport(jQuery('div.columnHeader:first'), 
+			                	    			actionBaseUrl,
+			                	    			params, 
+			                	    			jvt.performAction, 
+			                	    			[toolbarId], 
+			                	    			true);
 			                	}
 			                });
 			            	
@@ -527,28 +527,21 @@
 			 */
 			jQuery('.sortSymbolImage', popupDiv).bind('click', function(event) {
 				event.preventDefault();
-                var self = jQuery(this);
-//                	currentHref = jQuery(this).attr("data-href"),
-                	currentHref = jQuery.parseJSON(jQuery(this).attr("data-href")),
-                	param = 'jr.action=' + jQuery(this).attr("data-sortdata"),
+                var self = jQuery(this),
+                	jvt = global.jasperreports.reportviewertoolbar, 
+                	parentPopupDiv = self.closest('.popupdiv'),
+                	actionBaseUrl = parentPopupDiv.attr('data-actionBaseUrl'),
+                	params = jQuery.parseJSON(parentPopupDiv.attr('data-actionBaseData')),
                 	toolbarId = self.closest('.mainReportDiv').find('.toolbarDiv').attr('id');
-//                	ctx = gm.getExecutionContext(this, currentHref, param);
-//                	ctx = gm.getToolbarExecutionContext(jQuery('div.columnHeader:first'), // getToolbarExecutionContext(startPoint, requestedUrl, params, callback, arrCallbackArgs, isJSON) 
-//                										currentHref, 
-//                										param, 
-//                										jvt.performAction, 
-//    	    											[toolbarId],  
-//                										true);
-//
-//                if (ctx) {
-//                    ctx.run();
-//                }
-                	
-                currentHref['jr.action'] = jQuery(this).attr("data-sortdata");
+
+                params[jvt.PARAM_ACTION] = jQuery(this).attr("data-sortData");
                 
-                Report.refreshReport(currentHref);
-                
-                
+                jvt.runReport(jQuery('div.columnHeader:first'), 
+                			actionBaseUrl, 
+                			params, 
+                			jvt.performAction, 
+    	    				[toolbarId],  
+                			true);
 			});
 			
 			/**

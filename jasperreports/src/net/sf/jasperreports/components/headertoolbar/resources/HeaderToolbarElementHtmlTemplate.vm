@@ -7,19 +7,19 @@
 	(function () {
 		var gm = jasperreports.global,
 			arrPopupHtml = [
-				"<div class='popupdiv' id='tbl_${popupId}'",
+				"<div class='popupdiv' id='tbl_${popupId}' data-actionBaseData='${actionBaseData}' data-actionBaseUrl='${actionBaseUrl}'",
 					#if (${isFilterable})
 				"		data-filterid='${filterDivId}'",
 					#end
 				"	style='position: absolute; display: none; width: 100px; height: 20px;'>",
 				"	<div class='headerToolbar' style=\"position:absolute; top: -20px; width: 100px; height: 20px; background-color: rgb(0, 51, 102); background-color: rgba(0, 51, 102, 0.6); background-image: url('${transparentPixelSrc}'); text-align: left;\">",
 				"		<span>",
-				"			<img class='sortSymbolImage sortAsc' data-href='${sortAscHref}' data-sortdata='{\"actionName\":\"sort\",\"sortData\":${sortAscData}}' src='${sortAscSrc}' data-src='${sortAscSrc}' data-hover='${sortAscHoverSrc}' />", 
-				"			<img class='sortSymbolImage sortDesc' data-href='${sortDescHref}' data-sortdata='{\"actionName\":\"sort\",\"sortData\":${sortDescData}}' src='${sortDescSrc}' data-src='${sortDescSrc}' data-hover='${sortDescHoverSrc}' />",
+				"			<img class='sortSymbolImage sortAsc' data-sortData='{\"actionName\":\"sort\",\"sortData\":${sortAscData}}' src='${sortAscSrc}' data-src='${sortAscSrc}' data-hover='${sortAscHoverSrc}' />", 
+				"			<img class='sortSymbolImage sortDesc' data-sortData='{\"actionName\":\"sort\",\"sortData\":${sortDescData}}' src='${sortDescSrc}' data-src='${sortDescSrc}' data-hover='${sortDescHoverSrc}' />",
 				"			<img class='filterSymbolImage' src='${filterSrc}' data-src='${filterSrc}' data-hover='${filterHoverSrc}' />",
 				"		</span>",
 				"	</div>",
-				"	<div class='headerToolbarMask headerToolbarMaskDefaultStyle' data-resizeAction='${resizeColumnAction}'>",
+				"	<div class='headerToolbarMask headerToolbarMaskDefaultStyle'>",
 				"	</div>",
 				"</div>"];
 				
@@ -33,9 +33,9 @@
 	(function () {
 		var gm = jasperreports.global,
 			uid = '${filterDivId}',
-			arrFilterDiv = ["<div id='${filterDivId}' class='filterdiv' style='display: none;' data-forsortlink='${sortLinkClass}' data-filter='{\"actionName\":\"filter\"}' data-clear='{\"actionName\":\"filter\",\"filterData\":{\"clearFilter\":true}}'>",
+			arrFilterDiv = ["<div id='${filterDivId}' class='filterdiv' style='display: none;' data-forsortlink='${sortLinkClass}' data-filterData='{\"actionName\":\"filter\"}' data-clearData='{\"actionName\":\"filter\",\"filterData\":{\"clearFilter\":true}}'>",
 			                "<img class='hidefilter' src='${filterCloseDialogImageResource}' />",
-			                "<form action='${filterFormAction}' action='GET' class='filterDivForm'>",
+			                "<form action='${actionBaseUrl}' data-actionBaseData='${actionBaseData}' action='POST' class='filterDivForm'>",
 			                "	<input class='postable forClear' type='hidden' name='${filterTableNameParam}' value='${filterTableNameValue}' />",
 			                "	<input class='postable filterField' type='hidden' name='${filterFieldParamName}' value='${filterColumnName}' />",
 			                "	<input class='postable' type='hidden' name='${filterTypeParamName}' value='${filterTypeParamNameValue}' />",

@@ -2336,9 +2336,7 @@ public class JRXhtmlExporter extends JRAbstractExporter
 			writer.write("\"");
 		}
 		
-		String tableUuidProp = "net.sf.jasperreports.export.tableuuid"; //FIXMEJIVE hardcoded property
-		
-		if (frame.getPropertiesMap() != null && frame.getPropertiesMap().containsProperty(tableUuidProp)) {
+		if (frame.getPropertiesMap() != null && frame.getPropertiesMap().containsProperty(JRHtmlExporter.PROPERTY_HTML_UUID)) {
 			writer.write(" data-uuid=\"");
 			writer.write(frame.getUUID().toString());
 			writer.write("\"");
