@@ -14,8 +14,8 @@ jQuery.noConflict();
 					scripts: {},
 					APPLICATION_CONTEXT_PATH: '',
 					JQUERY: {
-						CORE: '/jquery/js/jquery-1.6.4.min.js',
-						UI: '/jquery/js/jquery-ui-1.8.16.custom.min.js'
+						CORE: '/jquery/js/jquery-1.7.1.min.js',
+						UI: '/jquery/js/jquery-ui-1.8.18.custom.min.js'
 					},
 					events: {
 						SORT_INIT: {
@@ -253,6 +253,10 @@ jQuery.noConflict();
 
 								if (elementToExtract) {
 									toExtract = jQuery(elementToExtract, response);
+									if (toExtract.size() != 1) { // error on server side
+										jg.showError(jqXHR.responseText, loadMaskTarget);
+										return;
+									}
 								}
 								
 								elementToAppendTo.html(toExtract);
@@ -494,6 +498,28 @@ jQuery.noConflict();
     		return result;
     	};
     	
+    	jg.showError = function(responseText, loadMaskTarget) {
+    		var errDialogId = 'errDialog';
+    			errDialog = jQuery('#' + errDialogId);
+    		if (errDialog.size != 1) {
+    			errDialog = jQuery("<div id='" + errDialogId + "'></div>");
+    			jQuery('body').append(errDialog);
+    		}
+    		
+    		errDialog.html(responseText);
+    		errDialog.dialog({
+    							title: 'Error',
+    							width: 1100,
+    							height: 500,
+    							close: function(event, ui) {
+    								loadMaskTarget.loadmask('hide');
+    							}
+    						});
+    		
+    		// hide all popup divs
+    		jQuery('.popupdiv').hide();
+    	};
+    	
 		/**
 		 * A jQuery plugin that displays an overlapping image for a specified element 
 		 * (based on element's id)
@@ -544,7 +570,7 @@ jQuery.noConflict();
 						borderLeftStyle : 		jQuery(this).css('borderLeftStyle'),
 						borderRightWidth : 		jQuery(this).css('borderRightWidth'),
 						borderRightStyle : 		jQuery(this).css('borderRightStyle'),
-						'z-index' : 			999999,
+						'z-index' : 			1000,
 						cursor:					'wait'
 					});
 				}
