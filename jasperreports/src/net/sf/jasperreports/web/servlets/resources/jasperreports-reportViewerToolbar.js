@@ -56,45 +56,48 @@
 						jvt.refreshPage(toolbarId, requestedPage);
 					}
 					
-					if (target.is('.undo')) {		// FIXMEJIVE: place this in headertoolbar.js
-						var actionData = {actionName: 'undo'},
-							undoActionLink = jQuery('.headerToolbarMask:first').attr('data-resizeAction'),
-							ctx = jg.getToolbarExecutionContext(jQuery('div.columnHeader:first'), 
-																undoActionLink, 'jr.action=' + jg.toJsonString(actionData), 
-																jvt.performUndo, 
-            	    											[toolbarId], 
-																true);
-                        
-						if (ctx) {
-                            ctx.run();
-                        }
+					if (target.is('.undo')) {
+						var firstPopupDiv = jQuery('.popupdiv:first'),
+							actionBaseUrl = firstPopupDiv.attr('data-actionBaseUrl'),
+							params = jQuery.parseJSON(firstPopupDiv.attr('data-actionBaseData'));
 						
-					} else if (target.is('.redo')) {		// FIXMEJIVE: place this in headertoolbar.js
-						var actionData = {actionName: 'redo'},
-						undoActionLink = jQuery('.headerToolbarMask:first').attr('data-resizeAction'),
-						ctx = jg.getToolbarExecutionContext(jQuery('div.columnHeader:first'), 
-															undoActionLink, 
-															'jr.action=' + jg.toJsonString(actionData), 
-															jvt.performRedo, 
-															[toolbarId], 
-															true);
+						params[jvt.PARAM_ACTION] = "{\"actionName\": \"undo\"}";
 						
-                        if (ctx) {
-                            ctx.run();
-                        }
-					} else if (target.is('.save')) {		// FIXMEJIVE: place this in headertoolbar.js
-						var actionData = {actionName: 'save'},
-						undoActionLink = jQuery('.headerToolbarMask:first').attr('data-resizeAction'),
-						ctx = jg.getToolbarExecutionContext(jQuery('div.columnHeader:first'), 
-															undoActionLink, 
-															'jr.action=' + jg.toJsonString(actionData), 
-															null, 
-															null, 
-															true);
+						jvt.runReport(firstPopupDiv,
+								actionBaseUrl, 
+								params, 
+								jvt.performUndo, 
+								[toolbarId], 
+								true);
 						
-                        if (ctx) {
-                            ctx.run();
-                        }
+					} else if (target.is('.redo')) {
+						var firstPopupDiv = jQuery('.popupdiv:first'),
+							actionBaseUrl = firstPopupDiv.attr('data-actionBaseUrl'),
+							params = jQuery.parseJSON(firstPopupDiv.attr('data-actionBaseData'));
+						
+						params[jvt.PARAM_ACTION] = "{\"actionName\": \"redo\"}";
+						
+						jvt.runReport(firstPopupDiv,
+								actionBaseUrl, 
+								params, 
+								jvt.performRedo, 
+								[toolbarId], 
+								true);
+						
+					} else if (target.is('.save')) {
+						var firstPopupDiv = jQuery('.popupdiv:first'),
+							actionBaseUrl = firstPopupDiv.attr('data-actionBaseUrl'),
+							params = jQuery.parseJSON(firstPopupDiv.attr('data-actionBaseData'));
+						
+						params[jvt.PARAM_ACTION] = "{\"actionName\": \"save\"}";
+						
+						jvt.runReport(firstPopupDiv,
+								actionBaseUrl, 
+								params, 
+								null, 
+								null, 
+								true);
+						
 					}
 				}
 			});
