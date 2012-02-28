@@ -47,7 +47,7 @@ public class ResizeColumnAction extends AbstractTableAction
 				// execute command
 				commandStack.execute(
 					new ResetInCacheCommand(
-						new ResizeColumnCommand(table, resizeColumnData), 
+						new ResizeColumnCommand(componentElement, resizeColumnData), 
 						getJasperReportsContext(), 
 						getReportContext(), 
 						target.getUri()
