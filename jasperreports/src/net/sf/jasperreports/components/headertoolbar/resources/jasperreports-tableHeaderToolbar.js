@@ -322,12 +322,6 @@
 		            	headerToolbarMask.data('tableFrameUuid', parentFrame.attr('data-uuid'));
 		            	headerToolbarMask.data('tableFrameIndex', jQuery('.jrtableframe[data-uuid=' + parentFrame.attr('data-uuid') + ']').index(parentFrame));
 		            	
-		            	// determine left and right columns
-		            	var leftColName = self.prev('.columnHeader').attr('data-popupColumn'),
-		            		rightColName = self.next('.columnHeader').attr('data-popupColumn'),
-		            		leftColumnSelector = leftColName != null ? columnSelectorPrefix + leftColName : null,
-		                	rightColumnSelector = rightColName !=null ? columnSelectorPrefix + rightColName : null;
-		            	
 		            	if (firstElem && lastElem) {
 	            			headerToolbar.css({
 	            				left: '0px'
@@ -361,7 +355,7 @@
 	            			
 	            			headerToolbarMask.css({
 		            			position: 'absolute',
-		            			'z-index': 999999,
+		            			'z-index': 1000,
 		            			width: self.width() + 'px',
 		            			height: headerToolbarMaskHeight + 'px',
 		            			left: '0px',
@@ -369,19 +363,11 @@
 		            		});
 		            	
 			            	popupDiv.css({
-			                    'z-index': 999998,
+			                    'z-index': 1000,
 			                    width: self.width() + 'px',
 			                    left: popupLeft  + 'px',
 			                    top: popupTop + 'px'
 			                });
-			            	
-			            	var handlesArr = [];
-			            	if (leftColumnSelector) {
-			            		handlesArr.push('w');
-			            	}
-			            	if (rightColumnSelector) {
-			            		handlesArr.push('e');
-			            	}
 			            	
 			            	headerToolbarMask.draggable({
 			            		start: function(event, ui) {
@@ -435,7 +421,7 @@
 			            	});
 			            	
 			            	headerToolbarMask.resizable({
-			            		handles: handlesArr.join(', '),
+			            		handles: 'w, e',
 			                	resize: function(event, ui) {
 			                		var self = jQuery(this);
 			                		self.prev().css({left: self.css('left')}); // ensures that headerToolbar moves along with the mask
@@ -559,7 +545,7 @@
                 if (filterDiv.size() == 1) {
                     filterDiv.css({
                         position: 'absolute',
-                        'z-index': 999998,
+                        'z-index': 1000,
                         left: (40 + self.closest('.popupdiv').position().left)  + "px", // FIXMEJIVE filterdiv should be moved into popupdiv	
                         top: (self.closest('.headerToolbar').position().top + self.closest('.popupdiv').position().top + 3) + "px"
                     });
