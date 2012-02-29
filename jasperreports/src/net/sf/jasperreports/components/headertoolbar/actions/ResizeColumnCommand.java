@@ -3,7 +3,6 @@ package net.sf.jasperreports.components.headertoolbar.actions;
 import java.util.List;
 
 import net.sf.jasperreports.components.table.BaseColumn;
-import net.sf.jasperreports.components.table.Cell;
 import net.sf.jasperreports.components.table.ColumnGroup;
 import net.sf.jasperreports.components.table.GroupCell;
 import net.sf.jasperreports.components.table.StandardBaseColumn;
@@ -12,6 +11,7 @@ import net.sf.jasperreports.components.table.StandardColumnGroup;
 import net.sf.jasperreports.components.table.StandardTable;
 import net.sf.jasperreports.components.table.util.TableUtil;
 import net.sf.jasperreports.engine.JRChild;
+import net.sf.jasperreports.engine.JRElementGroup;
 import net.sf.jasperreports.engine.base.JRBaseElement;
 import net.sf.jasperreports.engine.design.JRDesignComponentElement;
 import net.sf.jasperreports.web.commands.Command;
@@ -74,31 +74,35 @@ public class ResizeColumnCommand implements Command
 	}
 	
 	private void resizeColumn(StandardColumn column, int amount) {
-		resizeCellChildren(column.getTableHeader(), amount);
-		resizeCellChildren(column.getColumnHeader(), amount);
-		resizeCellChildren(column.getDetailCell(), amount);
-		resizeCellChildren(column.getColumnFooter(), amount);
-		resizeCellChildren(column.getTableFooter(), amount);
+		resizeChildren(column.getTableHeader(), amount);
+		resizeChildren(column.getColumnHeader(), amount);
+		resizeChildren(column.getDetailCell(), amount);
+		resizeChildren(column.getColumnFooter(), amount);
+		resizeChildren(column.getTableFooter(), amount);
 
 		resizeColumnGroupHF(column, amount);
 	}
 
 	private void resizeColumnGroupHF(StandardBaseColumn column, int amount) {
 		for (GroupCell header: column.getGroupHeaders()) {
-			resizeCellChildren(header.getCell(), amount);
+			resizeChildren(header.getCell(), amount);
 		}
 
 		for (GroupCell footer: column.getGroupFooters()) {
-			resizeCellChildren(footer.getCell(), amount);
+			resizeChildren(footer.getCell(), amount);
 		}
 	}
 	
-	private void resizeCellChildren(Cell cell, int amount) {
-		if (cell != null) {
-			for (JRChild child: cell.getChildren()) {
+	private void resizeChildren(JRElementGroup elementGroup, int amount) {
+		if (elementGroup != null) {
+			for (JRChild child: elementGroup.getChildren()) {
 				if (child instanceof JRBaseElement) {
 					JRBaseElement be = (JRBaseElement) child;
 					individualResizeCommandStack.execute(new ResizeElementCommand(be, be.getWidth() + amount));
+				}
+				if (child instanceof JRElementGroup) {
+					JRElementGroup eg = (JRElementGroup) child;
+					resizeChildren(eg, amount);
 				}
 			}
 		}
