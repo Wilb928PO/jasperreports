@@ -1,5 +1,6 @@
 package net.sf.jasperreports.components.headertoolbar.actions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.jasperreports.components.table.BaseColumn;
@@ -43,7 +44,6 @@ public class ResizeColumnCommand implements Command
 
 	public void execute() 
 	{
-		
 		List<BaseColumn> tableColumns = TableUtil.getAllColumns(table);
 		
 		int modIndex = resizeColumnData.getColumnIndex();
@@ -51,39 +51,71 @@ public class ResizeColumnCommand implements Command
 		modColumn = (StandardColumn) tableColumns.get(modIndex);
 		oldModColumnWidth = modColumn.getWidth();
 		
-		
 		int deltaWidth = resizeColumnData.getWidth() - modColumn.getWidth();
+
 		
-		// resize the component that contains the table
-		individualResizeCommandStack.execute(new ResizeElementCommand(componentElement, componentElement.getWidth() + deltaWidth));
 		
-		// resize the column group that contains modColumn
-		modColumnGroup = (StandardColumnGroup) getColumnGroupForColumn(modColumn, table.getColumns());
-		if (modColumnGroup != null) {
-			oldModColumnGroupWidth = modColumnGroup.getWidth();
-			newModColumnGroupWidth = oldModColumnGroupWidth + deltaWidth;
-			
-			modColumnGroup.setWidth(newModColumnGroupWidth);
-			resizeColumnGroupHF(modColumnGroup, deltaWidth);
+		
+		
+		List<ColumnInfo> parentColumnGroups = new ColumnUtil(resizeColumnData.getColumnIndex()).getParentColumnGroups(table.getColumns());
+		
+		for(ColumnInfo colInfo : parentColumnGroups)
+		{
+			resizeColumn(colInfo.column, deltaWidth);
 		}
 
+	
+	
 		// resize the column
 		modColumn.setWidth(resizeColumnData.getWidth());
 		resizeColumn(modColumn, deltaWidth);
-		
 	}
 	
-	private void resizeColumn(StandardColumn column, int amount) {
+//	public void execute() 
+//	{
+//		
+//		List<BaseColumn> tableColumns = TableUtil.getAllColumns(table);
+//		
+//		int modIndex = resizeColumnData.getColumnIndex();
+//		
+//		modColumn = (StandardColumn) tableColumns.get(modIndex);
+//		oldModColumnWidth = modColumn.getWidth();
+//		
+//		
+//		int deltaWidth = resizeColumnData.getWidth() - modColumn.getWidth();
+//		
+//		// resize the component that contains the table
+//		individualResizeCommandStack.execute(new ResizeElementCommand(componentElement, componentElement.getWidth() + deltaWidth));
+//		
+//		// resize the column group that contains modColumn
+//		modColumnGroup = (StandardColumnGroup) getColumnGroupForColumn(modColumn, table.getColumns());
+//		if (modColumnGroup != null) {
+//			oldModColumnGroupWidth = modColumnGroup.getWidth();
+//			newModColumnGroupWidth = oldModColumnGroupWidth + deltaWidth;
+//			
+//			modColumnGroup.setWidth(newModColumnGroupWidth);
+//			resizeColumnGroupHF(modColumnGroup, deltaWidth);
+//		}
+//
+//		// resize the column
+//		modColumn.setWidth(resizeColumnData.getWidth());
+//		resizeColumn(modColumn, deltaWidth);
+//		
+//	}
+	
+	private void resizeColumn(BaseColumn column, int amount) {
+		
+		StandardBaseColumn standardColumn = column instanceof StandardBaseColumn ? (StandardBaseColumn)column : null;
+		if (standardColumn != null)
+		{
+			standardColumn.setWidth(standardColumn.getWidth() + amount);
+		}
+		
 		resizeChildren(column.getTableHeader(), amount);
 		resizeChildren(column.getColumnHeader(), amount);
-		resizeChildren(column.getDetailCell(), amount);
 		resizeChildren(column.getColumnFooter(), amount);
 		resizeChildren(column.getTableFooter(), amount);
 
-		resizeColumnGroupHF(column, amount);
-	}
-
-	private void resizeColumnGroupHF(StandardBaseColumn column, int amount) {
 		for (GroupCell header: column.getGroupHeaders()) {
 			resizeChildren(header.getCell(), amount);
 		}
@@ -92,6 +124,26 @@ public class ResizeColumnCommand implements Command
 			resizeChildren(footer.getCell(), amount);
 		}
 	}
+
+//	private void resizeColumn(StandardColumn column, int amount) {
+//		resizeChildren(column.getTableHeader(), amount);
+//		resizeChildren(column.getColumnHeader(), amount);
+//		resizeChildren(column.getDetailCell(), amount);
+//		resizeChildren(column.getColumnFooter(), amount);
+//		resizeChildren(column.getTableFooter(), amount);
+//
+//		resizeColumnGroupHF(column, amount);
+//	}
+
+//	private void resizeColumnGroupHF(StandardBaseColumn column, int amount) {
+//		for (GroupCell header: column.getGroupHeaders()) {
+//			resizeChildren(header.getCell(), amount);
+//		}
+//
+//		for (GroupCell footer: column.getGroupFooters()) {
+//			resizeChildren(footer.getCell(), amount);
+//		}
+//	}
 	
 	private void resizeChildren(JRElementGroup elementGroup, int amount) {
 		if (elementGroup != null) {
@@ -108,19 +160,19 @@ public class ResizeColumnCommand implements Command
 		}
 	}
 	
-	private ColumnGroup getColumnGroupForColumn(BaseColumn column, List<BaseColumn> columns) {
-		for (BaseColumn bc: columns) {
-			if (bc instanceof ColumnGroup) {
-				ColumnGroup cg = (ColumnGroup) bc;
-				if (cg.getColumns().contains(column)) {
-					return cg;
-				} else {
-					return getColumnGroupForColumn(column, cg.getColumns());
-				}
-			}
-		}
-		return null;
-	}
+//	private ColumnGroup getColumnGroupForColumn(BaseColumn column, List<BaseColumn> columns) {
+//		for (BaseColumn bc: columns) {
+//			if (bc instanceof ColumnGroup) {
+//				ColumnGroup cg = (ColumnGroup) bc;
+//				if (cg.getColumns().contains(column)) {
+//					return cg;
+//				} else {
+//					return getColumnGroupForColumn(column, cg.getColumns());
+//				}
+//			}
+//		}
+//		return null;
+//	}
 
 	public void undo() 
 	{
@@ -144,4 +196,50 @@ public class ResizeColumnCommand implements Command
 		individualResizeCommandStack.redoAll();
 	}
 
+	static public class ColumnUtil
+	{
+		private int colIndex;
+		private int crtColIndex;
+		private int crtColX;
+		private List<ColumnInfo> parentColumnGroups = new ArrayList<ColumnInfo>();
+		
+		ColumnUtil(int colIndex)
+		{
+			this.colIndex = colIndex;
+		}
+
+		public List<ColumnInfo> getParentColumnGroups(List<BaseColumn> columns) 
+		{
+			for(BaseColumn column : columns)
+			{
+				if (column instanceof ColumnGroup)
+				{
+					ColumnInfo colInfo = new ColumnInfo();
+					colInfo.x = crtColIndex;
+					colInfo.column = column;
+					parentColumnGroups.add(colInfo);
+					
+					getParentColumnGroups(((ColumnGroup)column).getColumns());
+				}
+				else
+				{
+					if (colIndex == crtColIndex)
+					{
+						return parentColumnGroups;
+					}
+					
+					crtColIndex++;
+					crtColX += column.getWidth();
+				}
+			}
+			
+			return parentColumnGroups;
+		}
+	}
+
+	static public class ColumnInfo
+	{
+		protected int x;
+		protected BaseColumn column;
+	}
 }
