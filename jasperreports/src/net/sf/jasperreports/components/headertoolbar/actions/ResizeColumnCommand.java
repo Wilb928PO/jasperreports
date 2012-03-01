@@ -57,17 +57,17 @@ public class ResizeColumnCommand implements Command
 		
 		
 		
-		List<ColumnInfo> parentColumnGroups = new ColumnUtil(resizeColumnData.getColumnIndex()).getParentColumnGroups(table.getColumns());
+		List<ColumnGroupInfo> parentColumnGroups = new ColumnUtil(resizeColumnData.getColumnIndex()).getParentColumnGroups(table.getColumns());
 		
-		for(ColumnInfo colInfo : parentColumnGroups)
+		for(ColumnGroupInfo colGroupInfo : parentColumnGroups)
 		{
-			resizeColumn(colInfo.column, deltaWidth);
+			resizeColumn(colGroupInfo.column, deltaWidth);
 		}
 
 	
 	
 		// resize the column
-		modColumn.setWidth(resizeColumnData.getWidth());
+//		modColumn.setWidth(resizeColumnData.getWidth());
 		resizeColumn(modColumn, deltaWidth);
 	}
 	
@@ -105,12 +105,18 @@ public class ResizeColumnCommand implements Command
 	
 	private void resizeColumn(BaseColumn column, int amount) {
 		
-		StandardBaseColumn standardColumn = column instanceof StandardBaseColumn ? (StandardBaseColumn)column : null;
-		if (standardColumn != null)
+		StandardBaseColumn standardBaseColumn = column instanceof StandardBaseColumn ? (StandardBaseColumn)column : null;
+		if (standardBaseColumn != null)
 		{
-			standardColumn.setWidth(standardColumn.getWidth() + amount);
+			standardBaseColumn.setWidth(standardBaseColumn.getWidth() + amount);
 		}
 		
+		StandardColumn standardColumn = column instanceof StandardColumn ? (StandardColumn)column : null;
+		if (standardColumn != null)
+		{
+			resizeChildren(standardColumn.getDetailCell(), amount);
+		}
+
 		resizeChildren(column.getTableHeader(), amount);
 		resizeChildren(column.getColumnHeader(), amount);
 		resizeChildren(column.getColumnFooter(), amount);
@@ -160,6 +166,7 @@ public class ResizeColumnCommand implements Command
 		}
 	}
 	
+//moved in TableUtil	
 //	private ColumnGroup getColumnGroupForColumn(BaseColumn column, List<BaseColumn> columns) {
 //		for (BaseColumn bc: columns) {
 //			if (bc instanceof ColumnGroup) {
@@ -201,23 +208,24 @@ public class ResizeColumnCommand implements Command
 		private int colIndex;
 		private int crtColIndex;
 		private int crtColX;
-		private List<ColumnInfo> parentColumnGroups = new ArrayList<ColumnInfo>();
+		private List<ColumnGroupInfo> parentColumnGroups = new ArrayList<ColumnGroupInfo>();
 		
 		ColumnUtil(int colIndex)
 		{
 			this.colIndex = colIndex;
 		}
 
-		public List<ColumnInfo> getParentColumnGroups(List<BaseColumn> columns) 
+		public List<ColumnGroupInfo> getParentColumnGroups(List<BaseColumn> columns) 
 		{
 			for(BaseColumn column : columns)
 			{
 				if (column instanceof ColumnGroup)
 				{
-					ColumnInfo colInfo = new ColumnInfo();
-					colInfo.x = crtColIndex;
-					colInfo.column = column;
-					parentColumnGroups.add(colInfo);
+					ColumnGroupInfo colGroupInfo = new ColumnGroupInfo();
+					colGroupInfo.x = crtColX;
+					colGroupInfo.colIndex = crtColIndex;
+					colGroupInfo.column = column;
+					parentColumnGroups.add(colGroupInfo);
 					
 					getParentColumnGroups(((ColumnGroup)column).getColumns());
 				}
@@ -237,9 +245,10 @@ public class ResizeColumnCommand implements Command
 		}
 	}
 
-	static public class ColumnInfo
+	static public class ColumnGroupInfo
 	{
-		protected int x;
-		protected BaseColumn column;
+		public int x;
+		public int colIndex;
+		public BaseColumn column;
 	}
 }

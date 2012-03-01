@@ -282,4 +282,17 @@ public class TableUtil
 		return cell;
 	}
 
+	public static ColumnGroup getColumnGroupForColumn(BaseColumn column, List<BaseColumn> columns) {
+		for (BaseColumn bc: columns) {
+			if (bc instanceof ColumnGroup) {
+				ColumnGroup cg = (ColumnGroup) bc;
+				if (cg.getColumns().contains(column)) {
+					return cg;
+				} else {
+					return getColumnGroupForColumn(column, cg.getColumns());
+				}
+			}
+		}
+		return null;
+	}
 }
