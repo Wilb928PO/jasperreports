@@ -2435,7 +2435,7 @@ public class JRXhtmlExporter extends JRAbstractExporter
 
 		if (styleBuffer.length() > 0)
 		{
-			writer.write(" style=\"overflow:hidden;");
+			writer.write(" style=\"");//overflow:hidden;");
 			writer.write(styleBuffer.toString());
 			writer.write("\"");
 		}
