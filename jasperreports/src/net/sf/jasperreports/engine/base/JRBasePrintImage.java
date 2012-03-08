@@ -138,7 +138,12 @@ public class JRBasePrintImage extends JRBasePrintGraphicElement implements JRPri
 	 */
 	public void setRenderer(JRRenderable renderer)
 	{
-		this.renderer = renderer;//FIXMECONTEXT
+		Renderable renderable = renderer instanceof Renderable ? (Renderable)renderer : null;
+		if (renderable == null)
+		{
+			//renderable = new  //FIXMECONTEXT
+		}
+		setRenderable(renderable);
 	}
 		
 	/**
