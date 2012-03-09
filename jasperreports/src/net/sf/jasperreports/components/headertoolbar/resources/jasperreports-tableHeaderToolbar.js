@@ -10,6 +10,13 @@
 				filters: {
 					filterContainerId: "jasperreports_filters"
 				},
+				templateData : {
+					popupId: 'popupdiv_template'
+				},
+				common: {	// FIXMEJIVE set commons here instead of template
+					actionBaseUrl: null,
+					actionBaseData: null
+				},
 				drag: {
 					dragStarted: false,
 					canDrop: false,
@@ -22,168 +29,6 @@
 				}
 	};
 	
-	/**
-	 * Creates a unique filter div
-	 * 
-	 * @param uniqueId
-	 * @param arrFilterDiv an array with div's html
-	 * @param filtersJsonString a JSON string of a java.util.List<net.sf.jasperreports.components.sort.FieldFilter>
-	 */
-	js.createFilterDiv = function (uniqueId, arrFilterDiv, filtersJsonString) {
-		var gm = global.jasperreports.global,
-			jvt = global.jasperreports.reportviewertoolbar,
-			filterContainerId = js.filters.filterContainerId,
-			filterContainerDiv = "<div id='" + filterContainerId + "'></div>",
-			fcuid = '#' + filterContainerId,
-			uid = '#' + uniqueId;
-		
-		// if filter container does not exist, create it
-		if (jQuery(fcuid).size() == 0) {
-			 jQuery(gm.reportContainerSelector).append(filterContainerDiv);
-		}
-		
-		// if filter with id of 'uniqueId' does not exist, append it to filter container
-		if (jQuery(uid).size() == 0) {
-			jQuery(fcuid).append(arrFilterDiv.join(''));
-			var filterDiv = jQuery(uid);
-			
-			// attach filter form events
-			jQuery('.hidefilter', filterDiv).bind(('createTouch' in document) ? 'touchend' : 'click', function(event){
-				jQuery(this).parent().hide();
-			});
-			
-			filterDiv.draggable();
-			
-			// 'Enter' key press for filter value triggers 'contextual' submit
-			jQuery('.filterValue', filterDiv).bind('keypress', function(event) {
-				if (event.keyCode == 13) {
-					event.preventDefault();
-					if ('createTouch' in document) {	// trigger does not seem to work on safari mobile; doing workaround
-						var el = jQuery('.submitFilter', filterDiv).get(0);
-						var evt = document.createEvent("MouseEvents");
-						evt.initMouseEvent("touchend", true, true);
-						el.dispatchEvent(evt);
-					} else {
-						jQuery('.submitFilter', filterDiv).trigger('click');
-					}
-				}
-			});
-			
-			jQuery('.submitFilter', filterDiv).bind(('createTouch' in document) ? 'touchend' : 'click', function(event){
-				var self = jQuery(this),
-					parentForm = self.parent(),
-					actionBaseUrl = parentForm.attr("action"),
-					params = jQuery.parseJSON(parentForm.attr('data-actionBaseData')),
-					parentFilterDiv = self.closest('.filterdiv'),
-					actionData = jQuery.parseJSON(parentFilterDiv.attr('data-filterData')),
-					contextStartPoint = jQuery('.' + parentFilterDiv.attr('data-forsortlink') + ':first'),
-					filterData = {};
-				
-				// extract form params
-				jQuery('.postable', parentForm).each(function(){
-					// prevent disabled inputs to get posted
-					if(!jQuery(this).is(':disabled')) {
-						filterData[this.name] = this.value;
-					}
-				});
-				
-				actionData.filterData = filterData;
-				params[jvt.PARAM_ACTION] = gm.toJsonString(actionData)
-				
-				var toolbarId = self.closest('.mainReportDiv').find('.toolbarDiv').attr('id');
-				jvt.runReport(jQuery('div.columnHeader:first'), 
-							actionBaseUrl,
-							params, 
-							jvt.performAction, 
-							[toolbarId], 
-							true);
-			});
-			
-			// show the second filter value for options containing 'between'
-			jQuery('.filterOperatorTypeValueSelector', filterDiv).bind('change', function (event) {
-				var optionValue = jQuery(this).val();
-				if (optionValue && optionValue.toLowerCase().indexOf('between') != -1) {
-					jQuery('.filterValueEnd', filterDiv)
-						.removeClass('hidden')
-						.removeAttr('disabled');
-				} else {
-					jQuery('.filterValueEnd', filterDiv)
-						.addClass('hidden')
-						.attr('disabled', true);
-				}
-			});
-			
-			jQuery('.clearFilter', filterDiv).bind(('createTouch' in document) ? 'touchend' : 'click', function(event){
-				var self = jQuery(this),
-					parentForm = self.parent(),
-					actionBaseUrl = parentForm.attr("action"),
-					params = jQuery.parseJSON(parentForm.attr('data-actionBaseData')),
-					parentFilterDiv = self.closest('.filterdiv'),
-					actionData = jQuery.parseJSON(parentFilterDiv.attr('data-clearData')),
-					contextStartPoint = jQuery('.' + parentFilterDiv.attr('data-forsortlink') + ':first'),
-					filterData = actionData.filterData;
-				
-				// extract form params
-				jQuery('.forClear', parentForm).each(function(){
-					// prevent disabled inputs to get posted
-					if(!jQuery(this).is(':disabled')) {
-						filterData[this.name] = this.value;
-					}
-				});
-				
-				params[jvt.PARAM_ACTION] = gm.toJsonString(actionData);
-				
-				var toolbarId = self.closest('.mainReportDiv').find('.toolbarDiv').attr('id');
-				jvt.runReport(jQuery('div.columnHeader:first'), 
-							actionBaseUrl, 
-							params, 
-							jvt.performAction, 
-							[toolbarId], 
-							true);
-			});
-		} else {
-			// update existing filter with values from filtersJsonString
-			var arrFilters = jQuery.parseJSON(filtersJsonString);
-			var found = false;
-			if (arrFilters) {
-				var filterDiv = jQuery(uid),
-					currentFilterField = jQuery('.filterField', filterDiv).val();
-				
-				for (var i=0, ln = arrFilters.length; i < ln; i++) {
-					var filter = arrFilters[i];
-					if (filter.field === currentFilterField) {
-						jQuery('.filterValueStart', filterDiv).val(filter.filterValueStart);
-						jQuery('.filterValueEnd', filterDiv).val(filter.filterValueEnd);
-						jQuery('.filterOperatorTypeValueSelector', filterDiv).val(filter.filterTypeOperator);
-						
-						if (filter.filterTypeOperator && filter.filterTypeOperator.toLowerCase().indexOf('between') != -1) {
-							jQuery('.filterValueEnd', filterDiv).removeClass('hidden').removeAttr('disabled');
-						} else {
-							jQuery('.filterValueEnd', filterDiv).addClass('hidden').attr('disabled', true);
-						}
-						
-						// show clear button
-						jQuery('.clearFilter', filterDiv).show();
-						
-						found = true;
-						break;
-					}
-				}
-				
-				// reset filter controls
-				if (!found) {
-					jQuery('.filterValueStart', filterDiv).val("");
-					jQuery('.filterValueEnd', filterDiv).val("");
-					jQuery('.filterOperatorTypeValueSelector :selected', filterDiv).attr('selected', false);
-					
-					// hide clear button
-					jQuery('.clearFilter', filterDiv).hide();
-				}
-			}
-		}
-		
-	};
-
 	/**
 	 * Initialization and event registration for non-dynamic JR elements
 	 */
@@ -198,27 +43,6 @@
 		        return false;  
 		    });
 			
-//			jQuery('.jrtableframe').live('click', 
-//					function(event) {
-//						event.stopPropagation();
-//						
-//						var target = jQuery(event.target),
-//							currentTarget = jQuery(this),
-//							colHeader = target.closest('.columnHeader'); 
-//						if (colHeader.size() == 1) {						// first look for column header
-//							colHeader.trigger('highlight');
-//						} else {											// look for columns
-//							var column = target.closest('.column');
-//							if (column.size() == 1) {
-//								var colName = /col_(\w+)/.exec(column.attr('class'));
-//								if(colName && colName.length > 1) {
-//									currentTarget.find('.header_' + colName[1]).trigger('highlight');
-//								}
-//							}
-//						}
-//					}
-//			);
-
 			jQuery('.jrtableframe').live('click',
 					/**
 					 * Highlight a column by determining where the click was performed inside the table frame
@@ -248,17 +72,18 @@
 								}
 							}
 							currentTarget.data('cachedHeaderData', arrHeaderData);
-						}			
+						}
 						
 						// determine click position inside frame
 						var clickPositionInFrame = event.pageX - currentTarget.offset().left,
+							currentTableFrameIndex = currentTarget.closest('.jrPage').find('.jrtableframe').index(currentTarget),
 							hd;
 						
 						for (var i = 0, ln = arrHeaderData.length; i < ln; i++) {
 							hd = arrHeaderData[i];
 							if (clickPositionInFrame <= hd.maxRight) {
 								event.stopPropagation(); // cancel event bubbling here to prevent parent frames to respond to the same event
-								currentTarget.find(hd.headerClass).trigger('highlight');
+								currentTarget.find(hd.headerClass).trigger('highlight', [currentTableFrameIndex]);
 								break;
 							}
 						}
@@ -293,7 +118,6 @@
 															columnToMoveNewIndex: i,
 														}};
 							}
-							
 							break;
 						}
 					}
@@ -301,26 +125,26 @@
 			});
 
             jQuery('.columnHeader').live('highlight',	// FIXMEJIVE 'columnHeader' hardcoded in TableReport.java
-            		function(event) {
+            		function(event, tableFrameIndex) {
             			// hide all other popupdivs
             			jQuery('.popupdiv').fadeOut(100);
             			
 		            	var self = jQuery(this),
 		            		popupId = self.attr('data-popupId'),
-		            		popupDiv = jQuery('#tbl_' + popupId),
+		            		parentFrame = self.closest('.jrtableframe'),
+		            		parentFrameUuid = parentFrame.attr('data-uuid'),
+		            		columnName = self.attr('data-popupColumn'),
+		            		popupDiv = js.getPopupFromTemplate(popupId, tableFrameIndex),
 		            		headerToolbar = jQuery('.headerToolbar', popupDiv),
 		            		headerToolbarMask = jQuery('.headerToolbarMask', popupDiv),
-		            		parentFrame = self.closest('.jrtableframe'),
-		            		columnSelectorPrefix = '.col_',
-		            		columnNameSel = columnSelectorPrefix + self.attr('data-popupColumn'), // FIXMEJIVE 'col_' prefix hardcoded in TableReport.java
+		            		columnNameSel = '.col_' + columnName, // FIXMEJIVE 'col_' prefix hardcoded in TableReport.java
 		            		firstElem = jQuery(columnNameSel + ':first', parentFrame),
 		            		lastElem = jQuery(columnNameSel + ':last', parentFrame),
-		            		headerSelectorPrefix = '.header_',
-		            		headerNameSel = headerSelectorPrefix + self.attr('data-popupColumn');
+		            		headerNameSel = '.header_' + /header_(\w+)/.exec(self.attr('class'))[1];
 		            	
 		            	headerToolbarMask.data('columnHeaderClass', headerNameSel);
-		            	headerToolbarMask.data('tableFrameUuid', parentFrame.attr('data-uuid'));
-		            	headerToolbarMask.data('tableFrameIndex', jQuery('.jrtableframe[data-uuid=' + parentFrame.attr('data-uuid') + ']').index(parentFrame));
+		            	headerToolbarMask.data('tableFrameUuid', parentFrameUuid);
+		            	headerToolbarMask.data('tableFrameIndex', jQuery('.jrtableframe[data-uuid=' + parentFrameUuid + ']').index(parentFrame));
 		            	
 		            	if (firstElem && lastElem) {
 	            			headerToolbar.css({
@@ -347,12 +171,14 @@
 	            				}
 	            			}
 	            			
-	            			
 	            			// the popup div contains headerToolbar(fixed size) and headerToolbarMask divs
-	            			var lastElemTop = lastElem.position() ? lastElem.position().top : 0,
-	            				lastElemHeight = lastElem.height() ? lastElem.height() : 0,
-	            				headerToolbarMaskHeight = (lastElemTop > 0 && lastElemHeight > 0) ? lastElemTop + lastElemHeight - self.position().top : self.height();
 	            			
+	            			var headerToolbarMaskHeight = self.height();
+	            				
+	            			if (lastElem.size() == 1) { // if lastElem exists
+	            				headerToolbarMaskHeight = lastElem.position().top + lastElem.height() - self.position().top;
+	            			}
+	            				
 	            			headerToolbarMask.css({
 		            			position: 'absolute',
 		            			'z-index': 1000,
@@ -399,7 +225,6 @@
 						            		parentPopupDiv = self.closest('.popupdiv'),
 						            		actionBaseUrl = parentPopupDiv.attr('data-actionBaseUrl'),
 						            		params = jQuery.parseJSON(parentPopupDiv.attr('data-actionBaseData')),
-					            			resizeActionLink = self.attr('data-actionBaseData'),
 				                	    	toolbarId = self.closest('.mainReportDiv').find('.toolbarDiv').attr('id');
 						            	
 						            	params[jvt.PARAM_ACTION] = gm.toJsonString(dragObj.moveColumnActionData);
@@ -481,98 +306,333 @@
 		jvt.performAction(toolbarId);
 		
 		var tableFrame = jQuery('.jrtableframe[data-uuid=' + tableFrameUuid + ']').get(tableFrameIndex);
-		jQuery(columnHeaderClass, tableFrame).trigger('click').trigger('highlight');
+		jQuery(columnHeaderClass, tableFrame).trigger('click').trigger('highlight', [tableFrameIndex]);
 	};
 	
-	js.registerTableHeaderEvents = function (popupId, arrPopupHtml) {
+	js.initTemplate = function (templateId) {
 		var gm = global.jasperreports.global,
 			jvt = global.jasperreports.reportviewertoolbar,
-			filterContainerId = "jive_dialogs", //js.filters.filterContainerId,
-			filterContainerDiv = "<div id='" + filterContainerId + "'></div>",
-			fcuid = '#' + filterContainerId,
-			uid = '#tbl_' + popupId;
-		
+			templateContainerId = "jive_templates",
+			templateContainerDiv = "<div id='" + templateContainerId + "'></div>",
+			tcuid = '#' + templateContainerId;
+	
 		// if filter container does not exist, create it
-		if (jQuery(fcuid).size() == 0) {
-			 jQuery(gm.reportContainerSelector).append(filterContainerDiv);
+		if (jQuery(tcuid).size() == 0) {
+			 jQuery(gm.reportContainerSelector).append(templateContainerDiv);
 		}
 		
-		// if filter with id of 'uniqueId' does not exist, append it to filter container
-		if (jQuery(uid).size() == 0) {
-			jQuery(fcuid).append(arrPopupHtml.join(''));
-			var popupDiv = jQuery(uid);
-			
-			// hide popup when mouse is out
-			popupDiv.bind('dblclick', function(event) {
-//			popupDiv.bind('mouseleave', function(event) {
-				jQuery(this).fadeOut(100);
-			});
-
-			/**
-			 * Handle sort when clicking sort icons
-			 */
-			jQuery('.sortSymbolImage', popupDiv).bind('click', function(event) {
-				event.preventDefault();
-                var self = jQuery(this),
-                	jvt = global.jasperreports.reportviewertoolbar, 
-                	parentPopupDiv = self.closest('.popupdiv'),
-                	actionBaseUrl = parentPopupDiv.attr('data-actionBaseUrl'),
-                	params = jQuery.parseJSON(parentPopupDiv.attr('data-actionBaseData')),
-                	toolbarId = self.closest('.mainReportDiv').find('.toolbarDiv').attr('id');
-
-                params[jvt.PARAM_ACTION] = jQuery(this).attr("data-sortData");
-                
-                jvt.runReport(jQuery('div.columnHeader:first'), 
-                			actionBaseUrl, 
-                			params, 
-                			jvt.performAction, 
-    	    				[toolbarId],  
-                			true);
-			});
-			
-			/**
-             * Show filter div when clicking the filter icon
-             */
-            jQuery('.filterSymbolImage', popupDiv).bind('click', function(event) {
-                var self = jQuery(this),
-                	filterDiv = jQuery('#' + jQuery(this).parents('.popupdiv').attr('data-filterid'));
-
-                // hide all other open filters FIXMEJIVE: this will close all visible filters from all reports on the same page
-                jQuery('.filterdiv').filter(':visible').each(function (index, element) {
-                    jQuery(element).hide();
-                });
-                
-                if (filterDiv.size() == 1) {
-                    filterDiv.css({
-                        position: 'absolute',
-                        'z-index': 1000,
-                        left: (40 + self.closest('.popupdiv').position().left)  + "px", // FIXMEJIVE filterdiv should be moved into popupdiv	
-                        top: (self.closest('.headerToolbar').position().top + self.closest('.popupdiv').position().top + 3) + "px"
-                    });
-                    filterDiv.show();
-                }
-            });
-            
-            /**
-             * Sort and filter hover
-             */
-            jQuery('.sortSymbolImage, .filterSymbolImage', popupDiv).live('mouseenter', function(event) {
-            	var self = jQuery(this),
-            		hoverSrc = self.attr('data-hover');
-            	if (hoverSrc && hoverSrc.length > 0) {
-            		self.attr('src', hoverSrc);
-            	}
-            	
-            });
-            jQuery('.sortSymbolImage, .filterSymbolImage', popupDiv).live('mouseleave', function(event) {
-            	var self = jQuery(this),
-	        		hoverSrc = self.attr('data-hover');
-	        	if (hoverSrc && hoverSrc.length > 0) {	// if there were any hover src, reset original src
-	        		self.attr('src', self.attr('data-src'));
-	        	}
-            });
-            
+		var popupDiv = jQuery('#'+templateId);
+		if (popupDiv.size() == 1) {
+			jQuery(tcuid).append(popupDiv);
+		} else{
+			// already initialized
+			return;
 		}
+		
+		// hide popup on click
+		popupDiv.bind('click', function(event) {
+			var target = jQuery(event.target);
+			if (target.is('.headerToolbar') || target.is('.headerToolbarMask')) {
+				jQuery(this).fadeOut(100);
+			}
+		});
+
+		/**
+		 * Handle sort when clicking sort icons
+		 */
+		jQuery('.sortAscBtn, .sortDescBtn', popupDiv).bind('click', function(event) {
+			event.preventDefault();
+            var self = jQuery(this),
+            	jvt = global.jasperreports.reportviewertoolbar, 
+            	parentPopupDiv = self.closest('.popupdiv'),
+            	actionBaseUrl = parentPopupDiv.attr('data-actionBaseUrl'),
+            	params = jQuery.parseJSON(parentPopupDiv.attr('data-actionBaseData')),
+            	toolbarId = self.closest('.mainReportDiv').find('.toolbarDiv').attr('id');
+
+            params[jvt.PARAM_ACTION] = jQuery(this).attr("data-sortData");
+            
+            jvt.runReport(jQuery('div.columnHeader:first'), 
+            			actionBaseUrl, 
+            			params, 
+            			jvt.performAction, 
+	    				[toolbarId],  
+            			true);
+		});
+		
+		/**
+         * Show filter div when clicking the filter icon
+         */
+        jQuery('.filterBtn', popupDiv).bind('click', function(event) {
+        	event.stopPropagation();
+            var self = jQuery(this),
+            	parentPopupDiv = self.closest('.popupdiv'),
+            	filterDiv = parentPopupDiv.find('.filterdiv');
+
+            // hide all other open filters FIXMEJIVE: this will close all visible filters from all reports on the same page
+            jQuery('.filterdiv').filter(':visible').each(function (index, element) {
+                jQuery(element).hide();
+            });
+            
+            if (filterDiv.size() == 1) {
+                filterDiv.css({
+                    position: 'absolute',
+                    'z-index': 1000,
+                    left: "30px",	
+                    top: "10px"
+                });
+                filterDiv.show();
+            }
+        });
+        
+        /**
+         * Button hover
+         */
+        jQuery('.hoverbtn', popupDiv).bind('mouseenter', function(event) {
+        	var self = jQuery(this),
+        		hoverClass = self.attr('data-hover');
+        	if (hoverClass) {
+        		self.addClass(hoverClass);
+        	}
+        	
+        });
+        jQuery('.hoverbtn', popupDiv).bind('mouseleave', function(event) {
+        	var self = jQuery(this),
+	    		hoverClass = self.attr('data-hover');
+	    	if (hoverClass) {
+	    		self.removeClass(hoverClass);
+	    	}
+        });
+        
+        /**
+         * COLUMN FILTERING
+         */
+        var filterDiv = popupDiv.find('.filterdiv');
+		
+		// attach filter form events
+		jQuery('.hidefilter', filterDiv).bind(('createTouch' in document) ? 'touchend' : 'click', function(event){
+			jQuery(this).parent().hide();
+		});
+		
+		filterDiv.draggable();
+		
+		// 'Enter' key press for filter value triggers 'contextual' submit
+		jQuery('.filterValue', filterDiv).bind('keypress', function(event) {
+			if (event.keyCode == 13) {
+				event.preventDefault();
+				if ('createTouch' in document) {	// trigger does not seem to work on safari mobile; doing workaround
+					var el = jQuery('.submitFilter', filterDiv).get(0);
+					var evt = document.createEvent("MouseEvents");
+					evt.initMouseEvent("touchend", true, true);
+					el.dispatchEvent(evt);
+				} else {
+					jQuery('.submitFilter', filterDiv).trigger('click');
+				}
+			}
+		});
+		
+		jQuery('.submitFilter', filterDiv).bind(('createTouch' in document) ? 'touchend' : 'click', function(event){
+			var self = jQuery(this),
+				parentForm = self.parent(),
+				parentPopupDiv = self.closest('.popupdiv'),
+				actionBaseUrl = parentForm.attr("action"),
+				params = jQuery.parseJSON(parentPopupDiv.attr('data-actionBaseData')),
+				parentFilterDiv = self.closest('.filterdiv'),
+				actionData = jQuery.parseJSON(parentFilterDiv.attr('data-filterData')),
+				filterData = {};
+			
+			// extract form params
+			jQuery('.postable', parentForm).each(function(){
+				// prevent disabled inputs to get posted
+				if(!jQuery(this).is(':disabled')) {
+					filterData[this.name] = this.value;
+				}
+			});
+			
+			actionData.filterData = filterData;
+			params[jvt.PARAM_ACTION] = gm.toJsonString(actionData)
+			
+			var toolbarId = self.closest('.mainReportDiv').find('.toolbarDiv').attr('id');
+			jvt.runReport(jQuery('div.columnHeader:first'), 
+						actionBaseUrl,
+						params, 
+						jvt.performAction, 
+						[toolbarId], 
+						true);
+		});
+		
+		// show the second filter value for options containing 'between'
+		jQuery('.filterOperatorTypeValueSelector', filterDiv).bind('change', function (event) {
+			var optionValue = jQuery(this).val();
+			if (optionValue && optionValue.toLowerCase().indexOf('between') != -1) {
+				jQuery('.fieldValueEnd', filterDiv)
+					.removeClass('hidden')
+					.removeAttr('disabled');
+			} else {
+				jQuery('.fieldValueEnd', filterDiv)
+					.addClass('hidden')
+					.attr('disabled', true);
+			}
+		});
+		
+		jQuery('.clearFilter', filterDiv).bind(('createTouch' in document) ? 'touchend' : 'click', function(event){
+			var self = jQuery(this),
+				parentForm = self.parent(),
+				parentPopupDiv = self.closest('.popupdiv'),
+				actionBaseUrl = parentForm.attr("action"),
+				params = jQuery.parseJSON(parentPopupDiv.attr('data-actionBaseData')),
+				parentFilterDiv = self.closest('.filterdiv'),
+				actionData = jQuery.parseJSON(parentFilterDiv.attr('data-clearData')),
+				filterData = actionData.filterData;
+			
+			// extract form params
+			jQuery('.forClear', parentForm).each(function(){
+				// prevent disabled inputs to get posted
+				if(!jQuery(this).is(':disabled')) {
+					filterData[this.name] = this.value;
+				}
+			});
+			
+			params[jvt.PARAM_ACTION] = gm.toJsonString(actionData);
+			
+			var toolbarId = self.closest('.mainReportDiv').find('.toolbarDiv').attr('id');
+			jvt.runReport(jQuery('div.columnHeader:first'), 
+						actionBaseUrl, 
+						params, 
+						jvt.performAction, 
+						[toolbarId], 
+						true);
+		});
+		
+		
+		/**
+		 * Format dialog
+		 */
+        jQuery('.formatDialogButton', popupDiv).bind('click', function(event) {
+        	event.stopPropagation();
+        	var self = jQuery(this),
+        		dialog = self.closest('.popupdiv').find('.formatDialog');
+    	  
+			dialog.css({
+				left: '10px',
+				position: 'relative',
+				top: '10px',
+				'z-index': 1001,
+				'text-align': 'left'
+			});
+			  
+			jQuery('.buttonCancel', dialog).bind('click', function(event) {
+				jQuery(this).closest('.formatDialog').hide();
+			});
+			   
+			dialog.show();
+		});
+        
+        jQuery('.formatDialog .buttonOK').bind('click', function() {
+        	var self = jQuery(this),
+        		parentTab = self.closest('.headingsTabContent'),
+        		parentPopupDiv = self.closest('.popupdiv'),
+        		actionBaseUrl = parentPopupDiv.attr('data-actionBaseUrl'),
+            	params = jQuery.parseJSON(parentPopupDiv.attr('data-actionBaseData')),
+            	actionData = {actionName: 'editColumnHeader'},
+        		editColumnHeaderData = {};
+        	
+        	jQuery('.postable', parentTab).each(function(){
+				// prevent disabled inputs to get posted
+				if(!jQuery(this).is(':disabled')) {
+					editColumnHeaderData[this.name] = this.value;
+				}
+			});
+        	
+        	actionData['editColumnHeaderData'] = editColumnHeaderData;
+        	
+        	params[jvt.PARAM_ACTION] = gm.toJsonString(actionData);
+        	
+        	var toolbarId = self.closest('.mainReportDiv').find('.toolbarDiv').attr('id');
+			jvt.runReport(jQuery('div.columnHeader:first'), 
+						actionBaseUrl, 
+						params, 
+						jvt.performAction, 
+						[toolbarId], 
+						true);
+        });
+	};
+	
+	js.addTemplateData = function (templateId, key, value) {
+		js.templateData[templateId + '_' + key] = value;
+	};
+	
+	js.applyTemplateDataToInstance = function (jqTemplateInstance, templateData, templateId) {
+		var tData = templateData || {},
+			prop;
+		
+		templateId && jqTemplateInstance.attr('id', templateId);
+		
+		for (prop in tData) {
+			if (tData.hasOwnProperty(prop)) {
+				var propValue = tData[prop],
+					o2s = Object.prototype.toString.call(propValue);
+				switch(o2s) {
+					case '[object Array]':
+						target = jQuery('.'+prop, jqTemplateInstance); 
+						if (target.is('select')) {
+							var i, option;
+							for (i = 0, ln = propValue.length; i < ln; i++) {
+								option = "<option value='" + propValue[i].key + "' " + (propValue[i].sel ? 'selected' : '') + ">" + propValue[i].val + "</option>";
+								target.append(option);
+							}
+						}
+						break;
+						
+					case '[object Object]':
+						target = jQuery('.'+prop, jqTemplateInstance); 
+						js.applyTemplateDataToInstance(target, propValue, null);
+						break;
+						
+					default:
+						if (prop.indexOf('data-') == 0) {
+							jqTemplateInstance.attr(prop, propValue);
+							
+						} else if (prop.indexOf('@class') == 0) {
+							jqTemplateInstance.addClass(propValue);
+							
+						} else {
+							target = jQuery('.'+prop, jqTemplateInstance); 
+							if (target.is('label')) {
+								target.html(propValue);
+							} else {
+								target.val(propValue);
+							}
+						}
+						break;
+				}
+			}
+		}
+	};
+	
+	js.getPopupFromTemplate = function (popupId, tableFrameIndex) {
+		var gm = global.jasperreports.global,
+			templateId = js.templateData.popupId,
+			dialogsContainerId = "jive_dialogs",
+			dialogsContainerDiv = "<div id='" + dialogsContainerId + "'></div>",
+			dcuid = '#' + dialogsContainerId,
+			tData = js.templateData[templateId + "_" + popupId],
+			uniquePopupId = popupId + '_' + tableFrameIndex;
+		
+		if (tData) {
+			// if dialogs container does not exist, create it
+			if (jQuery(dcuid).size() == 0) {
+				 jQuery(gm.dialogsContainerSelector).append(dialogsContainerDiv);
+			}
+			
+			if (jQuery('#'+uniquePopupId).size() == 0) {
+				var templateInstance = jQuery('#' + templateId).clone(true);
+				
+				js.applyTemplateDataToInstance(templateInstance, tData, uniquePopupId);
+				jQuery(dcuid).append(templateInstance);
+				return templateInstance;
+			}
+		}
+		return jQuery('#'+uniquePopupId);
 	};
 	
 	global.jasperreports.tableheadertoolbar = js;

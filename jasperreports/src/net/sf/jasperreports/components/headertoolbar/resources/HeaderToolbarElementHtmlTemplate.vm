@@ -1,66 +1,93 @@
+#if (!${templateAlreadyLoaded})
 <script class='jasperreports'>
 	jasperreports.global.appendScriptElementToDOM('_headertoolbarScript', '${jasperreports_tableHeaderToolbar_js}', 'jasperreports.tableheadertoolbar.init');
+	jasperreports.global.appendStyleElementToDOM('_headertoolbarStyle', '${jasperreports_tableHeaderToolbar_css}');
 </script>
-
-#if (${popupId})
+<div class='popupdiv' id='popupdiv_template' data-actionBaseData='${actionBaseData}' data-actionBaseUrl='${actionBaseUrl}' style='display: none;'>
+	<div class='headerToolbar' style="background-image: url('${transparentPixelSrc}');">
+		<span>
+			<input type='button' class='formatDialogButton' style='width: 14px; height: 14px' value='M'/>
+			<button type='button' class='hoverbtn sortAscBtn' data-hover='' data-sortData='' /> 
+			<button type='button' class='hoverbtn sortDescBtn' data-hover='' data-sortData='' />
+			<button type='button' class='hoverbtn filterBtn' data-hover='' />
+		</span>
+	</div>
+	<div class='headerToolbarMask headerToolbarMaskDefaultStyle'>
+	</div>
+	<div class='filterdiv' style='display: none;' data-filterData='{"actionName":"filter"}' data-clearData='{"actionName":"filter","filterData":{"clearFilter":true}}'>
+        <img class='hidefilter' src='${filterCloseDialogImageResource}' />
+        <form action='${actionBaseUrl}' action='POST' class='filterDivForm'>
+        	<input class='postable forClear uuid' type='hidden' name='uuid' value='' />
+        	<input class='postable forClear fieldName' type='hidden' name='fieldName' value='' />
+        	<input class='postable filterType' type='hidden' name='filterType' value='' />
+        	<input class='postable filterPattern' disabled='disabled' type='hidden' name='filterPattern' value='' />
+        	<label class='filterColumnNameLabel'></label>
+			<select class='postable filterOperatorTypeValueSelector' name='filterTypeOperator'>
+			</select>
+        	<input class='postable filterValue fieldValueStart' type='text' name='fieldValueStart' value='' />
+        	<input class='postable filterValue hidden fieldValueEnd' disabled type='text' name='fieldValueEnd' value='' />
+        	<input class='submitFilter' type='button' value='Filter' />
+        	<input class='clearFilter' style='display:none;' type='button' value='Clear' />
+        </form>
+	</div>
+	<div class="formatDialog">
+		<ul class="formatHeaderUL">
+			<li class="formatLI"><span class="formatTitle">Format Column</span></li>
+			<li class="formatLI tabHeadingsLi"><div class="formatTabText tabHeadings formatTabSelected">Headings</div></li>
+			<li class="formatLI"><div class="formatTabText">Values</div></li>
+		</ul>
+		<div class="formatBody headingsTabContent">
+			<input class="postable tableUuid" name="tableUuid" type="hidden" />
+			<input class="postable columnIndex" name="columnIndex" type="hidden" />
+			<label>Name:</label><input class="postable headingName" name="headingName" type="text" />
+			<br/>
+			<label>Font:</label><input class="postable fontName" name="fontName" type="text" />
+			<br/>
+			<label>Size:</label><input class="postable fontSize" name="fontSize" type="text" />
+			<br/>
+			<label>Style</label>
+			<br/>
+			<label>Bold:</label><input class="postable fontBold" name="fontBold" type="text" />
+			<br/>
+			<label>Italic:</label><input class="postable fontItalic" name="fontItalic" type="text" value='' />
+			<br/>
+			<label>Underline:</label><input class="postable fontUnderline" name="fontUnderline" type="text" value='' />
+			<br/>
+			<label>Color:</label><input class="postable fontColor" name="fontColor" type="text" />
+			<br/>
+			<label>Alignment:</label><input class="postable fontHAlign" name="fontHAlign" type="text" />
+			<br/>
+			<input class="buttonOK" type="button" value="Ok" />
+			<input class="buttonCancel" type="button" value="Cancel" />
+		</div>
+	</div>
+</div>
 <script class='jasperreports'>
-	(function () {
-		var gm = jasperreports.global,
-			arrPopupHtml = [
-				"<div class='popupdiv' id='tbl_${popupId}' data-actionBaseData='${actionBaseData}' data-actionBaseUrl='${actionBaseUrl}'",
-					#if (${isFilterable})
-				"		data-filterid='${filterDivId}'",
+	var gm = jasperreports.global;		
+	gm.subscribeToEvent(gm.events.HEADERTOOLBAR_INIT.name, 'jasperreports.tableheadertoolbar.initTemplate', ['popupdiv_template']);
+</script>
+#end
+<script class='jasperreports'>
+	var gm = jasperreports.global,
+		templateJsonData = {
+			headerToolbar: {
+				sortAscBtn: {'data-hover': '${sortAscHover}', '@class': '${sortAscActive}', 'data-sortData': '{"actionName":"sort","sortData":${sortAscData}}'},
+				sortDescBtn: {'data-hover': '${sortDescHover}', '@class': '${sortDescActive}', 'data-sortData': '{"actionName":"sort","sortData":${sortDescData}}'},
+				filterBtn: {'data-hover': '${filterHover}',	'@class': '${filterActive}'	}
+			},
+			filterdiv: {
+				filterDivForm: ${filterData},
+				filterOperatorTypeValueSelector: [
+				#foreach( $entry in ${filterTypeValuesMap.entrySet()} )
+					#set( $selected = false )
+					#if ($entry.key == ${filterTypeOperatorValue})
+						#set( $selected = true )
 					#end
-				"	style='position: absolute; display: none; width: 100px; height: 20px;'>",
-				"	<div class='headerToolbar' style=\"position:absolute; top: -20px; width: 100px; height: 20px; background-color: rgb(0, 51, 102); background-color: rgba(0, 51, 102, 0.6); background-image: url('${transparentPixelSrc}'); text-align: left;\">",
-				"		<span>",
-				"			<img class='sortSymbolImage sortAsc' data-sortData='{\"actionName\":\"sort\",\"sortData\":${sortAscData}}' src='${sortAscSrc}' data-src='${sortAscSrc}' data-hover='${sortAscHoverSrc}' />", 
-				"			<img class='sortSymbolImage sortDesc' data-sortData='{\"actionName\":\"sort\",\"sortData\":${sortDescData}}' src='${sortDescSrc}' data-src='${sortDescSrc}' data-hover='${sortDescHoverSrc}' />",
-				"			<img class='filterSymbolImage' src='${filterSrc}' data-src='${filterSrc}' data-hover='${filterHoverSrc}' />",
-				"		</span>",
-				"	</div>",
-				"	<div class='headerToolbarMask headerToolbarMaskDefaultStyle'>",
-				"	</div>",
-				"</div>"];
-				
-		gm.subscribeToEvent(gm.events.HEADERTOOLBAR_INIT.name, 'jasperreports.tableheadertoolbar.registerTableHeaderEvents', ['${popupId}', arrPopupHtml]);
-	} ());
+					{key: '$entry.key', sel: $selected, val: '$entry.value'},
+				#end
+				],
+			},
+			headingsTabContent: ${colHeaderData}
+		};
+	gm.subscribeToEvent(gm.events.HEADERTOOLBAR_INIT.name, 'jasperreports.tableheadertoolbar.addTemplateData', ['popupdiv_template', '${popupId}', templateJsonData]);
 </script>
-#end
-
-#if (${isFilterable})
-<script class='jasperreports'>
-	(function () {
-		var gm = jasperreports.global,
-			uid = '${filterDivId}',
-			arrFilterDiv = ["<div id='${filterDivId}' class='filterdiv' style='display: none;' data-forsortlink='${sortLinkClass}' data-filterData='{\"actionName\":\"filter\"}' data-clearData='{\"actionName\":\"filter\",\"filterData\":{\"clearFilter\":true}}'>",
-			                "<img class='hidefilter' src='${filterCloseDialogImageResource}' />",
-			                "<form action='${actionBaseUrl}' data-actionBaseData='${actionBaseData}' action='POST' class='filterDivForm'>",
-			                "	<input class='postable forClear' type='hidden' name='${filterTableNameParam}' value='${filterTableNameValue}' />",
-			                "	<input class='postable filterField' type='hidden' name='${filterFieldParamName}' value='${filterColumnName}' />",
-			                "	<input class='postable' type='hidden' name='${filterTypeParamName}' value='${filterTypeParamNameValue}' />",
-			                	#if(${filterPatternParamValue})
-			                "	<input class='postable' type='hidden' name='${filterPatternParamName}' value='${filterPatternParamValue}' />",
-			                	#end
-			                "	<label class='filterColumnNameLabel' for='${filterTypeOperatorParamName}'>${filterColumnNameLabel}</label>",
-							"	<select class='postable filterOperatorTypeValueSelector' name='${filterTypeOperatorParamName}'>",
-								#foreach( $entry in ${filterTypeValuesMap.entrySet()} )
-									#set( $selected = "" )
-									#if ($entry.key == ${filterTypeOperatorParamValue})
-										#set( $selected = "selected='selected'" )
-									#end
-    						"	<option value='$entry.key' $selected >$entry.value</option>",
-								#end
-							"	</select>",
-			                "	<input class='postable filterValue filterValueStart' type='text' name='${filterValueStartParamName}' value='${filterValueStartParamValue}' style='width: 80px;' />",
-			                "	<input class='postable filterValue filterValueEnd #if (!${enableFilterEndParameter})hidden' disabled #else ' #end type='text' name='${filterValueEndParamName}' value='${filterValueEndParamValue}' style='width: 80px;' />",
-			                "	<input class='submitFilter' type='button' value='Filter' />",
-			                "	<input class='forClear' type='hidden' name='${filterToRemoveParamName}' value='${filterToRemoveParamvalue}' />",
-			                "	<input class='clearFilter' #if(!${isFiltered}) style='display:none;' #end type='button' value='Clear' />",
-			                "</form>",
-			                "</div>"];
-			                
-		gm.subscribeToEvent(gm.events.HEADERTOOLBAR_INIT.name, 'jasperreports.tableheadertoolbar.createFilterDiv', [uid, arrFilterDiv, '${filtersJsonString}']);
-	} ());
-</script>
-#end

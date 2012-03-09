@@ -63,12 +63,10 @@ public interface HeaderToolbarElement {
 	public static final String REQUEST_PARAMETER_REMOVE_FILTER = "jr.rmvFltr";
 	
 	public static final String REQUEST_PARAMETER_SORT_DATA = "jr.sort";
-	public static final String REQUEST_PARAMETER_DATASET_RUN = "jr.dsr";//FIXMEJIVE this parameter cannot uniquely identify a dataset run that repeats; check it
 	public static final String REQUEST_PARAMETER_FILTER_TYPE = "jr.fltrTp"; 
 	public static final String REQUEST_PARAMETER_FILTER_TYPE_OPERATOR = "jr.fltrTpOprtr"; 
 	public static final String REQUEST_PARAMETER_FILTER_PATTERN = "jr.fltrPtrn"; 
 	
-	public static final String PROPERTY_DATASET_RUN = JRPropertiesUtil.PROPERTY_PREFIX + "export." + HeaderToolbarElement.REQUEST_PARAMETER_DATASET_RUN;
 	public static final String PROPERTY_FILTER_TYPE = JRPropertiesUtil.PROPERTY_PREFIX + "export." + HeaderToolbarElement.REQUEST_PARAMETER_FILTER_TYPE;
 	public static final String PROPERTY_FILTER_PATTERN = JRPropertiesUtil.PROPERTY_PREFIX + "export." + HeaderToolbarElement.REQUEST_PARAMETER_FILTER_PATTERN;
 

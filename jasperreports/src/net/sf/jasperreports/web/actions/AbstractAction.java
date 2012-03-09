@@ -9,7 +9,7 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
 @JsonTypeInfo(use=JsonTypeInfo.Id.NAME, include=JsonTypeInfo.As.PROPERTY, property="actionName")
 public abstract class AbstractAction implements Action {
 	
-	private static final String PARAM_COMMAND_STACK = "net.sf.jasperreports.command.stack";
+	public static final String PARAM_COMMAND_STACK = "net.sf.jasperreports.command.stack";
 	
 	private JasperReportsContext jasperReportsContext;
 	private ReportContext reportContext;

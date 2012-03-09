@@ -8,18 +8,16 @@ public class SortData {
 	private String sortColumnName;
 	private String sortColumnType;
 	private String sortOrder;
-	private String sortDatasetName;
 	
 	public SortData() {
 	}
 	
-	public SortData(String uuid, String sortColumnName, String sortColumnType, String sortOrder, String sortDatasetName) 
+	public SortData(String uuid, String sortColumnName, String sortColumnType, String sortOrder) 
 	{
 		this.uuid = uuid;
 		this.sortColumnName = sortColumnName;
 		this.sortColumnType = sortColumnType;
 		this.sortOrder = sortOrder;
-		this.sortDatasetName = sortDatasetName;
 	}
 
 	public String getUuid() {
@@ -54,16 +52,8 @@ public class SortData {
 		this.sortOrder = sortOrder;
 	}
 
-	public String getSortDatasetName() {
-		return sortDatasetName;
-	}
-
-	public void setSortDatasetName(String sortDatasetName) {
-		this.sortDatasetName = sortDatasetName;
-	}
-
 	@Override
 	public String toString() {
-		return "sortColumnName: " + sortColumnName + "; sortColumnType: " + sortColumnType + "; sortOrder: " + sortOrder + "; sortDatasetName: " + sortDatasetName;
+		return "sortColumnName: " + sortColumnName + "; sortColumnType: " + sortColumnType + "; sortOrder: " + sortOrder;
 	}
 }

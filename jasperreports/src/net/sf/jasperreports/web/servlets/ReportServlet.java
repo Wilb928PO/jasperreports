@@ -43,6 +43,7 @@ import net.sf.jasperreports.engine.export.JRXhtmlExporter;
 import net.sf.jasperreports.web.WebReportContext;
 import net.sf.jasperreports.web.actions.AbstractAction;
 import net.sf.jasperreports.web.actions.Action;
+import net.sf.jasperreports.web.commands.CommandStack;
 import net.sf.jasperreports.web.util.JacksonUtil;
 import net.sf.jasperreports.web.util.ReportExecutionHyperlinkProducerFactory;
 import net.sf.jasperreports.web.util.VelocityUtil;
@@ -117,6 +118,12 @@ public class ReportServlet extends AbstractServlet
 		}
 		catch (Exception e)
 		{
+			// try to undo
+			CommandStack commandStack = (CommandStack)webReportContext.getParameterValue(AbstractAction.PARAM_COMMAND_STACK);
+			if (commandStack != null) {
+				commandStack.undo();				
+			}
+			
 			log.error("Error on report execution", e);
 			
 			out.println("<html>");//FIXMEJIVE do we need to render this? or should this be done by the viewer?

@@ -421,7 +421,7 @@ public class TableReport implements JRReport
 			JRTextField sortTextField = getColumnSortTextField(column);
 			if (sortTextField != null)
 			{
-				addSortElement(column, frame, sortTextField.getExpression().getChunks()[0], sortTextField.getPattern());
+				addHeaderToolbarElement(column, frame, sortTextField.getExpression().getChunks()[0], sortTextField.getPattern());
 			}
 			return frame;
 		}
@@ -480,7 +480,7 @@ public class TableReport implements JRReport
 			return null;
         }
 
-		protected void addSortElement(Column column, JRDesignFrame frame,
+		protected void addHeaderToolbarElement(Column column, JRDesignFrame frame,
 				JRExpressionChunk sortExpression, String filterPattern)
 		{
 			Cell header = column.getColumnHeader();
@@ -497,8 +497,6 @@ public class TableReport implements JRReport
 			genericElement.setWidth(0);
 			genericElement.setMode(ModeEnum.TRANSPARENT);
             genericElement.setStretchType(StretchTypeEnum.RELATIVE_TO_BAND_HEIGHT);
-			
-			genericElement.getPropertiesMap().setProperty(HeaderToolbarElement.PROPERTY_DATASET_RUN, getName());
 			
 			String name = sortExpression.getText();
 			SortFieldTypeEnum columnType;
@@ -530,10 +528,11 @@ public class TableReport implements JRReport
 			addElementParameter(genericElement, HeaderToolbarElement.PARAMETER_SORT_HANDLER_HORIZONTAL_ALIGN, "Right");
 			addElementParameter(genericElement, HeaderToolbarElement.PARAMETER_SORT_HANDLER_VERTICAL_ALIGN, "Middle");
 
-			String popupId = getName() + "_" + name;
+			String popupId = name + "_" + column.hashCode();
 			addElementParameter(genericElement, "popupId", popupId);
+			addElementParameter(genericElement, "columnIndex", headerClasses.size());
 
-			frame.getPropertiesMap().setProperty(JRHtmlExporter.PROPERTY_HTML_CLASS, "columnHeader header_" + name);	// FIXMEJIVE should generate unique html class?
+			frame.getPropertiesMap().setProperty(JRHtmlExporter.PROPERTY_HTML_CLASS, "columnHeader header_" + name + "_" + column.hashCode());	// FIXMEJIVE should generate unique html class?
 			frame.getPropertiesMap().setProperty(JRHtmlExporter.PROPERTY_HTML_POPUP_ID, popupId);
 			frame.getPropertiesMap().setProperty(JRHtmlExporter.PROPERTY_HTML_POPUP_COLUMN, name);
 			

@@ -33,6 +33,7 @@ import java.util.ResourceBundle;
 import java.util.UUID;
 
 import net.sf.jasperreports.components.BaseElementHtmlHandler;
+import net.sf.jasperreports.components.headertoolbar.actions.EditColumnHeaderData;
 import net.sf.jasperreports.components.headertoolbar.actions.FilterAction;
 import net.sf.jasperreports.components.headertoolbar.actions.SortAction;
 import net.sf.jasperreports.components.sort.FieldFilter;
@@ -43,9 +44,11 @@ import net.sf.jasperreports.components.sort.FilterTypesEnum;
 import net.sf.jasperreports.components.sort.actions.FilterCommand;
 import net.sf.jasperreports.components.sort.actions.FilterData;
 import net.sf.jasperreports.components.sort.actions.SortData;
+import net.sf.jasperreports.components.table.BaseColumn;
+import net.sf.jasperreports.components.table.StandardColumn;
 import net.sf.jasperreports.components.table.StandardTable;
+import net.sf.jasperreports.components.table.util.TableUtil;
 import net.sf.jasperreports.engine.DatasetFilter;
-import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JRGenericPrintElement;
 import net.sf.jasperreports.engine.JRIdentifiable;
 import net.sf.jasperreports.engine.JRParameter;
@@ -59,6 +62,7 @@ import net.sf.jasperreports.engine.base.JRBasePrintHyperlink;
 import net.sf.jasperreports.engine.design.JRDesignComponentElement;
 import net.sf.jasperreports.engine.design.JRDesignDataset;
 import net.sf.jasperreports.engine.design.JRDesignDatasetRun;
+import net.sf.jasperreports.engine.design.JRDesignTextElement;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.export.JRHtmlExporterContext;
 import net.sf.jasperreports.engine.export.JRXhtmlExporter;
@@ -88,65 +92,57 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 	private static final Log log = LogFactory.getLog(HeaderToolbarElementHtmlHandler.class);
 	
 	private static final String RESOURCE_HEADERTOOLBAR_JS = "net/sf/jasperreports/components/headertoolbar/resources/jasperreports-tableHeaderToolbar.js";
+	private static final String RESOURCE_HEADERTOOLBAR_CSS = "net/sf/jasperreports/components/headertoolbar/resources/jasperreports-tableHeaderToolbar.css";
 	private static final String RESOURCE_IMAGE_CLOSE = "net/sf/jasperreports/components/headertoolbar/resources/images/delete_edit.gif";
 	private static final String RESOURCE_TRANSPARENT_PIXEL = "net/sf/jasperreports/engine/images/pixel.GIF";
-	
-	// new
-	private static final String RESOURCE_FILTER_DISABLED = 		"net/sf/jasperreports/components/headertoolbar/resources/images/filter.png";
-	private static final String RESOURCE_FILTER_DEFAULT = 		"net/sf/jasperreports/components/headertoolbar/resources/images/filter.png";
-	private static final String RESOURCE_FILTER_DEFAULT_HOVER = "net/sf/jasperreports/components/headertoolbar/resources/images/filter_over.png";
-	private static final String RESOURCE_FILTER_ENABLED = 		"net/sf/jasperreports/components/headertoolbar/resources/images/filter_over.png";
-	private static final String RESOURCE_FILTER_ENABLED_HOVER = "net/sf/jasperreports/components/headertoolbar/resources/images/filter_over.png";
-	private static final String RESOURCE_FILTER_WRONG = 		"net/sf/jasperreports/components/headertoolbar/resources/images/filter_wrong.png";
-	private static final String RESOURCE_FILTER_WRONG_HOVER = 	"net/sf/jasperreports/components/headertoolbar/resources/images/filter_wrong.png";
-	
-	private static final String RESOURCE_SORT_DEFAULT_ASC = 		"net/sf/jasperreports/components/headertoolbar/resources/images/sort_asc.png";
-	private static final String RESOURCE_SORT_DEFAULT_ASC_HOVER = 	"net/sf/jasperreports/components/headertoolbar/resources/images/sort_asc_over.png";
-	private static final String RESOURCE_SORT_ENABLED_ASC = 		"net/sf/jasperreports/components/headertoolbar/resources/images/sort_asc_over.png";
-	private static final String RESOURCE_SORT_ENABLED_ASC_HOVER = 	"net/sf/jasperreports/components/headertoolbar/resources/images/sort_asc_over.png";
-	
-	private static final String RESOURCE_SORT_DEFAULT_DESC = 		"net/sf/jasperreports/components/headertoolbar/resources/images/sort_desc.png";
-	private static final String RESOURCE_SORT_DEFAULT_DESC_HOVER = 	"net/sf/jasperreports/components/headertoolbar/resources/images/sort_desc_over.png";
-	private static final String RESOURCE_SORT_ENABLED_DESC = 		"net/sf/jasperreports/components/headertoolbar/resources/images/sort_desc_over.png";
-	private static final String RESOURCE_SORT_ENABLED_DESC_HOVER = 	"net/sf/jasperreports/components/headertoolbar/resources/images/sort_desc_over.png";
-	// new
-	
-	private static final String SORT_ELEMENT_HTML_TEMPLATE = "net/sf/jasperreports/components/headertoolbar/resources/HeaderToolbarElementHtmlTemplate.vm";
-	
-	private static class CustomJRExporterParameter extends JRExporterParameter{
 
-		protected CustomJRExporterParameter(String name) {
-			super(name);
-		}
-		
-	}
+	private static final String CSS_FILTER_DISABLED = 		"filterBtnDisabled";
+	private static final String CSS_FILTER_DEFAULT = 		"filterBtnDefault";
+	private static final String CSS_FILTER_DEFAULT_HOVER = 	"filterBtnDefaultHover";
+	private static final String CSS_FILTER_ENABLED = 		"filterBtnEnabled";
+	private static final String CSS_FILTER_ENABLED_HOVER = 	"filterBtnEnabledHover";
+	private static final String CSS_FILTER_WRONG = 			"filterBtnWrong";
+	private static final String CSS_FILTER_WRONG_HOVER = 	"filterBtnWrongHover";
 	
-	private static final CustomJRExporterParameter param = new HeaderToolbarElementHtmlHandler.CustomJRExporterParameter("already_generated");
+	private static final String CSS_SORT_DEFAULT_ASC = 			"sortAscBtnDefault";
+	private static final String CSS_SORT_DEFAULT_ASC_HOVER = 	"sortAscBtnDefaultHover";
+	private static final String CSS_SORT_ENABLED_ASC = 			"sortAscBtnEnabled";
+	private static final String CSS_SORT_ENABLED_ASC_HOVER = 	"sortAscBtnEnabledHover";
+	
+	private static final String CSS_SORT_DEFAULT_DESC = 		"sortDescBtnDefault";
+	private static final String CSS_SORT_DEFAULT_DESC_HOVER = 	"sortDescBtnDefaultHover";
+	private static final String CSS_SORT_ENABLED_DESC = 		"sortDescBtnEnabled";
+	private static final String CSS_SORT_ENABLED_DESC_HOVER = 	"sortDescBtnEnabledHover";
+	
+	private static final String SORT_ELEMENT_HTML_TEMPLATE = 	"net/sf/jasperreports/components/headertoolbar/resources/HeaderToolbarElementHtmlTemplate.vm";
+	
+	private static final String PARAM_GENERATED_TEMPLATE_PREFIX = "net.sf.jasperreports.headertoolbar.";
+	
 
 	public String getHtmlFragment(JRHtmlExporterContext context, JRGenericPrintElement element)
 	{
-		if (context.getExportParameters().containsKey(param) && (Boolean)context.getExportParameters().get(param)) {
-			if (log.isDebugEnabled()) {
-				log.debug("found alredy_generated param");
-			}
-		} else {
-			if (log.isDebugEnabled()) {
-				log.debug("did not find alredy_generated param");
-			}
-			context.getExportParameters().put(param, Boolean.TRUE);
-		}
+		boolean templateAlreadyLoaded = false;
+
 		String htmlFragment = null;
 		ReportContext reportContext = context.getExporter().getReportContext();
 		if (reportContext != null)//FIXMEJIVE
 		{
+			
 			String tableUUID = (String) element.getParameterValue(HeaderToolbarElement.PARAMETER_TABLE_UUID);
 			String sortColumnName = (String) element.getParameterValue(HeaderToolbarElement.PARAMETER_SORT_COLUMN_NAME);
+
+			if (reportContext.getParameterValue(PARAM_GENERATED_TEMPLATE_PREFIX + tableUUID) != null) {
+				templateAlreadyLoaded = true;
+			} else {
+				reportContext.setParameterValue(PARAM_GENERATED_TEMPLATE_PREFIX + tableUUID, true);
+			}
+			
 			String sortColumnLabel = (String) element.getParameterValue(HeaderToolbarElement.PARAMETER_SORT_COLUMN_LABEL);
 			String sortColumnType = (String) element.getParameterValue(HeaderToolbarElement.PARAMETER_SORT_COLUMN_TYPE);
 			
-			String sortDatasetName = element.getPropertiesMap().getProperty(HeaderToolbarElement.PROPERTY_DATASET_RUN);
-
 			String popupId = (String) element.getParameterValue("popupId");
+			Integer columnIndex = (Integer) element.getParameterValue("columnIndex");
+			
 			
 			FilterTypesEnum filterType = FilterTypesEnum.getByName(element.getPropertiesMap().getProperty(HeaderToolbarElement.PROPERTY_FILTER_TYPE));
 			if (filterType == null)//FIXMEJIVE
@@ -155,6 +151,9 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 			}
 			
 			String filterPattern = element.getPropertiesMap().getProperty(HeaderToolbarElement.PROPERTY_FILTER_PATTERN);
+			if (filterPattern == null) {
+				filterPattern = "";
+			}
 
 			Locale locale = (Locale) reportContext.getParameterValue(JRParameter.REPORT_LOCALE);
 			
@@ -182,6 +181,8 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 			String appContextPath = (String)reportContext.getParameterValue("net.sf.jasperreports.web.app.context.path");//FIXMEJIVE define constant
 			
 			VelocityContext velocityContext = new VelocityContext();
+			velocityContext.put("templateAlreadyLoaded", templateAlreadyLoaded);
+
 			String webResourcesBasePath = JRPropertiesUtil.getInstance(context.getExporter().getJasperReportsContext()).getProperty("net.sf.jasperreports.web.resources.base.path");
 			if (webResourcesBasePath == null)
 			{
@@ -189,41 +190,24 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 			}
 			String imagesResourcePath = (appContextPath == null ? "" : appContextPath) + webResourcesBasePath;//FIXMEJIVE
 
+
 			velocityContext.put("jasperreports_tableHeaderToolbar_js", webResourcesBasePath + HeaderToolbarElementHtmlHandler.RESOURCE_HEADERTOOLBAR_JS);
+			velocityContext.put("jasperreports_tableHeaderToolbar_css", webResourcesBasePath + HeaderToolbarElementHtmlHandler.RESOURCE_HEADERTOOLBAR_CSS);
 			velocityContext.put("elementX", ((JRXhtmlExporter)context.getExporter()).toSizeUnit(element.getX()));
 			velocityContext.put("elementY", ((JRXhtmlExporter)context.getExporter()).toSizeUnit(element.getY()));
 			velocityContext.put("elementWidth", element.getWidth());
 			velocityContext.put("elementHeight", element.getHeight());
-			velocityContext.put("sortLinkClass", sortDatasetName);
 			velocityContext.put("transparentPixelSrc", imagesResourcePath + HeaderToolbarElementHtmlHandler.RESOURCE_TRANSPARENT_PIXEL);
 			
 			velocityContext.put("isFilterable", filterType != null);
-			velocityContext.put("filterDivId", "filter_" + sortDatasetName + "_" + sortColumnName);
+			velocityContext.put("filterDivId", "filter_" + sortColumnName);
 			velocityContext.put("filterReportUriParamName", ReportServlet.REQUEST_PARAMETER_REPORT_URI);
 			velocityContext.put("filterReportUriParamValue", reportContext.getParameterValue(ReportServlet.REQUEST_PARAMETER_REPORT_URI));
 			velocityContext.put("filterColumnName", sortColumnName);
 			velocityContext.put("filterColumnNameLabel", sortColumnLabel != null ? sortColumnLabel : "");
 			velocityContext.put("filterCloseDialogImageResource", imagesResourcePath + HeaderToolbarElementHtmlHandler.RESOURCE_IMAGE_CLOSE);
 			
-			// begin: the params that will generate the JSON post object for filtering
-			velocityContext.put("filterTableNameParam", FilterData.FILTER_TABLE_UUID);
-			velocityContext.put("filterTableNameValue", tableUUID);
-
-			velocityContext.put("filterFieldParamName", FilterData.FIELD_NAME);
-
-			velocityContext.put("filterTypeParamName", FilterData.FILTER_TYPE);
-			velocityContext.put("filterTypeParamNameValue", filterType.getName());
 			
-			velocityContext.put("filterPatternParamName", FilterData.FILTER_PATTERN);
-			velocityContext.put("filterPatternParamValue", filterPattern);
-			
-			velocityContext.put("filterTypeOperatorParamName", FilterData.FILTER_TYPE_OPERATOR);
-			velocityContext.put("filterTypeValuesMap", translatedOperators);
-
-			velocityContext.put("filterValueStartParamName", FilterData.FIELD_VALUE_START);
-			
-			velocityContext.put("filterValueEndParamName", FilterData.FIELD_VALUE_END);
-			// end
 			
 			velocityContext.put("actionBaseUrl", getActionBaseUrl(context));
 			velocityContext.put("actionBaseData", getActionBaseJsonData(context));
@@ -232,19 +216,22 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 			if (popupId != null) {
 				velocityContext.put("popupId", popupId);
 			}
-			SortData sortAscData = new SortData(tableUUID, sortColumnName, sortColumnType, HeaderToolbarElement.SORT_ORDER_ASC, sortDatasetName);
-			SortData sortDescData = new SortData(tableUUID, sortColumnName, sortColumnType, HeaderToolbarElement.SORT_ORDER_DESC, sortDatasetName);
+			if (columnIndex != null) {
+				setColumnHeaderData(sortColumnLabel, columnIndex, tableUUID, velocityContext, context.getExporter().getJasperReportsContext(), reportContext);
+			}
+			SortData sortAscData = new SortData(tableUUID, sortColumnName, sortColumnType, HeaderToolbarElement.SORT_ORDER_ASC);
+			SortData sortDescData = new SortData(tableUUID, sortColumnName, sortColumnType, HeaderToolbarElement.SORT_ORDER_DESC);
 	
-			String sortAscSrc = RESOURCE_SORT_DEFAULT_ASC;
-			String sortAscHoverSrc = RESOURCE_SORT_DEFAULT_ASC_HOVER;
-			String sortDescSrc = RESOURCE_SORT_DEFAULT_DESC;
-			String sortDescHoverSrc = RESOURCE_SORT_DEFAULT_DESC_HOVER;
-			String filterSrc = RESOURCE_FILTER_DISABLED;
-			String filterHoverSrc = "";
+			String sortAscActive = CSS_SORT_DEFAULT_ASC;
+			String sortAscHover = CSS_SORT_DEFAULT_ASC_HOVER;
+			String sortDescActive = CSS_SORT_DEFAULT_DESC;
+			String sortDescHover = CSS_SORT_DEFAULT_DESC_HOVER;
+			String filterActive = CSS_FILTER_DISABLED;
+			String filterHover = "";
 			
 			if (filterType != null) {
-				filterSrc = RESOURCE_FILTER_DEFAULT;
-				filterHoverSrc = RESOURCE_FILTER_DEFAULT_HOVER;
+				filterActive = CSS_FILTER_DEFAULT;
+				filterHover = CSS_FILTER_DEFAULT_HOVER;
 			}
 			// end:temp
 			
@@ -254,7 +241,7 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 				velocityContext.put("backgroundColor", JRColorUtil.getColorHexa(element.getBackcolor()));
 			}
 
-			String sortField = getCurrentSortField(context.getExporter().getJasperReportsContext(), reportContext, tableUUID, sortDatasetName, sortColumnName, sortColumnType);
+			String sortField = getCurrentSortField(context.getExporter().getJasperReportsContext(), reportContext, tableUUID, sortColumnName, sortColumnType);
 			if (sortField != null) 
 			{
 				String[] sortActionData = HeaderToolbarElementUtils.extractColumnInfo(sortField);
@@ -262,12 +249,12 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 				boolean isAscending = HeaderToolbarElement.SORT_ORDER_ASC.equals(sortActionData[2]);
 				if (isAscending) {
 					sortAscData.setSortOrder(HeaderToolbarElement.SORT_ORDER_NONE);
-					sortAscSrc = RESOURCE_SORT_ENABLED_ASC;
-					sortAscHoverSrc = RESOURCE_SORT_ENABLED_ASC_HOVER;
+					sortAscActive = CSS_SORT_ENABLED_ASC;
+					sortAscHover = CSS_SORT_ENABLED_ASC_HOVER;
 				} else {
 					sortDescData.setSortOrder(HeaderToolbarElement.SORT_ORDER_NONE);
-					sortDescSrc = RESOURCE_SORT_ENABLED_DESC;
-					sortDescHoverSrc = RESOURCE_SORT_ENABLED_DESC_HOVER;
+					sortDescActive = CSS_SORT_ENABLED_DESC;
+					sortDescHover = CSS_SORT_ENABLED_DESC_HOVER;
 				}
 			}
 			
@@ -275,8 +262,6 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 			String filterValueStart = "";
 			String filterValueEnd = "";
 			String filterTypeOperatorValue = "";
-			boolean isFiltered = false;
-			boolean enableFilterEndParameter = false;
 			List<DatasetFilter> fieldFilters = getExistingFiltersForField(context.getExporter().getJasperReportsContext(), reportContext, tableUUID, sortColumnName);
 
 			if (fieldFilters.size() > 0) {
@@ -288,46 +273,46 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 					filterValueEnd = ff.getFilterValueEnd();
 				}
 				filterTypeOperatorValue = ff.getFilterTypeOperator();
-				isFiltered = true;
-				if (filterTypeOperatorValue != null && filterTypeOperatorValue.toLowerCase().contains("between")) {
-					enableFilterEndParameter = true;
-				}
 				if (ff.getIsValid() != null && !ff.getIsValid()) {
-					filterSrc = RESOURCE_FILTER_WRONG;
-					filterHoverSrc = RESOURCE_FILTER_WRONG_HOVER;
+					filterActive = CSS_FILTER_WRONG;
+					filterHover = CSS_FILTER_WRONG_HOVER;
 				} else {
-					filterSrc = RESOURCE_FILTER_ENABLED;
-					filterHoverSrc = RESOURCE_FILTER_ENABLED_HOVER;
+					filterActive = CSS_FILTER_ENABLED;
+					filterHover = CSS_FILTER_ENABLED_HOVER;
 				}
 			}
-			
-			velocityContext.put("isFiltered", isFiltered);
 			
 			// params for clear filter
-			velocityContext.put("filterToRemoveParamName", FilterData.FIELD_NAME);
 			velocityContext.put("filterToRemoveParamvalue", sortColumnName);
 			
-			String filtersJsonString = JacksonUtil.getInstance(context.getExporter().getJasperReportsContext()).getEscapedJsonString(fieldFilters);
-			if (log.isDebugEnabled()) {
-				log.debug("filtersJsonString: " + filtersJsonString);
-			}
-			velocityContext.put("filtersJsonString", filtersJsonString);
-
-			velocityContext.put("filterValueStartParamValue", filterValueStart);
-			velocityContext.put("filterValueEndParamValue", filterValueEnd);
-			velocityContext.put("filterTypeOperatorParamValue", filterTypeOperatorValue);
-			velocityContext.put("enableFilterEndParameter", enableFilterEndParameter);
+			// begin: the params that will generate the JSON post object for filtering
+			FilterData filterData = new FilterData();
+			filterData.setUuid(tableUUID);
+			filterData.setFieldName(sortColumnName);
+			filterData.setFilterType(filterType.getName());
+			filterData.setFilterPattern(filterPattern);
+			filterData.setFieldValueStart(filterValueStart);
+			filterData.setFieldValueEnd(filterValueEnd);
+//			fd.setFilterTypeOperator(filterTypeOperatorValue);
+			
+			velocityContext.put("filterData", JacksonUtil.getInstance(context.getExporter().getJasperReportsContext()).getJsonString(filterData));
+			velocityContext.put("filterTypeValuesMap", translatedOperators);
+			velocityContext.put("filterTypeOperatorValue", filterTypeOperatorValue);
+			velocityContext.put("filterTableUuid", tableUUID);
+			// end
 			
 			// begin:temp
-			velocityContext.put("sortAscData", JacksonUtil.getInstance(context.getExporter().getJasperReportsContext()).getEscapedJsonString(sortAscData));
-			velocityContext.put("sortDescData", JacksonUtil.getInstance(context.getExporter().getJasperReportsContext()).getEscapedJsonString(sortDescData));
+//			velocityContext.put("sortAscData", JacksonUtil.getInstance(context.getExporter().getJasperReportsContext()).getEscapedJsonString(sortAscData));
+			velocityContext.put("sortAscData", JacksonUtil.getInstance(context.getExporter().getJasperReportsContext()).getJsonString(sortAscData));
+//			velocityContext.put("sortDescData", JacksonUtil.getInstance(context.getExporter().getJasperReportsContext()).getEscapedJsonString(sortDescData));
+			velocityContext.put("sortDescData", JacksonUtil.getInstance(context.getExporter().getJasperReportsContext()).getJsonString(sortDescData));
 			
-			velocityContext.put("sortAscSrc", imagesResourcePath + sortAscSrc);
-			velocityContext.put("sortAscHoverSrc", imagesResourcePath + sortAscHoverSrc);
-			velocityContext.put("sortDescSrc", imagesResourcePath + sortDescSrc);
-			velocityContext.put("sortDescHoverSrc", imagesResourcePath + sortDescHoverSrc);
-			velocityContext.put("filterSrc", imagesResourcePath + filterSrc);
-			velocityContext.put("filterHoverSrc", imagesResourcePath + filterHoverSrc);
+			velocityContext.put("sortAscActive", sortAscActive);
+			velocityContext.put("sortAscHover", sortAscHover);
+			velocityContext.put("sortDescActive", sortDescActive);
+			velocityContext.put("sortDescHover", sortDescHover);
+			velocityContext.put("filterActive", filterActive);
+			velocityContext.put("filterHover", filterHover);
 			// end: temp
 			
 			htmlFragment = VelocityUtil.processTemplate(HeaderToolbarElementHtmlHandler.SORT_ELEMENT_HTML_TEMPLATE, velocityContext);
@@ -348,30 +333,18 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 		actionParams.put(WebReportContext.REQUEST_PARAMETER_REPORT_CONTEXT_ID, reportContext.getId());
 		actionParams.put(ReportServlet.REQUEST_PARAMETER_RUN_REPORT, true);
 		
-		return JacksonUtil.getInstance(context.getExporter().getJasperReportsContext()).getEscapedJsonString(actionParams);
+//		return JacksonUtil.getInstance(context.getExporter().getJasperReportsContext()).getEscapedJsonString(actionParams);
+		return JacksonUtil.getInstance(context.getExporter().getJasperReportsContext()).getJsonString(actionParams);
 	}
 
 	private String getCurrentSortField(
 		JasperReportsContext jasperReportsContext,
 		ReportContext reportContext, 
 		String uuid, 
-		String sortDatasetName, 
 		String sortColumnName, 
 		String sortColumnType
 		) 
 	{
-//		String currentSortDataset = (String) reportContext.getParameterValue(
-//				HeaderToolbarElement.REQUEST_PARAMETER_DATASET_RUN);
-//		if (sortDatasetName == null || !sortDatasetName.equals(currentSortDataset))
-//		{
-//			// sorting is on a different dataset
-//			return null;
-//		}
-//		
-//		String currentTableSortFieldsParam = currentSortDataset + HeaderToolbarElement.SORT_FIELDS_PARAM_SUFFIX;
-//		@SuppressWarnings("unchecked")
-//		List<JRSortField> existingFields = (List<JRSortField>) reportContext.getParameterValue(currentTableSortFieldsParam);
-
 		JasperDesignCache cache = JasperDesignCache.getInstance(jasperReportsContext, reportContext);
 		SortAction action = new SortAction();
 		action.init(jasperReportsContext, reportContext);
@@ -481,6 +454,41 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 		}
 		
 		return result;		
+	}
+	
+	private void setColumnHeaderData(String sortColumnLabel, Integer columnIndex, String tableUuid, VelocityContext velocityContext, JasperReportsContext jasperReportsContext, ReportContext reportContext) {
+		FilterAction action = new FilterAction();
+		action.init(jasperReportsContext, reportContext);
+		CommandTarget target = action.getCommandTarget(UUID.fromString(tableUuid));
+		EditColumnHeaderData colHeaderData = new EditColumnHeaderData();
+		
+		if (target != null){
+			JRIdentifiable identifiable = target.getIdentifiable();
+			JRDesignComponentElement componentElement = identifiable instanceof JRDesignComponentElement ? (JRDesignComponentElement)identifiable : null;
+			StandardTable table = componentElement == null ? null : (StandardTable)componentElement.getComponent();
+			
+			List<BaseColumn> tableColumns = TableUtil.getAllColumns(table);
+			
+			if (columnIndex != null) {
+				StandardColumn column = (StandardColumn) tableColumns.get(columnIndex);
+				
+				JRDesignTextElement textElement = TableUtil.getColumnHeaderTextElement(column);
+				
+				if (textElement != null) {
+					colHeaderData.setHeadingName(sortColumnLabel);
+					colHeaderData.setColumnIndex(columnIndex);
+					colHeaderData.setTableUuid(tableUuid);
+					colHeaderData.setFontName(textElement.getFontName());
+					colHeaderData.setFontSize(textElement.getFontSize());
+					colHeaderData.setFontBold(textElement.isBold());
+					colHeaderData.setFontItalic(textElement.isItalic());
+					colHeaderData.setFontUnderline(textElement.isUnderline());
+					colHeaderData.setFontColor(JRColorUtil.getColorHexa(textElement.getForecolor()));
+					colHeaderData.setFontHAlign(textElement.getHorizontalAlignmentValue().getName());
+				}
+			}
+		}
+		velocityContext.put("colHeaderData", JacksonUtil.getInstance(jasperReportsContext).getJsonString(colHeaderData));
 	}
 
 }

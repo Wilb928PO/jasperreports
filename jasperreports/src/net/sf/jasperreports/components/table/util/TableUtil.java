@@ -36,10 +36,13 @@ import net.sf.jasperreports.components.table.BaseColumn;
 import net.sf.jasperreports.components.table.Cell;
 import net.sf.jasperreports.components.table.Column;
 import net.sf.jasperreports.components.table.ColumnGroup;
+import net.sf.jasperreports.components.table.StandardColumn;
 import net.sf.jasperreports.components.table.TableComponent;
+import net.sf.jasperreports.engine.JRChild;
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRDatasetRun;
 import net.sf.jasperreports.engine.JRGroup;
+import net.sf.jasperreports.engine.design.JRDesignTextElement;
 import net.sf.jasperreports.engine.design.JasperDesign;
 
 /**
@@ -293,6 +296,25 @@ public class TableUtil
 				}
 			}
 		}
+		return null;
+	}
+	
+	public static JRDesignTextElement getColumnHeaderTextElement(StandardColumn column) {
+		Cell header = column.getColumnHeader();
+		List<JRChild> detailElements = header == null ? null : header.getChildren();
+		
+		// only consider cells with a single text fields
+		if (detailElements == null || detailElements.size() != 1)
+		{
+			return null;
+		}
+
+		JRChild detailElement = detailElements.get(0);
+		if (detailElement instanceof JRDesignTextElement)
+		{
+			return (JRDesignTextElement) detailElement;
+		}
+
 		return null;
 	}
 }

@@ -2,14 +2,6 @@ package net.sf.jasperreports.components.sort.actions;
 
 public class FilterData {
 	
-	public static final String FILTER_TABLE_UUID = "uuid";
-	public static final String FIELD_NAME = "fieldName";
-	public static final String FIELD_VALUE_START = "fieldValueStart";
-	public static final String FIELD_VALUE_END = "fieldValueEnd";
-	public static final String FILTER_TYPE = "filterType";
-	public static final String FILTER_TYPE_OPERATOR = "filterTypeOperator";
-	public static final String FILTER_PATTERN = "filterPattern";
-	
 	private String uuid;
 	private String fieldName;
 	private String fieldValueStart;

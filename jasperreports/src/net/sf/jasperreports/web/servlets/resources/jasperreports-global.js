@@ -12,6 +12,7 @@ jQuery.noConflict();
 	var jr = {
 				global: {
 					scripts: {},
+					styles: {},
 					APPLICATION_CONTEXT_PATH: '',
 					JQUERY: {
 						CORE: '/jquery/js/jquery-1.7.1.min.js',
@@ -29,7 +30,8 @@ jQuery.noConflict();
 					},
 					eventSubscribers: {},
 					isFirstAjaxRequest: true,
-					reportContainerSelector: 'div.jrPage:first'		// FIXMEJIVE jrPage hardcoded in JRXHtmlExporter.java
+					dialogsContainerSelector: 'div.jrPage:first',		// FIXMEJIVE jrPage hardcoded in JRXHtmlExporter.java
+					reportContainerSelector: 'body'
 				}
 		},
 		jg = jr.global;
@@ -114,6 +116,21 @@ jQuery.noConflict();
 		}
 	};
 	
+	/** 
+	 * Dynamically loads a css file 
+	 */
+	jg.loadStyle = function (styleName, styleUrl) {
+		// prevent the style tag from being created more than once 
+		if (!jg.styles[styleName]) {
+			var styleElement = document.createElement('link');
+			styleElement.setAttribute('rel', 'stylesheet');
+			styleElement.setAttribute('type', 'text/css');
+			styleElement.setAttribute('href', styleUrl);
+			document.getElementsByTagName('head')[0].appendChild(styleElement);
+			jg.styles[styleName] = styleUrl;
+		}
+	};
+	
 	/**
 	 * NOT USED YET: Dynamically loads jQuery core and ui and then uses jQuery stuff
 	 */
@@ -132,6 +149,13 @@ jQuery.noConflict();
 			scripturi = jg.APPLICATION_CONTEXT_PATH + scripturi;
 		}
 		jg.loadScript(scriptname, scripturi, callbackFn);
+	};
+	
+	jg.appendStyleElementToDOM = function (styleName, styleUrl, isAbsoluteUrl) {
+		if (!isAbsoluteUrl) {
+			styleUrl = jg.APPLICATION_CONTEXT_PATH + styleUrl;
+		}
+		jg.loadStyle(styleName, styleUrl);
 	};
 	
 	jg.getEventByName = function (eventName) {
@@ -408,7 +432,8 @@ jQuery.noConflict();
 		
 
 		jg.getToolbarExecutionContext = function(startPoint, requestedUrl, params, callback, arrCallbackArgs, isJSON) {
-			var executionContextElement = jQuery(startPoint).closest('div.mainReportDiv');
+//			var executionContextElement = jQuery(startPoint).closest('div.mainReportDiv');
+			var executionContextElement = jQuery('div.mainReportDiv:first'); // FIXMEJIVE unpredictable when using embeded reports 
 			
 			if (executionContextElement && executionContextElement.size() > 0) {
 				return new jg.AjaxExecutionContext(
@@ -450,9 +475,10 @@ jQuery.noConflict();
     		return encodeURIComponent(str.replace(/(\n)|(\r)|(\t)|(\b)/g, '').replace(/\"/g, '\\\"'));
     	};
 		
-		jg.toJsonString = function(object) {
+		jg.toJsonString = function(object, boolEscapeStrings) {
     		var o2s = Object.prototype.toString.call(object),
-    			result = '';
+    			result = '',
+    			boolEscapeStrings = boolEscapeStrings || false;
     		
     		switch (o2s) {
 				case '[object Array]':
@@ -484,7 +510,7 @@ jQuery.noConflict();
 					break;
 
 				case '[object String]':
-					result += "\"" + jg.escapeString(object) + "\"";
+					result += "\"" + (boolEscapeStrings ? jg.escapeString(object) : object) + "\"";
 					break;
 
 				case '[object Null]':
@@ -517,7 +543,7 @@ jQuery.noConflict();
     						});
     		
     		// hide all popup divs
-    		jQuery('.popupdiv').hide();
+//    		jQuery('.popupdiv').hide();
     	};
     	
 		/**
