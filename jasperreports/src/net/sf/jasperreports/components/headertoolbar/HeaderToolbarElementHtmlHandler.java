@@ -34,6 +34,7 @@ import java.util.UUID;
 
 import net.sf.jasperreports.components.BaseElementHtmlHandler;
 import net.sf.jasperreports.components.headertoolbar.actions.EditColumnHeaderData;
+import net.sf.jasperreports.components.headertoolbar.actions.EditColumnValueData;
 import net.sf.jasperreports.components.headertoolbar.actions.FilterAction;
 import net.sf.jasperreports.components.headertoolbar.actions.SortAction;
 import net.sf.jasperreports.components.sort.FieldFilter;
@@ -63,6 +64,7 @@ import net.sf.jasperreports.engine.design.JRDesignComponentElement;
 import net.sf.jasperreports.engine.design.JRDesignDataset;
 import net.sf.jasperreports.engine.design.JRDesignDatasetRun;
 import net.sf.jasperreports.engine.design.JRDesignTextElement;
+import net.sf.jasperreports.engine.design.JRDesignTextField;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.export.JRHtmlExporterContext;
 import net.sf.jasperreports.engine.export.JRXhtmlExporter;
@@ -166,21 +168,31 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 			}
 			
 			Map<String, String> translatedOperators = null;
+			Map<String, String> valuesFormatPatternMap = new LinkedHashMap<String, String>();
+			String formatPatternLabel = "";
 			switch (filterType) {
 				case NUMERIC:
 					translatedOperators = getTranslatedOperators(FilterTypeNumericOperatorsEnum.class.getName(), FilterTypeNumericOperatorsEnum.values(), locale);
+					valuesFormatPatternMap.put("###,###.###", "123,456.789");
+					formatPatternLabel = "Number pattern:";
 					break;
 				case DATE:
 					translatedOperators = getTranslatedOperators(FilterTypeDateOperatorsEnum.class.getName(), FilterTypeDateOperatorsEnum.values(), locale);
+					valuesFormatPatternMap.put("dd.MM.yy", "30.01.12");
+					valuesFormatPatternMap.put("yyyy-MM-dd", "2012-01-30");
+					formatPatternLabel = "Date pattern:";
 					break;
 				case TEXT:
 					translatedOperators = getTranslatedOperators(FilterTypeTextOperatorsEnum.class.getName(), FilterTypeTextOperatorsEnum.values(), locale);
+					formatPatternLabel = "!?Text pattern!?:";
 					break;
 			}
 			
 			String appContextPath = (String)reportContext.getParameterValue("net.sf.jasperreports.web.app.context.path");//FIXMEJIVE define constant
 			
 			VelocityContext velocityContext = new VelocityContext();
+			velocityContext.put("valuesFormatPatternMap", valuesFormatPatternMap);
+			velocityContext.put("formatPatternLabel", formatPatternLabel);
 			velocityContext.put("templateAlreadyLoaded", templateAlreadyLoaded);
 
 			String webResourcesBasePath = JRPropertiesUtil.getInstance(context.getJasperReportsContext()).getProperty("net.sf.jasperreports.web.resources.base.path");
@@ -217,7 +229,9 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 				velocityContext.put("popupId", popupId);
 			}
 			if (columnIndex != null) {
+				velocityContext.put("columnIndex", columnIndex);
 				setColumnHeaderData(sortColumnLabel, columnIndex, tableUUID, velocityContext, context.getJasperReportsContext(), reportContext);
+				setColumnValueData(sortColumnLabel, columnIndex, tableUUID, velocityContext, context.getJasperReportsContext(), reportContext);
 			}
 			SortData sortAscData = new SortData(tableUUID, sortColumnName, sortColumnType, HeaderToolbarElement.SORT_ORDER_ASC);
 			SortData sortDescData = new SortData(tableUUID, sortColumnName, sortColumnType, HeaderToolbarElement.SORT_ORDER_DESC);
@@ -489,6 +503,43 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 			}
 		}
 		velocityContext.put("colHeaderData", JacksonUtil.getInstance(jasperReportsContext).getJsonString(colHeaderData));
+	}
+
+	private void setColumnValueData(String sortColumnLabel, Integer columnIndex, String tableUuid, VelocityContext velocityContext, JasperReportsContext jasperReportsContext, ReportContext reportContext) {
+		FilterAction action = new FilterAction();
+		action.init(jasperReportsContext, reportContext);
+		CommandTarget target = action.getCommandTarget(UUID.fromString(tableUuid));
+		EditColumnValueData colValueData = new EditColumnValueData();
+		
+		if (target != null){
+			JRIdentifiable identifiable = target.getIdentifiable();
+			JRDesignComponentElement componentElement = identifiable instanceof JRDesignComponentElement ? (JRDesignComponentElement)identifiable : null;
+			StandardTable table = componentElement == null ? null : (StandardTable)componentElement.getComponent();
+			
+			List<BaseColumn> tableColumns = TableUtil.getAllColumns(table);
+			
+			if (columnIndex != null) {
+				StandardColumn column = (StandardColumn) tableColumns.get(columnIndex);
+				
+				JRDesignTextField textElement = (JRDesignTextField)TableUtil.getColumnValueTextElement(column);
+				
+				if (textElement != null) {
+					colValueData.setHeadingName(sortColumnLabel);
+					colValueData.setColumnIndex(columnIndex);
+					colValueData.setTableUuid(tableUuid);
+					colValueData.setFontName(textElement.getFontName());
+					colValueData.setFontSize(textElement.getFontSize());
+					colValueData.setFontBold(textElement.isBold());
+					colValueData.setFontItalic(textElement.isItalic());
+					colValueData.setFontUnderline(textElement.isUnderline());
+					colValueData.setFontColor(JRColorUtil.getColorHexa(textElement.getForecolor()));
+					colValueData.setFontHAlign(textElement.getHorizontalAlignmentValue().getName());
+					
+					velocityContext.put("formatPatternValue", textElement.getPattern());
+				}
+			}
+		}
+		velocityContext.put("colValueData", JacksonUtil.getInstance(jasperReportsContext).getJsonString(colValueData));
 	}
 
 }

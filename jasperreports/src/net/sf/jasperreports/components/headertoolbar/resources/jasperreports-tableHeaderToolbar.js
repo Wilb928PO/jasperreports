@@ -144,7 +144,8 @@
 		            	
 		            	headerToolbarMask.data('columnHeaderClass', headerNameSel);
 		            	headerToolbarMask.data('tableFrameUuid', parentFrameUuid);
-		            	headerToolbarMask.data('tableFrameIndex', jQuery('.jrtableframe[data-uuid=' + parentFrameUuid + ']').index(parentFrame));
+//		            	headerToolbarMask.data('tableFrameIndex', jQuery('.jrtableframe[data-uuid=' + parentFrameUuid + ']').index(parentFrame));
+		            	headerToolbarMask.data('tableFrameIndex', tableFrameIndex);
 		            	
 		            	if (firstElem && lastElem) {
 	            			headerToolbar.css({
@@ -233,7 +234,7 @@
 				                	    			actionBaseUrl,
 				                	    			params, 
     	    										js.highlightColumn, 
-    	    										[dragObj.draggedColumnHeaderClass, dragObj.dragTableFrameUuid, dragObj.whichTableFrameIndex, toolbarId], 
+    	    										[dragObj.moveColumnActionData.moveColumnData.columnToMoveNewIndex, dragObj.whichTableFrameIndex, toolbarId], 
     	    										true);
 			            			} else {
 			            				// move mask back to its place
@@ -269,7 +270,7 @@
 			                	    	actionData = {	actionName: 'resize',
 			                	    					resizeColumnData: {
 			                	    						uuid: uuid,
-			                	    						columnIndex: jQuery('.columnHeader').index(jQuery(headerNameSel+':first')),
+			                	    						columnIndex: self.attr('data-columnIndex'),
 			                	    						direction: direction,
 			                	    						width: self.width()
 			                	    					}
@@ -301,12 +302,12 @@
 		
 	};
 	
-	js.highlightColumn = function (columnHeaderClass, tableFrameUuid, tableFrameIndex, toolbarId) {
+	js.highlightColumn = function (columnIndex, tableFrameIndex, toolbarId) {
 		var jvt = global.jasperreports.reportviewertoolbar;
 		jvt.performAction(toolbarId);
 		
-		var tableFrame = jQuery('.jrtableframe[data-uuid=' + tableFrameUuid + ']').get(tableFrameIndex);
-		jQuery(columnHeaderClass, tableFrame).trigger('click').trigger('highlight', [tableFrameIndex]);
+		var tableFrame = jQuery('.jrtableframe').get(tableFrameIndex);
+		jQuery('.columnHeader:eq(' + columnIndex + ')', tableFrame).trigger('click').trigger('highlight', [tableFrameIndex]);
 	};
 	
 	js.initTemplate = function (templateId) {
@@ -434,7 +435,7 @@
 			var self = jQuery(this),
 				parentForm = self.parent(),
 				parentPopupDiv = self.closest('.popupdiv'),
-				actionBaseUrl = parentForm.attr("action"),
+				actionBaseUrl = parentPopupDiv.attr('data-actionBaseUrl'),
 				params = jQuery.parseJSON(parentPopupDiv.attr('data-actionBaseData')),
 				parentFilterDiv = self.closest('.filterdiv'),
 				actionData = jQuery.parseJSON(parentFilterDiv.attr('data-filterData')),
@@ -462,13 +463,18 @@
 		
 		// show the second filter value for options containing 'between'
 		jQuery('.filterOperatorTypeValueSelector', filterDiv).bind('change', function (event) {
-			var optionValue = jQuery(this).val();
+			var self = jQuery(this),
+				optionValue = self.val(),
+				parentFilterDiv = self.parent();
+			
 			if (optionValue && optionValue.toLowerCase().indexOf('between') != -1) {
-				jQuery('.fieldValueEnd', filterDiv)
+				parentFilterDiv.addClass('filterDivFormExpanded');
+				jQuery('.fieldValueEnd', parentFilterDiv)
 					.removeClass('hidden')
 					.removeAttr('disabled');
 			} else {
-				jQuery('.fieldValueEnd', filterDiv)
+				parentFilterDiv.removeClass('filterDivFormExpanded');
+				jQuery('.fieldValueEnd', parentFilterDiv)
 					.addClass('hidden')
 					.attr('disabled', true);
 			}
@@ -478,7 +484,7 @@
 			var self = jQuery(this),
 				parentForm = self.parent(),
 				parentPopupDiv = self.closest('.popupdiv'),
-				actionBaseUrl = parentForm.attr("action"),
+				actionBaseUrl = parentPopupDiv.attr('data-actionBaseUrl'),
 				params = jQuery.parseJSON(parentPopupDiv.attr('data-actionBaseData')),
 				parentFilterDiv = self.closest('.filterdiv'),
 				actionData = jQuery.parseJSON(parentFilterDiv.attr('data-clearData')),
@@ -507,7 +513,7 @@
 		/**
 		 * Format dialog
 		 */
-        jQuery('.formatDialogButton', popupDiv).bind('click', function(event) {
+        jQuery('.formatDialogBtn', popupDiv).bind('click', function(event) {
         	event.stopPropagation();
         	var self = jQuery(this),
         		dialog = self.closest('.popupdiv').find('.formatDialog');
@@ -527,7 +533,22 @@
 			dialog.show();
 		});
         
-        jQuery('.formatDialog .buttonOK').bind('click', function() {
+        jQuery('.formatTab', popupDiv).bind('click', function() {
+        	var self = jQuery(this),
+        		parentFDialog = self.closest('.formatDialog');
+        	
+        	if (!self.is('.formatTabSelected')) {
+        		var selectedTab = jQuery('.formatTabSelected', parentFDialog);
+        		
+        		selectedTab.removeClass('formatTabSelected');
+        		jQuery('.' + selectedTab.attr('data-tabBody'), parentFDialog).removeClass('selectedTabBody');
+        		
+        		self.addClass('formatTabSelected');
+        		jQuery('.' + self.attr('data-tabBody'), parentFDialog).addClass('selectedTabBody');
+        	}
+        });
+        
+        jQuery('.headingsTabContent .buttonOK').bind('click', function() {
         	var self = jQuery(this),
         		parentTab = self.closest('.headingsTabContent'),
         		parentPopupDiv = self.closest('.popupdiv'),
@@ -554,6 +575,35 @@
 						jvt.performAction, 
 						[toolbarId], 
 						true);
+        });
+
+        jQuery('.valuesTabContent .buttonOK').bind('click', function() {
+        	var self = jQuery(this),
+        	parentTab = self.closest('.valuesTabContent'),
+        	parentPopupDiv = self.closest('.popupdiv'),
+        	actionBaseUrl = parentPopupDiv.attr('data-actionBaseUrl'),
+        	params = jQuery.parseJSON(parentPopupDiv.attr('data-actionBaseData')),
+        	actionData = {actionName: 'editColumnValues'},
+        	editColumnValueData = {};
+        	
+        	jQuery('.postable', parentTab).each(function(){
+        		// prevent disabled inputs to get posted
+        		if(!jQuery(this).is(':disabled')) {
+        			editColumnValueData[this.name] = this.value;
+        		}
+        	});
+        	
+        	actionData['editColumnValueData'] = editColumnValueData;
+        	
+        	params[jvt.PARAM_ACTION] = gm.toJsonString(actionData);
+        	
+        	var toolbarId = self.closest('.mainReportDiv').find('.toolbarDiv').attr('id');
+        	jvt.runReport(jQuery('div.columnHeader:first'), 
+        			actionBaseUrl, 
+        			params, 
+        			jvt.performAction, 
+        			[toolbarId], 
+        			true);
         });
 	};
 	

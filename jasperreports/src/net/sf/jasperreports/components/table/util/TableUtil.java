@@ -41,7 +41,10 @@ import net.sf.jasperreports.components.table.TableComponent;
 import net.sf.jasperreports.engine.JRChild;
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRDatasetRun;
+import net.sf.jasperreports.engine.JRExpression;
+import net.sf.jasperreports.engine.JRExpressionChunk;
 import net.sf.jasperreports.engine.JRGroup;
+import net.sf.jasperreports.engine.JRTextField;
 import net.sf.jasperreports.engine.design.JRDesignTextElement;
 import net.sf.jasperreports.engine.design.JasperDesign;
 
@@ -316,5 +319,36 @@ public class TableUtil
 		}
 
 		return null;
+	}
+
+	public static JRTextField getColumnValueTextElement(StandardColumn column) {
+		Cell detailCell = column.getDetailCell();
+		List<JRChild> detailElements = detailCell == null ? null : detailCell.getChildren();
+		
+		// only consider cells with a single text fields
+		if (detailElements == null || detailElements.size() != 1)
+		{
+			return null;
+		}
+		
+		JRChild detailElement = detailElements.get(0);
+		if (!(detailElement instanceof JRTextField))
+		{
+			return null;
+		}
+		
+		// see if the text field expression is $F{..} of $V{..}
+		JRTextField text = (JRTextField) detailElement;
+		JRExpression textExpression = text.getExpression();
+		JRExpressionChunk[] chunks = textExpression == null ? null : textExpression.getChunks();
+		if (chunks == null || chunks.length != 1
+				|| (chunks[0].getType() != JRExpressionChunk.TYPE_FIELD
+				&& chunks[0].getType() != JRExpressionChunk.TYPE_VARIABLE))
+		{
+			return null;
+		}
+		
+		// success
+		return text;
 	}
 }
