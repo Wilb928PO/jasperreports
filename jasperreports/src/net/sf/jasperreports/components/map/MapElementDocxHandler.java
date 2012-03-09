@@ -54,7 +54,7 @@ public class MapElementDocxHandler implements GenericElementDocxHandler
 		try
 		{
 			JRDocxExporter exporter = (JRDocxExporter)exporterContext.getExporter();
-			exporter.exportImage(exporterContext.getTableHelper(), getImage(exporterContext.getExporter().getJasperReportsContext(), element), gridCell);
+			exporter.exportImage(exporterContext.getTableHelper(), getImage(exporterContext.getJasperReportsContext(), element), gridCell);
 		}
 		catch (Exception e)
 		{

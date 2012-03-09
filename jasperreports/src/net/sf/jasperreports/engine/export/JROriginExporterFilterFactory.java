@@ -40,7 +40,7 @@ public class JROriginExporterFilterFactory implements ExporterFilterFactory
 				+ JROriginExporterFilter.PROPERTY_EXCLUDE_ORIGIN_PREFIX;
 		return 
 			JROriginExporterFilter.getFilter(
-				exporterContext.getExporter().getJasperReportsContext(),
+				exporterContext.getJasperReportsContext(),
 				exporterContext.getExportedReport().getPropertiesMap(), 
 				originFilterPrefix
 				);

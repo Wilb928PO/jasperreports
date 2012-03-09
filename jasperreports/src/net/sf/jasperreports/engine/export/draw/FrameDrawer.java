@@ -118,7 +118,7 @@ public class FrameDrawer extends ElementDrawer<JRPrintFrame>
 		AwtTextRenderer textRenderer
 		)
 	{
-		this(exporterContext.getExporter().getJasperReportsContext(), filter, textRenderer);
+		this(exporterContext.getJasperReportsContext(), filter, textRenderer);
 
 		this.exporterContext = exporterContext;
 	}

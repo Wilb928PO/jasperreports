@@ -56,7 +56,7 @@ public class MapElementXlsxHandler implements GenericElementXlsxHandler
 		try
 		{
 			JRXlsxExporter exporter = (JRXlsxExporter)exporterContext.getExporter();
-			exporter.exportImage(getImage(exporterContext.getExporter().getJasperReportsContext(), element), gridCell, colIndex, rowIndex, 0, 0, null);
+			exporter.exportImage(getImage(exporterContext.getJasperReportsContext(), element), gridCell, colIndex, rowIndex, 0, 0, null);
 		}
 		catch (Exception e)
 		{

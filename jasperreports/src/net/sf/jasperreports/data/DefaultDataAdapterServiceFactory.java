@@ -60,7 +60,6 @@ import net.sf.jasperreports.data.xml.XmlDataAdapter;
 import net.sf.jasperreports.data.xml.XmlDataAdapterService;
 import net.sf.jasperreports.data.xmla.XmlaDataAdapter;
 import net.sf.jasperreports.data.xmla.XmlaDataAdapterService;
-import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JasperReportsContext;
 
 
@@ -165,14 +164,6 @@ public class DefaultDataAdapterServiceFactory implements DataAdapterServiceFacto
 		}
 		
 		return dataAdapterService;
-	}
-	
-	/**
-	 * @deprecated Replaced by {@link #getDataAdapterService(JasperReportsContext, DataAdapter)}.
-	 */
-	public DataAdapterService getDataAdapterService(DataAdapter dataAdapter)
-	{
-		return getDataAdapterService(DefaultJasperReportsContext.getInstance(), dataAdapter);
 	}
   
 }

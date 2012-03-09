@@ -183,7 +183,7 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 			VelocityContext velocityContext = new VelocityContext();
 			velocityContext.put("templateAlreadyLoaded", templateAlreadyLoaded);
 
-			String webResourcesBasePath = JRPropertiesUtil.getInstance(context.getExporter().getJasperReportsContext()).getProperty("net.sf.jasperreports.web.resources.base.path");
+			String webResourcesBasePath = JRPropertiesUtil.getInstance(context.getJasperReportsContext()).getProperty("net.sf.jasperreports.web.resources.base.path");
 			if (webResourcesBasePath == null)
 			{
 				webResourcesBasePath = ResourceServlet.DEFAULT_PATH + "?" + ResourceServlet.RESOURCE_URI + "=";
@@ -217,7 +217,7 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 				velocityContext.put("popupId", popupId);
 			}
 			if (columnIndex != null) {
-				setColumnHeaderData(sortColumnLabel, columnIndex, tableUUID, velocityContext, context.getExporter().getJasperReportsContext(), reportContext);
+				setColumnHeaderData(sortColumnLabel, columnIndex, tableUUID, velocityContext, context.getJasperReportsContext(), reportContext);
 			}
 			SortData sortAscData = new SortData(tableUUID, sortColumnName, sortColumnType, HeaderToolbarElement.SORT_ORDER_ASC);
 			SortData sortDescData = new SortData(tableUUID, sortColumnName, sortColumnType, HeaderToolbarElement.SORT_ORDER_DESC);
@@ -241,7 +241,7 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 				velocityContext.put("backgroundColor", JRColorUtil.getColorHexa(element.getBackcolor()));
 			}
 
-			String sortField = getCurrentSortField(context.getExporter().getJasperReportsContext(), reportContext, tableUUID, sortColumnName, sortColumnType);
+			String sortField = getCurrentSortField(context.getJasperReportsContext(), reportContext, tableUUID, sortColumnName, sortColumnType);
 			if (sortField != null) 
 			{
 				String[] sortActionData = HeaderToolbarElementUtils.extractColumnInfo(sortField);
@@ -262,7 +262,7 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 			String filterValueStart = "";
 			String filterValueEnd = "";
 			String filterTypeOperatorValue = "";
-			List<DatasetFilter> fieldFilters = getExistingFiltersForField(context.getExporter().getJasperReportsContext(), reportContext, tableUUID, sortColumnName);
+			List<DatasetFilter> fieldFilters = getExistingFiltersForField(context.getJasperReportsContext(), reportContext, tableUUID, sortColumnName);
 
 			if (fieldFilters.size() > 0) {
 				FieldFilter ff = (FieldFilter)fieldFilters.get(0);
@@ -295,7 +295,7 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 			filterData.setFieldValueEnd(filterValueEnd);
 //			fd.setFilterTypeOperator(filterTypeOperatorValue);
 			
-			velocityContext.put("filterData", JacksonUtil.getInstance(context.getExporter().getJasperReportsContext()).getJsonString(filterData));
+			velocityContext.put("filterData", JacksonUtil.getInstance(context.getJasperReportsContext()).getJsonString(filterData));
 			velocityContext.put("filterTypeValuesMap", translatedOperators);
 			velocityContext.put("filterTypeOperatorValue", filterTypeOperatorValue);
 			velocityContext.put("filterTableUuid", tableUUID);
@@ -303,9 +303,9 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 			
 			// begin:temp
 //			velocityContext.put("sortAscData", JacksonUtil.getInstance(context.getExporter().getJasperReportsContext()).getEscapedJsonString(sortAscData));
-			velocityContext.put("sortAscData", JacksonUtil.getInstance(context.getExporter().getJasperReportsContext()).getJsonString(sortAscData));
-//			velocityContext.put("sortDescData", JacksonUtil.getInstance(context.getExporter().getJasperReportsContext()).getEscapedJsonString(sortDescData));
-			velocityContext.put("sortDescData", JacksonUtil.getInstance(context.getExporter().getJasperReportsContext()).getJsonString(sortDescData));
+			velocityContext.put("sortAscData", JacksonUtil.getInstance(context.getJasperReportsContext()).getJsonString(sortAscData));
+//			velocityContext.put("sortDescData", JacksonUtil.getInstance(context.getJasperReportsContext()).getEscapedJsonString(sortDescData));
+			velocityContext.put("sortDescData", JacksonUtil.getInstance(context.getJasperReportsContext()).getJsonString(sortDescData));
 			
 			velocityContext.put("sortAscActive", sortAscActive);
 			velocityContext.put("sortAscHover", sortAscHover);
@@ -333,8 +333,8 @@ public class HeaderToolbarElementHtmlHandler extends BaseElementHtmlHandler
 		actionParams.put(WebReportContext.REQUEST_PARAMETER_REPORT_CONTEXT_ID, reportContext.getId());
 		actionParams.put(ReportServlet.REQUEST_PARAMETER_RUN_REPORT, true);
 		
-//		return JacksonUtil.getInstance(context.getExporter().getJasperReportsContext()).getEscapedJsonString(actionParams);
-		return JacksonUtil.getInstance(context.getExporter().getJasperReportsContext()).getJsonString(actionParams);
+//		return JacksonUtil.getInstance(context.getJasperReportsContext()).getEscapedJsonString(actionParams);
+		return JacksonUtil.getInstance(context.getJasperReportsContext()).getJsonString(actionParams);
 	}
 
 	private String getCurrentSortField(

@@ -68,7 +68,7 @@ public class MapElementHtmlHandler implements GenericElementHtmlHandler
 		ReportContext reportContext = context.getExporter().getReportContext();
 		if (reportContext != null)
 		{
-			String webResourcesBasePath = JRPropertiesUtil.getInstance(context.getExporter().getJasperReportsContext()).getProperty("net.sf.jasperreports.web.resources.base.path");
+			String webResourcesBasePath = JRPropertiesUtil.getInstance(context.getJasperReportsContext()).getProperty("net.sf.jasperreports.web.resources.base.path");
 			if (webResourcesBasePath == null)
 			{
 				webResourcesBasePath = ResourceServlet.DEFAULT_PATH + "?" + ResourceServlet.RESOURCE_URI + "=";

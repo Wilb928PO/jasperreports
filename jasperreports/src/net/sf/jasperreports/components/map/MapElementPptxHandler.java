@@ -52,7 +52,7 @@ public class MapElementPptxHandler implements GenericElementPptxHandler
 		try
 		{
 			JRPptxExporter exporter = (JRPptxExporter)exporterContext.getExporter();
-			exporter.exportImage(getImage(exporterContext.getExporter().getJasperReportsContext(), element));
+			exporter.exportImage(getImage(exporterContext.getJasperReportsContext(), element));
 		}
 		catch (Exception e)
 		{

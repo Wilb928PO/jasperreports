@@ -88,12 +88,6 @@ public interface JRExporter
 	 */
 	public Map<JRExporterParameter, Object> getParameters();
 
-
-	/**
-	 *
-	 */
-	public JasperReportsContext getJasperReportsContext();
-
 	
 	/**
 	 *

@@ -73,7 +73,7 @@ public class FlashUtils
 	public static String getAllowScriptAccess(
 			JRExporterContext context, JRGenericPrintElement element)
 	{
-		return JRPropertiesUtil.getInstance(context.getExporter().getJasperReportsContext()).getProperty(FlashPrintElement.PROPERTY_ALLOW_SCRIPT_ACCESS, 
+		return JRPropertiesUtil.getInstance(context.getJasperReportsContext()).getProperty(FlashPrintElement.PROPERTY_ALLOW_SCRIPT_ACCESS, 
 				element, context.getExportedReport());
 	}
 }

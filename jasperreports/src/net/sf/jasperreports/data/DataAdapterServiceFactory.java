@@ -37,11 +37,5 @@ public interface DataAdapterServiceFactory
 	 *
 	 */
 	public DataAdapterService getDataAdapterService(JasperReportsContext jasperReportsContext, DataAdapter dataAdapter);
-  
-
-	/**
-	 * @deprecated Replaced by {@link #getDataAdapterService(JasperReportsContext, DataAdapter)}.
-	 */
-	public DataAdapterService getDataAdapterService(DataAdapter dataAdapter);
 
 }

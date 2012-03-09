@@ -59,7 +59,7 @@ public class MapElementGraphics2DHandler implements GenericElementGraphics2DHand
 			
 			imageDrawer.draw(
 					grx,
-					MapElementImageProvider.getImage(exporterContext.getExporter().getJasperReportsContext(), element), 
+					MapElementImageProvider.getImage(exporterContext.getJasperReportsContext(), element), 
 					offset.getX(), 
 					offset.getY()
 					);

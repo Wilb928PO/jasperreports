@@ -99,6 +99,11 @@ public abstract class JRAbstractExporter implements JRExporter
 			return JRAbstractExporter.this;
 		}
 
+		public JasperReportsContext getJasperReportsContext()
+		{
+			return jasperReportsContext;
+		}
+		
 		public JasperPrint getExportedReport()
 		{
 			return jasperPrint;
