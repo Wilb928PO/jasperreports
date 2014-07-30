@@ -31,8 +31,6 @@
 package net.sf.jasperreports.engine;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 
@@ -40,131 +38,29 @@ import java.util.List;
  * @author Teodor Danciu (teodord@users.sourceforge.net)
  * @version $Id: JasperPrint.java 6841 2014-01-28 14:51:00Z teodord $
  */
-public class PrintBook implements Serializable, JRPropertiesHolder
+public interface PrintBook extends Serializable, JRPropertiesHolder
 {
-
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
-
-	/**
-	 *
-	 */
-	private String name;
-
-	//FIXME unsynchronize on serialization?
-	private List<JasperPrint> jasperPrintList = Collections.synchronizedList(new ArrayList<JasperPrint>());
-
-	private JRPropertiesMap propertiesMap;
-	
-
-	/**
-	 * Creates a new empty book. 
-	 */
-	public PrintBook()
-	{
-		propertiesMap = new JRPropertiesMap();
-	}
-
 	/**
 	 * @return Returns the name of the book
 	 */
-	public String getName()
-	{
-		return name;
-	}
+	public String getName();
 		
-	/**
-	 * Sets the name of the book.
-	 * 
-	 * @param name name of the book
-	 */
-	public void setName(String name)
-	{
-		this.name = name;
-	}
-
-	public boolean hasProperties()
-	{
-		return propertiesMap != null && propertiesMap.hasProperties();
-	}
+	public boolean hasProperties();
 	
 	/**
 	 * 
 	 */
-	public JRPropertiesMap getPropertiesMap()
-	{
-		return propertiesMap;
-	}
+	public JRPropertiesMap getPropertiesMap();
 
-	public JRPropertiesHolder getParentProperties()
-	{
-		return null;
-	}
+	public JRPropertiesHolder getParentProperties();
 	
 	/**
 	 *
 	 */
-	public String[] getPropertyNames()
-	{
-		return propertiesMap.getPropertyNames();
-	}
-
-	/**
-	 *
-	 */
-	public String getProperty(String propName)
-	{
-		return propertiesMap.getProperty(propName);
-	}
-
-	/**
-	 *
-	 */
-	public void setProperty(String propName, String value)
-	{
-		propertiesMap.setProperty(propName, value);
-	}
-
-	/**
-	 *
-	 */
-	public void removeProperty(String propName)
-	{
-		propertiesMap.removeProperty(propName);
-	}
+	public String[] getPropertyNames();
 
 	/**
 	 * Returns a list of all JasperPrint objects the filled book.
 	 */
-	public List<JasperPrint> getJasperPrintList()
-	{
-		return jasperPrintList;
-	}
-		
-	/**
-	 * Adds a new JasperPrint to the book.
-	 */
-	public synchronized void addJasperPrint(JasperPrint page)
-	{
-		jasperPrintList.add(page);
-	}
-
-	/**
-	 * Adds a new JasperPrint to the book, placing it at the specified index.
-	 */
-	public synchronized void addJasperPrint(int index, JasperPrint page)
-	{
-		jasperPrintList.add(index, page);
-	}
-
-	/**
-	 * Removes a JasperPrint from the book.
-	 */
-	public synchronized JasperPrint removeJasperPrint(int index)
-	{
-		return jasperPrintList.remove(index);
-	}
-
+	public List<JasperPrint> getJasperPrintList();
 }
