@@ -275,7 +275,7 @@ import net.sf.jasperreports.engine.type.WhenResourceMissingTypeEnum;
  * @author Teodor Danciu (teodord@users.sourceforge.net)
  * @version $Id$
  */
-public interface JRReport extends Report, JRDefaultStyleProvider, JRPropertiesHolder, JRIdentifiable
+public interface JRReport extends JRDefaultStyleProvider, JRPropertiesHolder, JRIdentifiable
 {
 
 
