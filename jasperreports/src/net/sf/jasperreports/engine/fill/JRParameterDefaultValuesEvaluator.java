@@ -33,7 +33,6 @@ import net.sf.jasperreports.engine.JRGroup;
 import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.JasperReportsContext;
-import net.sf.jasperreports.engine.Report;
 import net.sf.jasperreports.engine.util.LocalJasperReportsContext;
 
 
@@ -56,19 +55,6 @@ public final class JRParameterDefaultValuesEvaluator
 	 * @throws JRException
 	 */
 	public static Map<String,Object> evaluateParameterDefaultValues(JasperReport report, Map<String,Object> initialParameters) throws JRException
-	{
-		return evaluateParameterDefaultValues(DefaultJasperReportsContext.getInstance(), report, initialParameters);
-	}
-
-	/**
-	 * Evaluates the default values for the parameters of a report.
-	 * 
-	 * @param report the report
-	 * @param initialParameters initial parameter value map
-	 * @return a map containing parameter values indexed by parameter names
-	 * @throws JRException
-	 */
-	public static Map<String,Object> evaluateParameterDefaultValues(Report report, Map<String,Object> initialParameters) throws JRException
 	{
 		return evaluateParameterDefaultValues(DefaultJasperReportsContext.getInstance(), report, initialParameters);
 	}
@@ -122,20 +108,6 @@ public final class JRParameterDefaultValuesEvaluator
 			fillDataset.disposeParameterContributors();
 			JRResourcesFillUtil.revertResourcesFillContext(resourcesContext);
 		}
-	}
-
-	/**
-	 * Evaluates the default values for the parameters of a report.
-	 * 
-	 * @param report the report
-	 * @param initialParameters initial parameter value map
-	 * @return a map containing parameter values indexed by parameter names
-	 * @throws JRException
-	 */
-	public static Map<String,Object> evaluateParameterDefaultValues(JasperReportsContext jasperReportsContext, Report report, Map<String,Object> initialParameters) throws JRException
-	{
-		//FIXMEBOOK
-		return null;
 	}
 	
 	protected static class ObjectFactory extends JRFillObjectFactory
