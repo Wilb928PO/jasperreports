@@ -148,6 +148,25 @@
      </restriction>
     </simpleType>
    </attribute>
+   <attribute name="sectionType" use="optional" default="Band">
+   	<annotation>
+   		<documentation>Specifies if the report design is made of sections containing bands or containing parts.</documentation>
+   	</annotation>
+    <simpleType>
+     <restriction base="string">
+      <enumeration value="Band">
+	   	<annotation>
+	   		<documentation>The report template is made of sections containing bands.</documentation>
+	   	</annotation>
+	  </enumeration>      
+      <enumeration value="Part">
+	   	<annotation>
+	   		<documentation>The report template is made of sections containing parts.</documentation>
+	   	</annotation>
+      </enumeration>
+     </restriction>
+    </simpleType>
+   </attribute>
    <attribute name="columnWidth" type="NMTOKEN" use="optional" default="555">
    	<annotation>
    		<documentation>Column width.</documentation>
@@ -1639,9 +1658,10 @@
    <documentation>Definition of a detail band for this report. A detail band is repeated for each line of data supplied by the report's data source. There can be multiple detail bands in a report.</documentation>
   </annotation>  
   <complexType>
-   <sequence>
+   <choice minOccurs="0" maxOccurs="1">
     <element ref="jr:band" minOccurs="0" maxOccurs="unbounded"/>
-   </sequence>
+    <element ref="jr:part" minOccurs="0" maxOccurs="unbounded"/>
+   </choice>
   </complexType>
  </element>
 
@@ -1793,6 +1813,19 @@
      </restriction>
     </simpleType>
    </attribute>
+  </complexType>
+ </element>
+
+ <element name="part">
+  <annotation>
+   <documentation>Generic definition of a report part.</documentation>
+  </annotation>  
+  <complexType>
+   <sequence>
+    <element ref="jr:property" minOccurs="0" maxOccurs="unbounded"/>
+    <element ref="jr:printWhenExpression" minOccurs="0" maxOccurs="1"/>
+    <element ref="jr:component"/>
+   </sequence>
   </complexType>
  </element>
 

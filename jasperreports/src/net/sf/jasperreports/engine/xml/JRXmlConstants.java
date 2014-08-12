@@ -117,6 +117,7 @@ public final class JRXmlConstants
 	public static final String ATTRIBUTE_pageHeight = "pageHeight";
 	public static final String ATTRIBUTE_orientation = "orientation";
 	public static final String ATTRIBUTE_whenNoDataType = "whenNoDataType";
+	public static final String ATTRIBUTE_sectionType = "sectionType";
 	public static final String ATTRIBUTE_columnWidth = "columnWidth";
 	public static final String ATTRIBUTE_columnSpacing = "columnSpacing";
 	public static final String ATTRIBUTE_leftMargin = "leftMargin";
@@ -179,6 +180,11 @@ public final class JRXmlConstants
 	public static final String ATTRIBUTE_height = "height";
 	public static final String ATTRIBUTE_isSplitAllowed = "isSplitAllowed";
 	public static final String ATTRIBUTE_splitType = "splitType";
+
+	/**
+	 * JRPartFactory associated constants
+	 */
+	public static final String ELEMENT_part = "part";
 
 	/**
 	 * JRPenFactory associated constants
