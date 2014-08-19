@@ -22,17 +22,25 @@
  * along with JasperReports. If not, see <http://www.gnu.org/licenses/>.
  */
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JRPrintPage;
 import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperPrintManager;
-import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.PrintBookmark;
+import net.sf.jasperreports.engine.SimplePrintPageFormat;
+import net.sf.jasperreports.engine.SimplePrintPart;
+import net.sf.jasperreports.engine.base.BasePrintBookmark;
 import net.sf.jasperreports.engine.export.JRCsvExporter;
 import net.sf.jasperreports.engine.export.JRCsvMetadataExporter;
+import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.export.JRRtfExporter;
 import net.sf.jasperreports.engine.export.JRXlsExporter;
 import net.sf.jasperreports.engine.export.JRXlsMetadataExporter;
@@ -43,11 +51,12 @@ import net.sf.jasperreports.engine.export.ooxml.JRPptxExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import net.sf.jasperreports.engine.util.AbstractSampleApp;
 import net.sf.jasperreports.engine.util.JRLoader;
-import net.sf.jasperreports.engine.xml.JRXmlWriter;
+import net.sf.jasperreports.engine.util.JRSaver;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleHtmlExporterOutput;
 import net.sf.jasperreports.export.SimpleOdsReportConfiguration;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
+import net.sf.jasperreports.export.SimplePdfExporterConfiguration;
 import net.sf.jasperreports.export.SimpleWriterExporterOutput;
 import net.sf.jasperreports.export.SimpleXlsMetadataReportConfiguration;
 import net.sf.jasperreports.export.SimpleXlsReportConfiguration;
@@ -99,15 +108,79 @@ public class BookApp extends AbstractSampleApp
 	 */
 	public void fill() throws JRException
 	{
-//		JasperDesign report = JRXmlLoader.load("reports/BookReport.jrxml");
-		JasperCompileManager.compileReportToFile("reports/BookReport.jrxml");
-		JasperReport report = (JasperReport)JRLoader.loadObjectFromFile("reports/BookReport.jasper");
-		JRXmlWriter.writeReport(report, "reports/BookReport.design.jrxml", "UTF-8");
-//		JRXmlWriter.writeReport(report, "build/reports/BookReport.jasper.jrxml", "UTF-8");
+		long start = System.currentTimeMillis();
+//		JasperPrint jasperPrint1 = JasperFillManager.fillReport(
+//			"build/reports/Report1.jasper",
+//			null, 
+//			new JREmptyDataSource(2)
+//			);
+//		JasperPrint jasperPrint2 = JasperFillManager.fillReport(
+//			"build/reports/Report2.jasper",
+//			null, 
+//			new JREmptyDataSource(2)
+//			);
+//		JasperPrint jasperPrint3 = JasperFillManager.fillReport(
+//			"build/reports/Report3.jasper",
+//			null, 
+//			new JREmptyDataSource(2)
+//			);
+//		
+//		SimplePrintPart printPart = new SimplePrintPart();
+//		printPart.setName(jasperPrint2.getName());
+//		SimplePrintPageFormat pageFormat = new SimplePrintPageFormat();
+//		pageFormat.setPageWidth(jasperPrint2.getPageWidth());
+//		pageFormat.setPageHeight(jasperPrint2.getPageHeight());
+//		pageFormat.setTopMargin(jasperPrint2.getTopMargin());
+//		pageFormat.setLeftMargin(jasperPrint2.getLeftMargin());
+//		pageFormat.setBottomMargin(jasperPrint2.getBottomMargin());
+//		pageFormat.setRightMargin(jasperPrint2.getRightMargin());
+//		pageFormat.setOrientation(jasperPrint2.getOrientationValue());
+//		printPart.setPageFormat(pageFormat);
+//		jasperPrint1.addPart(jasperPrint1.getPages().size(), printPart);
+//
+//		for (JRPrintPage page : jasperPrint2.getPages())
+//		{
+//			jasperPrint1.addPage(page);
+//		}
+//		
+//		printPart = new SimplePrintPart();
+//		printPart.setName(jasperPrint3.getName());
+//		pageFormat = new SimplePrintPageFormat();
+//		pageFormat.setPageWidth(jasperPrint3.getPageWidth());
+//		pageFormat.setPageHeight(jasperPrint3.getPageHeight());
+//		pageFormat.setTopMargin(jasperPrint3.getTopMargin());
+//		pageFormat.setLeftMargin(jasperPrint3.getLeftMargin());
+//		pageFormat.setBottomMargin(jasperPrint3.getBottomMargin());
+//		pageFormat.setRightMargin(jasperPrint3.getRightMargin());
+//		pageFormat.setOrientation(jasperPrint3.getOrientationValue());
+//		printPart.setPageFormat(pageFormat);
+//		jasperPrint1.addPart(jasperPrint1.getPages().size(), printPart);
+//
+//		for (JRPrintPage page : jasperPrint3.getPages())
+//		{
+//			jasperPrint1.addPage(page);
+//		}
+//		
+//		List<PrintBookmark> bookmarks = new ArrayList<PrintBookmark>();
+//		PrintBookmark bookmark = new BasePrintBookmark("Unu", 0, "0");
+//		bookmarks.add(bookmark);
+//		jasperPrint1.setBookmarks(bookmarks);
+//		
+//		JRSaver.saveObject(jasperPrint1, "build/reports/BookReport.jrprint");
 		
-//		long start = System.currentTimeMillis();
-//		JasperFillManager.fillReportToFile("build/reports/BookReport.jasper", null, new JREmptyDataSource());
-//		System.err.println("Filling time : " + (System.currentTimeMillis() - start));
+//		JasperViewer.viewReport(jasperPrint1);
+		
+
+		
+////		JasperDesign report = JRXmlLoader.load("reports/BookReport.jrxml");
+//		JasperCompileManager.compileReportToFile("reports/BookReport.jrxml");
+//		JasperReport report = (JasperReport)JRLoader.loadObjectFromFile("reports/BookReport.jasper");
+//		JRXmlWriter.writeReport(report, "reports/BookReport.design.jrxml", "UTF-8");
+////		JRXmlWriter.writeReport(report, "build/reports/BookReport.jasper.jrxml", "UTF-8");
+//		
+////		long start = System.currentTimeMillis();
+		JasperFillManager.fillReportToFile("build/reports/BookReport.jasper", null, new JREmptyDataSource());
+		System.err.println("Filling time : " + (System.currentTimeMillis() - start));
 	}
 	
 	
@@ -128,7 +201,17 @@ public class BookApp extends AbstractSampleApp
 	public void pdf() throws JRException
 	{
 		long start = System.currentTimeMillis();
-		JasperExportManager.exportReportToPdfFile("build/reports/BookReport.jrprint");
+		
+		JRPdfExporter exporter = new JRPdfExporter();
+		
+		exporter.setExporterInput(new SimpleExporterInput("build/reports/BookReport.jrprint"));
+		exporter.setExporterOutput(new SimpleOutputStreamExporterOutput("build/reports/BookReport.pdf"));
+		SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
+		configuration.setCreatingBatchModeBookmarks(true);
+		exporter.setConfiguration(configuration);
+		
+		exporter.exportReport();
+		//JasperExportManager.exportReportToPdfFile("build/reports/BookReport.jrprint");
 		System.err.println("PDF creation time : " + (System.currentTimeMillis() - start));
 	}
 	

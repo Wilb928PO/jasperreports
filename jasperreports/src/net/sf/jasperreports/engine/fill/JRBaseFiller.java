@@ -29,6 +29,8 @@
 
 package net.sf.jasperreports.engine.fill;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.text.Format;
 import java.util.ArrayList;
@@ -84,16 +86,19 @@ import net.sf.jasperreports.engine.type.FooterPositionEnum;
 import net.sf.jasperreports.engine.type.OrientationEnum;
 import net.sf.jasperreports.engine.type.PrintOrderEnum;
 import net.sf.jasperreports.engine.type.RunDirectionEnum;
+import net.sf.jasperreports.engine.type.SectionTypeEnum;
 import net.sf.jasperreports.engine.type.WhenNoDataTypeEnum;
 import net.sf.jasperreports.engine.type.WhenResourceMissingTypeEnum;
 import net.sf.jasperreports.engine.util.DefaultFormatFactory;
 import net.sf.jasperreports.engine.util.FormatFactory;
 import net.sf.jasperreports.engine.util.JRDataUtils;
 import net.sf.jasperreports.engine.util.JRGraphEnvInitializer;
+import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.engine.util.JRStyledTextParser;
 import net.sf.jasperreports.engine.util.LinkedMap;
 import net.sf.jasperreports.engine.util.LocalJasperReportsContext;
 import net.sf.jasperreports.engine.util.UniformPrintElementVisitor;
+import net.sf.jasperreports.repo.RepositoryUtil;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -901,6 +906,31 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 
 	public JasperPrint fill(Map<String,Object> parameterValues) throws JRException
 	{
+		//FIXMEBOOK
+		if (jasperReport.getSectionType() == SectionTypeEnum.PART)
+		{
+			InputStream is = null;
+			try
+			{
+				is = RepositoryUtil.getInstance(getJasperReportsContext()).getInputStreamFromLocation("BookReport.jrprint");
+				jasperPrint = (JasperPrint)JRLoader.loadObject(is);
+			}
+			finally
+			{
+				if (is != null)
+				{
+					try
+					{
+						is.close();
+					}
+					catch (IOException e)
+					{
+					}
+				}
+			}
+			return jasperPrint;
+		}
+		
 		if (parameterValues == null)
 		{
 			parameterValues = new HashMap<String,Object>();
