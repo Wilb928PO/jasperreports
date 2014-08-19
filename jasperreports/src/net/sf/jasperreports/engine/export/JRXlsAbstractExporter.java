@@ -61,6 +61,7 @@ import net.sf.jasperreports.engine.JRPropertiesUtil.PropertySuffix;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JRStyledTextAttributeSelector;
 import net.sf.jasperreports.engine.JasperReportsContext;
+import net.sf.jasperreports.engine.PrintPageFormat;
 import net.sf.jasperreports.engine.base.JRBasePrintText;
 import net.sf.jasperreports.engine.type.HorizontalAlignEnum;
 import net.sf.jasperreports.engine.type.ModeEnum;
@@ -562,6 +563,7 @@ public abstract class JRXlsAbstractExporter<RC extends XlsReportConfiguration, C
 	
 	protected int reportIndex;
 	protected int pageIndex;
+	protected PrintPageFormat pageFormat;
 	protected Map<Integer, Boolean> onePagePerSheetMap = new HashMap<Integer, Boolean>();
 	protected int sheetsBeforeCurrentReport;
 	protected Map<Integer, Integer> sheetsBeforeCurrentReportMap = new HashMap<Integer, Integer>();
@@ -725,6 +727,7 @@ public abstract class JRXlsAbstractExporter<RC extends XlsReportConfiguration, C
 	{
 		openWorkbook(os);
 		sheetNamesMap = new HashMap<String,Integer>();
+		pageFormat = null;
 		
 		List<ExporterInputItem> items = exporterInput.getItems();
 
@@ -761,6 +764,8 @@ public abstract class JRXlsAbstractExporter<RC extends XlsReportConfiguration, C
 
 						JRPrintPage page = pages.get(pageIndex);
 						
+						pageFormat = jasperPrint.getPageFormat(pageIndex);
+						
 						/*   */
 						exportPage(page, /*xCuts*/null, /*startRow*/0, /*defaultSheetName*/null);
 					}
@@ -773,8 +778,7 @@ public abstract class JRXlsAbstractExporter<RC extends XlsReportConfiguration, C
 					 */
 					CutsInfo xCuts = 
 						JRGridLayout.calculateXCuts(
-							getNature(), pages, startPageIndex, endPageIndex,
-							jasperPrint.getPageWidth(), 
+							getNature(), jasperPrint, startPageIndex, endPageIndex,
 							configuration.getOffsetX() == null ? 0 : configuration.getOffsetX() 
 							);
 					
@@ -792,7 +796,8 @@ public abstract class JRXlsAbstractExporter<RC extends XlsReportConfiguration, C
 							throw new JRException("Current thread interrupted.");
 						}
 						JRPrintPage page = pages.get(pageIndex);
-						startRow = exportPage(page, xCuts, startRow, jasperPrint.getName());
+						pageFormat = jasperPrint.getPageFormat(pageIndex);
+						startRow = exportPage(page, xCuts, startRow, jasperPrint.getName());//FIXMEPART
 					}
 					//updateColumns(xCuts);
 				}
@@ -819,8 +824,8 @@ public abstract class JRXlsAbstractExporter<RC extends XlsReportConfiguration, C
 			new JRGridLayout(
 				getNature(),
 				page.getElements(),
-				jasperPrint.getPageWidth(),
-				jasperPrint.getPageHeight(),
+				pageFormat.getPageWidth(),
+				pageFormat.getPageHeight(),
 				configuration.getOffsetX() == null ? 0 : configuration.getOffsetX(), 
 				configuration.getOffsetY() == null ? 0 : configuration.getOffsetY(),
 				xCuts

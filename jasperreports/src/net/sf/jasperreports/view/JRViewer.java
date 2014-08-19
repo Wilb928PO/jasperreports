@@ -89,9 +89,9 @@ import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperPrintManager;
 import net.sf.jasperreports.engine.JasperReportsContext;
+import net.sf.jasperreports.engine.PrintPageFormat;
 import net.sf.jasperreports.engine.Renderable;
 import net.sf.jasperreports.engine.export.JRGraphics2DExporter;
-import net.sf.jasperreports.engine.print.JRPrinterAWT;
 import net.sf.jasperreports.engine.type.HyperlinkTypeEnum;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.engine.util.LocalJasperReportsContext;
@@ -1113,7 +1113,7 @@ public class JRViewer extends javax.swing.JPanel implements JRHyperlinkListener
 		}
 		else if (btnFitWidth.isSelected())
 		{
-			setRealZoomRatio(((float)pnlInScroll.getVisibleRect().getWidth() - 20f) / jasperPrint.getPageWidth());
+			setRealZoomRatio(((float)pnlInScroll.getVisibleRect().getWidth() - 20f) / getPageFormat().getPageWidth());
 			btnFitWidth.setSelected(true);
 		}
 
@@ -1138,7 +1138,7 @@ public class JRViewer extends javax.swing.JPanel implements JRHyperlinkListener
 			btnActualSize.setSelected(false);
 			btnFitPage.setSelected(false);
 			cmbZoom.setSelectedIndex(-1);
-			setRealZoomRatio(((float)pnlInScroll.getVisibleRect().getWidth() - 20f) / jasperPrint.getPageWidth());
+			setRealZoomRatio(((float)pnlInScroll.getVisibleRect().getWidth() - 20f) / getPageFormat().getPageWidth());
 			btnFitWidth.setSelected(true);
 		}
 	}//GEN-LAST:event_btnFitWidthActionPerformed
@@ -1516,6 +1516,14 @@ public class JRViewer extends javax.swing.JPanel implements JRHyperlinkListener
 
 	/**
 	*/
+	private PrintPageFormat getPageFormat()
+	{
+		return jasperPrint.getPageFormat(pageIndex);
+	}
+
+
+	/**
+	*/
 	protected void loadReport(String fileName, boolean isXmlReport) throws JRException
 	{
 		if (isXmlReport)
@@ -1614,9 +1622,11 @@ public class JRViewer extends javax.swing.JPanel implements JRHyperlinkListener
 		btnZoomOut.setEnabled(zoom > MIN_ZOOM);
 		cmbZoom.setEnabled(true);
 
+		PrintPageFormat pageFormat = getPageFormat();
+		
 		Dimension dim = new Dimension(
-			(int)(jasperPrint.getPageWidth() * realZoom) + 8, // 2 from border, 5 from shadow and 1 extra pixel for image
-			(int)(jasperPrint.getPageHeight() * realZoom) + 8
+			(int)(pageFormat.getPageWidth() * realZoom) + 8, // 2 from border, 5 from shadow and 1 extra pixel for image
+			(int)(pageFormat.getPageHeight() * realZoom) + 8
 			);
 		pnlPage.setMaximumSize(dim);
 		pnlPage.setMinimumSize(dim);
@@ -1630,7 +1640,7 @@ public class JRViewer extends javax.swing.JPanel implements JRHyperlinkListener
 		}
 		else
 		{
-			long imageSize = JRPrinterAWT.getImageSize(jasperPrint, realZoom);
+			long imageSize = ((int) (pageFormat.getPageWidth() * realZoom) + 1) * ((int) (pageFormat.getPageHeight() * realZoom) + 1);
 			renderImage = imageSize <= maxImageSize;
 		}
 
@@ -1687,9 +1697,10 @@ public class JRViewer extends javax.swing.JPanel implements JRHyperlinkListener
 
 	protected Image getPageErrorImage()
 	{
+		PrintPageFormat pageFormat = getPageFormat();
 		Image image = new BufferedImage(
-				(int) (jasperPrint.getPageWidth() * realZoom) + 1,
-				(int) (jasperPrint.getPageHeight() * realZoom) + 1,
+				(int) (pageFormat.getPageWidth() * realZoom) + 1,
+				(int) (pageFormat.getPageHeight() * realZoom) + 1,
 				BufferedImage.TYPE_INT_RGB
 				);
 		
@@ -2068,13 +2079,13 @@ public class JRViewer extends javax.swing.JPanel implements JRHyperlinkListener
 	 */
 	public void setFitWidthZoomRatio()
 	{
-		setRealZoomRatio(((float)pnlInScroll.getVisibleRect().getWidth() - 20f) / jasperPrint.getPageWidth());
+		setRealZoomRatio(((float)pnlInScroll.getVisibleRect().getWidth() - 20f) / getPageFormat().getPageWidth());
 
 	}
 
 	public void setFitPageZoomRatio()
 	{
-		setRealZoomRatio(((float)pnlInScroll.getVisibleRect().getHeight() - 20f) / jasperPrint.getPageHeight());
+		setRealZoomRatio(((float)pnlInScroll.getVisibleRect().getHeight() - 20f) / getPageFormat().getPageHeight());
 	}
 
 
@@ -2161,8 +2172,9 @@ public class JRViewer extends javax.swing.JPanel implements JRHyperlinkListener
 
 	protected void drawPageError(Graphics grx)
 	{
+		PrintPageFormat pageFormat = getPageFormat();
 		grx.setColor(Color.white);
-		grx.fillRect(0, 0, jasperPrint.getPageWidth() + 1, jasperPrint.getPageHeight() + 1);
+		grx.fillRect(0, 0, pageFormat.getPageWidth() + 1, pageFormat.getPageHeight() + 1);
 	}
 
 	protected void keyNavigate(KeyEvent evt)
@@ -2241,8 +2253,9 @@ public class JRViewer extends javax.swing.JPanel implements JRHyperlinkListener
 	 *
 	*/
 	private void fitPage(){
-		float heightRatio = ((float)pnlInScroll.getVisibleRect().getHeight() - 20f) / jasperPrint.getPageHeight();
-		float widthRatio = ((float)pnlInScroll.getVisibleRect().getWidth() - 20f) / jasperPrint.getPageWidth();
+		PrintPageFormat pageFormat = getPageFormat();
+		float heightRatio = ((float)pnlInScroll.getVisibleRect().getHeight() - 20f) / pageFormat.getPageHeight();
+		float widthRatio = ((float)pnlInScroll.getVisibleRect().getWidth() - 20f) / pageFormat.getPageWidth();
 		setRealZoomRatio(heightRatio < widthRatio ? heightRatio : widthRatio);
 	}
 
