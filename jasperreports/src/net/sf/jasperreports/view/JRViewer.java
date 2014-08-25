@@ -642,7 +642,7 @@ public class JRViewer extends javax.swing.JPanel implements JRHyperlinkListener
 				if (isOnlyHyperlinkListener())
 				{
 					System.out.println("Hyperlink reference : " + hyperlink.getHyperlinkReference());
-					System.out.println("Hyperlink anchor	: " + hyperlink.getHyperlinkAnchor());
+					System.out.println("Hyperlink anchor    : " + hyperlink.getHyperlinkAnchor());
 					System.out.println("Implement your own JRHyperlinkListener to manage this type of event.");
 				}
 				break;
@@ -652,7 +652,7 @@ public class JRViewer extends javax.swing.JPanel implements JRHyperlinkListener
 				if (isOnlyHyperlinkListener())
 				{
 					System.out.println("Hyperlink reference : " + hyperlink.getHyperlinkReference());
-					System.out.println("Hyperlink page	  : " + hyperlink.getHyperlinkPage());
+					System.out.println("Hyperlink page      : " + hyperlink.getHyperlinkPage());
 					System.out.println("Implement your own JRHyperlinkListener to manage this type of event.");
 				}
 				break;
@@ -1373,6 +1373,7 @@ public class JRViewer extends javax.swing.JPanel implements JRHyperlinkListener
 					log.error("Reload error.", e);
 				}
 				jasperPrint = null;
+				refreshTabs();
 				setPageIndex(0);
 				refreshPage();
 
@@ -1456,17 +1457,20 @@ public class JRViewer extends javax.swing.JPanel implements JRHyperlinkListener
 			Integer partIndex = pnlTabs.getSelectedIndex();
 			if (partIndex > 0)
 			{
-				SortedMap<Integer, PrintPart> parts = jasperPrint.getParts();
+				SortedMap<Integer, PrintPart> parts = jasperPrint == null ? null : jasperPrint.getParts();
 				
-				partIndex = parts.firstKey() == 0 ? partIndex : partIndex - 1;
-				
-				Iterator<Integer> it = parts.keySet().iterator();
-
-				int i = 0;
-				while (i <= partIndex && it.hasNext())
+				if (parts != null)
 				{
-					pgIdx = it.next();
-					i++;
+					partIndex = parts.firstKey() == 0 ? partIndex : partIndex - 1;
+					
+					Iterator<Integer> it = parts.keySet().iterator();
+
+					int i = 0;
+					while (i <= partIndex && it.hasNext())
+					{
+						pgIdx = it.next();
+						i++;
+					}
 				}
 			}
 
@@ -1667,7 +1671,7 @@ public class JRViewer extends javax.swing.JPanel implements JRHyperlinkListener
 		pnlTabs.removeAll();
 		pnlMain.removeAll();
 
-		SortedMap<Integer, PrintPart> parts = jasperPrint.getParts();
+		SortedMap<Integer, PrintPart> parts = jasperPrint == null ? null : jasperPrint.getParts();
 		if (parts == null || parts.size() == 0)
 		{
 			pnlMain.add(scrollPane, java.awt.BorderLayout.CENTER);

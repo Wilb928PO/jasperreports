@@ -23,6 +23,7 @@
  */
 package net.sf.jasperreports.swing;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Cursor;
@@ -47,6 +48,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.SortedMap;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -67,8 +69,10 @@ import net.sf.jasperreports.engine.JRPrintImageAreaHyperlink;
 import net.sf.jasperreports.engine.JRPrintPage;
 import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.JRRuntimeException;
+import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperPrintManager;
 import net.sf.jasperreports.engine.PrintPageFormat;
+import net.sf.jasperreports.engine.PrintPart;
 import net.sf.jasperreports.engine.Renderable;
 import net.sf.jasperreports.engine.export.JRGraphics2DExporter;
 import net.sf.jasperreports.engine.type.HyperlinkTypeEnum;
@@ -106,6 +110,7 @@ public class JRViewerPanel extends JPanel implements JRHyperlinkListener, JRView
 	private javax.swing.JPanel pnlInScroll;
 	private javax.swing.JPanel pnlLinks;
 	private javax.swing.JPanel pnlPage;
+	private javax.swing.JTabbedPane pnlTabs;
 	private javax.swing.JScrollPane scrollPane;
 
 	private final JRViewerController viewerContext;
@@ -114,6 +119,8 @@ public class JRViewerPanel extends JPanel implements JRHyperlinkListener, JRView
 
 	private int downX;
 	private int downY;
+
+	private boolean pnlTabsChangeListenerEnabled = true;
 	
 	private List<JRHyperlinkListener> hyperlinkListeners = new ArrayList<JRHyperlinkListener>();
 	private Map<JPanel, JRPrintHyperlink> linksMap = new HashMap<JPanel, JRPrintHyperlink>();
@@ -168,6 +175,7 @@ public class JRViewerPanel extends JPanel implements JRHyperlinkListener, JRView
 		scrollPane.getHorizontalScrollBar().setUnitIncrement(5);
 		scrollPane.getVerticalScrollBar().setUnitIncrement(5);
 
+		pnlTabs = new javax.swing.JTabbedPane();
 		pnlInScroll = new javax.swing.JPanel();
 		pnlPage = new javax.swing.JPanel();
 		jPanel4 = new javax.swing.JPanel();
@@ -190,8 +198,15 @@ public class JRViewerPanel extends JPanel implements JRHyperlinkListener, JRView
 			}
 		});
 
-		scrollPane.setHorizontalScrollBarPolicy(javax.swing.JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-		scrollPane.setVerticalScrollBarPolicy(javax.swing.JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		pnlTabs.addChangeListener(new javax.swing.event.ChangeListener() {
+			public void stateChanged(javax.swing.event.ChangeEvent evt) {
+				pnlTabsStateChanged(evt);
+			}
+		});
+		add(pnlTabs, java.awt.BorderLayout.CENTER);
+
+		scrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+		scrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		pnlInScroll.setLayout(new java.awt.GridBagLayout());
 
 		pnlPage.setLayout(new java.awt.BorderLayout());
@@ -272,7 +287,7 @@ public class JRViewerPanel extends JPanel implements JRHyperlinkListener, JRView
 		jPanel4.add(jPanel9, gridBagConstraints);
 
 		lblPage.setBackground(java.awt.Color.white);
-		lblPage.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0)));
+		lblPage.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 		lblPage.setOpaque(true);
 		gridBagConstraints = new java.awt.GridBagConstraints();
 		gridBagConstraints.gridx = 0;
@@ -660,12 +675,106 @@ public class JRViewerPanel extends JPanel implements JRHyperlinkListener, JRView
 		pnlLinks.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 	}//GEN-LAST:event_pnlLinksMouseReleased
 
+	private void pnlTabsStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_pnlTabsStateChanged
+		if (pnlTabsChangeListenerEnabled)
+		{
+			((JPanel)pnlTabs.getSelectedComponent()).add(scrollPane);
+
+			Integer pgIdx = 0;
+
+			Integer partIndex = pnlTabs.getSelectedIndex();
+			if (partIndex > 0)
+			{
+				JasperPrint jasperPrint = viewerContext.getJasperPrint();
+				SortedMap<Integer, PrintPart> parts = jasperPrint == null ? null : jasperPrint.getParts();
+				
+				if (parts != null)
+				{
+					partIndex = parts.firstKey() == 0 ? partIndex : partIndex - 1;
+					
+					Iterator<Integer> it = parts.keySet().iterator();
+
+					int i = 0;
+					while (i <= partIndex && it.hasNext())
+					{
+						pgIdx = it.next();
+						i++;
+					}
+				}
+			}
+
+			viewerContext.setPageIndex(pgIdx);
+			viewerContext.refreshPage();
+		}
+	}//GEN-LAST:event_pnlTabsStateChanged
+
 	protected void pageChanged()
 	{
 		if (viewerContext.hasPages())
 		{
 			pageError = false;
+			
+			SortedMap<Integer, PrintPart> parts = viewerContext.getJasperPrint().getParts();
+			if (parts != null && parts.size() > 0)
+			{
+				Integer pageIndex = viewerContext.getPageIndex();
+				Integer partIndex = 0;
+				Iterator<Integer> it = parts.keySet().iterator();
+				while (it.hasNext())
+				{
+					Integer pgIdx = it.next(); 
+					if (pageIndex < pgIdx)
+					{
+						break;
+					}
+					partIndex++;
+				}
+				if (partIndex < pnlTabs.getComponentCount())
+				{
+					pnlTabsChangeListenerEnabled = false;
+					pnlTabs.setSelectedIndex(partIndex - (parts.firstKey() == 0 ? 1 : 0));
+					((JPanel)pnlTabs.getSelectedComponent()).add(scrollPane);
+					pnlTabsChangeListenerEnabled = true;
+				}
+			}
 		}
+	}
+
+	protected void refreshTabs()
+	{
+		pnlTabsChangeListenerEnabled = false;
+
+		pnlTabs.removeAll();
+		removeAll();
+
+		JasperPrint jasperPrint =  viewerContext.getJasperPrint();
+		SortedMap<Integer, PrintPart> parts = jasperPrint == null ? null : jasperPrint.getParts();
+		if (parts == null || parts.size() == 0)
+		{
+			add(scrollPane, java.awt.BorderLayout.CENTER);
+		}
+		else
+		{
+			if (parts.firstKey() > 0)
+			{
+				JPanel partTab = new JPanel();
+				partTab.setLayout(new BorderLayout());
+				partTab.setName(viewerContext.getJasperPrint().getName());
+				pnlTabs.add(partTab);
+			}
+			
+			for (PrintPart part : parts.values())
+			{
+				JPanel partTab = new JPanel();
+				partTab.setLayout(new BorderLayout());
+				partTab.setName(part.getName());
+				pnlTabs.add(partTab);
+			}
+			
+			add(pnlTabs, java.awt.BorderLayout.CENTER);
+		}
+
+		pnlTabsChangeListenerEnabled = true;
 	}
 
 	protected void refreshPage()
@@ -1194,6 +1303,10 @@ public class JRViewerPanel extends JPanel implements JRHyperlinkListener, JRView
 			break;
 		case JRViewerEvent.EVENT_ZOOM_CHANGED:
 			zoomChanged();
+			break;
+		case JRViewerEvent.EVENT_REPORT_LOADED:
+		case JRViewerEvent.EVENT_REPORT_LOAD_FAILED:
+			refreshTabs();
 			break;
 		}
 	}
