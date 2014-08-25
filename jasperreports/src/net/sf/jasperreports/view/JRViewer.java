@@ -30,6 +30,7 @@
  */
 package net.sf.jasperreports.view;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
@@ -62,6 +63,7 @@ import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.SortedMap;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
@@ -90,6 +92,7 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperPrintManager;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.PrintPageFormat;
+import net.sf.jasperreports.engine.PrintPart;
 import net.sf.jasperreports.engine.Renderable;
 import net.sf.jasperreports.engine.export.JRGraphics2DExporter;
 import net.sf.jasperreports.engine.type.HyperlinkTypeEnum;
@@ -185,6 +188,8 @@ public class JRViewer extends javax.swing.JPanel implements JRHyperlinkListener
 
 	private int downX;
 	private int downY;
+	
+	private boolean pnlTabsChangeListenerEnabled = true;
 
 	private List<JRHyperlinkListener> hyperlinkListeners = new ArrayList<JRHyperlinkListener>();
 	private Map<JPanel,JRPrintHyperlink> linksMap = new HashMap<JPanel,JRPrintHyperlink>();
@@ -1442,7 +1447,32 @@ public class JRViewer extends javax.swing.JPanel implements JRHyperlinkListener
 	}//GEN-LAST:event_cmbZoomActionPerformed
 
 	private void pnlTabsStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_pnlTabsStateChanged
-		// TODO add your handling code here:
+		if (pnlTabsChangeListenerEnabled)
+		{
+			((JPanel)pnlTabs.getSelectedComponent()).add(scrollPane);
+
+			Integer pgIdx = 0;
+
+			Integer partIndex = pnlTabs.getSelectedIndex();
+			if (partIndex > 0)
+			{
+				SortedMap<Integer, PrintPart> parts = jasperPrint.getParts();
+				
+				partIndex = parts.firstKey() == 0 ? partIndex : partIndex - 1;
+				
+				Iterator<Integer> it = parts.keySet().iterator();
+
+				int i = 0;
+				while (i <= partIndex && it.hasNext())
+				{
+					pgIdx = it.next();
+					i++;
+				}
+			}
+
+			setPageIndex(pgIdx);
+			refreshPage();
+		}
 	}//GEN-LAST:event_pnlTabsStateChanged
 
 
@@ -1512,6 +1542,29 @@ public class JRViewer extends javax.swing.JPanel implements JRHyperlinkListener
 						new Object[]{Integer.valueOf(pageIndex + 1), Integer.valueOf(jasperPrint.getPages().size())}
 						)
 					);
+				
+				SortedMap<Integer, PrintPart> parts = jasperPrint.getParts();
+				if (parts != null && parts.size() > 0)
+				{
+					Integer partIndex = 0;
+					Iterator<Integer> it = parts.keySet().iterator();
+					while (it.hasNext())
+					{
+						Integer pgIdx = it.next(); 
+						if (pageIndex < pgIdx)
+						{
+							break;
+						}
+						partIndex++;
+					}
+					if (partIndex < pnlTabs.getComponentCount())
+					{
+						pnlTabsChangeListenerEnabled = false;
+						pnlTabs.setSelectedIndex(partIndex - (parts.firstKey() == 0 ? 1 : 0));
+						((JPanel)pnlTabs.getSelectedComponent()).add(scrollPane);
+						pnlTabsChangeListenerEnabled = true;
+					}
+				}
 			}
 		}
 		else
@@ -1548,6 +1601,8 @@ public class JRViewer extends javax.swing.JPanel implements JRHyperlinkListener
 			jasperPrint = (JasperPrint)JRLoader.loadObjectFromFile(fileName);
 		}
 
+		refreshTabs();
+
 		type = TYPE_FILE_NAME;
 		this.isXML = isXmlReport;
 		reportFileName = fileName;
@@ -1578,6 +1633,8 @@ public class JRViewer extends javax.swing.JPanel implements JRHyperlinkListener
 		{
 			jasperPrint = (JasperPrint)JRLoader.loadObject(is);
 		}
+		
+		refreshTabs();
 
 		type = TYPE_INPUT_STREAM;
 		this.isXML = isXmlReport;
@@ -1591,11 +1648,54 @@ public class JRViewer extends javax.swing.JPanel implements JRHyperlinkListener
 	protected void loadReport(JasperPrint jrPrint)
 	{
 		jasperPrint = jrPrint;
+
+		refreshTabs();
+
 		type = TYPE_OBJECT;
 		isXML = false;
 		btnReload.setEnabled(false);
 		setPageIndex(0);
 	}
+
+	
+	/**
+	*/
+	protected void refreshTabs()
+	{
+		pnlTabsChangeListenerEnabled = false;
+
+		pnlTabs.removeAll();
+		pnlMain.removeAll();
+
+		SortedMap<Integer, PrintPart> parts = jasperPrint.getParts();
+		if (parts == null || parts.size() == 0)
+		{
+			pnlMain.add(scrollPane, java.awt.BorderLayout.CENTER);
+		}
+		else
+		{
+			if (parts.firstKey() > 0)
+			{
+				JPanel partTab = new JPanel();
+				partTab.setLayout(new BorderLayout());
+				partTab.setName(jasperPrint.getName());
+				pnlTabs.add(partTab);
+			}
+			
+			for (PrintPart part : parts.values())
+			{
+				JPanel partTab = new JPanel();
+				partTab.setLayout(new BorderLayout());
+				partTab.setName(part.getName());
+				pnlTabs.add(partTab);
+			}
+			
+			pnlMain.add(pnlTabs, java.awt.BorderLayout.CENTER);
+		}
+
+		pnlTabsChangeListenerEnabled = true;
+	}
+
 
 	/**
 	*/
