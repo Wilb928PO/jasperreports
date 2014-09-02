@@ -40,7 +40,6 @@
 				<include name="**/*.svg"/>
 				<include name="**/*.svgz"/>
 				<include name="**/*.tmpl"/>
-				<include name="**/*.jrprint"/>
 			</fileset>
 		</copy>
 	</target>

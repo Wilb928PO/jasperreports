@@ -87,7 +87,6 @@
 					<include>**/*.svg</include>
 					<include>**/*.svgz</include>
 					<include>**/*.tmpl</include>
-					<include>**/*.jrprint</include>
 				</includes>
 			</resource>
 		</resources>
