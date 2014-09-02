@@ -1863,7 +1863,7 @@ public class JRVerticalFiller extends JRBaseFiller
 	{
 		if (isSubreport())
 		{
-			if (!parentFiller.isBandOverFlowAllowed())
+			if (!parent.isBandOverFlowAllowed())
 			{
 				throw new JRRuntimeException("Subreport overflowed on a band that does not support overflow.");
 			}

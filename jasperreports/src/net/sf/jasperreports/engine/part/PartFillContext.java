@@ -24,47 +24,21 @@
 package net.sf.jasperreports.engine.part;
 
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRExpression;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.fill.BaseReportFiller;
 
 /**
- * A component handler used while filling the report.
- * 
- * <p>
- * The fill component implementation is responsible for managing a component
- * at fill time.  A typical implementation would evaluate a set of expressions
- * and create a print element to be included in the generated report.
- * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id: FillComponent.java 5878 2013-01-07 20:23:13Z teodord $
+ * @version $Id$
  */
-public interface PartFillComponent
+public interface PartFillContext
 {
-
-	/**
-	 * Initializes the fill component with the fill context.
-	 * 
-	 * <p>
-	 * This method is called before the fill component is used.
-	 * 
-	 * @param fillContext the fill context
-	 */
-	void initialize(PartFillContext fillContext);
 	
-	/**
-	 * Evaluates the fill component.
-	 * 
-	 * <p>
-	 * This method would evaluate the component expressions and store the
-	 * results to be used in {@link #fill()}.
-	 * 
-	 * @param evaluation the evaluation type
-	 * @throws JRException
-	 */
-	void evaluate(byte evaluation) throws JRException;
+	BaseReportFiller getFiller();
+	
+	Object evaluate(JRExpression expression, byte evaluation) throws JRException;
 
-	/**
-	 * Fills the component by creating a print element which will be included
-	 * in the generated report.
-	 */
-	void fill() throws JRException;
+	void addPartReport(JasperPrint jasperPrint);
 
 }

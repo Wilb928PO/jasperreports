@@ -43,7 +43,6 @@ public class JRFillSection implements JRSection, JROriginProvider
 	protected JRBaseFiller filler;
 
 	protected JRFillBand[] bands;
-	protected JRFillPart[] parts;
 
 	protected JROrigin origin;
 
@@ -140,7 +139,7 @@ public class JRFillSection implements JRSection, JROriginProvider
 	 */
 	public JRPart[] getParts() 
 	{
-		return parts;
+		return null;
 	}
 
 

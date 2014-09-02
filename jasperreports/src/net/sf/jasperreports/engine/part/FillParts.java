@@ -23,48 +23,48 @@
  */
 package net.sf.jasperreports.engine.part;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRPart;
+import net.sf.jasperreports.engine.JRSection;
+import net.sf.jasperreports.engine.fill.JRFillObjectFactory;
 
 /**
- * A component handler used while filling the report.
- * 
- * <p>
- * The fill component implementation is responsible for managing a component
- * at fill time.  A typical implementation would evaluate a set of expressions
- * and create a print element to be included in the generated report.
- * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id: FillComponent.java 5878 2013-01-07 20:23:13Z teodord $
+ * @version $Id$
  */
-public interface PartFillComponent
+public class FillParts
 {
 
-	/**
-	 * Initializes the fill component with the fill context.
-	 * 
-	 * <p>
-	 * This method is called before the fill component is used.
-	 * 
-	 * @param fillContext the fill context
-	 */
-	void initialize(PartFillContext fillContext);
+	private List<FillPart> parts;
 	
-	/**
-	 * Evaluates the fill component.
-	 * 
-	 * <p>
-	 * This method would evaluate the component expressions and store the
-	 * results to be used in {@link #fill()}.
-	 * 
-	 * @param evaluation the evaluation type
-	 * @throws JRException
-	 */
-	void evaluate(byte evaluation) throws JRException;
+	public FillParts(JRSection section, JRFillObjectFactory fillFactory)
+	{
+		JRPart[] sectionParts = section == null ? null : section.getParts();
+		if (sectionParts == null || sectionParts.length == 0)
+		{
+			parts = Collections.emptyList();
+		}
+		else
+		{
+			parts = new ArrayList<FillPart>(sectionParts.length);
+			for (JRPart part : sectionParts)
+			{
+				FillPart fillPart = new FillPart(part, fillFactory);
+				parts.add(fillPart);
+			}
+		}
+	}
 
-	/**
-	 * Fills the component by creating a print element which will be included
-	 * in the generated report.
-	 */
-	void fill() throws JRException;
+	public void fill(byte evaluation) throws JRException
+	{
+		for (FillPart part : parts)
+		{
+			part.fill(evaluation);
+		}
+	}
 
 }

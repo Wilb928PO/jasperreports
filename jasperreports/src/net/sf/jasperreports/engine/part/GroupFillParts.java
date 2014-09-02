@@ -21,37 +21,44 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with JasperReports. If not, see <http://www.gnu.org/licenses/>.
  */
-package net.sf.jasperreports.parts.subreport;
+package net.sf.jasperreports.engine.part;
 
-import net.sf.jasperreports.components.list.BaseFillList;
-import net.sf.jasperreports.engine.component.Component;
-import net.sf.jasperreports.engine.fill.JRFillCloneFactory;
+import net.sf.jasperreports.engine.JRGroup;
+import net.sf.jasperreports.engine.fill.JRFillGroup;
 import net.sf.jasperreports.engine.fill.JRFillObjectFactory;
-import net.sf.jasperreports.engine.part.PartComponentFillFactory;
-import net.sf.jasperreports.engine.part.PartFillComponent;
 
 /**
- * Factory of {@link BaseFillList list fill component} instances.
- * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id: FillListFactory.java 5877 2013-01-07 19:51:14Z teodord $
+ * @version $Id$
  */
-public class FillSubreportPartFactory implements PartComponentFillFactory
+public class GroupFillParts
 {
 
-	public PartFillComponent cloneFillComponent(PartFillComponent component,
-			JRFillCloneFactory factory)
+	private JRFillGroup fillGroup;
+	private FillParts headerParts;
+	private FillParts footerParts;
+
+	public GroupFillParts(JRGroup group, JRFillObjectFactory fillFactory)
 	{
-		//TODO implement
-		throw new UnsupportedOperationException();
+		// this should have already been created
+		fillGroup = fillFactory.getGroup(group);
+		
+		headerParts = new FillParts(group.getGroupHeaderSection(), fillFactory);
+		footerParts = new FillParts(group.getGroupFooterSection(), fillFactory);
+	}
+	
+	public boolean hasChanged()
+	{
+		return fillGroup.hasChanged();
 	}
 
-	public PartFillComponent toFillComponent(Component component,
-			JRFillObjectFactory factory)
+	public FillParts getHeaderParts()
 	{
-		SubreportPartComponent subreportPart = (SubreportPartComponent) component;
-		SubreportFillPart fillSubreport = new SubreportFillPart(subreportPart, factory);
-		return fillSubreport;
+		return headerParts;
 	}
 
+	public FillParts getFooterParts()
+	{
+		return footerParts;
+	}
 }

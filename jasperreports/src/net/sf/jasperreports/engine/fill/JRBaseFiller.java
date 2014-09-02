@@ -29,9 +29,6 @@
 
 package net.sf.jasperreports.engine.fill;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.sql.Connection;
 import java.text.Format;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,10 +46,7 @@ import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 
 import net.sf.jasperreports.engine.BookmarkHelper;
-import net.sf.jasperreports.engine.JRAbstractScriptlet;
 import net.sf.jasperreports.engine.JRBand;
-import net.sf.jasperreports.engine.JRDataSource;
-import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRDefaultStyleProvider;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExpression;
@@ -80,7 +74,6 @@ import net.sf.jasperreports.engine.base.JRVirtualPrintPage;
 import net.sf.jasperreports.engine.base.VirtualElementsData;
 import net.sf.jasperreports.engine.base.VirtualizablePageElements;
 import net.sf.jasperreports.engine.type.BandTypeEnum;
-import net.sf.jasperreports.engine.type.CalculationEnum;
 import net.sf.jasperreports.engine.type.EvaluationTimeEnum;
 import net.sf.jasperreports.engine.type.FooterPositionEnum;
 import net.sf.jasperreports.engine.type.OrientationEnum;
@@ -89,16 +82,10 @@ import net.sf.jasperreports.engine.type.RunDirectionEnum;
 import net.sf.jasperreports.engine.type.SectionTypeEnum;
 import net.sf.jasperreports.engine.type.WhenNoDataTypeEnum;
 import net.sf.jasperreports.engine.type.WhenResourceMissingTypeEnum;
-import net.sf.jasperreports.engine.util.DefaultFormatFactory;
-import net.sf.jasperreports.engine.util.FormatFactory;
 import net.sf.jasperreports.engine.util.JRDataUtils;
-import net.sf.jasperreports.engine.util.JRGraphEnvInitializer;
-import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.engine.util.JRStyledTextParser;
 import net.sf.jasperreports.engine.util.LinkedMap;
-import net.sf.jasperreports.engine.util.LocalJasperReportsContext;
 import net.sf.jasperreports.engine.util.UniformPrintElementVisitor;
-import net.sf.jasperreports.repo.RepositoryUtil;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -108,7 +95,7 @@ import org.apache.commons.logging.LogFactory;
  * @author Teodor Danciu (teodord@users.sourceforge.net)
  * @version $Id$
  */
-public abstract class JRBaseFiller implements JRDefaultStyleProvider
+public abstract class JRBaseFiller extends BaseReportFiller implements JRDefaultStyleProvider
 {
 
 	private static final Log log = LogFactory.getLog(JRBaseFiller.class);
@@ -116,24 +103,10 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 	private static final int PAGE_HEIGHT_PAGINATION_IGNORED = 0x7d000000;//less than Integer.MAX_VALUE to avoid 
 
 	protected final Map<Integer, JRFillElement> fillElements = new HashMap<Integer, JRFillElement>();
-	protected final int fillerId;
-
-	/**
-	 *
-	 */
-	protected JRBaseFiller parentFiller;
-	protected JRFillSubreport parentElement;
-
-	private final JRFillObjectFactory factory;
 
 	private JRStyledTextParser styledTextParser = JRStyledTextParser.getInstance();
 
 	private FillListener fillListener;
-	
-	/**
-	 *
-	 */
-	private boolean isInterrupted;
 
 	/**
 	 *
@@ -187,11 +160,6 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 
 	protected JRStyle[] styles;
 
-	/**
-	 * Main report dataset.
-	 */
-	protected JRFillDataset mainDataset;
-
 	protected JRFillGroup[] groups;
 
 	protected JRFillSection missingFillSection;
@@ -220,20 +188,11 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 	protected JRVirtualizationContext virtualizationContext;
 	protected ElementEvaluationVirtualizationListener virtualizationListener;
 
-	protected FormatFactory formatFactory;
-
-	protected JRFillContext fillContext;
-
 	/**
 	 * Bound element maps indexed by {@link JREvaluationTime JREvaluationTime} objects.
 	 */
 	// we can use HashMap because the map is initialized in the beginning and doesn't change afterwards
 	protected HashMap<JREvaluationTime, LinkedHashMap<PageKey, LinkedMap<Object, EvaluationBoundAction>>> boundElements;
-
-	/**
-	 *
-	 */
-	protected JasperPrint jasperPrint;
 
 	protected JRPrintPage printPage;
 	
@@ -253,27 +212,6 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 	protected Map<Integer, JRBaseFiller> subfillers;
 
 	private Thread fillingThread;
-
-	protected JRCalculator calculator;
-
-	protected JRAbstractScriptlet scriptlet;
-
-	/**
-	 * Map of datasets ({@link JRFillDataset JRFillDataset} objects} indexed by name.
-	 */
-	protected Map<String,JRFillDataset> datasetMap;
-
-	/**
-	 *
-	 */
-	private JasperReportsContext jasperReportsContext;
-	private JRPropertiesUtil propertiesUtil;
-	private List<String> printTransferPropertyPrefixes;
-
-	/**
-	 * The report.
-	 */
-	protected JasperReport jasperReport;
 
 	private boolean bandOverFlowAllowed;
 
@@ -331,34 +269,12 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 		JRFillSubreport parentElement
 		) throws JRException
 	{
-		JRGraphEnvInitializer.initializeGraphEnv();
-
-		setJasperReportsContext(jasperReportsContext);
+		super(jasperReportsContext, jasperReport, initEvaluator,
+				FillerSubreportParent.forSubreport(parentElement));
 		
-		this.jasperReport = jasperReport;
-
-		/*   */
-		this.parentElement = parentElement;
-		if (parentElement != null)
+		if (jasperReport.getSectionType() != SectionTypeEnum.BAND)
 		{
-			this.parentFiller = parentElement.filler;
-		}
-
-		if (parentFiller == null)
-		{
-			fillContext = new JRFillContext(this);
-			printTransferPropertyPrefixes = readPrintTransferPropertyPrefixes();
-		}
-		else
-		{
-			fillContext = parentFiller.fillContext;
-			printTransferPropertyPrefixes = parentFiller.printTransferPropertyPrefixes;
-		}
-		
-		this.fillerId = fillContext.generatedFillerId();
-		if (log.isDebugEnabled())
-		{
-			log.debug("Fill " + fillerId + ": created for " + jasperReport.getName());
+			throw new JRRuntimeException("Unsupported report section type " + jasperReport.getSectionType());
 		}
 
 		/*   */
@@ -382,8 +298,6 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 		isFloatColumnFooter = jasperReport.isFloatColumnFooter();
 		whenResourceMissingType = jasperReport.getWhenResourceMissingTypeValue();
 
-		jasperPrint = new JasperPrint();
-
 		boolean isCreateBookmarks = 
 			propertiesUtil.getBooleanProperty(
 				jasperReport, 
@@ -401,34 +315,10 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 						)
 					);
 		}
-		
-		getPropertiesUtil().transferProperties(jasperReport, jasperPrint, 
-				JasperPrint.PROPERTIES_PRINT_TRANSFER_PREFIX);
-		
-		if (initEvaluator == null)
-		{
-			calculator = JRFillDataset.createCalculator(jasperReportsContext, jasperReport, jasperReport.getMainDataset());
-		}
-		else
-		{
-			calculator = new JRCalculator(initEvaluator);
-		}
-
-		/*   */
-		factory = new JRFillObjectFactory(this);
 
 		/*   */
 		missingFillBand = new JRFillBand(this, null, factory);
 		missingFillSection = new JRFillSection(this, null, factory);
-
-		createDatasets();
-		mainDataset = factory.getDataset(jasperReport.getMainDataset());
-		
-		if (parentFiller == null)
-		{
-			FillDatasetPosition masterFillPosition = new FillDatasetPosition(null);
-			mainDataset.setFillPosition(masterFillPosition);
-		}
 		
 		groups = mainDataset.groups;
 
@@ -436,49 +326,10 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 
 		String reportName = factory.getFiller().isSubreport() ? factory.getFiller().getJasperReport().getName() : null;
 		
-		background = factory.getBand(jasperReport.getBackground());
-		if (background != missingFillBand)
-		{
-			background.setOrigin(
-				new JROrigin(
-					reportName,
-					BandTypeEnum.BACKGROUND
-					)
-				);
-		}
-		
-		title = factory.getBand(jasperReport.getTitle());
-		if (title != missingFillBand)
-		{
-			title.setOrigin(
-				new JROrigin(
-					reportName,
-					BandTypeEnum.TITLE
-					)
-				);
-		}
-
-		pageHeader = factory.getBand(jasperReport.getPageHeader());
-		if (pageHeader != missingFillBand)
-		{
-			pageHeader.setOrigin(
-				new JROrigin(
-					reportName,
-					BandTypeEnum.PAGE_HEADER
-					)
-				);
-		}
-		
-		columnHeader = factory.getBand(jasperReport.getColumnHeader());
-		if (columnHeader != missingFillBand)
-		{
-			columnHeader.setOrigin(
-				new JROrigin(
-					reportName,
-					BandTypeEnum.COLUMN_HEADER
-					)
-				);
-		}
+		background = createFillBand(jasperReport.getBackground(), reportName, BandTypeEnum.BACKGROUND);
+		title = createFillBand(jasperReport.getTitle(), reportName, BandTypeEnum.TITLE);
+		pageHeader = createFillBand(jasperReport.getPageHeader(), reportName, BandTypeEnum.PAGE_HEADER);
+		columnHeader = createFillBand(jasperReport.getColumnHeader(), reportName, BandTypeEnum.COLUMN_HEADER);
 		
 		detailSection = factory.getSection(jasperReport.getDetailSection());
 		if (detailSection != missingFillSection)
@@ -491,96 +342,37 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 				);
 		}
 		
-		columnFooter = factory.getBand(jasperReport.getColumnFooter());
-		if (columnFooter != missingFillBand)
-		{
-			columnFooter.setOrigin(
-				new JROrigin(
-					reportName,
-					BandTypeEnum.COLUMN_FOOTER
-					)
-				);
-		}
+		columnFooter = createFillBand(jasperReport.getColumnFooter(), reportName, BandTypeEnum.COLUMN_FOOTER);
+		pageFooter = createFillBand(jasperReport.getPageFooter(), reportName, BandTypeEnum.PAGE_FOOTER);
+		lastPageFooter = createFillBand(jasperReport.getLastPageFooter(), reportName, BandTypeEnum.LAST_PAGE_FOOTER);
 		
-		pageFooter = factory.getBand(jasperReport.getPageFooter());
-		if (pageFooter != missingFillBand)
-		{
-			pageFooter.setOrigin(
-				new JROrigin(
-					reportName,
-					BandTypeEnum.PAGE_FOOTER
-					)
-				);
-		}
-		
-		lastPageFooter = factory.getBand(jasperReport.getLastPageFooter());
-		if (lastPageFooter != missingFillBand)
-		{
-			lastPageFooter.setOrigin(
-				new JROrigin(
-					reportName,
-					BandTypeEnum.LAST_PAGE_FOOTER
-					)
-				);
-		}
-		
-		summary = factory.getBand(jasperReport.getSummary());
+		summary = createFillBand(jasperReport.getSummary(), reportName, BandTypeEnum.SUMMARY);
 		if (summary != missingFillBand && summary.isEmpty())
 		{
 			summary = missingFillBand;
 		}
-		if (summary != missingFillBand)
-		{
-			summary.setOrigin(
-				new JROrigin(
-					reportName,
-					BandTypeEnum.SUMMARY
-					)
-				);
-		}
 		
-		noData = factory.getBand(jasperReport.getNoData());
-		if (noData != missingFillBand)
-		{
-			noData.setOrigin(
-				new JROrigin(
-					reportName,
-					BandTypeEnum.NO_DATA
-					)
-				);
-		}
+		noData = createFillBand(jasperReport.getNoData(), reportName, BandTypeEnum.NO_DATA);
 
-		mainDataset.initElementDatasets(factory);
-		initDatasets(factory);
-
-		mainDataset.checkVariableCalculationReqs(factory);
-
-		/*   */
-		mainDataset.setCalculator(calculator);
-		mainDataset.initCalculator();
-
+		initDatasets();
 		initBands();
 	}
 
-	/**
-	 * Returns the report parameters indexed by name.
-	 *
-	 * @return the report parameters map
-	 */
-	protected Map<String,JRFillParameter> getParametersMap()
+	@Override
+	protected JRFillObjectFactory createFillFactory()
 	{
-		return mainDataset.parametersMap;
+		return new JRFillObjectFactory(this);
 	}
-
 	
-	/**
-	 * Returns the map of parameter values.
-	 * 
-	 * @return the map of parameter values
-	 */
-	public Map<String,Object> getParameterValuesMap()
+	private JRFillBand createFillBand(JRBand reportBand, String reportName, BandTypeEnum bandType)
 	{
-		return mainDataset.getParameterValuesMap();
+		JRFillBand fillBand = factory.getBand(jasperReport.getBackground());
+		if (fillBand != missingFillBand)
+		{
+			JROrigin origin = new JROrigin(reportName, bandType);
+			fillBand.setOrigin(origin);
+		}
+		return fillBand;
 	}
 
 	/**
@@ -602,18 +394,6 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 	protected Map<String,JRFillVariable> getVariablesMap()
 	{
 		return mainDataset.variablesMap;
-	}
-
-
-	/**
-	 * Returns a report variable.
-	 *
-	 * @param variableName the variable name
-	 * @return the variable
-	 */
-	protected JRFillVariable getVariable(String variableName)
-	{
-		return mainDataset.getVariable(variableName);
 	}
 
 
@@ -700,48 +480,6 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 		noData.addNowEvaluationTimes(groupEvaluationTimes);
 	}
 
-
-	/**
-	 *
-	 */
-	public JasperReportsContext getJasperReportsContext()
-	{
-		return jasperReportsContext;
-	}
-
-	/**
-	 *
-	 */
-	protected void setJasperReportsContext(JasperReportsContext jasperReportsContext)
-	{
-		this.jasperReportsContext = jasperReportsContext;
-		this.propertiesUtil = JRPropertiesUtil.getInstance(jasperReportsContext);
-	}
-
-	/**
-	 *
-	 */
-	public JRPropertiesUtil getPropertiesUtil()
-	{
-		return propertiesUtil;
-	}
-
-	private List<String> readPrintTransferPropertyPrefixes()
-	{
-		List<JRPropertiesUtil.PropertySuffix> transferProperties = propertiesUtil.getProperties(
-				JasperPrint.PROPERTIES_PRINT_TRANSFER_PREFIX);
-		List<String> prefixes = new ArrayList<String>(transferProperties.size());
-		for (JRPropertiesUtil.PropertySuffix property : transferProperties)
-		{
-			String transferPrefix = property.getValue();
-			if (transferPrefix != null && transferPrefix.length() > 0)
-			{
-				prefixes.add(transferPrefix);
-			}
-		}
-		return prefixes;
-	}
-
 	protected List<String> getPrintTransferPropertyPrefixes()
 	{
 		return printTransferPropertyPrefixes;
@@ -781,57 +519,14 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 		return defaultStyle;
 	}
 
-	/**
-	 *
-	 */
-	protected boolean isSubreport()
-	{
-		return (parentFiller != null);
-	}
-
 	protected boolean isMasterReport()
 	{
-		return parentFiller == null;
+		return parent == null;
 	}
 
 	protected boolean isSubreportRunToBottom()
 	{
-		return parentElement != null && parentElement.isRunToBottom() != null
-				&& parentElement.isRunToBottom().booleanValue();
-	}
-	
-	/**
-	 *
-	 */
-	protected boolean isInterrupted()
-	{
-		return (isInterrupted || (parentFiller != null && parentFiller.isInterrupted()));
-	}
-
-	/**
-	 *
-	 */
-	protected void setInterrupted(boolean isInterrupted)
-	{
-		this.isInterrupted = isInterrupted;
-	}
-
-	protected void checkInterrupted()
-	{
-		if (Thread.interrupted())
-		{
-			setInterrupted(true);
-		}
-		
-		if (isInterrupted())
-		{
-			if (log.isDebugEnabled())
-			{
-				log.debug("Fill " + fillerId + ": interrupting");
-			}
-
-			throw new JRFillInterruptedException();
-		}
+		return parent != null && parent.isRunToBottom();
 	}
 	
 	/**
@@ -861,76 +556,16 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 	 * 
 	 * @param fillListener the listener to add
 	 */
+	@Override
 	public void addFillListener(FillListener fillListener)
 	{
 		this.fillListener = CompositeFillListener.addListener(this.fillListener, fillListener);
 	}
 
-	public JasperPrint fill(Map<String,Object> parameterValues, Connection conn) throws JRException
-	{
-		if (parameterValues == null)
-		{
-			parameterValues = new HashMap<String,Object>();
-		}
 
-		setConnectionParameterValue(parameterValues, conn);
-
-		return fill(parameterValues);
-	}
-
-
-	protected void setConnectionParameterValue(Map<String,Object> parameterValues, Connection conn)
-	{
-		mainDataset.setConnectionParameterValue(parameterValues, conn);
-	}
-
-
-	public JasperPrint fill(Map<String,Object> parameterValues, JRDataSource ds) throws JRException
-	{
-		if (parameterValues == null)
-		{
-			parameterValues = new HashMap<String,Object>();
-		}
-
-		setDatasourceParameterValue(parameterValues, ds);
-
-		return fill(parameterValues);
-	}
-
-
-	protected void setDatasourceParameterValue(Map<String,Object> parameterValues, JRDataSource ds)
-	{
-		mainDataset.setDatasourceParameterValue(parameterValues, ds);
-	}
-
-
+	@Override
 	public JasperPrint fill(Map<String,Object> parameterValues) throws JRException
 	{
-		//FIXMEBOOK
-		if (jasperReport.getSectionType() == SectionTypeEnum.PART)
-		{
-			InputStream is = null;
-			try
-			{
-				is = RepositoryUtil.getInstance(getJasperReportsContext()).getInputStreamFromLocation("BookReport.jrprint");
-				jasperPrint = (JasperPrint)JRLoader.loadObject(is);
-			}
-			finally
-			{
-				if (is != null)
-				{
-					try
-					{
-						is.close();
-					}
-					catch (IOException e)
-					{
-					}
-				}
-			}
-			return jasperPrint;
-		}
-		
 		if (parameterValues == null)
 		{
 			parameterValues = new HashMap<String,Object>();
@@ -953,9 +588,9 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 		{
 			createBoundElemementMaps();
 
-			if (parentFiller != null)
+			if (parent != null)
 			{
-				parentFiller.registerSubfiller(this);
+				parent.registerSubfiller(this);
 			}
 
 			setParameters(parameterValues);
@@ -1011,15 +646,15 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 			mainDataset.closeDatasource();
 			mainDataset.disposeParameterContributors();
 			
-			if (success && parentFiller == null)
+			if (success && parent == null)
 			{
 				// commit the cached data
 				fillContext.cacheDone();
 			}
 
-			if (parentFiller != null)
+			if (parent != null)
 			{
-				parentFiller.unregisterSubfiller(this);
+				parent.unregisterSubfiller(this);
 			}
 			
 			if (fillContext.isUsingVirtualizer())
@@ -1033,21 +668,12 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 			//kill the subreport filler threads
 			killSubfillerThreads();
 			
-			if (parentFiller == null)
+			if (parent == null)
 			{
 				fillContext.dispose();
 			}
 
 			JRResourcesFillUtil.revertResourcesFillContext(resourcesContext);
-		}
-	}
-
-	private void setParametersToContext(Map<String,Object> parameterValues)
-	{
-		JasperReportsContext localContext = LocalJasperReportsContext.getLocalContext(jasperReportsContext, parameterValues);
-		if (localContext != jasperReportsContext)
-		{
-			setJasperReportsContext(localContext);
 		}
 	}
 		
@@ -1334,7 +960,7 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 
 		setIgnorePagination(parameterValues);
 
-		if (parentFiller == null)
+		if (parent == null)
 		{
 			ReportContext reportContext = (ReportContext) parameterValues.get(JRParameter.REPORT_CONTEXT);
 			fillContext.setReportContext(reportContext);
@@ -1444,20 +1070,9 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 	}
 
 
-	private void setFormatFactory(Map<String,Object> parameterValues)
-	{
-		formatFactory = (FormatFactory)parameterValues.get(JRParameter.REPORT_FORMAT_FACTORY);
-		if (formatFactory == null)
-		{
-			formatFactory = DefaultFormatFactory.createFormatFactory(jasperReport.getFormatFactoryClass());
-			parameterValues.put(JRParameter.REPORT_FORMAT_FACTORY, formatFactory);
-		}
-	}
-
-
 	private void setIgnorePagination(Map<String,Object> parameterValues)
 	{
-		if (parentFiller == null)//pagination is driven by the master
+		if (parent == null)//pagination is driven by the master
 		{
 			Boolean isIgnorePaginationParam = (Boolean) parameterValues.get(JRParameter.IS_IGNORE_PAGINATION);
 			if (isIgnorePaginationParam != null)
@@ -1500,28 +1115,6 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 
 
 	/**
-	 * Returns the report locale.
-	 *
-	 * @return the report locale
-	 */
-	protected Locale getLocale()
-	{
-		return mainDataset.getLocale();
-	}
-
-
-	/**
-	 * Returns the report time zone.
-	 *
-	 * @return the report time zone
-	 */
-	protected TimeZone getTimeZone()
-	{
-		return mainDataset.timeZone;
-	}
-
-
-	/**
 	 * Returns the report resource bundle.
 	 *
 	 * @return the report resource bundle
@@ -1529,17 +1122,6 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 	protected ResourceBundle getResourceBundle()
 	{
 		return mainDataset.resourceBundle;
-	}
-
-
-	/**
-	 * Returns the report format factory.
-	 *
-	 * @return the report format factory
-	 */
-	protected FormatFactory getFormatFactory()
-	{
-		return formatFactory;
 	}
 
 
@@ -1809,24 +1391,11 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 
 
 	/**
-	 * Adds a variable calculation request.
-	 *
-	 * @param variableName
-	 *            the variable name
-	 * @param calculation
-	 *            the calculation type
-	 */
-	protected void addVariableCalculationReq(String variableName, CalculationEnum calculation)
-	{
-		mainDataset.addVariableCalculationReq(variableName, calculation);
-	}
-
-
-	/**
 	 * Cancells the fill process.
 	 *
 	 * @throws JRException
 	 */
+	@Override
 	public void cancelFill() throws JRException
 	{
 		if (log.isDebugEnabled())
@@ -1924,66 +1493,9 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 	}
 
 
-	/**
-	 * Evaluates an expression
-	 * @param expression the expression
-	 * @param evaluation the evaluation type
-	 * @return the evaluation result
-	 * @throws JRException
-	 */
-	protected Object evaluateExpression(JRExpression expression, byte evaluation) throws JRException
-	{
-		return mainDataset.evaluateExpression(expression, evaluation);
-	}
-
-	protected JRFillExpressionEvaluator getExpressionEvaluator()
-	{
-		return calculator;
-	}
-
-	private void createDatasets() throws JRException
-	{
-		datasetMap = new HashMap<String,JRFillDataset>();
-
-		JRDataset[] datasets = jasperReport.getDatasets();
-		if (datasets != null && datasets.length > 0)
-		{
-			for (int i = 0; i < datasets.length; i++)
-			{
-				JRFillDataset fillDataset = factory.getDataset(datasets[i]);
-				fillDataset.createCalculator(jasperReport);
-
-				datasetMap.put(datasets[i].getName(), fillDataset);
-			}
-		}
-	}
-
-
-	private void initDatasets(JRFillObjectFactory factory)
-	{
-		for (Iterator<JRFillDataset> it = datasetMap.values().iterator(); it.hasNext();)
-		{
-			JRFillDataset dataset = it.next();
-			dataset.inheritFromMain();
-			dataset.initElementDatasets(factory);
-		}
-	}
-
-
 	protected WhenResourceMissingTypeEnum getWhenResourceMissingType()
 	{
 		return mainDataset.whenResourceMissingType;
-	}
-
-
-	/**
-	 * Returns the report.
-	 *
-	 * @return the report
-	 */
-	public JasperReport getJasperReport()
-	{
-		return jasperReport;
 	}
 
 
@@ -2000,13 +1512,14 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 
 	protected int getMasterColumnCount()
 	{
-		JRBaseFiller filler = parentFiller;
+		FillerParent fillerParent = parent;
 		int colCount = 1;
 
-		while (filler != null)
+		while (fillerParent != null)
 		{
-			colCount *= filler.columnCount;
-			filler = filler.parentFiller;
+			JRBaseFiller filler = (JRBaseFiller) fillerParent.getFiller();
+			colCount *= filler.columnCount;//FIXMEBOOK
+			fillerParent = filler.parent;
 		}
 
 		return colCount;
@@ -2020,16 +1533,11 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 	public JRBaseFiller getMasterFiller()
 	{
 		JRBaseFiller filler = this;
-		while (filler.parentFiller != null)
+		while (filler.parent != null)
 		{
-			filler = filler.parentFiller;
+			filler = (JRBaseFiller) filler.parent.getFiller();//FIXMEBOOK
 		}
 		return filler;
-	}
-
-	public JRFillDataset getMainDataset()
-	{
-		return mainDataset;
 	}
 
 
@@ -2086,7 +1594,7 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 	protected void subreportPageFilled(JRPrintPage subreportPage)
 	{
 		PageKey subreportKey = new PageKey(subreportPage);
-		PageKey parentKey = new PageKey(parentFiller.printPage);
+		PageKey parentKey = new PageKey(((JRBaseFiller) parent.getFiller()).printPage);//FIXMEBOOK
 		
 		// move all delayed elements from the subreport page to the master page
 		moveBoundActions(subreportKey, parentKey);
@@ -2130,7 +1638,8 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 		}
 	}
 
-	protected boolean isPageFinal(int pageIdx)
+	@Override
+	public boolean isPageFinal(int pageIdx)
 	{
 		JRPrintPage page = jasperPrint.getPages().get(pageIdx);
 		return !hasBoundActions(page);
@@ -2326,11 +1835,6 @@ public abstract class JRBaseFiller implements JRDefaultStyleProvider
 		}
 		
 		return moved;
-	}
-
-	public JRFillContext getFillContext()
-	{
-		return fillContext;
 	}
 	
 	protected int getFillerId()

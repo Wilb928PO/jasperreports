@@ -99,7 +99,7 @@ public class JRFillDataset implements JRDataset, DatasetFillContext
 	/**
 	 * The filler that created this object.
 	 */
-	private final JRBaseFiller filler;
+	private final BaseReportFiller filler;
 	
 	/**
 	 *
@@ -261,7 +261,7 @@ public class JRFillDataset implements JRDataset, DatasetFillContext
 	 * @param dataset the template dataset
 	 * @param factory the fill object factory
 	 */
-	public JRFillDataset(JRBaseFiller filler, JRDataset dataset, JRFillObjectFactory factory)
+	public JRFillDataset(BaseReportFiller filler, JRDataset dataset, JRFillObjectFactory factory)
 	{
 		factory.put(dataset, this);
 		
@@ -286,7 +286,7 @@ public class JRFillDataset implements JRDataset, DatasetFillContext
 		setGroups(dataset, factory);
 	}
 
-	
+
 	private void setParameters(JRDataset dataset, JRFillObjectFactory factory)
 	{
 		JRParameter[] jrParameters = dataset.getParameters();

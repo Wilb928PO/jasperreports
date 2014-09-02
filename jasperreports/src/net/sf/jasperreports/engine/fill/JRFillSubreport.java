@@ -63,6 +63,7 @@ import net.sf.jasperreports.engine.design.JRValidationFault;
 import net.sf.jasperreports.engine.design.JRVerifier;
 import net.sf.jasperreports.engine.type.ModeEnum;
 import net.sf.jasperreports.engine.type.OverflowType;
+import net.sf.jasperreports.engine.type.SectionTypeEnum;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.engine.util.JRSingletonCache;
 import net.sf.jasperreports.engine.util.JRStyleResolver;
@@ -328,36 +329,7 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 			}
 			else
 			{
-				if (source instanceof net.sf.jasperreports.engine.JasperReport)
-				{
-					report = (JasperReport)source;
-				}
-				else if (source instanceof java.io.InputStream)
-				{
-					report = (JasperReport)JRLoader.loadObject((InputStream)source);
-				}
-				else if (source instanceof java.net.URL)
-				{
-					report = (JasperReport)JRLoader.loadObject((URL)source);
-				}
-				else if (source instanceof java.io.File)
-				{
-					report = (JasperReport)JRLoader.loadObject((File)source);
-				}
-				else if (source instanceof java.lang.String)
-				{
-					report = RepositoryUtil.getInstance(filler.getJasperReportsContext()).getReport(filler.getFillContext().getReportContext(), (String)source);
-//						(JasperReport)JRLoader.loadObjectFromLocation(
-//							(String)source, 
-//							filler.reportClassLoader,
-//							filler.urlHandlerFactory,
-//							filler.fileResolver
-//							);
-				}
-				else
-				{
-					throw new JRRuntimeException("Unknown subreport source class " + source.getClass().getName());
-				}
+				report = loadReport(source, filler);
 				
 				if (isUsingCache)
 				{
@@ -366,6 +338,42 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 			}
 		}
 		
+		return report;
+	}
+
+	public static JasperReport loadReport(Object source, BaseReportFiller filler) throws JRException
+	{
+		JasperReport report;
+		if (source instanceof net.sf.jasperreports.engine.JasperReport)
+		{
+			report = (JasperReport)source;
+		}
+		else if (source instanceof java.io.InputStream)
+		{
+			report = (JasperReport)JRLoader.loadObject((InputStream)source);
+		}
+		else if (source instanceof java.net.URL)
+		{
+			report = (JasperReport)JRLoader.loadObject((URL)source);
+		}
+		else if (source instanceof java.io.File)
+		{
+			report = (JasperReport)JRLoader.loadObject((File)source);
+		}
+		else if (source instanceof java.lang.String)
+		{
+			report = RepositoryUtil.getInstance(filler.getJasperReportsContext()).getReport(filler.getFillContext().getReportContext(), (String)source);
+//						(JasperReport)JRLoader.loadObjectFromLocation(
+//							(String)source, 
+//							filler.reportClassLoader,
+//							filler.urlHandlerFactory,
+//							filler.fileResolver
+//							);
+		}
+		else
+		{
+			throw new JRRuntimeException("Unknown subreport source class " + source.getClass().getName());
+		}
 		return report;
 	}
 
@@ -471,6 +479,11 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 			log.debug("Fill " + filler.fillerId + ": creating subreport filler");
 		}
 		
+		if (jasperReport.getSectionType() != SectionTypeEnum.BAND)
+		{
+			throw new JRRuntimeException("Unsupported subreport section type " + jasperReport.getSectionType());
+		}
+		
 		switch (jasperReport.getPrintOrderValue())
 		{
 			case HORIZONTAL :
@@ -510,7 +523,7 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 	 * @throws JRException
 	 */
 	public static Map<String, Object> getParameterValues(
-			JRBaseFiller filler, 
+			BaseReportFiller filler, 
 			JRExpression parametersMapExpression, 
 			JRDatasetParameter[] subreportParameters, 
 			byte evaluation, 
@@ -540,7 +553,7 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 	 */
 	public static Map<String, Object> getParameterValues(
 			//TODO using the filler or current dataset?
-			JRBaseFiller filler, 
+			BaseReportFiller filler, 
 			JRFillExpressionEvaluator expressionEvaluator,
 			JRExpression parametersMapExpression, 
 			JRDatasetParameter[] subreportParameters, 
@@ -976,7 +989,7 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 				topMargin += parentFiller.jasperReport.getTopMargin();
 				bottomMargin += parentFiller.jasperReport.getBottomMargin();
 				
-				parentFiller = parentFiller.parentFiller;
+				parentFiller = parentFiller.parent == null ? null : (JRBaseFiller) parentFiller.parent.getFiller();//FIXMEBOOK
 			}
 			while (parentFiller != null);
 			

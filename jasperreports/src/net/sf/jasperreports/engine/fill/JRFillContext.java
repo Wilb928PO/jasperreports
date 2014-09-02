@@ -60,7 +60,7 @@ import net.sf.jasperreports.engine.util.Pair;
  */
 public class JRFillContext
 {
-	private final JRBaseFiller masterFiller;
+	private final BaseReportFiller masterFiller;
 	
 	private Map<Object,JRPrintImage> loadedImages;
 	private Map<Object,JasperReport> loadedSubreports;
@@ -95,7 +95,7 @@ public class JRFillContext
 	/**
 	 * Constructs a fill context.
 	 */
-	public JRFillContext(JRBaseFiller masterFiller)
+	public JRFillContext(BaseReportFiller masterFiller)
 	{
 		this.masterFiller = masterFiller;
 		this.jasperReportsContext = masterFiller.getJasperReportsContext();
@@ -108,7 +108,7 @@ public class JRFillContext
 		FontUtil.getInstance(jasperReportsContext).resetThreadMissingFontsCache();
 	}
 
-	public JRBaseFiller getMasterFiller()
+	public BaseReportFiller getMasterFiller()
 	{
 		return masterFiller;
 	}
@@ -540,7 +540,7 @@ public class JRFillContext
 	public void updateBookmark(JRPrintElement element)
 	{
 		// bookmarks are in the master filler
-		masterFiller.updateBookmark(element);
+		((JRBaseFiller) masterFiller).updateBookmark(element);//FIXMEBOOK
 	}
 	
 	public Object getFillCache(String key)

@@ -499,7 +499,7 @@ public class JRFillBand extends JRFillElementContainer implements JRBand, JROrig
 		
 		if (isPageBreakInhibited && filler.isSubreport())
 		{
-			isPageBreakInhibited = filler.parentElement.getBand().isPageBreakInhibited();
+			isPageBreakInhibited = filler.parent.isPageBreakInhibited();
 		}
 		
 		return isPageBreakInhibited;
