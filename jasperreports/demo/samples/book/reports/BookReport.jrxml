@@ -6,11 +6,35 @@
 			<printWhenExpression>Boolean.TRUE</printWhenExpression>
 			<p:subreportPart xmlns:p="http://jasperreports.sourceforge.net/jasperreports/parts" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/parts http://jasperreports.sourceforge.net/xsd/parts.xsd" usingCache="true">
 				<parametersMapExpression>null</parametersMapExpression>
-				<subreportParameter name="caisa">
-					<subreportParameterExpression>"mdeah"</subreportParameterExpression>
+				<subreportParameter name="REPORT_DATA_SOURCE">
+					<subreportParameterExpression>new net.sf.jasperreports.engine.JREmptyDataSource(2)</subreportParameterExpression>
 				</subreportParameter>
 				<returnValue subreportVariable="var1" toVariable="PAGE_NUMBER" calculation="Sum"/>
-				<subreportExpression>"dede"</subreportExpression>
+				<subreportExpression>"build/reports/Report1.jasper"</subreportExpression>
+			</p:subreportPart>
+		</part>
+		<part>
+			<property name="da" value="yes"/>
+			<printWhenExpression>Boolean.TRUE</printWhenExpression>
+			<p:subreportPart xmlns:p="http://jasperreports.sourceforge.net/jasperreports/parts" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/parts http://jasperreports.sourceforge.net/xsd/parts.xsd" usingCache="true">
+				<parametersMapExpression>null</parametersMapExpression>
+				<subreportParameter name="REPORT_DATA_SOURCE">
+					<subreportParameterExpression>new net.sf.jasperreports.engine.JREmptyDataSource(2)</subreportParameterExpression>
+				</subreportParameter>
+				<returnValue subreportVariable="var1" toVariable="PAGE_NUMBER" calculation="Sum"/>
+				<subreportExpression>"build/reports/Report2.jasper"</subreportExpression>
+			</p:subreportPart>
+		</part>
+		<part>
+			<property name="da" value="yes"/>
+			<printWhenExpression>Boolean.TRUE</printWhenExpression>
+			<p:subreportPart xmlns:p="http://jasperreports.sourceforge.net/jasperreports/parts" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/parts http://jasperreports.sourceforge.net/xsd/parts.xsd" usingCache="true">
+				<parametersMapExpression>null</parametersMapExpression>
+				<subreportParameter name="REPORT_DATA_SOURCE">
+					<subreportParameterExpression>new net.sf.jasperreports.engine.JREmptyDataSource(2)</subreportParameterExpression>
+				</subreportParameter>
+				<returnValue subreportVariable="var1" toVariable="PAGE_NUMBER" calculation="Sum"/>
+				<subreportExpression>"build/reports/Report3.jasper"</subreportExpression>
 			</p:subreportPart>
 		</part>
 	</detail>
