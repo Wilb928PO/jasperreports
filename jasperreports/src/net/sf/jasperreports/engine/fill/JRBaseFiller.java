@@ -373,7 +373,7 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 	
 	private JRFillBand createFillBand(JRBand reportBand, String reportName, BandTypeEnum bandType)
 	{
-		JRFillBand fillBand = factory.getBand(jasperReport.getBackground());
+		JRFillBand fillBand = factory.getBand(reportBand);
 		if (fillBand != missingFillBand)
 		{
 			JROrigin origin = new JROrigin(reportName, bandType);
