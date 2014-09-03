@@ -354,7 +354,7 @@ public class PartReportFiller extends BaseReportFiller
 		jasperPrint.getPages().addAll(partPages);
 		
 		SimplePrintPart part = new SimplePrintPart();
-		part.setName(jasperPrint.getName());
+		part.setName(partPrint.getName());
 		
 		SimplePrintPageFormat pageFormat = new SimplePrintPageFormat();
 		pageFormat.setPageWidth(partPrint.getPageWidth());
