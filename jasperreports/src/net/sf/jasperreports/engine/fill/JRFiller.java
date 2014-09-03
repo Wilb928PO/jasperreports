@@ -199,8 +199,17 @@ public final class JRFiller
 			filler = createBandReportFiller(jasperReportsContext, jasperReport);
 			break;
 		case PART:
-			filler = new PartReportFiller(jasperReportsContext, jasperReport);
+		{
+			if (JRPropertiesUtil.getInstance(jasperReportsContext).getBooleanProperty(jasperReport, "net.sf.jasperreports.book.fake.fill", false))
+			{
+				filler = createBandReportFiller(jasperReportsContext, jasperReport);
+			}
+			else
+			{
+				filler = new PartReportFiller(jasperReportsContext, jasperReport);
+			}
 			break;
+		}
 		default:
 			throw new JRRuntimeException("Unknown report section type " + jasperReport.getSectionType());
 		}
