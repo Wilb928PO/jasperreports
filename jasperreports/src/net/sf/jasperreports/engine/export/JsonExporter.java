@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.SortedMap;
 
 import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRAbstractExporter;
@@ -41,6 +42,7 @@ import net.sf.jasperreports.engine.JRPrintPage;
 import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.PrintBookmark;
+import net.sf.jasperreports.engine.PrintPart;
 import net.sf.jasperreports.engine.ReportContext;
 import net.sf.jasperreports.engine.util.HyperlinkData;
 import net.sf.jasperreports.export.ExporterInputItem;
@@ -53,6 +55,7 @@ import net.sf.jasperreports.web.util.JacksonUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.fasterxml.jackson.core.io.JsonStringEncoder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -237,6 +240,7 @@ public class JsonExporter extends JRAbstractExporter<JsonReportConfiguration, Js
 		Collection<JRPrintElement> elements = page.getElements();
 		exportElements(elements);
 		exportBookmarks();
+		exportParts();
 		exportWebFonts();
 		exportHyperlinks();
 
@@ -293,6 +297,56 @@ public class JsonExporter extends JRAbstractExporter<JsonReportConfiguration, Js
 			writer.write("\"type\": \"bookmarks\",");
 			writer.write("\"bookmarks\": " + jacksonUtil.getJsonString(bookmarks));
 
+			writer.write("}");
+		}
+	}
+
+	protected void exportParts() throws IOException
+	{
+		SortedMap<Integer, PrintPart> parts = jasperPrint.getParts();
+
+		if (parts != null && parts.size() > 0)
+		{
+			if (gotFirstJsonFragment)
+			{
+				writer.write(",\n");
+			} else
+			{
+				gotFirstJsonFragment = true;
+			}
+			writer.write("\"parts_" + (parts.hashCode() & 0x7FFFFFFF) + "\": {");
+
+			writer.write("\"id\": \"parts_" + (parts.hashCode() & 0x7FFFFFFF) + "\",");
+			writer.write("\"type\": \"reportparts\",");
+			writer.write("\"parts\": [");
+
+			if (parts.firstKey() > 0)
+			{
+				writer.write("{\"idx\": 0, \"name\": \"");
+				writer.write(JsonStringEncoder.getInstance().quoteAsString(jasperPrint.getName()));
+				writer.write("\"}");
+				if (parts.size() > 1)
+				{
+					writer.write(",");
+				}
+			}
+
+			Iterator<Integer> it = parts.keySet().iterator();
+			Integer idx;
+
+			while (it.hasNext())
+			{
+				idx = it.next();
+				writer.write("{\"idx\": " + idx + ", \"name\": \"");
+				writer.write(JsonStringEncoder.getInstance().quoteAsString(parts.get(idx).getName()));
+				writer.write("\"}");
+				if (it.hasNext())
+				{
+					writer.write(",");
+				}
+			}
+
+			writer.write("]");
 			writer.write("}");
 		}
 	}
