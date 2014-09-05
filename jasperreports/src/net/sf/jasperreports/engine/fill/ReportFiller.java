@@ -51,4 +51,7 @@ public interface ReportFiller
 
 	boolean isPageFinal(int pageIndex);
 
+	//FIXMEBOOK needed in JRS?
+	JRFillContext getFillContext();
+
 }
