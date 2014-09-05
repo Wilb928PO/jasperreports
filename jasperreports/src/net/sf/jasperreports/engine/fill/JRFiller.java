@@ -35,6 +35,7 @@ import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.JasperReportsContext;
+import net.sf.jasperreports.engine.type.SectionTypeEnum;
 
 
 /**
@@ -194,7 +195,9 @@ public final class JRFiller
 	public static ReportFiller createReportFiller(JasperReportsContext jasperReportsContext, JasperReport jasperReport) throws JRException
 	{
 		ReportFiller filler;
-		switch (jasperReport.getSectionType())
+		SectionTypeEnum sectionType = jasperReport.getSectionType();
+		sectionType = sectionType == null ? SectionTypeEnum.BAND : sectionType;
+		switch (sectionType)
 		{
 		case BAND:
 			filler = createBandReportFiller(jasperReportsContext, jasperReport);
