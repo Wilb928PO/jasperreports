@@ -32,9 +32,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import net.sf.jasperreports.engine.JRAbstractScriptlet;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRDataset;
@@ -50,6 +47,9 @@ import net.sf.jasperreports.engine.util.DefaultFormatFactory;
 import net.sf.jasperreports.engine.util.FormatFactory;
 import net.sf.jasperreports.engine.util.JRGraphEnvInitializer;
 import net.sf.jasperreports.engine.util.LocalJasperReportsContext;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
@@ -98,6 +98,7 @@ public abstract class BaseReportFiller implements ReportFiller
 	
 	private boolean isInterrupted;
 
+
 	public BaseReportFiller(JasperReportsContext jasperReportsContext, JasperReport jasperReport, 
 			DatasetExpressionEvaluator initEvaluator, FillerParent parent) throws JRException
 	{
@@ -134,12 +135,16 @@ public abstract class BaseReportFiller implements ReportFiller
 		{
 			calculator = new JRCalculator(initEvaluator);
 		}
-		
+
 		jasperPrint = new JasperPrint();
 		propertiesUtil.transferProperties(jasperReport, jasperPrint, 
 				JasperPrint.PROPERTIES_PRINT_TRANSFER_PREFIX);
 		
 		factory = createFillFactory();
+	}
+	
+	protected void fixmeInit() throws JRException
+	{
 
 		createDatasets();
 		mainDataset = factory.getDataset(jasperReport.getMainDataset());

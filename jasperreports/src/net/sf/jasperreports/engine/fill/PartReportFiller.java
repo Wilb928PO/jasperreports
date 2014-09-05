@@ -63,9 +63,21 @@ public class PartReportFiller extends BaseReportFiller
 	private FillParts detailParts;
 	private List<GroupFillParts> groupParts;
 	
-	public PartReportFiller(JasperReportsContext jasperReportsContext, JasperReport jasperReport) throws JRException
+	public static PartReportFiller getInstance(JasperReportsContext jasperReportsContext, JasperReport jasperReport) throws JRException
+	{
+		PartReportFiller filler = new PartReportFiller(jasperReportsContext, jasperReport);
+		filler.fixmeInit();
+		return filler;
+	}
+
+	private PartReportFiller(JasperReportsContext jasperReportsContext, JasperReport jasperReport) throws JRException
 	{
 		super(jasperReportsContext, jasperReport, null, null);
+	}
+
+	protected void fixmeInit() throws JRException
+	{
+		super.fixmeInit();
 		
 		if (jasperReport.getSectionType() != SectionTypeEnum.PART)
 		{

@@ -183,7 +183,8 @@ public final class JRFiller
 			}
 			case VERTICAL :
 			{
-				filler = new JRVerticalFiller(jasperReportsContext, jasperReport);
+				//filler = new JRVerticalFiller(jasperReportsContext, jasperReport);
+				filler = JRVerticalFiller.getInstance(jasperReportsContext, jasperReport);
 				break;
 			}
 		}
@@ -200,14 +201,8 @@ public final class JRFiller
 			break;
 		case PART:
 		{
-			if (JRPropertiesUtil.getInstance(jasperReportsContext).getBooleanProperty(jasperReport, "net.sf.jasperreports.book.fake.fill", false))
-			{
-				filler = createBandReportFiller(jasperReportsContext, jasperReport);
-			}
-			else
-			{
-				filler = new PartReportFiller(jasperReportsContext, jasperReport);
-			}
+			//filler = new PartReportFiller(jasperReportsContext, jasperReport);
+			filler = PartReportFiller.getInstance(jasperReportsContext, jasperReport);
 			break;
 		}
 		default:

@@ -29,8 +29,6 @@
 
 package net.sf.jasperreports.engine.fill;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.text.Format;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -85,11 +83,9 @@ import net.sf.jasperreports.engine.type.SectionTypeEnum;
 import net.sf.jasperreports.engine.type.WhenNoDataTypeEnum;
 import net.sf.jasperreports.engine.type.WhenResourceMissingTypeEnum;
 import net.sf.jasperreports.engine.util.JRDataUtils;
-import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.engine.util.JRStyledTextParser;
 import net.sf.jasperreports.engine.util.LinkedMap;
 import net.sf.jasperreports.engine.util.UniformPrintElementVisitor;
-import net.sf.jasperreports.repo.RepositoryUtil;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -256,30 +252,22 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 	protected JRBaseFiller(
 		JasperReportsContext jasperReportsContext, 
 		JasperReport jasperReport, 
-		JREvaluator initEvaluator, 
-		JRFillSubreport parentElement
-		) throws JRException
-	{
-		this(jasperReportsContext, jasperReport, (DatasetExpressionEvaluator) initEvaluator, parentElement);
-	}
-
-	/**
-	 *
-	 */
-	protected JRBaseFiller(
-		JasperReportsContext jasperReportsContext, 
-		JasperReport jasperReport, 
 		DatasetExpressionEvaluator initEvaluator, 
 		JRFillSubreport parentElement
 		) throws JRException
 	{
 		super(jasperReportsContext, jasperReport, initEvaluator,
 				FillerSubreportParent.forSubreport(parentElement));
+	}
+	
+	/**
+	 *
+	 */
+	protected void fixmeInit() throws JRException
+	{
+		super.fixmeInit();
 		
-		if (
-			jasperReport.getSectionType() != SectionTypeEnum.BAND
-			&& !JRPropertiesUtil.getInstance(jasperReportsContext).getBooleanProperty(jasperReport, "net.sf.jasperreports.book.fake.fill", false)
-			)
+		if (jasperReport.getSectionType() != SectionTypeEnum.BAND)
 		{
 			throw new JRRuntimeException("Unsupported report section type " + jasperReport.getSectionType());
 		}
@@ -364,6 +352,118 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 		initDatasets();
 		initBands();
 	}
+
+//	/**
+//	 *
+//	 */
+//	protected JRBaseFiller(
+//		JasperReportsContext jasperReportsContext, 
+//		JasperReport jasperReport, 
+//		JREvaluator initEvaluator, 
+//		JRFillSubreport parentElement
+//		) throws JRException
+//	{
+//		this(jasperReportsContext, jasperReport, (DatasetExpressionEvaluator) initEvaluator, parentElement);
+//	}
+//
+//	/**
+//	 *
+//	 */
+//	protected JRBaseFiller(
+//		JasperReportsContext jasperReportsContext, 
+//		JasperReport jasperReport, 
+//		DatasetExpressionEvaluator initEvaluator, 
+//		JRFillSubreport parentElement
+//		) throws JRException
+//	{
+//		super(jasperReportsContext, jasperReport, initEvaluator,
+//				FillerSubreportParent.forSubreport(parentElement));
+//		
+//		if (jasperReport.getSectionType() != SectionTypeEnum.BAND)
+//		{
+//			throw new JRRuntimeException("Unsupported report section type " + jasperReport.getSectionType());
+//		}
+//
+//		/*   */
+//		name = jasperReport.getName();
+//		columnCount = jasperReport.getColumnCount();
+//		printOrder = jasperReport.getPrintOrderValue();
+//		columnDirection = jasperReport.getColumnDirection();
+//		pageWidth = jasperReport.getPageWidth();
+//		pageHeight = jasperReport.getPageHeight();
+//		orientation = jasperReport.getOrientationValue();
+//		whenNoDataType = jasperReport.getWhenNoDataTypeValue();
+//		columnWidth = jasperReport.getColumnWidth();
+//		columnSpacing = jasperReport.getColumnSpacing();
+//		leftMargin = jasperReport.getLeftMargin();
+//		rightMargin = jasperReport.getRightMargin();
+//		topMargin = jasperReport.getTopMargin();
+//		bottomMargin = jasperReport.getBottomMargin();
+//		isTitleNewPage = jasperReport.isTitleNewPage();
+//		isSummaryNewPage = jasperReport.isSummaryNewPage();
+//		isSummaryWithPageHeaderAndFooter = jasperReport.isSummaryWithPageHeaderAndFooter();
+//		isFloatColumnFooter = jasperReport.isFloatColumnFooter();
+//		whenResourceMissingType = jasperReport.getWhenResourceMissingTypeValue();
+//
+//		boolean isCreateBookmarks = 
+//			propertiesUtil.getBooleanProperty(
+//				jasperReport, 
+//				JasperPrint.PROPERTY_CREATE_BOOKMARKS,
+//				false
+//				);
+//		if (isCreateBookmarks)
+//		{
+//			bookmarkHelper = 
+//				new BookmarkHelper(
+//					propertiesUtil.getBooleanProperty(
+//						jasperReport, 
+//						JasperPrint.PROPERTY_COLLAPSE_MISSING_BOOKMARK_LEVELS,
+//						false
+//						)
+//					);
+//		}
+//
+//		/*   */
+//		missingFillBand = new JRFillBand(this, null, factory);
+//		missingFillSection = new JRFillSection(this, null, factory);
+//		
+//		groups = mainDataset.groups;
+//
+//		createReportTemplates(factory);
+//
+//		String reportName = factory.getFiller().isSubreport() ? factory.getFiller().getJasperReport().getName() : null;
+//		
+//		background = createFillBand(jasperReport.getBackground(), reportName, BandTypeEnum.BACKGROUND);
+//		title = createFillBand(jasperReport.getTitle(), reportName, BandTypeEnum.TITLE);
+//		pageHeader = createFillBand(jasperReport.getPageHeader(), reportName, BandTypeEnum.PAGE_HEADER);
+//		columnHeader = createFillBand(jasperReport.getColumnHeader(), reportName, BandTypeEnum.COLUMN_HEADER);
+//		
+//		detailSection = factory.getSection(jasperReport.getDetailSection());
+//		if (detailSection != missingFillSection)
+//		{
+//			detailSection.setOrigin(
+//				new JROrigin(
+//					reportName,
+//					BandTypeEnum.DETAIL
+//					)
+//				);
+//		}
+//		
+//		columnFooter = createFillBand(jasperReport.getColumnFooter(), reportName, BandTypeEnum.COLUMN_FOOTER);
+//		pageFooter = createFillBand(jasperReport.getPageFooter(), reportName, BandTypeEnum.PAGE_FOOTER);
+//		lastPageFooter = createFillBand(jasperReport.getLastPageFooter(), reportName, BandTypeEnum.LAST_PAGE_FOOTER);
+//		
+//		summary = createFillBand(jasperReport.getSummary(), reportName, BandTypeEnum.SUMMARY);
+//		if (summary != missingFillBand && summary.isEmpty())
+//		{
+//			summary = missingFillBand;
+//		}
+//		
+//		noData = createFillBand(jasperReport.getNoData(), reportName, BandTypeEnum.NO_DATA);
+//
+//		initDatasets();
+//		initBands();
+//	}
 
 	@Override
 	protected JRFillObjectFactory createFillFactory()
@@ -573,31 +673,6 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 	@Override
 	public JasperPrint fill(Map<String,Object> parameterValues) throws JRException
 	{
-		//FIXMEBOOK
-		if (jasperReport.getSectionType() == SectionTypeEnum.PART)
-		{
-			InputStream is = null;
-			try
-			{
-				is = RepositoryUtil.getInstance(getJasperReportsContext()).getInputStreamFromLocation("BookReport.jrprint");
-				jasperPrint = (JasperPrint)JRLoader.loadObject(is);
-			}
-			finally
-			{
-				if (is != null)
-				{
-					try
-					{
-						is.close();
-					}
-					catch (IOException e)
-					{
-					}
-				}
-			}
-			return jasperPrint;
-		}
-
 		if (parameterValues == null)
 		{
 			parameterValues = new HashMap<String,Object>();
