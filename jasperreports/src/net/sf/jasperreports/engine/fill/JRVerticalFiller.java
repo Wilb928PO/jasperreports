@@ -54,45 +54,32 @@ public class JRVerticalFiller extends JRBaseFiller
 	/**
 	 *
 	 */
-	protected static JRVerticalFiller getInstance(
+	protected JRVerticalFiller(
 		JasperReportsContext jasperReportsContext, 
 		JasperReport jasperReport
 		) throws JRException
 	{
-		return getInstance(jasperReportsContext, jasperReport, null, null);
+		this(jasperReportsContext, jasperReport, null, null);
 	}
 
 	/**
 	 *
 	 */
-	protected static JRVerticalFiller getInstance(
-		JasperReportsContext jasperReportsContext,
+	protected JRVerticalFiller(
+		JasperReportsContext jasperReportsContext, 
 		JasperReport jasperReport, 
-		DatasetExpressionEvaluator evaluator, 
 		JRFillSubreport parentElement
 		) throws JRException
 	{
-		JRVerticalFiller filler = new JRVerticalFiller(jasperReportsContext, jasperReport, evaluator, parentElement);
-		filler.fixmeInit();
-		filler.setPageHeight(filler.pageHeight);
-		return filler;
+		super(jasperReportsContext, jasperReport, null, parentElement);
+
+		setPageHeight(pageHeight);
 	}
 
 	/**
 	 *
 	 */
-	private JRVerticalFiller(
-		JasperReportsContext jasperReportsContext, 
-		JasperReport jasperReport
-		) throws JRException
-	{
-		super(jasperReportsContext, jasperReport, null, null);
-	}
-
-	/**
-	 *
-	 */
-	private JRVerticalFiller(
+	protected JRVerticalFiller(
 		JasperReportsContext jasperReportsContext,
 		JasperReport jasperReport, 
 		DatasetExpressionEvaluator evaluator, 
@@ -100,68 +87,22 @@ public class JRVerticalFiller extends JRBaseFiller
 		) throws JRException
 	{
 		super(jasperReportsContext, jasperReport, evaluator, parentElement);
+
+		setPageHeight(pageHeight);
 	}
 
 	/**
 	 *
 	 */
-	protected void fixmeInit() throws JRException
+	protected JRVerticalFiller(
+		JasperReportsContext jasperReportsContext, 
+		JasperReport jasperReport, 
+		JREvaluator evaluator, 
+		JRFillSubreport parentElement
+		) throws JRException
 	{
-		super.fixmeInit();
+		this(jasperReportsContext, jasperReport, (DatasetExpressionEvaluator) evaluator, parentElement);
 	}
-
-//	/**
-//	 *
-//	 */
-//	protected JRVerticalFiller(
-//		JasperReportsContext jasperReportsContext, 
-//		JasperReport jasperReport
-//		) throws JRException
-//	{
-//		this(jasperReportsContext, jasperReport, null, null);
-//	}
-//
-//	/**
-//	 *
-//	 */
-//	protected JRVerticalFiller(
-//		JasperReportsContext jasperReportsContext, 
-//		JasperReport jasperReport, 
-//		JRFillSubreport parentElement
-//		) throws JRException
-//	{
-//		super(jasperReportsContext, jasperReport, null, parentElement);
-//
-//		setPageHeight(pageHeight);
-//	}
-//
-//	/**
-//	 *
-//	 */
-//	protected JRVerticalFiller(
-//		JasperReportsContext jasperReportsContext,
-//		JasperReport jasperReport, 
-//		DatasetExpressionEvaluator evaluator, 
-//		JRFillSubreport parentElement
-//		) throws JRException
-//	{
-//		super(jasperReportsContext, jasperReport, evaluator, parentElement);
-//
-//		setPageHeight(pageHeight);
-//	}
-//
-//	/**
-//	 *
-//	 */
-//	protected JRVerticalFiller(
-//		JasperReportsContext jasperReportsContext, 
-//		JasperReport jasperReport, 
-//		JREvaluator evaluator, 
-//		JRFillSubreport parentElement
-//		) throws JRException
-//	{
-//		this(jasperReportsContext, jasperReport, (DatasetExpressionEvaluator) evaluator, parentElement);
-//	}
 
 
 	/**

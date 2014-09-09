@@ -493,8 +493,7 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 			}
 			case VERTICAL :
 			{
-				//subreportFiller = new JRVerticalFiller(filler.getJasperReportsContext(), jasperReport, evaluator, this);
-				subreportFiller = JRVerticalFiller.getInstance(filler.getJasperReportsContext(), jasperReport, evaluator, this);
+				subreportFiller = new JRVerticalFiller(filler.getJasperReportsContext(), jasperReport, evaluator, this);
 				break;
 			}
 			default :

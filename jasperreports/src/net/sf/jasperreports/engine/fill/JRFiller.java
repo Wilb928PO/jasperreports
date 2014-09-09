@@ -184,8 +184,7 @@ public final class JRFiller
 			}
 			case VERTICAL :
 			{
-				//filler = new JRVerticalFiller(jasperReportsContext, jasperReport);
-				filler = JRVerticalFiller.getInstance(jasperReportsContext, jasperReport);
+				filler = new JRVerticalFiller(jasperReportsContext, jasperReport);
 				break;
 			}
 		}
@@ -204,8 +203,7 @@ public final class JRFiller
 			break;
 		case PART:
 		{
-			//filler = new PartReportFiller(jasperReportsContext, jasperReport);
-			filler = PartReportFiller.getInstance(jasperReportsContext, jasperReport);
+			filler = new PartReportFiller(jasperReportsContext, jasperReport);
 			break;
 		}
 		default:
