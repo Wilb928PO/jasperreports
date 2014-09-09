@@ -93,6 +93,12 @@ public class PartReportFiller extends BaseReportFiller
 	}
 
 	@Override
+	protected JRFillObjectFactory initFillFactory()
+	{
+		return new JRFillObjectFactory(this);
+	}
+
+	@Override
 	public JasperPrint fill(Map<String, Object> parameterValues) throws JRException
 	{
 		//FIXMEBOOK copied from JRBaseFiller

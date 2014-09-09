@@ -139,7 +139,7 @@ public abstract class BaseReportFiller implements ReportFiller
 		propertiesUtil.transferProperties(jasperReport, jasperPrint, 
 				JasperPrint.PROPERTIES_PRINT_TRANSFER_PREFIX);
 		
-		factory = createFillFactory();
+		factory = initFillFactory();
 
 		createDatasets();
 		mainDataset = factory.getDataset(jasperReport.getMainDataset());
@@ -167,10 +167,7 @@ public abstract class BaseReportFiller implements ReportFiller
 		return prefixes;
 	}
 
-	protected JRFillObjectFactory createFillFactory()
-	{
-		return new JRFillObjectFactory(this);
-	}
+	protected abstract JRFillObjectFactory initFillFactory();
 
 	private void createDatasets() throws JRException
 	{

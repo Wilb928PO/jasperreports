@@ -29,8 +29,6 @@
 
 package net.sf.jasperreports.engine.fill;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.text.Format;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -85,11 +83,9 @@ import net.sf.jasperreports.engine.type.SectionTypeEnum;
 import net.sf.jasperreports.engine.type.WhenNoDataTypeEnum;
 import net.sf.jasperreports.engine.type.WhenResourceMissingTypeEnum;
 import net.sf.jasperreports.engine.util.JRDataUtils;
-import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.engine.util.JRStyledTextParser;
 import net.sf.jasperreports.engine.util.LinkedMap;
 import net.sf.jasperreports.engine.util.UniformPrintElementVisitor;
-import net.sf.jasperreports.repo.RepositoryUtil;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -106,7 +102,7 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 	
 	private static final int PAGE_HEIGHT_PAGINATION_IGNORED = 0x7d000000;//less than Integer.MAX_VALUE to avoid 
 
-	protected final Map<Integer, JRFillElement> fillElements = new HashMap<Integer, JRFillElement>();
+	protected Map<Integer, JRFillElement> fillElements;
 
 	private JRStyledTextParser styledTextParser = JRStyledTextParser.getInstance();
 
@@ -323,10 +319,6 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 					);
 		}
 
-		/*   */
-		missingFillBand = new JRFillBand(this, null, factory);
-		missingFillSection = new JRFillSection(this, null, factory);
-		
 		groups = mainDataset.groups;
 
 		createReportTemplates(factory);
@@ -366,9 +358,18 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 	}
 
 	@Override
-	protected JRFillObjectFactory createFillFactory()
+	protected JRFillObjectFactory initFillFactory()
 	{
-		return new JRFillObjectFactory(this);
+		JRFillObjectFactory fillFactory = new JRFillObjectFactory(this);
+		
+		// needed when creating group bands
+		defaultStyleListeners = new ArrayList<DefaultStyleListener>();
+		fillElements = new HashMap<Integer, JRFillElement>();
+		
+		missingFillBand = new JRFillBand(this, null, fillFactory);
+		missingFillSection = new JRFillSection(this, null, fillFactory);
+
+		return fillFactory;
 	}
 	
 	private JRFillBand createFillBand(JRBand reportBand, String reportName, BandTypeEnum bandType)
@@ -694,7 +695,7 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 		void defaultStyleSet(JRStyle style);
 	}
 
-	private final List<DefaultStyleListener> defaultStyleListeners = new ArrayList<DefaultStyleListener>();
+	private List<DefaultStyleListener> defaultStyleListeners;
 
 	protected void addDefaultStyleListener(DefaultStyleListener listener)
 	{
