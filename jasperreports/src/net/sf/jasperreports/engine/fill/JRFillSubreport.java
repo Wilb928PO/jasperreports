@@ -479,9 +479,10 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 			log.debug("Fill " + filler.fillerId + ": creating subreport filler");
 		}
 		
-		if (jasperReport.getSectionType() != SectionTypeEnum.BAND)
+		SectionTypeEnum subreportSectionType = jasperReport.getSectionType();
+		if (subreportSectionType != null && subreportSectionType != SectionTypeEnum.BAND)
 		{
-			throw new JRRuntimeException("Unsupported subreport section type " + jasperReport.getSectionType());
+			throw new JRRuntimeException("Unsupported subreport section type " + subreportSectionType);
 		}
 		
 		switch (jasperReport.getPrintOrderValue())

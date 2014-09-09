@@ -272,7 +272,8 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 		super(jasperReportsContext, jasperReport, initEvaluator,
 				FillerSubreportParent.forSubreport(parentElement));
 		
-		if (jasperReport.getSectionType() != SectionTypeEnum.BAND)
+		SectionTypeEnum sectionType = jasperReport.getSectionType();
+		if (sectionType != null && sectionType != SectionTypeEnum.BAND)
 		{
 			throw new JRRuntimeException("Unsupported report section type " + jasperReport.getSectionType());
 		}
