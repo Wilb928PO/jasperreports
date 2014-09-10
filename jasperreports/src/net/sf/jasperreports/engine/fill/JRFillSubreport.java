@@ -485,16 +485,17 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 			throw new JRRuntimeException("Unsupported subreport section type " + subreportSectionType);
 		}
 		
+		FillerSubreportParent fillerParent = new FillerSubreportParent(this, evaluator);
 		switch (jasperReport.getPrintOrderValue())
 		{
 			case HORIZONTAL :
 			{
-				subreportFiller = new JRHorizontalFiller(filler.getJasperReportsContext(), jasperReport, evaluator, this);
+				subreportFiller = new JRHorizontalFiller(filler.getJasperReportsContext(), jasperReport, fillerParent);
 				break;
 			}
 			case VERTICAL :
 			{
-				subreportFiller = new JRVerticalFiller(filler.getJasperReportsContext(), jasperReport, evaluator, this);
+				subreportFiller = new JRVerticalFiller(filler.getJasperReportsContext(), jasperReport, fillerParent);
 				break;
 			}
 			default :

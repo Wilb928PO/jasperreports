@@ -65,7 +65,7 @@ public class PartReportFiller extends BaseReportFiller
 	
 	public PartReportFiller(JasperReportsContext jasperReportsContext, JasperReport jasperReport) throws JRException
 	{
-		super(jasperReportsContext, jasperReport, null, null);
+		super(jasperReportsContext, jasperReport, null);
 		
 		if (jasperReport.getSectionType() != SectionTypeEnum.PART)
 		{

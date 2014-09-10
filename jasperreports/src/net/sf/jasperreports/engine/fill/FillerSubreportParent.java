@@ -30,18 +30,15 @@ package net.sf.jasperreports.engine.fill;
 public class FillerSubreportParent implements FillerParent
 {
 
-	public static FillerParent forSubreport(JRFillSubreport parentElement)
-	{
-		return parentElement == null ? null : new FillerSubreportParent(parentElement);
-	}
-
 	private final JRFillSubreport parentElement;
 	private final JRBaseFiller parentFiller;
+	private final DatasetExpressionEvaluator evaluator;
 	
-	public FillerSubreportParent(JRFillSubreport parentElement)
+	public FillerSubreportParent(JRFillSubreport parentElement, DatasetExpressionEvaluator evaluator)
 	{
 		this.parentElement = parentElement;
 		this.parentFiller = parentElement.filler;
+		this.evaluator = evaluator;
 	}
 
 	@Override
@@ -78,6 +75,12 @@ public class FillerSubreportParent implements FillerParent
 	public boolean isBandOverFlowAllowed()
 	{
 		return parentFiller.isBandOverFlowAllowed();
+	}
+
+	@Override
+	public DatasetExpressionEvaluator getCachedEvaluator()
+	{
+		return evaluator;
 	}
 
 }

@@ -252,25 +252,10 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 	protected JRBaseFiller(
 		JasperReportsContext jasperReportsContext, 
 		JasperReport jasperReport, 
-		JREvaluator initEvaluator, 
-		JRFillSubreport parentElement
+		FillerParent parent 
 		) throws JRException
 	{
-		this(jasperReportsContext, jasperReport, (DatasetExpressionEvaluator) initEvaluator, parentElement);
-	}
-
-	/**
-	 *
-	 */
-	protected JRBaseFiller(
-		JasperReportsContext jasperReportsContext, 
-		JasperReport jasperReport, 
-		DatasetExpressionEvaluator initEvaluator, 
-		JRFillSubreport parentElement
-		) throws JRException
-	{
-		super(jasperReportsContext, jasperReport, initEvaluator,
-				FillerSubreportParent.forSubreport(parentElement));
+		super(jasperReportsContext, jasperReport, parent);
 		
 		SectionTypeEnum sectionType = jasperReport.getSectionType();
 		if (sectionType != null && sectionType != SectionTypeEnum.BAND)

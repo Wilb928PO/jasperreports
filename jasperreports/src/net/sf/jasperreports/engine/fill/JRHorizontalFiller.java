@@ -64,7 +64,7 @@ public class JRHorizontalFiller extends JRBaseFiller
 		JasperReport jasperReport
 		) throws JRException
 	{
-		this(jasperReportsContext, jasperReport, null, null);
+		this(jasperReportsContext, jasperReport, null);
 	}
 
 	/**
@@ -73,40 +73,12 @@ public class JRHorizontalFiller extends JRBaseFiller
 	protected JRHorizontalFiller(
 		JasperReportsContext jasperReportsContext, 
 		JasperReport jasperReport, 
-		JRFillSubreport parentElement
+		FillerParent parent 
 		) throws JRException
 	{
-		super(jasperReportsContext, jasperReport, null, parentElement);
+		super(jasperReportsContext, jasperReport, parent);
 
 		setPageHeight(pageHeight);
-	}
-
-	/**
-	 *
-	 */
-	protected JRHorizontalFiller(
-		JasperReportsContext jasperReportsContext, 
-		JasperReport jasperReport, 
-		DatasetExpressionEvaluator evaluator, 
-		JRFillSubreport parentElement
-		) throws JRException
-	{
-		super(jasperReportsContext, jasperReport, evaluator, parentElement);
-
-		setPageHeight(pageHeight);
-	}
-
-	/**
-	 *
-	 */
-	protected JRHorizontalFiller(
-		JasperReportsContext jasperReportsContext, 
-		JasperReport jasperReport, 
-		JREvaluator evaluator, 
-		JRFillSubreport parentElement
-		) throws JRException
-	{
-		this(jasperReportsContext, jasperReport, (DatasetExpressionEvaluator) evaluator, parentElement);
 	}
 
 

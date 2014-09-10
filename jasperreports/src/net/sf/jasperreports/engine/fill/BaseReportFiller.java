@@ -99,7 +99,7 @@ public abstract class BaseReportFiller implements ReportFiller
 	private boolean isInterrupted;
 
 	public BaseReportFiller(JasperReportsContext jasperReportsContext, JasperReport jasperReport, 
-			DatasetExpressionEvaluator initEvaluator, FillerParent parent) throws JRException
+			FillerParent parent) throws JRException
 	{
 		JRGraphEnvInitializer.initializeGraphEnv();
 		
@@ -109,6 +109,7 @@ public abstract class BaseReportFiller implements ReportFiller
 		
 		this.parent = parent;
 
+		DatasetExpressionEvaluator initEvaluator = null;
 		if (parent == null)
 		{
 			fillContext = new JRFillContext(this);
@@ -118,6 +119,7 @@ public abstract class BaseReportFiller implements ReportFiller
 		{
 			fillContext = parent.getFiller().fillContext;
 			printTransferPropertyPrefixes = parent.getFiller().printTransferPropertyPrefixes;
+			initEvaluator = parent.getCachedEvaluator();
 		}
 		
 		this.fillerId = fillContext.generatedFillerId();

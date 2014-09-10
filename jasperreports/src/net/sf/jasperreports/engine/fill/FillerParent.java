@@ -31,6 +31,8 @@ public interface FillerParent
 {
 
 	BaseReportFiller getFiller();
+	
+	DatasetExpressionEvaluator getCachedEvaluator();//FIXMEBOOK change name?
 
 	void registerSubfiller(JRBaseFiller filler);
 
