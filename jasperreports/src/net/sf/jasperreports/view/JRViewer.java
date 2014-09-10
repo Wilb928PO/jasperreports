@@ -1561,10 +1561,11 @@ public class JRViewer extends javax.swing.JPanel implements JRHyperlinkListener
 						}
 						partIndex++;
 					}
-					if (partIndex < pnlTabs.getComponentCount())
+					int tabIndex = partIndex - (parts.firstKey() == 0 ? 1 : 0);
+					if (tabIndex < pnlTabs.getComponentCount())
 					{
 						pnlTabsChangeListenerEnabled = false;
-						pnlTabs.setSelectedIndex(partIndex - (parts.firstKey() == 0 ? 1 : 0));
+						pnlTabs.setSelectedIndex(tabIndex);
 						((JPanel)pnlTabs.getSelectedComponent()).add(scrollPane);
 						pnlTabsChangeListenerEnabled = true;
 					}
