@@ -70,7 +70,7 @@ public class JRHorizontalFiller extends JRBaseFiller
 	/**
 	 *
 	 */
-	protected JRHorizontalFiller(
+	public JRHorizontalFiller(
 		JasperReportsContext jasperReportsContext, 
 		JasperReport jasperReport, 
 		FillerParent parent 
@@ -223,13 +223,7 @@ public class JRHorizontalFiller extends JRBaseFiller
 
 		if (isSubreport())
 		{
-			//if (
-			//	columnIndex == 0 ||
-			//	(columnIndex > 0 && printPageStretchHeight < offsetY + bottomMargin)
-			//	)
-			//{
-				printPageStretchHeight = offsetY + bottomMargin;
-			//}
+			addPageToParent(true);
 		}
 		else
 		{
@@ -1904,20 +1898,7 @@ public class JRHorizontalFiller extends JRBaseFiller
 	{
 		if (isSubreport())
 		{
-			if (!parent.isBandOverFlowAllowed())
-			{
-				throw new JRRuntimeException("Subreport overflowed on a band that does not support overflow.");
-			}
-
-			//if (
-			//	columnIndex == 0 ||
-			//	(columnIndex > 0 && printPageStretchHeight < offsetY + bottomMargin)
-			//	)
-			//{
-				printPageStretchHeight = offsetY + bottomMargin;
-			//}
-
-			suspendSubreportRunner();
+			addPageToParent(false);
 		}
 
 		printPage = newPage();

@@ -94,6 +94,7 @@
 			<include name="net/sf/jasperreports/engine/fill/JRFillSubreport.class"/>
 			<include name="net/sf/jasperreports/engine/fill/JRSubreportRunnable.class"/>
 			<include name="net/sf/jasperreports/engine/fill/JRContinuationSubreportRunner.class"/>
+			<include name="net/sf/jasperreports/engine/fill/FillerSubreportParent.class"/>
 		</javaflow>
 
 		<mkdir dir="./dist"/> 

@@ -45,7 +45,6 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 
-import net.sf.jasperreports.engine.BookmarkHelper;
 import net.sf.jasperreports.engine.JRBand;
 import net.sf.jasperreports.engine.JRDefaultStyleProvider;
 import net.sf.jasperreports.engine.JRException;
@@ -195,10 +194,6 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 	protected HashMap<JREvaluationTime, LinkedHashMap<PageKey, LinkedMap<Object, EvaluationBoundAction>>> boundElements;
 
 	protected JRPrintPage printPage;
-	
-	protected BookmarkHelper bookmarkHelper;
-
-	protected int printPageStretchHeight;
 
 	/**
 	 * List of {@link JRFillBand JRFillBand} objects containing all bands of the
@@ -220,8 +215,6 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 	 */
 	protected Map<String,Format> dateFormatCache = new HashMap<String,Format>();
 	protected Map<String,Format> numberFormatCache = new HashMap<String,Format>();
-
-	private JRSubreportRunner subreportRunner;
 
 	protected SavePoint keepTogetherSavePoint;
 	
@@ -283,24 +276,6 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 		isSummaryWithPageHeaderAndFooter = jasperReport.isSummaryWithPageHeaderAndFooter();
 		isFloatColumnFooter = jasperReport.isFloatColumnFooter();
 		whenResourceMissingType = jasperReport.getWhenResourceMissingTypeValue();
-
-		boolean isCreateBookmarks = 
-			propertiesUtil.getBooleanProperty(
-				jasperReport, 
-				JasperPrint.PROPERTY_CREATE_BOOKMARKS,
-				false
-				);
-		if (isCreateBookmarks)
-		{
-			bookmarkHelper = 
-				new BookmarkHelper(
-					propertiesUtil.getBooleanProperty(
-						jasperReport, 
-						JasperPrint.PROPERTY_COLLAPSE_MISSING_BOOKMARK_LEVELS,
-						false
-						)
-					);
-		}
 
 		groups = mainDataset.groups;
 
@@ -526,14 +501,6 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 	protected JRPrintPage getCurrentPage()
 	{
 		return printPage;
-	}
-
-	/**
-	 *
-	 */
-	protected int getCurrentPageStretchHeight()
-	{
-		return printPageStretchHeight;
 	}
 
 	/**
@@ -1354,17 +1321,6 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 	{
 		return mainDataset.getVariableValue(variableName);
 	}
-	
-	/**
-	 * Returns the value of a parameter.
-	 * 
-	 * @param parameterName the parameter name
-	 * @return the parameter value
-	 */
-	public Object getParameterValue(String parameterName)
-	{
-		return mainDataset.getParameterValue(parameterName);
-	}
 
 	/**
 	 * Resloves elements which are to be evaluated at band level.
@@ -1460,29 +1416,44 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 			fillContext.setPrintPage(page);
 		}
 	}
-
-
-	protected void addLastPageBookmarks()
+	
+	protected void addPageToParent(final boolean ended) throws JRException
 	{
-		if (bookmarkHelper != null)
+		FillerPageAddedEvent pageAdded = new FillerPageAddedEvent()
 		{
-			int pageIndex = jasperPrint.getPages() == null ? -1 : (jasperPrint.getPages().size() - 1);
-			if (pageIndex >= 0)
+			@Override
+			public JasperPrint getJasperPrint()
 			{
-				JRPrintPage page = jasperPrint.getPages().get(pageIndex);
-				bookmarkHelper.addBookmarks(page, pageIndex);
+				return jasperPrint;
 			}
-		}
-	}
+			
+			@Override
+			public JRPrintPage getPage()
+			{
+				return printPage;
+			}
 
-	protected void updateBookmark(JRPrintElement element)
-	{
-		if (bookmarkHelper != null)
-		{
-			bookmarkHelper.updateBookmark(element);
-		}
-	}
+			@Override
+			public boolean hasReportEnded()
+			{
+				return ended;
+			}
 
+			@Override
+			public int getPageStretchHeight()
+			{
+				return offsetY + bottomMargin;
+			}
+
+			@Override
+			public int getPageIndex()
+			{
+				return ((Number) calculator.getPageNumber().getValue()).intValue() - 1;
+			}
+		};
+		
+		parent.addPage(pageAdded);
+	}
 
 	protected WhenResourceMissingTypeEnum getWhenResourceMissingType()
 	{
@@ -1508,8 +1479,11 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 
 		while (fillerParent != null)
 		{
-			JRBaseFiller filler = (JRBaseFiller) fillerParent.getFiller();
-			colCount *= filler.columnCount;//FIXMEBOOK
+			BaseReportFiller filler = fillerParent.getFiller();
+			if (filler instanceof JRBaseFiller)//FIXMEBOOK
+			{
+				colCount *= ((JRBaseFiller) filler).columnCount;
+			}
 			fillerParent = filler.parent;
 		}
 
@@ -1521,12 +1495,12 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 	 * 
 	 * @return the master filler object
 	 */
-	public JRBaseFiller getMasterFiller()
+	public BaseReportFiller getMasterFiller()
 	{
-		JRBaseFiller filler = this;
+		BaseReportFiller filler = this;
 		while (filler.parent != null)
 		{
-			filler = (JRBaseFiller) filler.parent.getFiller();//FIXMEBOOK
+			filler = filler.parent.getFiller();
 		}
 		return filler;
 	}
@@ -1706,26 +1680,6 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 //	{
 //		consolidatedStyles.put(consolidatedStyle.getName(), consolidatedStyle);
 //	}
-
-	protected void setSubreportRunner(JRSubreportRunner runner)
-	{
-		this.subreportRunner = runner;
-	}
-
-	protected void suspendSubreportRunner() throws JRException
-	{
-		if (subreportRunner == null)
-		{
-			throw new JRRuntimeException("No subreport runner set.");
-		}
-
-		if (log.isDebugEnabled())
-		{
-			log.debug("Fill " + fillerId + ": suspeding subreport runner");
-		}
-
-		subreportRunner.suspend();
-	}
 
 
 	protected void createReportTemplates(JRFillObjectFactory factory)

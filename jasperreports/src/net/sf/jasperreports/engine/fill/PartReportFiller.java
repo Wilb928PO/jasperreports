@@ -65,7 +65,12 @@ public class PartReportFiller extends BaseReportFiller
 	
 	public PartReportFiller(JasperReportsContext jasperReportsContext, JasperReport jasperReport) throws JRException
 	{
-		super(jasperReportsContext, jasperReport, null);
+		this(jasperReportsContext, jasperReport, null);
+	}
+	
+	public PartReportFiller(JasperReportsContext jasperReportsContext, JasperReport jasperReport, FillerParent parent) throws JRException
+	{
+		super(jasperReportsContext, jasperReport, parent);
 		
 		if (jasperReport.getSectionType() != SectionTypeEnum.PART)
 		{
@@ -347,18 +352,8 @@ public class PartReportFiller extends BaseReportFiller
 		return true;
 	}
 
-	public void addPartReport(JasperPrint partPrint)
+	public void addPart(JasperPrint partPrint)
 	{
-		//FIXMEBOOK
-		List<JRPrintPage> partPages = partPrint.getPages();
-		if (partPages.isEmpty())
-		{
-			return;
-		}
-		
-		int startIndex = jasperPrint.getPages().size();
-		jasperPrint.getPages().addAll(partPages);
-		
 		SimplePrintPart part = new SimplePrintPart();
 		part.setName(partPrint.getName());
 		
@@ -372,7 +367,13 @@ public class PartReportFiller extends BaseReportFiller
 		pageFormat.setBottomMargin(partPrint.getBottomMargin());
 		part.setPageFormat(pageFormat);
 		
+		int startIndex = jasperPrint.getPages().size();
 		jasperPrint.addPart(startIndex, part);
+	}
+
+	public void addPartPage(JRPrintPage page)
+	{
+		jasperPrint.addPage(page);
 	}
 
 }

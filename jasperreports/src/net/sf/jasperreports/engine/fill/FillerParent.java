@@ -23,6 +23,8 @@
  */
 package net.sf.jasperreports.engine.fill;
 
+import net.sf.jasperreports.engine.JRException;
+
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
@@ -42,6 +44,6 @@ public interface FillerParent
 
 	boolean isPageBreakInhibited();
 
-	boolean isBandOverFlowAllowed();
+	void addPage(FillerPageAddedEvent pageAdded) throws JRException;
 
 }

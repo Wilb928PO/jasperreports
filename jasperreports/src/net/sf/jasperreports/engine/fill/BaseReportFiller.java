@@ -35,12 +35,15 @@ import java.util.TimeZone;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import net.sf.jasperreports.engine.BookmarkHelper;
 import net.sf.jasperreports.engine.JRAbstractScriptlet;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRParameter;
+import net.sf.jasperreports.engine.JRPrintElement;
+import net.sf.jasperreports.engine.JRPrintPage;
 import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
@@ -93,6 +96,8 @@ public abstract class BaseReportFiller implements ReportFiller
 	protected JRAbstractScriptlet scriptlet;
 
 	protected FormatFactory formatFactory;
+	
+	protected BookmarkHelper bookmarkHelper;
 	
 	protected JasperPrint jasperPrint;
 	
@@ -150,6 +155,15 @@ public abstract class BaseReportFiller implements ReportFiller
 		{
 			FillDatasetPosition masterFillPosition = new FillDatasetPosition(null);
 			mainDataset.setFillPosition(masterFillPosition);
+		}
+
+		boolean isCreateBookmarks = propertiesUtil.getBooleanProperty(jasperReport, 
+				JasperPrint.PROPERTY_CREATE_BOOKMARKS, false);
+		if (isCreateBookmarks)
+		{
+			boolean collapseMissingLevels = propertiesUtil.getBooleanProperty(jasperReport, 
+				JasperPrint.PROPERTY_COLLAPSE_MISSING_BOOKMARK_LEVELS, false);
+			bookmarkHelper = new BookmarkHelper(collapseMissingLevels);
 		}
 	}
 	
@@ -337,6 +351,17 @@ public abstract class BaseReportFiller implements ReportFiller
 	{
 		return mainDataset.parametersMap;
 	}
+	
+	/**
+	 * Returns the value of a parameter.
+	 * 
+	 * @param parameterName the parameter name
+	 * @return the parameter value
+	 */
+	public Object getParameterValue(String parameterName)
+	{
+		return mainDataset.getParameterValue(parameterName);
+	}
 
 	/**
 	 * Returns the report locale.
@@ -422,6 +447,27 @@ public abstract class BaseReportFiller implements ReportFiller
 	protected FormatFactory getFormatFactory()
 	{
 		return formatFactory;
+	}
+
+	protected void addLastPageBookmarks()
+	{
+		if (bookmarkHelper != null)
+		{
+			int pageIndex = jasperPrint.getPages() == null ? -1 : (jasperPrint.getPages().size() - 1);
+			if (pageIndex >= 0)
+			{
+				JRPrintPage page = jasperPrint.getPages().get(pageIndex);
+				bookmarkHelper.addBookmarks(page, pageIndex);
+			}
+		}
+	}
+
+	protected void updateBookmark(JRPrintElement element)
+	{
+		if (bookmarkHelper != null)
+		{
+			bookmarkHelper.updateBookmark(element);
+		}
 	}
 
 }

@@ -26,13 +26,21 @@ package net.sf.jasperreports.parts.subreport;
 import java.util.Map;
 
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.JasperReportsContext;
+import net.sf.jasperreports.engine.fill.BaseReportFiller;
+import net.sf.jasperreports.engine.fill.DatasetExpressionEvaluator;
+import net.sf.jasperreports.engine.fill.FillerPageAddedEvent;
+import net.sf.jasperreports.engine.fill.FillerParent;
+import net.sf.jasperreports.engine.fill.JRBaseFiller;
 import net.sf.jasperreports.engine.fill.JRFillExpressionEvaluator;
 import net.sf.jasperreports.engine.fill.JRFillObjectFactory;
 import net.sf.jasperreports.engine.fill.JRFillSubreport;
+import net.sf.jasperreports.engine.fill.JRHorizontalFiller;
+import net.sf.jasperreports.engine.fill.PartReportFiller;
 import net.sf.jasperreports.engine.part.BasePartFillComponent;
+import net.sf.jasperreports.engine.type.SectionTypeEnum;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
@@ -46,6 +54,8 @@ public class SubreportFillPart extends BasePartFillComponent
 
 	private JasperReport jasperReport;
 	private Map<String, Object> parameterValues;
+	
+	private BaseReportFiller subreportFiller;
 	
 	public SubreportFillPart(SubreportPartComponent subreportPart, JRFillObjectFactory factory)
 	{
@@ -72,9 +82,98 @@ public class SubreportFillPart extends BasePartFillComponent
 	@Override
 	public void fill() throws JRException
 	{
-		//FIXMEBOOK
-		JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameterValues);
-		fillContext.addPartReport(jasperPrint);
+		subreportFiller = createSubreportFiller();
+		subreportFiller.fill(parameterValues);
+	}
+	
+	protected BaseReportFiller createSubreportFiller() throws JRException
+	{
+		SectionTypeEnum sectionType = jasperReport.getSectionType();
+		sectionType = sectionType == null ? SectionTypeEnum.BAND : sectionType;
+		
+		FillerParent parent = new PartParent();
+		
+		JasperReportsContext jasperReportsContext = fillContext.getFiller().getJasperReportsContext();
+		BaseReportFiller filler;
+		switch (sectionType)
+		{
+		case BAND:
+			switch (jasperReport.getPrintOrderValue())
+			{
+			case HORIZONTAL:
+				filler = new JRHorizontalFiller(jasperReportsContext, jasperReport, parent);
+				break;
+			case VERTICAL:
+				filler = new JRHorizontalFiller(jasperReportsContext, jasperReport, parent);
+				break;
+			default:
+				throw new JRRuntimeException("Unknown report section type " + sectionType);
+			}
+			break;
+		case PART:
+			filler = new PartReportFiller(jasperReportsContext, jasperReport, parent);
+			break;
+		default:
+			throw new JRRuntimeException("Unknown report section type " + sectionType);
+		}
+		
+		return filler;
+	}
+	
+	protected class PartParent implements FillerParent
+	{
+
+		@Override
+		public BaseReportFiller getFiller()
+		{
+			return fillContext.getFiller();
+		}
+
+		@Override
+		public DatasetExpressionEvaluator getCachedEvaluator()
+		{
+			//FIXMEBOOK
+			return null;
+		}
+
+		@Override
+		public void registerSubfiller(JRBaseFiller filler)
+		{
+			//FIXMEBOOK
+		}
+
+		@Override
+		public void unregisterSubfiller(JRBaseFiller jrBaseFiller)
+		{
+			//FIXMEBOOK
+		}
+
+		@Override
+		public boolean isRunToBottom()
+		{
+			return false;
+		}
+
+		@Override
+		public boolean isPageBreakInhibited()
+		{
+			return false;
+		}
+
+		@Override
+		public void addPage(FillerPageAddedEvent pageAdded) throws JRException
+		{
+			if (pageAdded.getPageIndex() == 0)
+			{
+				//first page, adding the part info
+				fillContext.addPart(pageAdded.getJasperPrint());
+			}
+			
+			fillContext.addPage(pageAdded.getPage());
+			
+			//FIXMEBOOK styles
+		}
+		
 	}
 
 }

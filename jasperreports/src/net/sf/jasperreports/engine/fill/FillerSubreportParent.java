@@ -23,16 +23,28 @@
  */
 package net.sf.jasperreports.engine.fill;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRRuntimeException;
+
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
 public class FillerSubreportParent implements FillerParent
 {
+	
+	private static final Log log = LogFactory.getLog(FillerSubreportParent.class);
 
 	private final JRFillSubreport parentElement;
 	private final JRBaseFiller parentFiller;
 	private final DatasetExpressionEvaluator evaluator;
+
+	private JRSubreportRunner subreportRunner;
+
+	private int currentPageStretchHeight;
 	
 	public FillerSubreportParent(JRFillSubreport parentElement, DatasetExpressionEvaluator evaluator)
 	{
@@ -72,15 +84,51 @@ public class FillerSubreportParent implements FillerParent
 	}
 
 	@Override
-	public boolean isBandOverFlowAllowed()
-	{
-		return parentFiller.isBandOverFlowAllowed();
-	}
-
-	@Override
 	public DatasetExpressionEvaluator getCachedEvaluator()
 	{
 		return evaluator;
+	}
+
+	public void setSubreportRunner(JRSubreportRunner subreportRunner)
+	{
+		this.subreportRunner = subreportRunner;
+	}
+
+	@Override
+	public void addPage(FillerPageAddedEvent pageAdded) throws JRException
+	{
+		currentPageStretchHeight = pageAdded.getPageStretchHeight();
+		
+		if (!pageAdded.hasReportEnded())
+		{
+			if (!parentFiller.isBandOverFlowAllowed())
+			{
+				throw new JRRuntimeException("Subreport overflowed on a band that does not support overflow.");
+			}
+
+			suspendSubreportRunner(pageAdded);
+		}
+	}
+
+	protected void suspendSubreportRunner(FillerPageAddedEvent pageAdded) throws JRException
+	{
+		if (subreportRunner == null)
+		{
+			throw new JRRuntimeException("No subreport runner set.");
+		}
+
+		if (log.isDebugEnabled())
+		{
+			//FIXMEBOOK subfiller Id
+			log.debug("Fill " + parentFiller.fillerId + ": suspeding subreport runner");
+		}
+
+		subreportRunner.suspend();
+	}
+
+	public int getCurrentPageStretchHeight()
+	{
+		return currentPageStretchHeight;
 	}
 
 }

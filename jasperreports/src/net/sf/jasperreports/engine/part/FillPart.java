@@ -26,11 +26,11 @@ package net.sf.jasperreports.engine.part;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRPart;
+import net.sf.jasperreports.engine.JRPrintPage;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.component.Component;
 import net.sf.jasperreports.engine.component.ComponentKey;
-import net.sf.jasperreports.engine.fill.BaseReportFiller;
 import net.sf.jasperreports.engine.fill.JRFillExpressionEvaluator;
 import net.sf.jasperreports.engine.fill.JRFillObjectFactory;
 import net.sf.jasperreports.engine.fill.PartReportFiller;
@@ -44,7 +44,7 @@ public class FillPart
 
 	private JRPart reportPart;
 	private JRFillExpressionEvaluator expressionEvaluator;
-	private BaseReportFiller reportFiller;
+	private PartReportFiller reportFiller;
 	
 	private PartFillComponent fillComponent;
 
@@ -52,7 +52,7 @@ public class FillPart
 	{
 		this.reportPart = part;
 		this.expressionEvaluator = fillFactory.getExpressionEvaluator();
-		reportFiller = fillFactory.getReportFiller();
+		reportFiller = (PartReportFiller) fillFactory.getReportFiller();//FIXMEBOOK
 		
 		ComponentKey componentKey = part.getComponentKey();
 		Component component = part.getComponent();
@@ -99,7 +99,7 @@ public class FillPart
 	{
 
 		@Override
-		public BaseReportFiller getFiller()
+		public PartReportFiller getFiller()
 		{
 			return reportFiller;
 		}
@@ -111,10 +111,15 @@ public class FillPart
 		}
 
 		@Override
-		public void addPartReport(JasperPrint jasperPrint)
+		public void addPart(JasperPrint jasperPrint)
 		{
-			//FIXMEBOOK
-			((PartReportFiller) reportFiller).addPartReport(jasperPrint);
+			reportFiller.addPart(jasperPrint);
+		}
+
+		@Override
+		public void addPage(JRPrintPage page)
+		{
+			reportFiller.addPartPage(page);
 		}
 		
 	}

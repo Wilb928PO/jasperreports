@@ -540,7 +540,7 @@ public class JRFillContext
 	public void updateBookmark(JRPrintElement element)
 	{
 		// bookmarks are in the master filler
-		((JRBaseFiller) masterFiller).updateBookmark(element);//FIXMEBOOK
+		masterFiller.updateBookmark(element);
 	}
 	
 	public Object getFillCache(String key)

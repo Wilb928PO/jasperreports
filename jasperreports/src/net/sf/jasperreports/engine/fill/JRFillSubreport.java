@@ -123,6 +123,7 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 	 *
 	 */
 	protected JRBaseFiller subreportFiller;
+	protected FillerSubreportParent subFillerParent;
 	private JRPrintPage printPage;
 
 	private JRSubreportRunner runner;
@@ -485,17 +486,18 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 			throw new JRRuntimeException("Unsupported subreport section type " + subreportSectionType);
 		}
 		
-		FillerSubreportParent fillerParent = new FillerSubreportParent(this, evaluator);
+		subFillerParent = new FillerSubreportParent(this, evaluator);
+		
 		switch (jasperReport.getPrintOrderValue())
 		{
 			case HORIZONTAL :
 			{
-				subreportFiller = new JRHorizontalFiller(filler.getJasperReportsContext(), jasperReport, fillerParent);
+				subreportFiller = new JRHorizontalFiller(filler.getJasperReportsContext(), jasperReport, subFillerParent);
 				break;
 			}
 			case VERTICAL :
 			{
-				subreportFiller = new JRVerticalFiller(filler.getJasperReportsContext(), jasperReport, fillerParent);
+				subreportFiller = new JRVerticalFiller(filler.getJasperReportsContext(), jasperReport, subFillerParent);
 				break;
 			}
 			default :
@@ -505,7 +507,7 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 		}
 		
 		runner = getRunnerFactory().createSubreportRunner(this, subreportFiller);
-		subreportFiller.setSubreportRunner(runner);
+		subFillerParent.setSubreportRunner(runner);
 		
 		subreportFiller.mainDataset.setFillPosition(datasetPosition);
 		subreportFiller.mainDataset.setCacheSkipped(!cacheIncluded);
@@ -842,7 +844,7 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 			}
 
 			printPage = subreportFiller.getCurrentPage();
-			setStretchHeight(result.hasFinished() ? subreportFiller.getCurrentPageStretchHeight() : pageHeight);
+			setStretchHeight(result.hasFinished() ? subFillerParent.getCurrentPageStretchHeight() : pageHeight);
 
 			//if the subreport fill thread has not finished, 
 			// it means that the subreport will overflow on the next page
@@ -1062,6 +1064,6 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 
 	protected int getContentsStretchHeight()
 	{
-		return subreportFiller.getCurrentPageStretchHeight();
+		return subFillerParent.getCurrentPageStretchHeight();
 	}
 }
