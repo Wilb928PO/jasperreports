@@ -164,6 +164,11 @@ public class PartReportFiller extends BaseReportFiller
 
 			/*   */
 			fillReport();
+			
+			if (bookmarkHelper != null)
+			{
+				jasperPrint.setBookmarks(bookmarkHelper.getRootBookmarks());
+			}
 
 			if (log.isDebugEnabled())
 			{
@@ -374,6 +379,7 @@ public class PartReportFiller extends BaseReportFiller
 	public void addPartPage(JRPrintPage page)
 	{
 		jasperPrint.addPage(page);
+		addLastPageBookmarks();
 	}
 
 }
