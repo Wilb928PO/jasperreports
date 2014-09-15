@@ -105,8 +105,6 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 
 	private JRStyledTextParser styledTextParser = JRStyledTextParser.getInstance();
 
-	private FillListener fillListener;
-
 	/**
 	 *
 	 */
@@ -205,8 +203,6 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 	 * Collection of subfillers
 	 */
 	protected Map<Integer, JRBaseFiller> subfillers;
-
-	private Thread fillingThread;
 
 	private boolean bandOverFlowAllowed;
 
@@ -507,18 +503,6 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 	 *
 	 */
 	protected abstract void setPageHeight(int pageHeight);
-
-	
-	/**
-	 * Adds a fill lister to be notified by events that occur during the fill.
-	 * 
-	 * @param fillListener the listener to add
-	 */
-	@Override
-	public void addFillListener(FillListener fillListener)
-	{
-		this.fillListener = CompositeFillListener.addListener(this.fillListener, fillListener);
-	}
 
 
 	@Override
@@ -1536,7 +1520,8 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 			synchronized (pagesMap)
 			{
 				// the key contains the page and its index; the index is only stored so that we have it in resolveBoundElements
-				PageKey pageKey = new PageKey(printPage, jasperPrint.getPages().size() - 1);
+				int pageIndex = ((Number) calculator.getPageNumber().getValue()).intValue() - 1;
+				PageKey pageKey = new PageKey(printPage, pageIndex);
 				
 				// get the actions map for the current page, creating if it does not yet exist
 				LinkedMap<Object, EvaluationBoundAction> boundElementsMap = pagesMap.get(pageKey);
@@ -1608,6 +1593,20 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 	{
 		JRPrintPage page = jasperPrint.getPages().get(pageIdx);
 		return !hasBoundActions(page);
+	}
+	
+	protected JRPrintPage getPrintPage(int pageIndex)
+	{
+		JRPrintPage page;
+		if (isMasterReport())
+		{
+			page = jasperPrint.getPages().get(pageIndex);
+		}
+		else
+		{
+			page = parent.getPage(pageIndex);
+		}
+		return page;
 	}
 
 	protected boolean hasBoundActions(JRPrintPage page)

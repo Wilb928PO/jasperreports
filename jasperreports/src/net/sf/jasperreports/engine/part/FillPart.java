@@ -47,6 +47,8 @@ public class FillPart
 	private PartReportFiller reportFiller;
 	
 	private PartFillComponent fillComponent;
+	
+	private int startPageIndex;
 
 	public FillPart(JRPart part, JRFillObjectFactory fillFactory)
 	{
@@ -67,6 +69,11 @@ public class FillPart
 		fillComponent.initialize(new Context());
 	}
 
+	public void prepareFill(int startPageIndex)
+	{
+		this.startPageIndex = startPageIndex;
+	}
+	
 	public void fill(byte evaluation) throws JRException
 	{
 		boolean toPrint = evaluatePrintWhenExpression(evaluation);
@@ -95,6 +102,16 @@ public class FillPart
 		return result;
 	}
 
+	public boolean isPageFinal(int pageIndex)
+	{
+		return fillComponent.isPageFinal(pageIndex - startPageIndex);
+	}
+
+	public int getStartPageIndex()
+	{
+		return startPageIndex;
+	}
+
 	protected class Context implements PartFillContext
 	{
 
@@ -111,15 +128,27 @@ public class FillPart
 		}
 
 		@Override
-		public void addPart(JasperPrint jasperPrint)
+		public void startPart(JasperPrint jasperPrint)
 		{
-			reportFiller.addPart(jasperPrint);
+			reportFiller.startPart(jasperPrint);
 		}
 
 		@Override
 		public void addPage(JRPrintPage page)
 		{
 			reportFiller.addPartPage(page);
+		}
+
+		@Override
+		public JRPrintPage getPage(int pageIndex)
+		{
+			return reportFiller.getPrintPage(startPageIndex + pageIndex);
+		}
+
+		@Override
+		public void partPageUpdated(int partPageIndex)
+		{
+			reportFiller.partPageUpdated(startPageIndex + partPageIndex);
 		}
 		
 	}

@@ -26,11 +26,14 @@ package net.sf.jasperreports.parts.subreport;
 import java.util.Map;
 
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRPrintPage;
 import net.sf.jasperreports.engine.JRRuntimeException;
+import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.fill.BaseReportFiller;
 import net.sf.jasperreports.engine.fill.DatasetExpressionEvaluator;
+import net.sf.jasperreports.engine.fill.FillListener;
 import net.sf.jasperreports.engine.fill.FillerPageAddedEvent;
 import net.sf.jasperreports.engine.fill.FillerParent;
 import net.sf.jasperreports.engine.fill.JRBaseFiller;
@@ -55,7 +58,7 @@ public class SubreportFillPart extends BasePartFillComponent
 	private JasperReport jasperReport;
 	private Map<String, Object> parameterValues;
 	
-	private BaseReportFiller subreportFiller;
+	private volatile BaseReportFiller subreportFiller;
 	
 	public SubreportFillPart(SubreportPartComponent subreportPart, JRFillObjectFactory factory)
 	{
@@ -84,6 +87,19 @@ public class SubreportFillPart extends BasePartFillComponent
 	{
 		subreportFiller = createSubreportFiller();
 		subreportFiller.fill(parameterValues);
+	}
+
+	@Override
+	public boolean isPageFinal(int pageIndex)
+	{
+		BaseReportFiller filler = subreportFiller;
+		if (filler == null)
+		{
+			//FIXMEBOOK
+			return true;
+		}
+		
+		return filler.isPageFinal(pageIndex);
 	}
 	
 	protected BaseReportFiller createSubreportFiller() throws JRException
@@ -116,6 +132,21 @@ public class SubreportFillPart extends BasePartFillComponent
 		default:
 			throw new JRRuntimeException("Unknown report section type " + sectionType);
 		}
+		
+		filler.addFillListener(new FillListener()
+		{
+			@Override
+			public void pageGenerated(JasperPrint jasperPrint, int pageIndex)
+			{
+				//NOP
+			}
+			
+			@Override
+			public void pageUpdated(JasperPrint jasperPrint, int pageIndex)
+			{
+				fillContext.partPageUpdated(pageIndex);
+			}
+		});
 		
 		return filler;
 	}
@@ -166,12 +197,18 @@ public class SubreportFillPart extends BasePartFillComponent
 			if (pageAdded.getPageIndex() == 0)
 			{
 				//first page, adding the part info
-				fillContext.addPart(pageAdded.getJasperPrint());
+				fillContext.startPart(pageAdded.getJasperPrint());
 			}
 			
 			fillContext.addPage(pageAdded.getPage());
 			
 			//FIXMEBOOK styles
+		}
+
+		@Override
+		public JRPrintPage getPage(int pageIndex)
+		{
+			return fillContext.getPage(pageIndex);
 		}
 		
 	}

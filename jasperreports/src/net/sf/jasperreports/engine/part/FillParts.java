@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRPart;
 import net.sf.jasperreports.engine.JRSection;
 import net.sf.jasperreports.engine.fill.JRFillObjectFactory;
@@ -59,12 +58,9 @@ public class FillParts
 		}
 	}
 
-	public void fill(byte evaluation) throws JRException
+	public List<FillPart> getParts()
 	{
-		for (FillPart part : parts)
-		{
-			part.fill(evaluation);
-		}
+		return parts;
 	}
 
 }

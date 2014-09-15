@@ -67,4 +67,6 @@ public interface PartFillComponent
 	 */
 	void fill() throws JRException;
 
+	boolean isPageFinal(int pageIndex);
+
 }

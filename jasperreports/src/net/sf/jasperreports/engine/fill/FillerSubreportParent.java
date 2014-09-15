@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRPrintPage;
 import net.sf.jasperreports.engine.JRRuntimeException;
 
 /**
@@ -108,6 +109,13 @@ public class FillerSubreportParent implements FillerParent
 
 			suspendSubreportRunner(pageAdded);
 		}
+	}
+
+	@Override
+	public JRPrintPage getPage(int pageIndex)
+	{
+		//FIXMEBOOK not used
+		return null;
 	}
 
 	protected void suspendSubreportRunner(FillerPageAddedEvent pageAdded) throws JRException

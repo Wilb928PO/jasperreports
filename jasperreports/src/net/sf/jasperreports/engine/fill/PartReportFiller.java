@@ -28,6 +28,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExpression;
@@ -42,6 +44,7 @@ import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.ReportContext;
 import net.sf.jasperreports.engine.SimplePrintPageFormat;
 import net.sf.jasperreports.engine.SimplePrintPart;
+import net.sf.jasperreports.engine.part.FillPart;
 import net.sf.jasperreports.engine.part.FillParts;
 import net.sf.jasperreports.engine.part.GroupFillParts;
 import net.sf.jasperreports.engine.type.IncrementTypeEnum;
@@ -62,6 +65,9 @@ public class PartReportFiller extends BaseReportFiller
 	
 	private FillParts detailParts;
 	private List<GroupFillParts> groupParts;
+	
+	private ReadWriteLock currentFillPartLock = new ReentrantReadWriteLock();
+	private FillPart currentFillingPart;
 	
 	public PartReportFiller(JasperReportsContext jasperReportsContext, JasperReport jasperReport) throws JRException
 	{
@@ -118,6 +124,8 @@ public class PartReportFiller extends BaseReportFiller
 		}
 
 		setParametersToContext(parameterValues);
+
+		fillingThread = Thread.currentThread();
 		
 		JRResourcesFillUtil.ResourcesFillContext resourcesContext = 
 			JRResourcesFillUtil.setResourcesFillContext(parameterValues);
@@ -199,12 +207,13 @@ public class PartReportFiller extends BaseReportFiller
 				// removing the listener
 				virtualizationContext.removeListener(virtualizationListener);
 			}
+*/			
 
 			fillingThread = null;
 
 			//kill the subreport filler threads
-			killSubfillerThreads();
-*/			
+			//killSubfillerThreads();
+			
 			if (parent == null)
 			{
 				fillContext.dispose();
@@ -335,29 +344,67 @@ public class PartReportFiller extends BaseReportFiller
 
 	protected void fillParts(FillParts parts, byte evaluation) throws JRException
 	{
-		parts.fill(evaluation);
+		for (FillPart part : parts.getParts())
+		{
+			checkInterrupted();
+			fillPart(part, evaluation);
+		}
 	}
 
-	@Override
-	public void addFillListener(FillListener listener)
+	protected void fillPart(FillPart part, byte evaluation) throws JRException
 	{
-		//FIXMEBOOK
-	}
-
-	@Override
-	public void cancelFill() throws JRException
-	{
-		//FIXMEBOOK
+		int startPageIndex = jasperPrint.getPages().size();
+		
+		currentFillPartLock.writeLock().lock();
+		try
+		{
+			part.prepareFill(startPageIndex);
+			
+			currentFillingPart = part;
+			part.fill(evaluation);
+		}
+		finally
+		{
+			currentFillPartLock.writeLock().unlock();
+		}
 	}
 
 	@Override
 	public boolean isPageFinal(int pageIndex)
 	{
-		//FIXMEBOOK
-		return true;
+		currentFillPartLock.readLock().lock();
+		try
+		{
+			FillPart fillingPart = currentFillingPart;
+			if (fillingPart == null)
+			{
+				//FIXMEBOOK
+				return true;
+			}
+			
+			int partStartPageIndex = fillingPart.getStartPageIndex();
+			if (pageIndex < partStartPageIndex)
+			{
+				return true;
+			}
+			
+			return fillingPart.isPageFinal(pageIndex);
+		}
+		finally
+		{
+			currentFillPartLock.readLock().unlock();
+		}
 	}
 
-	public void addPart(JasperPrint partPrint)
+	public void partPageUpdated(int pageIndex)
+	{
+		if (fillListener != null)
+		{
+			fillListener.pageUpdated(jasperPrint, pageIndex);
+		}
+	}
+
+	public void startPart(JasperPrint partPrint)
 	{
 		SimplePrintPart part = new SimplePrintPart();
 		part.setName(partPrint.getName());
@@ -378,8 +425,16 @@ public class PartReportFiller extends BaseReportFiller
 
 	public void addPartPage(JRPrintPage page)
 	{
+		int pageIndex = jasperPrint.getPages().size();
 		jasperPrint.addPage(page);
 		addLastPageBookmarks();
+		
+		fillListener.pageGenerated(jasperPrint, pageIndex);
+	}
+
+	public JRPrintPage getPrintPage(int pageIndex)
+	{
+		return jasperPrint.getPages().get(pageIndex);
 	}
 
 }

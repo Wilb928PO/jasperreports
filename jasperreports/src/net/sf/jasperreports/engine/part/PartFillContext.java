@@ -40,8 +40,12 @@ public interface PartFillContext
 	
 	Object evaluate(JRExpression expression, byte evaluation) throws JRException;
 
-	void addPart(JasperPrint jasperPrint);
+	void startPart(JasperPrint jasperPrint);
 
 	void addPage(JRPrintPage page);
+
+	JRPrintPage getPage(int pageIndex);
+	
+	void partPageUpdated(int partPageIndex);
 
 }

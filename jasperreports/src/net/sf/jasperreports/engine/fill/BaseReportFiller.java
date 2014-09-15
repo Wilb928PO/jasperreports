@@ -101,7 +101,11 @@ public abstract class BaseReportFiller implements ReportFiller
 	
 	protected JasperPrint jasperPrint;
 	
+	protected Thread fillingThread;
+	
 	private boolean isInterrupted;
+
+	protected FillListener fillListener;
 
 	public BaseReportFiller(JasperReportsContext jasperReportsContext, JasperReport jasperReport, 
 			FillerParent parent) throws JRException
@@ -221,6 +225,17 @@ public abstract class BaseReportFiller implements ReportFiller
 			dataset.inheritFromMain();
 			dataset.initElementDatasets(factory);
 		}
+	}
+	
+	/**
+	 * Adds a fill lister to be notified by events that occur during the fill.
+	 * 
+	 * @param fillListener the listener to add
+	 */
+	@Override
+	public void addFillListener(FillListener fillListener)
+	{
+		this.fillListener = CompositeFillListener.addListener(this.fillListener, fillListener);
 	}
 
 	public JasperReportsContext getJasperReportsContext()
@@ -467,6 +482,44 @@ public abstract class BaseReportFiller implements ReportFiller
 		if (bookmarkHelper != null)
 		{
 			bookmarkHelper.updateBookmark(element);
+		}
+	}
+
+
+	/**
+	 * Cancells the fill process.
+	 *
+	 * @throws JRException
+	 */
+	@Override
+	public void cancelFill() throws JRException
+	{
+		if (log.isDebugEnabled())
+		{
+			log.debug("Fill " + fillerId + ": cancelling");
+		}
+
+		fillContext.markCanceled();
+		
+		if (fillContext.cancelRunningQuery())
+		{
+			if (log.isDebugEnabled())
+			{
+				log.debug("Fill " + fillerId + ": query cancelled");
+			}
+		}
+		else
+		{
+			Thread t = fillingThread;
+			if (t != null)
+			{
+				if (log.isDebugEnabled())
+				{
+					log.debug("Fill " + fillerId + ": Interrupting thread " + t);
+				}
+
+				t.interrupt();
+			}
 		}
 	}
 
