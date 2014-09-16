@@ -429,7 +429,10 @@ public class PartReportFiller extends BaseReportFiller
 		jasperPrint.addPage(page);
 		addLastPageBookmarks();
 		
-		fillListener.pageGenerated(jasperPrint, pageIndex);
+		if (fillListener != null)
+		{
+			fillListener.pageGenerated(jasperPrint, pageIndex);
+		}
 	}
 
 	public JRPrintPage getPrintPage(int pageIndex)
