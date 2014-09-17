@@ -104,7 +104,7 @@ public class FillPart
 
 	public boolean isPageFinal(int pageIndex)
 	{
-		return fillComponent.isPageFinal(pageIndex - startPageIndex);
+		return fillComponent.isPageFinal(pageIndex);
 	}
 
 	public int getStartPageIndex()

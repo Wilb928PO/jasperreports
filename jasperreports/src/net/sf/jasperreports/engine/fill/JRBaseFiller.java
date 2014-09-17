@@ -1591,7 +1591,7 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 	@Override
 	public boolean isPageFinal(int pageIdx)
 	{
-		JRPrintPage page = jasperPrint.getPages().get(pageIdx);
+		JRPrintPage page = getPrintPage(pageIdx);
 		return !hasBoundActions(page);
 	}
 	

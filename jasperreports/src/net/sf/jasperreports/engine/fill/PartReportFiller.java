@@ -359,14 +359,14 @@ public class PartReportFiller extends BaseReportFiller
 		try
 		{
 			part.prepareFill(startPageIndex);
-			
 			currentFillingPart = part;
-			part.fill(evaluation);
 		}
 		finally
 		{
 			currentFillPartLock.writeLock().unlock();
 		}
+		
+		part.fill(evaluation);
 	}
 
 	@Override
