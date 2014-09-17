@@ -41,6 +41,7 @@ import net.sf.jasperreports.engine.fill.JRFillExpressionEvaluator;
 import net.sf.jasperreports.engine.fill.JRFillObjectFactory;
 import net.sf.jasperreports.engine.fill.JRFillSubreport;
 import net.sf.jasperreports.engine.fill.JRHorizontalFiller;
+import net.sf.jasperreports.engine.fill.JRVerticalFiller;
 import net.sf.jasperreports.engine.fill.PartReportFiller;
 import net.sf.jasperreports.engine.part.BasePartFillComponent;
 import net.sf.jasperreports.engine.type.SectionTypeEnum;
@@ -120,7 +121,7 @@ public class SubreportFillPart extends BasePartFillComponent
 				filler = new JRHorizontalFiller(jasperReportsContext, jasperReport, parent);
 				break;
 			case VERTICAL:
-				filler = new JRHorizontalFiller(jasperReportsContext, jasperReport, parent);
+				filler = new JRVerticalFiller(jasperReportsContext, jasperReport, parent);
 				break;
 			default:
 				throw new JRRuntimeException("Unknown report section type " + sectionType);
