@@ -1333,6 +1333,11 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 	
 	protected void addPageToParent(final boolean ended) throws JRException
 	{
+		if (printPage == null)
+		{
+			return;
+		}
+		
 		FillerPageAddedEvent pageAdded = new FillerPageAddedEvent()
 		{
 			@Override
