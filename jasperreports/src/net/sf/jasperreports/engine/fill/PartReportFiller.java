@@ -427,11 +427,21 @@ public class PartReportFiller extends BaseReportFiller
 		
 		int startIndex = jasperPrint.getPages().size();
 		jasperPrint.addPart(startIndex, part);
+		
+		if (log.isDebugEnabled())
+		{
+			log.debug("added part " + part.getName() + " at index " + startIndex);
+		}
 	}
 
 	public void addPartPage(JRPrintPage page)
 	{
 		int pageIndex = jasperPrint.getPages().size();
+		if (log.isDebugEnabled())
+		{
+			log.debug("adding part page at index " + pageIndex);
+		}
+		
 		jasperPrint.addPage(page);
 		addLastPageBookmarks();
 		
