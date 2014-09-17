@@ -183,7 +183,7 @@ public class SubreportFillPart extends BasePartFillComponent
 		@Override
 		public boolean isRunToBottom()
 		{
-			return false;
+			return true;
 		}
 
 		@Override
