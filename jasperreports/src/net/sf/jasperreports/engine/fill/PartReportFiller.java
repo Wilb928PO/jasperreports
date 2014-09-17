@@ -222,11 +222,17 @@ public class PartReportFiller extends BaseReportFiller
 			JRResourcesFillUtil.revertResourcesFillContext(resourcesContext);
 		}
 	}
+
+	@Override
+	protected void virtualizationContextCreated()
+	{
+		//NOP
+	}
 	
 	protected void setParameters(Map<String,Object> parameterValues) throws JRException
 	{
 		//FIXMEBOOK copied from JRBaseFiller
-		//initVirtualizationContext(parameterValues);
+		initVirtualizationContext(parameterValues);
 
 		setFormatFactory(parameterValues);
 

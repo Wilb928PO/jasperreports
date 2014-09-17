@@ -326,8 +326,9 @@ public class JRFillContext
 	 */
 	public void ensureMasterPageAvailable()
 	{
-		if (usingVirtualizer)
+		if (usingVirtualizer && printPage != null)//FIXMEBOOK
 		{
+			//FIXME this has no effect since VirtualizableElementList
 			printPage.getElements();
 		}
 	}

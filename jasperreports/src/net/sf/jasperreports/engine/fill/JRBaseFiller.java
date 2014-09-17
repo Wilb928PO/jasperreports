@@ -54,7 +54,6 @@ import net.sf.jasperreports.engine.JROrigin;
 import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JRPrintElement;
 import net.sf.jasperreports.engine.JRPrintPage;
-import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.JRReportTemplate;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JRStyle;
@@ -62,7 +61,6 @@ import net.sf.jasperreports.engine.JRStyleSetter;
 import net.sf.jasperreports.engine.JRTemplate;
 import net.sf.jasperreports.engine.JRTemplateReference;
 import net.sf.jasperreports.engine.JRVirtualizable;
-import net.sf.jasperreports.engine.JRVirtualizer;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.JasperReportsContext;
@@ -182,7 +180,6 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 
 	protected JRFillBand noData;
 
-	protected JRVirtualizationContext virtualizationContext;
 	protected ElementEvaluationVirtualizationListener virtualizationListener;
 
 	/**
@@ -921,50 +918,11 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 		}
 	}
 
-	protected void initVirtualizationContext(Map<String, Object> parameterValues)
+	@Override
+	protected void virtualizationContextCreated()
 	{
-		if (isSubreport())
-		{
-			if (fillContext.isUsingVirtualizer())
-			{
-				// creating a subcontext for the subreport.
-				// this allows setting a separate listener, and guarantees that
-				// the current subreport page is not externalized.
-				virtualizationContext = new JRVirtualizationContext(fillContext.getVirtualizationContext());//FIXME lucianc clear this context from the virtualizer
-				
-				// setting per subreport page size
-				setVirtualPageSize(parameterValues);
-				
-				virtualizationListener = new ElementEvaluationVirtualizationListener(this);
-				virtualizationContext.addListener(virtualizationListener);
-			}
-		}
-		else
-		{
-			/* Virtualizer */
-			JRVirtualizer virtualizer = (JRVirtualizer) parameterValues.get(JRParameter.REPORT_VIRTUALIZER);
-			if (virtualizer == null)
-			{
-				return;
-			}
-			
-			if (log.isDebugEnabled())
-			{
-				log.debug("Fill " + fillerId + ": using virtualizer " + virtualizer);
-			}
-
-			fillContext.setUsingVirtualizer(true);
-			
-			virtualizationContext = fillContext.getVirtualizationContext();
-			virtualizationContext.setVirtualizer(virtualizer);
-			
-			setVirtualPageSize(parameterValues);
-			
-			virtualizationListener = new ElementEvaluationVirtualizationListener(this);
-			virtualizationContext.addListener(virtualizationListener);
-			
-			JRVirtualizationContext.register(virtualizationContext, jasperPrint);
-		}
+		virtualizationListener = new ElementEvaluationVirtualizationListener(this);
+		virtualizationContext.addListener(virtualizationListener);
 	}
 	
 	protected void lockVirtualizationContext()
@@ -980,34 +938,6 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 		if (virtualizationContext != null)
 		{
 			virtualizationContext.unlock();
-		}
-	}
-
-	protected void setVirtualPageSize(Map<String, Object> parameterValues)
-	{
-		// see if we have a parameter for the page size
-		Integer virtualPageSize = (Integer) parameterValues.get(
-				JRVirtualPrintPage.PROPERTY_VIRTUAL_PAGE_ELEMENT_SIZE);
-		if (virtualPageSize == null)
-		{
-			// check if we have a property
-			String pageSizeProp = jasperReport.getPropertiesMap().getProperty(
-					JRVirtualPrintPage.PROPERTY_VIRTUAL_PAGE_ELEMENT_SIZE);
-			if (pageSizeProp != null)
-			{
-				virtualPageSize = JRPropertiesUtil.asInteger(pageSizeProp);
-			}
-		}
-		
-		if (virtualPageSize != null)
-		{
-			if (log.isDebugEnabled())
-			{
-				log.debug("virtual page size " + virtualPageSize);
-			}
-			
-			// override the default
-			virtualizationContext.setPageElementSize(virtualPageSize);
 		}
 	}
 
