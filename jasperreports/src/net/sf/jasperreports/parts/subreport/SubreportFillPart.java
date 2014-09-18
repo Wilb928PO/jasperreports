@@ -25,18 +25,22 @@ package net.sf.jasperreports.parts.subreport;
 
 import java.util.Map;
 
+import net.sf.jasperreports.data.cache.DataCacheHandler;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRPrintPage;
+import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.fill.BaseReportFiller;
 import net.sf.jasperreports.engine.fill.DatasetExpressionEvaluator;
+import net.sf.jasperreports.engine.fill.FillDatasetPosition;
 import net.sf.jasperreports.engine.fill.FillListener;
 import net.sf.jasperreports.engine.fill.FillerPageAddedEvent;
 import net.sf.jasperreports.engine.fill.FillerParent;
 import net.sf.jasperreports.engine.fill.JRBaseFiller;
+import net.sf.jasperreports.engine.fill.JRFillDataset;
 import net.sf.jasperreports.engine.fill.JRFillExpressionEvaluator;
 import net.sf.jasperreports.engine.fill.JRFillObjectFactory;
 import net.sf.jasperreports.engine.fill.JRFillSubreport;
@@ -59,6 +63,9 @@ public class SubreportFillPart extends BasePartFillComponent
 	private JasperReport jasperReport;
 	private Map<String, Object> parameterValues;
 	
+	private FillDatasetPosition datasetPosition;
+	private boolean cacheIncluded;
+	
 	private volatile BaseReportFiller subreportFiller;
 	
 	public SubreportFillPart(SubreportPartComponent subreportPart, JRFillObjectFactory factory)
@@ -71,6 +78,16 @@ public class SubreportFillPart extends BasePartFillComponent
 	public void evaluate(byte evaluation) throws JRException
 	{
 		jasperReport = evaluateReport(evaluation);
+		
+		JRFillDataset parentDataset = expressionEvaluator.getFillDataset();
+		datasetPosition = new FillDatasetPosition(parentDataset.getFillPosition());
+		datasetPosition.addAttribute("subreportPartUUID", fillContext.getPart().getUUID());
+		parentDataset.setCacheRecordIndex(datasetPosition, evaluation);
+		
+		String cacheIncludedProp = JRPropertiesUtil.getOwnProperty(fillContext.getPart(), DataCacheHandler.PROPERTY_INCLUDED); 
+		cacheIncluded = JRPropertiesUtil.asBoolean(cacheIncludedProp, true);// default to true
+		//FIXMEBOOK do not evaluate REPORT_DATA_SOURCE
+		
 		parameterValues = JRFillSubreport.getParameterValues(fillContext.getFiller(), expressionEvaluator, 
 				subreportPart.getParametersMapExpression(), subreportPart.getParameters(), 
 				evaluation, false, 
@@ -87,6 +104,11 @@ public class SubreportFillPart extends BasePartFillComponent
 	public void fill() throws JRException
 	{
 		subreportFiller = createSubreportFiller();
+		
+		JRFillDataset subreportDataset = subreportFiller.getMainDataset();
+		subreportDataset.setFillPosition(datasetPosition);
+		subreportDataset.setCacheSkipped(!cacheIncluded);
+		
 		subreportFiller.fill(parameterValues);
 	}
 

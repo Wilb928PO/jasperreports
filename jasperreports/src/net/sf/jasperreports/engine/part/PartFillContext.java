@@ -25,6 +25,7 @@ package net.sf.jasperreports.engine.part;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExpression;
+import net.sf.jasperreports.engine.JRPart;
 import net.sf.jasperreports.engine.JRPrintPage;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.fill.PartReportFiller;
@@ -35,6 +36,8 @@ import net.sf.jasperreports.engine.fill.PartReportFiller;
  */
 public interface PartFillContext
 {
+	
+	JRPart getPart();
 	
 	PartReportFiller getFiller();
 	

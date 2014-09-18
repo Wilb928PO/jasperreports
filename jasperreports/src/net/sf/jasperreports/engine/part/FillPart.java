@@ -114,6 +114,11 @@ public class FillPart
 
 	protected class Context implements PartFillContext
 	{
+		@Override
+		public JRPart getPart()
+		{
+			return reportPart;
+		}
 
 		@Override
 		public PartReportFiller getFiller()
@@ -150,6 +155,5 @@ public class FillPart
 		{
 			reportFiller.partPageUpdated(startPageIndex + partPageIndex);
 		}
-		
 	}
 }
