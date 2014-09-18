@@ -701,6 +701,11 @@ public class JRFillDataset implements JRDataset, DatasetFillContext
 		}
 	}
 
+	public FillDatasetPosition getFillPosition()
+	{
+		return fillPosition;
+	}
+
 	public void setFillPosition(FillDatasetPosition fillPosition)
 	{
 		if (fillPosition != null)

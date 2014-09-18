@@ -23,6 +23,8 @@
  */
 package net.sf.jasperreports.engine.design;
 
+import java.util.UUID;
+
 import net.sf.jasperreports.engine.JRConstants;
 import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.base.JRBasePart;
@@ -52,6 +54,11 @@ public class JRDesignPart extends JRBasePart
 	 */
 	public JRDesignPart()
 	{
+	}
+
+	public void setUUID(UUID uuid)
+	{
+		this.uuid = uuid;
 	}
 
 	/**

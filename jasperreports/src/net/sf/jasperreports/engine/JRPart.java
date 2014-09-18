@@ -31,7 +31,7 @@ import net.sf.jasperreports.engine.component.ComponentKey;
  * @author Teodor Danciu (teodord@users.sourceforge.net)
  * @version $Id: JRBand.java 7045 2014-04-24 14:20:46Z shertage $
  */
-public interface JRPart extends JRPropertiesHolder, JRCloneable
+public interface JRPart extends JRPropertiesHolder, JRCloneable, JRIdentifiable
 {
 	
 

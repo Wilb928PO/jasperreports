@@ -844,6 +844,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 		if (componentXmlWriter.isToWrite(part, this))
 		{
 			writer.startElement(JRXmlConstants.ELEMENT_part, getNamespace());
+			writer.addAttribute(JRXmlConstants.ATTRIBUTE_uuid, part.getUUID().toString());
 
 			writeProperties(part);
 			writeExpression(JRXmlConstants.ELEMENT_printWhenExpression, part.getPrintWhenExpression(), false);

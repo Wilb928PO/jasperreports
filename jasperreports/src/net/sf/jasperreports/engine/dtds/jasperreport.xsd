@@ -1826,6 +1826,11 @@
     <element ref="jr:printWhenExpression" minOccurs="0" maxOccurs="1"/>
     <element ref="jr:component"/>
    </sequence>
+   <attribute name="uuid" type="string" use="optional">
+	<annotation>
+	 <documentation>This attribute is auto-generated and is used to uniquely identify parts.</documentation>
+	</annotation>
+   </attribute>  
   </complexType>
  </element>
 

@@ -24,6 +24,7 @@
 package net.sf.jasperreports.engine.base;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRConstants;
@@ -53,6 +54,7 @@ public class JRBasePart implements JRPart, Serializable, JRChangeEventsSupport
 
 	private static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
 
+	protected UUID uuid;
 	private JRPropertiesMap propertiesMap;
 
 	protected JRExpression printWhenExpression;
@@ -68,6 +70,7 @@ public class JRBasePart implements JRPart, Serializable, JRChangeEventsSupport
 	{
 		factory.put(part, this);
 		
+		this.uuid = part.getUUID();
 		this.propertiesMap = JRPropertiesMap.getPropertiesClone(part);
 		this.printWhenExpression = factory.getExpression(part.getPrintWhenExpression());
 
@@ -81,6 +84,16 @@ public class JRBasePart implements JRPart, Serializable, JRChangeEventsSupport
 		{
 			((JRVisitable) component).visit(factory);
 		}
+	}
+
+	@Override
+	public UUID getUUID()
+	{
+		if (uuid == null)
+		{
+			uuid = UUID.randomUUID();
+		}
+		return uuid;
 	}
 
 	public Component getComponent()
@@ -153,6 +166,7 @@ public class JRBasePart implements JRPart, Serializable, JRChangeEventsSupport
 
 		clone.printWhenExpression = JRCloneUtils.nullSafeClone(printWhenExpression);
 		clone.propertiesMap = JRPropertiesMap.getPropertiesClone(this);
+		clone.uuid = null;
 		clone.eventSupport = null;
 		
 		return clone;

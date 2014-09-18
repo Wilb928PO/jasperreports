@@ -564,6 +564,7 @@ public final class JRXmlDigesterFactory
 	protected static void addPartComponentRules(Digester digester)
 	{
 		digester.addFactoryCreate("*/part", JRPartFactory.class.getName());
+		digester.addRule("*/part", new UuidPropertyRule("uuid", "UUID"));
 		digester.addSetNext("*/part", "addPart", JRPart.class.getName());
 
 		Collection<PartComponentsBundle> components = PartComponentsEnvironment.getInstance(DefaultJasperReportsContext.getInstance()).getBundles();
