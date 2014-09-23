@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -79,7 +79,7 @@ import net.sf.jasperreports.engine.type.SplitTypeEnum;
  * <dd>The band is allowed to split anywhere except above its topmost element</dd>
  * </dl>
  * If a split type is not specified, the default is given by the
- * <code>net.sf.jasperreports.band.split.type</code> configuration property.
+ * {@link #PROPERTY_SPLIT_TYPE net.sf.jasperreports.band.split.type} configuration property.
  * <h3>Skipping Bands</h3>
  * All the report sections allow users to define a report expression that will be evaluated at
  * runtime to decide if that section should be generated or skipped when producing the

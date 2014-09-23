@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -44,8 +44,7 @@ public class FillListFactory implements ComponentFillFactory
 	public FillComponent cloneFillComponent(FillComponent component,
 			JRFillCloneFactory factory)
 	{
-		//TODO implement
-		throw new UnsupportedOperationException();
+		return (FillComponent) ((BaseFillList) component).createClone(factory);
 	}
 
 	public FillComponent toFillComponent(Component component,

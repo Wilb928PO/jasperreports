@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -174,7 +174,7 @@ public class JRAntCompileTask extends JRBaseAntTask
 	 * The specified class should be an implementation of the 
 	 * {@link net.sf.jasperreports.engine.design.JRCompiler} interface.
 	 * When specified, this value will temporarily override the value of the
-	 * <code>jasper.reports.compiler.class</code> system property.
+	 * {@link net.sf.jasperreports.engine.design.JRCompiler#COMPILER_CLASS net.sf.jasperreports.compiler.class} system property.
 	 * 
 	 * @param compiler report compiler class name
 	 */

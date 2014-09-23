@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -37,6 +37,7 @@ import net.sf.jasperreports.engine.JRExpressionCollector;
 import net.sf.jasperreports.engine.JRFrame;
 import net.sf.jasperreports.engine.JRLineBox;
 import net.sf.jasperreports.engine.JRVisitor;
+import net.sf.jasperreports.engine.type.BorderSplitType;
 import net.sf.jasperreports.engine.type.ModeEnum;
 import net.sf.jasperreports.engine.util.ElementsVisitorUtils;
 import net.sf.jasperreports.engine.util.JRBoxUtil;
@@ -55,6 +56,8 @@ public class JRBaseFrame extends JRBaseElement implements JRFrame
 	protected List<JRChild> children;
 
 	protected JRLineBox lineBox;
+	
+	private BorderSplitType borderSplitType;
 
 
 	public JRBaseFrame(JRFrame frame, JRBaseObjectFactory factory)
@@ -73,6 +76,7 @@ public class JRBaseFrame extends JRBaseElement implements JRFrame
 		}
 		
 		lineBox = frame.getLineBox().clone(this);
+		this.borderSplitType = frame.getBorderSplitType();
 	}
 
 	public JRElement[] getElements()
@@ -128,6 +132,12 @@ public class JRBaseFrame extends JRBaseElement implements JRFrame
 	public Color getDefaultLineColor() 
 	{
 		return getForecolor();
+	}
+
+	@Override
+	public BorderSplitType getBorderSplitType()
+	{
+		return borderSplitType;
 	}
 
 	

@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -23,6 +23,8 @@
  */
 package net.sf.jasperreports.engine.util;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -39,7 +41,15 @@ public final class JRDataUtils
 	
 	public static final double JULIAN_0000 = 1721424.5;
 	public static final double JULIAN_1900 = 2415020.5;	
+	public static final String ISO_DATE_PATTERN = "yyyy-MM-dd'T'HH:mm:ss";
 	
+	
+	public static DateFormat getIsoDateFormat()
+	{
+		return new SimpleDateFormat(ISO_DATE_PATTERN);
+	}
+	
+
 	public static String getLocaleCode(Locale locale)
 	{
 		return locale.toString();

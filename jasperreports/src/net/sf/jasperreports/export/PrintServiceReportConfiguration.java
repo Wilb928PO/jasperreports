@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -32,7 +32,7 @@ import net.sf.jasperreports.engine.export.JRPrintServiceExporter;
  * @see JRPrintServiceExporter
  * 
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id: PrintServiceExporterConfiguration.java 6717 2013-11-11 09:29:30Z teodord $
+ * @version $Id$
  */
 public interface PrintServiceReportConfiguration extends Graphics2DReportConfiguration
 {

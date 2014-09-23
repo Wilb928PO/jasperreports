@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -31,7 +31,7 @@ import net.sf.jasperreports.export.type.PdfPrintScalingEnum;
 import net.sf.jasperreports.export.type.PdfVersionEnum;
 import net.sf.jasperreports.export.type.PdfaConformanceEnum;
 
-import com.lowagie.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.PdfWriter;
 
 
 /**
@@ -169,7 +169,7 @@ public interface PdfExporterConfiguration extends ExporterConfiguration
 	public static final String PROPERTY_PDFA_CONFORMANCE = JRPropertiesUtil.PROPERTY_PREFIX + "export.pdfa.conformance";
 
 	/**
-	 * Property whose value is used as default for the {@link #getIccProfilePath} export configuration setting.
+	 * Property whose value is used as default for the {@link #getIccProfilePath()} export configuration setting.
 	 */
 	public static final String PROPERTY_PDFA_ICC_PROFILE_PATH = JRPropertiesUtil.PROPERTY_PREFIX + "export.pdfa.icc.profile.path";
 

@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -74,7 +74,7 @@ public interface JRMeterPlot extends JRChartPlot
 	/**
 	 * Returns a list of all the intervals contained in this Meter.  The return value is never
 	 * <code>null</code> but can be an empty list.  Each element in the list is a
-	 * {@link net.sf.jasperreports.charts.util.JRMeterInterval <code>net.sf.jasperreports.charts.util.JRMeterInterval</code>}
+	 * {@link net.sf.jasperreports.charts.util.JRMeterInterval JRMeterInterval}
 	 *
 	 * @return a list of all the intervals contained in this Meter
 	 */

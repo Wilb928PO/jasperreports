@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -33,7 +33,7 @@ import net.sf.jasperreports.engine.JRRuntimeException;
  * to the Java Virtual Machine.
  * <p/>
  * The missing font check that raises this exception can be turned off by using the
- * <code>net.sf.jasperreports.awt.ignore.missing.font</code> boolean configuration property, 
+ * {@link net.sf.jasperreports.engine.util.JRStyledText#PROPERTY_AWT_IGNORE_MISSING_FONT net.sf.jasperreports.awt.ignore.missing.font} boolean configuration property, 
  * which is available globally or at report level.
  * <p/>
  * However, we advise you to leave this font check in place and rather make sure that inside your report template 

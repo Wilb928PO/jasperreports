@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -92,6 +92,21 @@ public class FillReturnValues
 			
 			returnValues = new JRFillSubreportReturnValue[returnValuesList.size()];
 			returnValuesList.toArray(returnValues);
+		}
+	}
+
+	protected FillReturnValues(FillReturnValues values, JRFillCloneFactory factory)
+	{
+		this.filler = values.filler;
+		this.band = values.band;
+		
+		if (values.returnValues != null)
+		{
+			this.returnValues = new JRFillSubreportReturnValue[values.returnValues.length];
+			for (int i = 0; i < values.returnValues.length; i++)
+			{
+				this.returnValues[i] = new JRFillSubreportReturnValue(values.returnValues[i], factory);
+			}
 		}
 	}
 

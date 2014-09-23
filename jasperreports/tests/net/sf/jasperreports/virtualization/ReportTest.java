@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -23,7 +23,9 @@
  */
 package net.sf.jasperreports.virtualization;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -50,7 +52,6 @@ import net.sf.jasperreports.engine.export.JRXmlExporter;
 import net.sf.jasperreports.engine.export.JRXmlExporterParameter;
 import net.sf.jasperreports.engine.fill.JRGzipVirtualizer;
 import net.sf.jasperreports.engine.util.JRLoader;
-import net.sf.jasperreports.engine.util.NullOutputStream;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
 import org.apache.commons.logging.Log;
@@ -67,7 +68,7 @@ public class ReportTest
 
 	private static final Log log = LogFactory.getLog(ReportTest.class);
 	
-	private final String DIGEST = "3196c0a2ab0dd663c2aad65f8436d321e44d5527";
+	private final String DIGEST = "ece1c2b966beca403f642d6e0f72d5d460852554";
 	
 	private JasperReport report;
 	private JasperFillManager fillManager;
@@ -131,9 +132,20 @@ public class ReportTest
 	protected String xmlDigest(JasperPrint print) 
 			throws NoSuchAlgorithmException, FileNotFoundException, JRException, IOException
 	{
+		File outputFile = createXmlOutputFile();
+		log.debug("XML export output at " + outputFile.getAbsolutePath());
+		
 		MessageDigest digest = MessageDigest.getInstance("SHA-1");
-		DigestOutputStream out = new DigestOutputStream(new NullOutputStream(), digest);
-		xmlExport(print, out);
+		FileOutputStream output = new FileOutputStream(outputFile);
+		try
+		{
+			DigestOutputStream out = new DigestOutputStream(output, digest);
+			xmlExport(print, out);
+		}
+		finally
+		{
+			output.close();
+		}
 		
 		byte[] digestBytes = digest.digest();
 		StringBuilder digestString = new StringBuilder(digestBytes.length * 2);
@@ -142,6 +154,22 @@ public class ReportTest
 			digestString.append(String.format("%02x", b));
 		}
 		return digestString.toString();
+	}
+	
+	protected File createXmlOutputFile() throws IOException
+	{
+		String outputDirPath = System.getProperty("xmlOutputDir");
+		File outputFile;
+		if (outputDirPath == null)
+		{
+			outputFile = File.createTempFile("jr_tests_", ".jrpxml");
+		}
+		else
+		{
+			File outputDir = new File(outputDirPath);
+			outputFile = File.createTempFile("jr_tests_", ".jrpxml", outputDir);
+		}
+		return outputFile;
 	}
 
 	protected void xmlExport(JasperPrint print, OutputStream out) throws JRException, IOException

@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -77,6 +77,23 @@ public class JRFillSubreportReturnValue implements JRSubreportReturnValue
 		calculation = returnValue.getCalculation();
 		
 		this.filler = filler;
+	}
+
+	/**
+	 * Cloning constructor.
+	 * 
+	 * @param fillReturnValue the object to clone
+	 * @param factory the clone factory
+	 */
+	protected JRFillSubreportReturnValue(JRFillSubreportReturnValue fillReturnValue, JRFillCloneFactory factory)
+	{
+		this.fromVariable = fillReturnValue.fromVariable;
+		this.toVariable = fillReturnValue.toVariable;
+		this.incrementerFactoryClassName = fillReturnValue.incrementerFactoryClassName;
+		this.calculation = fillReturnValue.calculation;
+		this.derived = fillReturnValue.derived;
+		this.incrementer = fillReturnValue.incrementer;
+		this.filler = fillReturnValue.filler;
 	}
 
 	public String getSubreportVariable()

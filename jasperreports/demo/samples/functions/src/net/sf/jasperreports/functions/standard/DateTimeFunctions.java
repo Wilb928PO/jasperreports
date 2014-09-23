@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -57,7 +57,7 @@ import org.joda.time.format.DateTimeFormatter;
  * This class should maintain all function methods that belongs to the category {@link #DATE_TIME}.
  * 
  * @author Massimo Rabbi (mrabbi@users.sourceforge.net)
- * @version $Id: CastorUtil.java 5880 2013-01-07 20:40:06Z teodord $
+ * @version $Id$
  */
 @FunctionCategories({DateTimeCategory.class})
 public final class DateTimeFunctions extends AbstractFunctionSupport

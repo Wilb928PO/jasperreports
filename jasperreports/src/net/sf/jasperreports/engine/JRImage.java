@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -106,7 +106,7 @@ import net.sf.jasperreports.engine.type.OnErrorTypeEnum;
  * <li><code>java.io.InputStream</code></li>
  * <li><code>java.net.URL</code></li>
  * <li><code>java.awt.Image</code></li>
- * <li><code>net.sf.jasperreports.engine.Renderable</code></li>
+ * <li><code>{@link net.sf.jasperreports.engine.Renderable}</code></li>
  * </ul>
  * When the image expression returns a <code>java.lang.String</code> value, the engine tries to see whether
  * the value represents a URL from which to load the image. If it is not a valid URL representation, it tries to locate a

@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -137,8 +137,8 @@ public class XalanXPathQueryExecuter extends JRAbstractQueryExecuter
 			datasource.setDocumentBuilderFactory(documentBuilderFactory);
 			
 			datasource.setLocale((Locale)getParameterValue(XalanXPathQueryExecuterFactory.XML_LOCALE, true));
-			datasource.setDatePattern((String)getParameterValue(XalanXPathQueryExecuterFactory.XML_DATE_PATTERN, true));
-			datasource.setNumberPattern((String)getParameterValue(XalanXPathQueryExecuterFactory.XML_NUMBER_PATTERN, true));
+			datasource.setDatePattern(getStringParameter(XalanXPathQueryExecuterFactory.XML_DATE_PATTERN, XalanXPathQueryExecuterFactory.PROPERTY_XML_DATE_PATTERN));
+			datasource.setNumberPattern(getStringParameter(XalanXPathQueryExecuterFactory.XML_NUMBER_PATTERN, XalanXPathQueryExecuterFactory.PROPERTY_XML_NUMBER_PATTERN));
 			datasource.setTimeZone((TimeZone)getParameterValue(XalanXPathQueryExecuterFactory.XML_TIME_ZONE, true));
 		}
 		

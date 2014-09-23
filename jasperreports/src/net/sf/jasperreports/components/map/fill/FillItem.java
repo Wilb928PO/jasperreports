@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -105,7 +105,11 @@ public abstract class FillItem implements Item
 	public Object getEvaluatedValue(ItemProperty property, JRFillExpressionEvaluator evaluator, byte evaluation) throws JRException
 	{
 		Object result = null;
-		if(property.getValueExpression() == null || "".equals(property.getValueExpression()))
+		if(
+			property.getValueExpression() == null 
+			|| property.getValueExpression().getText() == null
+			|| property.getValueExpression().getText().trim().length() == 0
+			)
 		{
 			result = property.getValue();
 		}

@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -29,12 +29,12 @@ import java.text.CharacterIterator;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.export.PdfReportConfiguration;
 
-import com.lowagie.text.SplitCharacter;
-import com.lowagie.text.pdf.PdfChunk;
+import com.itextpdf.text.SplitCharacter;
+import com.itextpdf.text.pdf.PdfChunk;
 
 
 /**
- * Implementation of {@link com.lowagie.text.SplitCharacter SplitCharacter} that
+ * Implementation of {@link com.itextpdf.text.SplitCharacter SplitCharacter} that
  * uses the same logic as AWT to break texts into lines.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)

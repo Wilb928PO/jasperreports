@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -43,7 +43,7 @@ import net.sf.jasperreports.engine.type.ModeEnum;
  * This could be the case in an application for which the color of some elements in the
  * report template needs to change based on user input. To locate the report elements that
  * need to have their colors altered, the caller program could use the
- * <code>getElementByKey(String)</code> method available at band level. A key value must be
+ * {@link JRBand#getElementByKey(String) getElementByKey(String)} method available at band level. A key value must be
  * associated with the report element and it must be unique within the overall band for the
  * lookup to work.
  * <h3>Element Size</h3>

@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -62,9 +62,12 @@
  * list of scriptlets and has the predefined name <code>REPORT</code>. 
  * </p><p> 
  * When creating a JasperReports scriptlet class, there are several methods that developers 
- * should implement or override, including <code>beforeReportInit()</code>, <code>afterReportInit()</code>, 
- * <code>beforePageInit()</code>, <code>afterPageInit()</code>, <code>beforeGroupInit()</code>, and 
- * <code>afterGroupInit()</code>. The report engine calls these methods at the appropriate time when 
+ * should implement or override, including {@link net.sf.jasperreports.engine.JRAbstractScriptlet#beforeReportInit() beforeReportInit()}, 
+ * {@link net.sf.jasperreports.engine.JRAbstractScriptlet#afterReportInit() afterReportInit()}, 
+ * {@link net.sf.jasperreports.engine.JRAbstractScriptlet#beforePageInit() beforePageInit()}, 
+ * {@link net.sf.jasperreports.engine.JRAbstractScriptlet#afterPageInit() afterPageInit()}, 
+ * {@link net.sf.jasperreports.engine.JRAbstractScriptlet#beforeGroupInit(String)}, and 
+ * {@link net.sf.jasperreports.engine.JRAbstractScriptlet#afterGroupInit(String)}. The report engine calls these methods at the appropriate time when 
  * filling the report. 
  * </p><p> 
  * For more complex reports containing very complicated report expressions for grouping 

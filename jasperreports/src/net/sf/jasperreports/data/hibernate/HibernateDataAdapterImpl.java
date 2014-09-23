@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -23,13 +23,13 @@
  */
 package net.sf.jasperreports.data.hibernate;
 
-import net.sf.jasperreports.data.AbstractDataAdapter;
+import net.sf.jasperreports.data.AbstractClasspathAwareDataAdapter;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
  * @version $Id$
  */
-public class HibernateDataAdapterImpl extends AbstractDataAdapter implements
+public class HibernateDataAdapterImpl extends AbstractClasspathAwareDataAdapter implements
 		HibernateDataAdapter {
 	private String xmlFile;
 	private String propertiesFile;

@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -42,7 +42,7 @@ import org.apache.commons.logging.LogFactory;
  * 
  * <p>
  * The workaround consists of simply reattempting the text measuring when 
- * a <code>java.lang.NullPointer</code> exception is thrown from
+ * a <code>java.lang.NullPointerException</code> is thrown from
  * <code>sun.font.GlyphLayout</code>. 
  * </p>
  * 

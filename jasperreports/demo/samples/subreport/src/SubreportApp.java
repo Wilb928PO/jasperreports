@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -34,6 +35,7 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.export.JRCsvExporter;
 import net.sf.jasperreports.engine.export.JRRtfExporter;
 import net.sf.jasperreports.engine.export.JRXlsExporter;
+import net.sf.jasperreports.engine.export.JsonMetadataExporter;
 import net.sf.jasperreports.engine.export.oasis.JROdsExporter;
 import net.sf.jasperreports.engine.export.oasis.JROdtExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRDocxExporter;
@@ -81,6 +83,7 @@ public class SubreportApp extends AbstractSampleApp
 		xls();
 		jxl();
 		csv();
+		jsonMetadata();
 		odt();
 		ods();
 		docx();
@@ -260,6 +263,37 @@ public class SubreportApp extends AbstractSampleApp
 		exporter.exportReport();
 
 		System.err.println("CSV creation time : " + (System.currentTimeMillis() - start));
+	}
+	
+	
+	/**
+	 *
+	 */
+	public void jsonMetadata() throws JRException
+	{
+		long start = System.currentTimeMillis();
+		JasperReport subreport = (JasperReport)JRLoader.loadObjectFromFile("build/reports/ProductReport.jasper");
+
+		//Preparing parameters
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		parameters.put("ProductsSubreport", subreport);
+		parameters.put(JRParameter.IS_IGNORE_PAGINATION, true);
+		
+		JasperPrint jasperPrint = JasperFillManager.fillReport("build/reports/MasterReport.jasper", parameters, getDemoHsqldbConnection());
+		System.err.println("Filling time : " + (System.currentTimeMillis() - start));
+		
+		start = System.currentTimeMillis();
+
+		File destFile = new File(new File("build/reports"), jasperPrint.getName() + ".json");
+
+		JsonMetadataExporter exporter = new JsonMetadataExporter();
+
+		exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+		exporter.setExporterOutput(new SimpleWriterExporterOutput(destFile));
+
+		exporter.exportReport();
+
+		System.err.println("JSON creation time : " + (System.currentTimeMillis() - start));
 	}
 	
 	

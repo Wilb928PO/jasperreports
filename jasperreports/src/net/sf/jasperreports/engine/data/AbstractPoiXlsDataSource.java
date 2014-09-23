@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -54,7 +54,7 @@ import org.apache.poi.ss.usermodel.Workbook;
  * names or set a flag to read the column names from the first row of the XLSX or XLS file.
  *
  * @author sanda zaharia (shertage@users.sourceforge.net)
- * @version $Id: ExcelDataSource.java 6968 2014-03-12 08:58:07Z shertage $
+ * @version $Id$
  */
 public abstract class AbstractPoiXlsDataSource extends AbstractXlsDataSource
 {
@@ -193,7 +193,6 @@ public abstract class AbstractPoiXlsDataSource extends AbstractXlsDataSource
 				readHeader();
 				recordIndex++;
 			}
-
 			if (recordIndex <= workbook.getSheetAt(sheetIndex).getLastRowNum())
 			{
 				return true;
@@ -240,6 +239,10 @@ public abstract class AbstractPoiXlsDataSource extends AbstractXlsDataSource
 		}
 		Sheet sheet = workbook.getSheetAt(sheetIndex);
 		Cell cell = sheet.getRow(recordIndex).getCell(columnIndex);
+		if(cell == null)
+		{
+			return null;
+		}
 		Class<?> valueClass = jrField.getValueClass();
 		
 		if (valueClass.equals(String.class)) 
@@ -254,9 +257,17 @@ public abstract class AbstractPoiXlsDataSource extends AbstractXlsDataSource
 				{
 					return cell.getBooleanCellValue();
 				}
-				else
+				else 
 				{
-					return convertStringValue(cell.getStringCellValue(), valueClass);
+					String value = cell.getStringCellValue();
+					if(value == null || value.trim().length() == 0)
+					{
+						return null;
+					}
+					else
+					{
+						return convertStringValue(value, valueClass);
+					}					
 				}
 			}
 			else if (Number.class.isAssignableFrom(valueClass))
@@ -267,14 +278,22 @@ public abstract class AbstractPoiXlsDataSource extends AbstractXlsDataSource
 				}
 				else
 				{
-					if (numberFormat != null)
+					String value = cell.getStringCellValue();
+					if(value == null || value.trim().length() == 0)
 					{
-						return FormatUtils.getFormattedNumber(numberFormat, cell.getStringCellValue(), valueClass);
+						return null;
 					}
-					else 
+					else
 					{
-						return convertStringValue(cell.getStringCellValue(), valueClass);
-					}
+						if (numberFormat != null)
+						{
+							return FormatUtils.getFormattedNumber(numberFormat, value, valueClass);
+						}
+						else 
+						{
+							return convertStringValue(value, valueClass);
+						}
+					}					
 				}
 			}
 			else if (Date.class.isAssignableFrom(valueClass))
@@ -285,14 +304,22 @@ public abstract class AbstractPoiXlsDataSource extends AbstractXlsDataSource
 				}
 				else
 				{
-					if (dateFormat != null)
+					String value = cell.getStringCellValue();
+					if(value == null || value.trim().length() == 0)
 					{
-						return FormatUtils.getFormattedDate(dateFormat, cell.getStringCellValue(), valueClass);
-					} 
+						return null;
+					}
 					else
 					{
-						return convertStringValue(cell.getStringCellValue(), valueClass);
-					}
+						if (dateFormat != null)
+						{
+							return FormatUtils.getFormattedDate(dateFormat, value, valueClass);
+						}
+						else 
+						{
+							return convertStringValue(value, valueClass);
+						}
+					}					
 				}
 			}
 			else

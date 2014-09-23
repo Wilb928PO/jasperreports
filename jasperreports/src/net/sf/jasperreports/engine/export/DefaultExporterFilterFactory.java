@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -54,7 +54,7 @@ public class DefaultExporterFilterFactory implements ExporterFilterFactory
 	
 	/**
 	 * The method searches for all filter factories registered via
-	 * <code>net.sf.jasperreports.export.filter.factory.*</code> properties,
+	 * {@link #PROPERTY_EXPORTER_FILTER_FACTORY_PREFIX net.sf.jasperreports.export.filter.factory.*} properties,
 	 * calls each factory and collects the returned filters.
 	 * 
 	 * The method returns:

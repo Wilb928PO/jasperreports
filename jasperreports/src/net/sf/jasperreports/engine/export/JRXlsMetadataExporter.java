@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -43,6 +43,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.AttributedCharacterIterator;
 import java.text.AttributedCharacterIterator.Attribute;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -97,6 +99,7 @@ import net.sf.jasperreports.engine.type.RenderableTypeEnum;
 import net.sf.jasperreports.engine.type.RotationEnum;
 import net.sf.jasperreports.engine.type.RunDirectionEnum;
 import net.sf.jasperreports.engine.type.VerticalAlignEnum;
+import net.sf.jasperreports.engine.util.JRDataUtils;
 import net.sf.jasperreports.engine.util.JRImageLoader;
 import net.sf.jasperreports.engine.util.JRStringUtil;
 import net.sf.jasperreports.engine.util.JRStyledText;
@@ -151,6 +154,8 @@ public class JRXlsMetadataExporter extends JRXlsAbstractMetadataExporter<XlsMeta
 	
 	private static Map<Color,HSSFColor> hssfColorsCache = new ReferenceMap();
 
+	protected final DateFormat isoDateFormat = JRDataUtils.getIsoDateFormat();
+	
 	protected Map<StyleInfo,HSSFCellStyle> loadedCellStyles = new HashMap<StyleInfo,HSSFCellStyle>();
 	protected Map<String,List<Hyperlink>> anchorLinks = new HashMap<String,List<Hyperlink>>();
 	protected Map<Integer,List<Hyperlink>> pageLinks = new HashMap<Integer,List<Hyperlink>>();
@@ -658,6 +663,7 @@ public class JRXlsMetadataExporter extends JRXlsAbstractMetadataExporter<XlsMeta
 	protected void exportText(final JRPrintText textElement) throws JRException {
 		String currentColumnName = textElement.getPropertiesMap().getProperty(JRXlsAbstractMetadataExporter.PROPERTY_COLUMN_NAME);
 		if (currentColumnName != null && currentColumnName.length() > 0) {
+			final boolean hasCurrentColumnData = textElement.getPropertiesMap().containsProperty(JRXlsAbstractMetadataExporter.PROPERTY_DATA);
 			String currentColumnData = textElement.getPropertiesMap().getProperty(JRXlsAbstractMetadataExporter.PROPERTY_DATA);
 			boolean repeatValue = getPropertiesUtil().getBooleanProperty(textElement, JRXlsAbstractMetadataExporter.PROPERTY_REPEAT_VALUE, false);
 			
@@ -699,9 +705,12 @@ public class JRXlsMetadataExporter extends JRXlsAbstractMetadataExporter<XlsMeta
 			final String textStr;
 			final String formula;
 			final CellSettings cellSettings = new CellSettings();
-			if (currentColumnData != null) {
+			if (hasCurrentColumnData)
+			{
 				styledText = new JRStyledText();
-				styledText.append(currentColumnData);
+				if (currentColumnData != null) {
+					styledText.append(currentColumnData);
+				}
 				textStr = currentColumnData;
 				formula = null;
 			} else {
@@ -747,7 +756,19 @@ public class JRXlsMetadataExporter extends JRXlsAbstractMetadataExporter<XlsMeta
 						if (convertedPattern != null) {
 							baseStyle.setDataFormat(dataFormat.getFormat(convertedPattern));
 						}
-						cellSettings.importValues(HSSFCell.CELL_TYPE_NUMERIC, getLoadedCellStyle(baseStyle), textValue.getValue());
+						Number value = null;
+						if (hasCurrentColumnData) {
+							if (textStr != null) {
+								try {
+									value = Double.parseDouble(textStr);
+								} catch (NumberFormatException nfe) {
+									throw new JRRuntimeException(nfe);
+								}
+							}
+						} else {
+							value = textValue.getValue();
+						}
+						cellSettings.importValues(HSSFCell.CELL_TYPE_NUMERIC, getLoadedCellStyle(baseStyle), value);
 					}
 
 					public void handle(DateTextValue textValue) {
@@ -755,7 +776,22 @@ public class JRXlsMetadataExporter extends JRXlsAbstractMetadataExporter<XlsMeta
 						if(convertedPattern != null) {
 							baseStyle.setDataFormat(dataFormat.getFormat(convertedPattern));
 						}
-						Date value = textValue.getValue() == null ? null : translateDateValue(textElement, textValue.getValue());
+						Date value = null;
+						if (hasCurrentColumnData) {
+							if (textStr != null) {
+								try {
+									value = new Date(Long.parseLong(textStr));
+								} catch (NumberFormatException nfe) {
+									try {
+										value = isoDateFormat.parse(textStr);
+									} catch (ParseException pe) {
+										throw new JRRuntimeException(pe);
+									}
+								}
+							}
+						} else {
+							value = textValue.getValue() == null ? null : translateDateValue(textElement, textValue.getValue());
+						}
 						cellSettings.importValues(HSSFCell.CELL_TYPE_NUMERIC, getLoadedCellStyle(baseStyle), value);
 					}
 

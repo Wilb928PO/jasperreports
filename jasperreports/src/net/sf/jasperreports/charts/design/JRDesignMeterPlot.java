@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -119,8 +119,10 @@ public class JRDesignMeterPlot extends JRBaseMeterPlot
 
 	/**
 	 * Sets the shape of the meter.  Must be one of
-	 * <code>MeterShapeEnum.CHORD</code>, <code>MeterShapeEnum.CIRCLE</code>,
-	 * <code>MeterShapeEnum.PIE</code> or <code>MeterShapeEnum.DIAL</code>.
+	 * {@link net.sf.jasperreports.charts.type.MeterShapeEnum#CHORD CHORD}, 
+	 * {@link net.sf.jasperreports.charts.type.MeterShapeEnum#CIRCLE CIRCLE},
+	 * {@link net.sf.jasperreports.charts.type.MeterShapeEnum#PIE PIE}
+	 * or {@link net.sf.jasperreports.charts.type.MeterShapeEnum#DIAL DIAL}.
 	 *
 	 * @param shape the shape of the meter
 	 * @throws JRException invalid shape was specified

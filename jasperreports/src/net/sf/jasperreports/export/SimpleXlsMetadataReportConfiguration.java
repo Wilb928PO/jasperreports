@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -26,7 +26,7 @@ package net.sf.jasperreports.export;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id: SimpleXlsMetadataExporterConfiguration.java 6720 2013-11-11 10:44:07Z teodord $
+ * @version $Id$
  */
 public class SimpleXlsMetadataReportConfiguration extends AbstractXlsReportConfiguration implements XlsMetadataReportConfiguration
 {

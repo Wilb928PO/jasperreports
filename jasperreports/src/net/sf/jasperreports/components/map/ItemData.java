@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -48,7 +48,7 @@ public interface ItemData extends JRCloneable
 	public List<Item> getItems();
 	
 	/**
-	 * Returns the dataset information that will be used by the <code>ItemData</code> object.
+	 * Returns the dataset information that will be used by the {@link net.sf.jasperreports.components.map.ItemData ItemData} object.
 	 * <p>
 	 * This information is required either to use the main dataset or to instantiate a 
 	 * subdataset from the report. The data produced by the subdataset is fed to the items list.

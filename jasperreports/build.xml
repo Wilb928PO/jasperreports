@@ -2,7 +2,7 @@
 
 	<description>Helps build the JasperReports distribution files.</description>
 
-	<property name="version" value="5.6.1"/>
+	<property name="version" value="5.6.2"/>
 
 	<target name="compile" description="Compiles the java source files of the library.">
 		<mkdir dir="./build/classes"/> 
@@ -111,14 +111,14 @@
 		<mkdir dir="./dist"/> 
 		<jar jarfile="./dist/jasperreports-fonts-${version}.jar">
 			<manifest>
-				<attribute name="Built-By" value="Jaspersoft Corporation"/>
+				<attribute name="Built-By" value="TIBCO Software Inc."/>
 				<section name="net/sf/jasperreports/fonts/">
 					<attribute name="Specification-Title" value="JasperReports Font Extension"/>
 					<attribute name="Specification-Version" value="${version}"/>
-					<attribute name="Specification-Vendor" value="Jaspersoft Corporation"/>
+					<attribute name="Specification-Vendor" value="TIBCO Software Inc."/>
 					<attribute name="Implementation-Title" value="net.sf.jasperreports.fonts"/>
 					<attribute name="Implementation-Version" value="${version}"/> 
-					<attribute name="Implementation-Vendor" value="Jaspersoft Corporation"/>
+					<attribute name="Implementation-Vendor" value="TIBCO Software Inc."/>
 				</section>
 			</manifest>		
 			<fileset dir="./demo/fonts">
@@ -162,7 +162,7 @@
 			</doctitle>
 			<bottom>
 <![CDATA[
-<span style="font-decoration:none;font-family:Arial,Helvetica,sans-serif;font-size:8pt;font-style:normal;color:#000000;">&copy; 2001-2010 Jaspersoft Corporation <a href="http://www.jaspersoft.com" target="_blank" style="color:#000000;">www.jaspersoft.com</a></span>
+<span style="font-decoration:none;font-family:Arial,Helvetica,sans-serif;font-size:8pt;font-style:normal;color:#000000;">&copy; 2001-2014 TIBCO Software Inc. <a href="http://www.jaspersoft.com" target="_blank" style="color:#000000;">www.jaspersoft.com</a></span>
 ]]>
 			</bottom>
 			<classpath>
@@ -180,7 +180,7 @@
 	</target>
 
 	<property name="sf.net" value="false"/>
-	<property name="svn" value="jr-5-6-1"/>
+	<property name="svn" value="jr-5-6-2"/>
 
 	<target name="preparedocs" description="Prepares Documentation Folder.">
 		<mkdir dir="./dist/docs"/> 

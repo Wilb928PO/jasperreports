@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -35,7 +35,7 @@ import net.sf.jasperreports.export.annotations.ExporterProperty;
  * @see JRCsvMetadataExporter
  * 
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id: CsvMetadataExporterConfiguration.java 6768 2013-11-22 08:48:44Z shertage $
+ * @version $Id$
  */
 public interface CsvMetadataReportConfiguration extends CsvReportConfiguration
 {

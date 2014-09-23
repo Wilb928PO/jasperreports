@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -162,7 +162,7 @@ public interface JRChartPlot extends JRCloneable
 	{
 		/**
 		 * Returns the series order that this color applies to.  The series order is relative to
-		 * the series order of all other <code>JRSeriesColor</code>s defined for this plot.  The
+		 * the series order of all other {@link JRSeriesColor}s defined for this plot.  The
 		 * relative ordering defines the order of the colors in the series.
 		 */
 		public int getSeriesOrder();

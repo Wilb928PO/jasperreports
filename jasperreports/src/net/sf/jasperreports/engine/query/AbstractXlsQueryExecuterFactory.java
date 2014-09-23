@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -29,7 +29,7 @@ import net.sf.jasperreports.engine.JRPropertiesUtil;
  * Query executer factory for Excel file type.
  * 
  * @author sanda zaharia (shertage@users.sourceforge.net)
- * @version $Id: ExcelQueryExecuterFactory.java 6960 2014-03-07 14:38:21Z shertage $
+ * @version $Id$
  */
 public abstract class AbstractXlsQueryExecuterFactory extends AbstractQueryExecuterFactory 
 {

@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -37,7 +37,7 @@ import net.sf.jasperreports.engine.query.AbstractXlsQueryExecuterFactory;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id: XlsDataAdapterService.java 6972 2014-03-12 11:41:51Z shertage $
+ * @version $Id$
  */
 public abstract class AbstractXlsDataAdapterService extends AbstractDataAdapterService 
 {

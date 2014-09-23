@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -35,7 +35,7 @@ import net.sf.jasperreports.export.annotations.ExporterProperty;
  * @see JRRtfExporter
  * 
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id: RtfExporterConfiguration.java 6697 2013-11-07 10:25:58Z teodord $
+ * @version $Id$
  */
 public interface RtfReportConfiguration extends ReportExportConfiguration
 {

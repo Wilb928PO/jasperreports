@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -28,7 +28,7 @@ import java.io.Serializable;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id: InputStreamResource.java 5879 2013-01-07 20:35:36Z teodord $
+ * @version $Id$
  */
 public class SerializableResource<T extends Serializable> extends ObjectResource<T>
 {

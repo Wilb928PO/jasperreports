@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -149,7 +149,7 @@ public interface JRTextField extends JRTextElement, JREvaluation, JRAnchor, JRHy
 	 * <p>
 	 * The property can be set at global/JasperReports context level.
 	 * </p>
-	 * @since 5.6.1
+	 * @since 5.6.2
 	 */
 	public static final String PROPERTY_PATTERN_DATE = JRPropertiesUtil.PROPERTY_PREFIX + "text.pattern.date";
 
@@ -163,7 +163,7 @@ public interface JRTextField extends JRTextElement, JREvaluation, JRAnchor, JRHy
 	 * <p>
 	 * The property can be set at global/JasperReports context level.
 	 * </p>
-	 * @since 5.6.1
+	 * @since 5.6.2
 	 */
 	public static final String PROPERTY_PATTERN_TIME = JRPropertiesUtil.PROPERTY_PREFIX + "text.pattern.time";
 
@@ -178,7 +178,7 @@ public interface JRTextField extends JRTextElement, JREvaluation, JRAnchor, JRHy
 	 * <p>
 	 * The property can be set at global/JasperReports context level.
 	 * </p>
-	 * @since 5.6.1
+	 * @since 5.6.2
 	 */
 	public static final String PROPERTY_PATTERN_DATETIME = JRPropertiesUtil.PROPERTY_PREFIX + "text.pattern.datetime";
 
@@ -193,7 +193,7 @@ public interface JRTextField extends JRTextElement, JREvaluation, JRAnchor, JRHy
 	 * <p>
 	 * The property can be set at global/JasperReports context level.
 	 * </p>
-	 * @since 5.6.1
+	 * @since 5.6.2
 	 */
 	public static final String PROPERTY_PATTERN_INTEGER = JRPropertiesUtil.PROPERTY_PREFIX + "text.pattern.integer";
 
@@ -207,7 +207,7 @@ public interface JRTextField extends JRTextElement, JREvaluation, JRAnchor, JRHy
 	 * <p>
 	 * The property can be set at global/JasperReports context level.
 	 * </p>
-	 * @since 5.6.1
+	 * @since 5.6.2
 	 */
 	public static final String PROPERTY_PATTERN_NUMBER = JRPropertiesUtil.PROPERTY_PREFIX + "text.pattern.number";
 	

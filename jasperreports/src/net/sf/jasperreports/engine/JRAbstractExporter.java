@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -223,7 +223,7 @@ public abstract class JRAbstractExporter<RC extends ReportExportConfiguration, C
 	 * cache of text value class to avoid calling JRClassLoader.loadClassForRealName() each time.
 	 * note that we're assuming single threaded exporting.
 	 */
-	private Map<String, Class<?>> textValueClasses = new HashMap<String, Class<?>>();
+	protected Map<String, Class<?>> textValueClasses = new HashMap<String, Class<?>>();
 	
 	/**
 	 *

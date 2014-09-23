@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -1001,15 +1001,15 @@ public class JRFillChart extends JRFillElement implements JRChart
 		if (getHyperlinkWhenExpression() == null || hyperlinkWhen == Boolean.TRUE)
 		{
 			printImage.setHyperlinkReference(getHyperlinkReference());
+			printImage.setHyperlinkAnchor(getHyperlinkAnchor());
+			printImage.setHyperlinkPage(getHyperlinkPage());
+			printImage.setHyperlinkTooltip(getHyperlinkTooltip());
+			printImage.setHyperlinkParameters(hyperlinkParameters);
 		}
 		else
 		{
 			printImage.setHyperlinkReference(null);
 		}
-		printImage.setHyperlinkAnchor(getHyperlinkAnchor());
-		printImage.setHyperlinkPage(getHyperlinkPage());
-		printImage.setHyperlinkTooltip(getHyperlinkTooltip());
-		printImage.setHyperlinkParameters(hyperlinkParameters);
 		transferProperties(printImage);
 	}
 

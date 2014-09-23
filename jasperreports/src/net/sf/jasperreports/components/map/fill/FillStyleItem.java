@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -67,8 +67,8 @@ public class FillStyleItem extends FillItem
 
 	@Override
 	public void verifyValue(ItemProperty property, Object value) throws JRException {
-		if(PROPERTY_NAME.equals(property.getName()) && (value == null || "".equals(value))){
-			throw new JRException("Found empty value the style name");
+		if(PROPERTY_NAME.equals(property.getName()) && (value == null || (value instanceof String && ((String)value).length() == 0))){
+			throw new JRException("Found empty value the " + property.getName() + " style item property.");
 		}
 	}
 	

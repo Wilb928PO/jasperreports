@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -106,7 +106,7 @@ public class JRDesignValueDataset extends JRDesignChartDataset implements JRValu
 	 * Returns the type of this dataset.
 	 *
 	 * @return the type of this dataset - always
-	 *    <code>JRChartDataset.VALUE_DATASET</code>
+	 *    {@link net.sf.jasperreports.engine.JRChartDataset#VALUE_DATASET VALUE_DATASET}
 	 */
 	public byte getDatasetType() {
 		return JRChartDataset.VALUE_DATASET;

@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -38,6 +38,7 @@ import net.sf.jasperreports.engine.JRPrintElement;
 import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.JRVisitor;
 import net.sf.jasperreports.engine.base.JRBaseElementGroup;
+import net.sf.jasperreports.engine.type.BorderSplitType;
 import net.sf.jasperreports.engine.type.ModeEnum;
 import net.sf.jasperreports.engine.util.ElementsVisitorUtils;
 import net.sf.jasperreports.engine.util.JRBoxUtil;
@@ -54,6 +55,8 @@ public class JRFillFrame extends JRFillElement implements JRFrame
 	protected final JRFrame parentFrame;
 	
 	protected final JRLineBox lineBox;
+	
+	protected final BorderSplitType borderSplitType;
 	
 	/**
 	 * Element container used for filling.
@@ -75,11 +78,7 @@ public class JRFillFrame extends JRFillElement implements JRFrame
 	 */
 	private Map<JRStyle,JRTemplateElement> topBottomTemplateFrames;
 	
-	/**
-	 * Whether the current frame chunk is the first one.
-	 */
-	private boolean first;
-	
+	private boolean fillTopBorder;
 	private boolean fillBottomBorder;
 	
 	/**
@@ -94,6 +93,7 @@ public class JRFillFrame extends JRFillElement implements JRFrame
 		parentFrame = frame;
 		
 		lineBox = frame.getLineBox().clone(this);
+		borderSplitType = initBorderSplitType(filler, frame);
 		
 		frameContainer = new JRFillFrameElements(factory);
 		
@@ -111,12 +111,27 @@ public class JRFillFrame extends JRFillElement implements JRFrame
 		parentFrame = frame.parentFrame;
 		
 		lineBox = frame.getLineBox().clone(this);
+		borderSplitType = frame.borderSplitType;
 		
 		frameContainer = new JRFillFrameElements(frame.frameContainer, factory);
 		
 		bottomTemplateFrames = frame.bottomTemplateFrames;
 		topTemplateFrames = frame.topTemplateFrames;
 		topBottomTemplateFrames = frame.topBottomTemplateFrames;
+	}
+	
+	private BorderSplitType initBorderSplitType(JRBaseFiller filler, JRFrame frame)
+	{
+		BorderSplitType splitType = frame.getBorderSplitType();
+		if (splitType == null)
+		{
+			String splitTypeProp = filler.getPropertiesUtil().getProperty(filler.getJasperReport(), PROPERTY_BORDER_SPLIT_TYPE);
+			if (splitTypeProp != null)
+			{
+				splitType = BorderSplitType.byName(splitTypeProp);
+			}
+		}
+		return splitType;
 	}
 
 	/**
@@ -167,6 +182,16 @@ public class JRFillFrame extends JRFillElement implements JRFrame
 		filling = false;
 	}
 
+	protected boolean drawTopBorderOnSplit()
+	{
+		return borderSplitType == BorderSplitType.DRAW_BORDERS;
+	}
+
+	protected boolean drawBotomBorderOnSplit()
+	{
+		return borderSplitType == BorderSplitType.DRAW_BORDERS;
+	}
+	
 	protected boolean prepare(int availableHeight, boolean isOverflow) throws JRException
 	{
 		super.prepare(availableHeight, isOverflow);
@@ -176,11 +201,13 @@ public class JRFillFrame extends JRFillElement implements JRFrame
 			return false;
 		}
 		
-		first = !isOverflow || !filling;
-		int topPadding = first ? getLineBox().getTopPadding().intValue() : 0;
+		// whether the current frame chunk is the first one.
+		boolean first = !isOverflow || !filling;
+		
+		int topPadding = getLineBox().getTopPadding().intValue();
 		int bottomPadding = getLineBox().getBottomPadding().intValue();		
 		
-		if (availableHeight < getRelativeY() + getHeight() - topPadding)
+		if (availableHeight < getRelativeY() + getHeight() - topPadding - bottomPadding)
 		{
 			setToPrint(false);
 			return true;
@@ -214,25 +241,26 @@ public class JRFillFrame extends JRFillElement implements JRFrame
 		frameContainer.initFill();
 		frameContainer.resetElements();
 		
-		frameContainer.prepareElements(availableHeight - getRelativeY() + bottomPadding + getLineBox().getTopPadding().intValue() - topPadding, true);
+		frameContainer.prepareElements(availableHeight - getRelativeY() - topPadding - bottomPadding, true);
 		
 		boolean willOverflow = frameContainer.willOverflow();
+		fillTopBorder = first || drawTopBorderOnSplit();
+		fillBottomBorder = !willOverflow || drawBotomBorderOnSplit();
+		
 		if (willOverflow)
 		{
-			fillBottomBorder = false;
 			setStretchHeight(availableHeight - getRelativeY());
 		}
 		else
 		{
 			int neededStretch = frameContainer.getStretchHeight() - frameContainer.getFirstY() + topPadding + bottomPadding;
-			if (neededStretch <= availableHeight - getRelativeY())
+			if (neededStretch <= availableHeight - getRelativeY()) 
 			{
-				fillBottomBorder = true;
 				setStretchHeight(neededStretch);
 			}
-			else //don't overflow because of the bottom padding
+			else
 			{
-				fillBottomBorder = false;
+				//FIXME is this case possible?
 				setStretchHeight(availableHeight - getRelativeY());
 			}
 		}
@@ -246,8 +274,8 @@ public class JRFillFrame extends JRFillElement implements JRFrame
 	{
 		super.setStretchHeight(stretchHeight);
 		
-		int topPadding = first ? getLineBox().getTopPadding().intValue() : 0;
-		int bottomPadding = fillBottomBorder ? getLineBox().getBottomPadding().intValue() : 0;		
+		int topPadding = getLineBox().getTopPadding().intValue();
+		int bottomPadding = getLineBox().getBottomPadding().intValue();		
 		frameContainer.setStretchHeight(stretchHeight + frameContainer.getFirstY() - topPadding - bottomPadding);
 	}
 	
@@ -261,8 +289,8 @@ public class JRFillFrame extends JRFillElement implements JRFrame
 			frameContainer.moveBandBottomElements();
 			frameContainer.removeBlankElements();
 
-			int topPadding = first ? getLineBox().getTopPadding().intValue() : 0;
-			int bottomPadding = fillBottomBorder ? getLineBox().getBottomPadding().intValue() : 0;
+			int topPadding = getLineBox().getTopPadding().intValue();
+			int bottomPadding = getLineBox().getBottomPadding().intValue();
 			super.setStretchHeight(frameContainer.getStretchHeight() - frameContainer.getFirstY() + topPadding + bottomPadding);
 		}
 	}
@@ -289,7 +317,7 @@ public class JRFillFrame extends JRFillElement implements JRFrame
 		JRStyle style = getStyle();
 
 		Map<JRStyle,JRTemplateElement> templatesMap;
-		if (first)
+		if (fillTopBorder)
 		{
 			if (fillBottomBorder)
 			{
@@ -317,7 +345,10 @@ public class JRFillFrame extends JRFillElement implements JRFrame
 		{
 			boxTemplate = createFrameTemplate();
 			transferProperties(boxTemplate);
-			if (first)
+			
+			//FIXME up to revision 2006 (Dec 5 2007) we were resetting both the border and the padding.
+			// now we are only resetting the border and not the padding, prepare() assumes that the top and bottom paddings are always used.
+			if (fillTopBorder)
 			{
 				if (!fillBottomBorder) //remove the bottom border
 				{				
@@ -384,6 +415,13 @@ public class JRFillFrame extends JRFillElement implements JRFrame
 	{
 		return lineBox;
 	}
+
+
+	@Override
+	public BorderSplitType getBorderSplitType()
+	{
+		return borderSplitType;
+	}
 	
 	/**
 	 *
@@ -429,7 +467,7 @@ public class JRFillFrame extends JRFillElement implements JRFrame
 
 		protected int getContainerHeight()
 		{
-			return JRFillFrame.this.getHeight() - getLineBox().getTopPadding().intValue() - getLineBox().getBottomPadding().intValue();
+			return JRFillFrame.this.getHeight() - getLineBox().getTopPadding().intValue() - getLineBox().getBottomPadding().intValue(); 
 		}
 	}
 	

@@ -16,6 +16,7 @@
       <property ref="net.sf.jasperreports.csv.record.delimiter"/>
       <property ref="net.sf.jasperreports.csv.source"/>
       <property ref="net.sf.jasperreports.csv.timezone.id"/>
+      <property ref="net.sf.jasperreports.data.adapter"/>
       <property ref="net.sf.jasperreports.ejbql.query.hint.{hint}"/>
       <property ref="net.sf.jasperreports.ejbql.query.page.size"/>
       <property ref="net.sf.jasperreports.hql.clear.cache"/>
@@ -96,6 +97,7 @@
       <property ref="net.sf.jasperreports.text.pattern.datetime"/>
       <property ref="net.sf.jasperreports.text.pattern.integer"/>
       <property ref="net.sf.jasperreports.text.pattern.number"/>
+      <property ref="net.sf.jasperreports.frame.border.split.type"/>
     </content>
   </category>
   
@@ -249,6 +251,8 @@
       <property ref="net.sf.jasperreports.export.pdf.tag.language"/>
       <property ref="net.sf.jasperreports.export.pdf.user.password"/>
       <property ref="net.sf.jasperreports.export.pdf.version"/>
+      <property ref="net.sf.jasperreports.export.pdfa.conformance"/>
+      <property ref="net.sf.jasperreports.export.pdfa.icc.profile.path"/>
       
       <property ref="net.sf.jasperreports.export.text.character.height"/>
       <property ref="net.sf.jasperreports.export.text.character.width"/>
@@ -482,6 +486,19 @@ Property holding the value of the number format pattern to be used when parsing 
     <default>N/A</default>
     <scope>Global | Dataset</scope>
     <since>4.0.0</since>
+  </configProperty>
+  
+  
+  <!-- net.sf.jasperreports.data.adapter -->
+  
+  <configProperty name="net.sf.jasperreports.data.adapter">
+    <description>
+A report/dataset level property that provides the location of a data adapter resource to be used for the dataset.    
+    </description>
+    <api>net/sf/jasperreports/data/DataAdapterParameterContributorFactory.html#PROPERTY_DATA_ADAPTER_LOCATION</api>
+    <default>N/A</default>
+    <scope>Global | Dataset</scope>
+    <since>4.1.1</since>
   </configProperty>
   
   
@@ -3161,6 +3178,36 @@ Its value is used as default for the
   </configProperty>
   
   
+  <!-- net.sf.jasperreports.export.pdfa.conformance -->
+  
+  <configProperty name="net.sf.jasperreports.export.pdfa.conformance">
+    <description>
+Property whose value is used as default for the <api href="net/sf/jasperreports/export/PdfExporterConfiguration.html#getPdfaConformance()">getPdfaConformance()</api> 
+export configuration setting. It specifies the conformance level of the PDF/A document. Possible values are: <code>pdfa1a</code>, <code>pdfa1b</code> and <code>none</code>.
+<br/>
+By default, this property is set to <code>none</code>. 
+    </description>
+    <api>net/sf/jasperreports/export/PdfExporterConfiguration.html#PROPERTY_PDFA_CONFORMANCE</api>
+    <default>none</default>
+    <scope>Global | Report</scope>
+    <since>3.1.2</since>
+  </configProperty>
+  
+  
+  <!-- net.sf.jasperreports.export.pdfa.icc.profile.path -->
+  
+  <configProperty name="net.sf.jasperreports.export.pdfa.icc.profile.path">
+    <description>
+Property whose value is used as default for the <api href="net/sf/jasperreports/export/PdfExporterConfiguration.html#getIccProfilePath()">getIccProfilePath()</api> 
+export configuration setting. It specifies the path to the ICC profile file for the PDF/A compliant documents.
+    </description>
+    <api>net/sf/jasperreports/export/PdfExporterConfiguration.html#PROPERTY_PDFA_ICC_PROFILE_PATH</api>
+    <default>N/A</default>
+    <scope>Global | Report</scope>
+    <since>3.1.2</since>
+  </configProperty>
+  
+  
   <!-- net.sf.jasperreports.export.pdf.tagged -->
   
   <configProperty name="net.sf.jasperreports.export.pdf.tagged">
@@ -4825,7 +4872,7 @@ The property can be set at global/JasperReports context level.
     <api>net/sf/jasperreports/engine/JRTextField.html#PROPERTY_PATTERN_DATE</api>
     <default>N/A</default>
     <scope>Global</scope>
-    <since>5.6.1</since>
+    <since>5.6.2</since>
   </configProperty>
   
   
@@ -4846,7 +4893,7 @@ The property can be set at global/JasperReports context level.
     <api>net/sf/jasperreports/engine/JRTextField.html#PROPERTY_PATTERN_TIME</api>
     <default>N/A</default>
     <scope>Global</scope>
-    <since>5.6.1</since>
+    <since>5.6.2</since>
   </configProperty>
   
   
@@ -4867,7 +4914,7 @@ The property can be set at global/JasperReports context level.
     <api>net/sf/jasperreports/engine/JRTextField.html#PROPERTY_PATTERN_DATETIME</api>
     <default>N/A</default>
     <scope>Global</scope>
-    <since>5.6.1</since>
+    <since>5.6.2</since>
   </configProperty>
   
   
@@ -4888,7 +4935,7 @@ The property can be set at global/JasperReports context level.
     <api>net/sf/jasperreports/engine/JRTextField.html#PROPERTY_PATTERN_INTEGER</api>
     <default>N/A</default>
     <scope>Global</scope>
-    <since>5.6.1</since>
+    <since>5.6.2</since>
   </configProperty>
   
   
@@ -4909,7 +4956,26 @@ The property can be set at global/JasperReports context level.
     <api>net/sf/jasperreports/engine/JRTextField.html#PROPERTY_PATTERN_NUMBER</api>
     <default>N/A</default>
     <scope>Global</scope>
-    <since>5.6.1</since>
+    <since>5.6.2</since>
+  </configProperty>
+  
+  
+  <!-- net.sf.jasperreports.frame.border.split.type -->
+  
+  <configProperty name="net.sf.jasperreports.frame.border.split.type">
+    <description>
+Provides the default border split type for frames.
+
+<p>
+The property can be set at report and global/JasperReports context levels.
+The property value can be NoBorders, in which case frames that span two pages do not have the bottom border of the first fragment and the top border of the second fragment drawn,
+and DrawBorders, in which case both fragments have borders drawn on all sides.
+</p>
+    </description>
+    <api>net/sf/jasperreports/engine/JRFrame.html#PROPERTY_BORDER_SPLIT_TYPE</api>
+    <default>NoBorders</default>
+    <scope>Global | Report</scope>
+    <since>6.0.0</since>
   </configProperty>
   
   

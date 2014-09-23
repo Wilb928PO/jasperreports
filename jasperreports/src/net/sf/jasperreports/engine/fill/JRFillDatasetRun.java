@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -104,6 +104,21 @@ public class JRFillDatasetRun implements JRDatasetRun
 		parameters = datasetRun.getParameters();
 		connectionExpression = datasetRun.getConnectionExpression();
 		dataSourceExpression = datasetRun.getDataSourceExpression();
+	}
+
+	public JRFillDatasetRun(JRFillDatasetRun datasetRun, JRFillCloneFactory factory)
+	{
+		this.filler = datasetRun.filler;
+		this.dataset = datasetRun.dataset;
+		
+		this.parentDatasetRun = datasetRun.parentDatasetRun;
+		this.parametersMapExpression = datasetRun.parametersMapExpression;
+		this.parameters = datasetRun.parameters;
+		this.connectionExpression = datasetRun.getConnectionExpression();
+		this.dataSourceExpression = datasetRun.getDataSourceExpression();
+		
+		this.returnValues = new FillReturnValues(datasetRun.returnValues, factory);
+		this.returnValuesContext = datasetRun.returnValuesContext;
 	}
 
 	protected void initReturnValues(JRFillObjectFactory factory)

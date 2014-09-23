@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -42,7 +42,7 @@ import net.sf.jasperreports.engine.JRRuntimeException;
  * names or set a flag to read the column names from the first row of the XLSX or XLS file.
  *
  * @author sanda zaharia (shertage@users.sourceforge.net)
- * @version $Id: ExcelDataSource.java 6968 2014-03-12 08:58:07Z shertage $
+ * @version $Id$
  */
 public abstract class AbstractXlsDataSource extends JRAbstractTextDataSource implements JRRewindableDataSource
 {

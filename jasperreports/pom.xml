@@ -17,7 +17,7 @@
 	</licenses>
 	<scm>
 		<connection>scm:svn:http://jasperforge.org/svn/repos/jasperreports</connection>
-		<tag>jr-5-6-1</tag>
+		<tag>jr-5-6-2</tag>
 		<url>http://code.jaspersoft.com/svn/repos/jasperreports/</url>
 	</scm>
 	<properties>
@@ -29,7 +29,7 @@
 			<name>Teodor Danciu</name>
 			<email>teodord@users.sourceforge.net</email>
 			<url>http://sourceforge.net/users/teodord</url>
-			<organization>Jaspersoft Corporation</organization>
+			<organization>TIBCO Software Inc.</organization>
 			<organizationUrl>http://www.jaspersoft.com</organizationUrl>
 			<roles>
 				<role>architect</role>
@@ -42,7 +42,7 @@
 			<name>Lucian Chirita</name>
 			<email>lucianc@users.sourceforge.net</email>
 			<url>http://sourceforge.net/users/lucianc</url>
-			<organization>Jaspersoft Corporation</organization>
+			<organization>TIBCO Software Inc.</organization>
 			<organizationUrl>http://www.jaspersoft.com</organizationUrl>
 			<roles>
 				<role>architect</role>
@@ -146,6 +146,15 @@
 					</archive>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<systemPropertyVariables>
+						<xmlOutputDir>${project.build.directory}/surefire</xmlOutputDir>
+					</systemPropertyVariables>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 	<distributionManagement>
@@ -199,9 +208,15 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>com.lowagie</groupId>
-			<artifactId>itext</artifactId>
-			<version>2.1.7.js2</version>
+			<groupId>com.itextpdf</groupId>
+			<artifactId>itextpdf</artifactId>
+			<version>5.5.0</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.itextpdf</groupId>
+			<artifactId>itext-pdfa</artifactId>
+			<version>5.5.0</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>

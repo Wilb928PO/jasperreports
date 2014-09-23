@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -97,11 +97,15 @@ public class FillMarker implements Marker
 	public Object getEvaluatedValue(MarkerProperty property, JRFillExpressionEvaluator evaluator, byte evaluation) throws JRException
 	{
 		Object result = null;
-		if(property.getValueExpression() == null || "".equals(property.getValueExpression()))
+		if (
+			property.getValueExpression() == null 
+			|| property.getValueExpression().getText() == null
+			|| property.getValueExpression().getText().trim().length() == 0
+			)
 		{
 			if(Marker.PROPERTY_latitude.equals(property.getName()) || Marker.PROPERTY_longitude.equals(property.getName()))
 			{
-				if(property.getValue() == null || "".equals(property.getValue()))
+				if(property.getValue() == null || property.getValue().length() == 0)
 				{
 					throw new JRException("Empty marker "+ property.getName()+ " found.");
 				}
@@ -113,7 +117,10 @@ public class FillMarker implements Marker
 			result = evaluator.evaluate(property.getValueExpression(), evaluation);
 			if(Marker.PROPERTY_latitude.equals(property.getName()) || Marker.PROPERTY_longitude.equals(property.getName()))
 			{
-				if(result == null || "".equals(result))
+				if(
+					result == null 
+					|| String.valueOf(result).trim().length() == 0
+					)
 				{
 					throw new JRException("Empty marker "+ property.getName()+ " found.");
 				}

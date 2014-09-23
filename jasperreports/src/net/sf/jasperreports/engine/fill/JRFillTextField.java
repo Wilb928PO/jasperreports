@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -904,15 +904,15 @@ public class JRFillTextField extends JRFillTextElement implements JRTextField
 		if (getHyperlinkWhenExpression() == null || hyperlinkWhen == Boolean.TRUE)
 		{
 			text.setHyperlinkReference(getHyperlinkReference());
+			text.setHyperlinkAnchor(getHyperlinkAnchor());
+			text.setHyperlinkPage(getHyperlinkPage());
+			text.setHyperlinkTooltip(getHyperlinkTooltip());
+			text.setHyperlinkParameters(hyperlinkParameters);
 		}
 		else
 		{
 			text.setHyperlinkReference(null);
 		}
-		text.setHyperlinkAnchor(getHyperlinkAnchor());
-		text.setHyperlinkPage(getHyperlinkPage());
-		text.setHyperlinkTooltip(getHyperlinkTooltip());
-		text.setHyperlinkParameters(hyperlinkParameters);
 		transferProperties(text);
 	}
 

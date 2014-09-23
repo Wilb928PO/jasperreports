@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -42,7 +42,7 @@ import org.apache.poi.ss.usermodel.Workbook;
  * names or set a flag to read the column names from the first row of the CSV file.
  *
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id: JRXlsDataSource.java 6953 2014-03-07 12:24:14Z shertage $
+ * @version $Id$
  */
 public class XlsDataSource extends AbstractPoiXlsDataSource
 {

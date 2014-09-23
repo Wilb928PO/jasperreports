@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -37,7 +37,7 @@ import net.sf.jasperreports.extensions.ListExtensionRegistry;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id: JacksonMappingExtensionsRegistryFactory.java 5880 2013-01-07 20:40:06Z teodord $
+ * @version $Id$
  */
 public class RequirejsModuleMappingExtensionsRegistryFactory implements ExtensionsRegistryFactory
 {

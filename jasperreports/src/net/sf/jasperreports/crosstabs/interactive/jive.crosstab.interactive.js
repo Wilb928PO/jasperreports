@@ -1,3 +1,27 @@
+/*
+ * JasperReports - Free Java Reporting Library.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
+ * http://www.jaspersoft.com
+ *
+ * Unless you have purchased a commercial license agreement from Jaspersoft,
+ * the following license terms apply:
+ *
+ * This program is part of JasperReports.
+ *
+ * JasperReports is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * JasperReports is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with JasperReports. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 define(["jquery.ui", "text!jive.crosstab.templates.tmpl", "text!jive.crosstab.templates.styles.css", "text!jive.i18n.tmpl"], function($, templates, templateCss, jivei18nText) {
 	var jivei18n = JSON.parse(jivei18nText),
         i18nfn = function (key) {
@@ -184,7 +208,7 @@ define(["jquery.ui", "text!jive.crosstab.templates.tmpl", "text!jive.crosstab.te
                 it.jo.css({position: 'absolute', width: '60px'});
                 it.jo.offset({top: top, left: ixt.selected.header.offset().left});
                 it.topCalculated = false;
-                if (ixt.isFloatingColumnHeader) {
+                if (ixt.isFloatingColumnHeader || ixt.isfloatingRowHeader) {
                     ixt.setToolbarPositionWhenFloating(true, it.isDashboard);
                 } else if (containerTop >= top) {
                     this.jo.offset({top: ixt.selected.header.offset().top});
@@ -653,9 +677,9 @@ define(["jquery.ui", "text!jive.crosstab.templates.tmpl", "text!jive.crosstab.te
 
             if (isActive) { // handle the toolbar position
                 firstHeader = $('td.jrxtcolfloating.first');
-                top = isDashboard ? 0 : $('div#reportViewFrame .body').offset().top,
-                    toolbarTop = it.foobar.jo.offset().top,
-                    firstHeaderTop = firstHeader.offset().top;
+                top = isDashboard ? 0 : $('div#reportViewFrame .body').offset().top;
+                toolbarTop = it.foobar.jo.offset().top;
+                firstHeaderTop = firstHeader.offset().top;
 
                 if (!it.foobar.topCalculated) {
                     if (toolbarTop < 0) {

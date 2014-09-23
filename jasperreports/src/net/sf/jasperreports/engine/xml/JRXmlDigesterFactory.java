@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -168,6 +168,7 @@ import net.sf.jasperreports.engine.design.JRDesignVariable;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.part.PartComponentsBundle;
 import net.sf.jasperreports.engine.part.PartComponentsEnvironment;
+import net.sf.jasperreports.engine.type.BorderSplitType;
 import net.sf.jasperreports.engine.type.CalculationEnum;
 import net.sf.jasperreports.engine.type.HorizontalPosition;
 import net.sf.jasperreports.engine.type.OverflowType;
@@ -1356,6 +1357,7 @@ public final class JRXmlDigesterFactory
 		String framePattern = "*/" + JRXmlConstants.ELEMENT_frame;
 		digester.addFactoryCreate(framePattern, JRFrameFactory.class.getName());
 		digester.addSetNext(framePattern, "addElement", JRDesignElement.class.getName());
+		digester.addRule(framePattern, new XmlConstantPropertyRule(JRXmlConstants.ATTRIBUTE_borderSplitType, BorderSplitType.values()));
 	}
 
 

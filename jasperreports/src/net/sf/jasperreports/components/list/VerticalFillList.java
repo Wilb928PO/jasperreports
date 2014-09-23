@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -26,6 +26,8 @@ package net.sf.jasperreports.components.list;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.component.FillPrepareResult;
+import net.sf.jasperreports.engine.fill.JRFillCloneFactory;
+import net.sf.jasperreports.engine.fill.JRFillCloneable;
 import net.sf.jasperreports.engine.fill.JRFillObjectFactory;
 
 import org.apache.commons.logging.Log;
@@ -51,6 +53,13 @@ public class VerticalFillList extends BaseFillList
 		JRFillObjectFactory datasetFactory = new JRFillObjectFactory(factory, 
 				createDatasetExpressionEvaluator());
 		this.listContents = new FillListContents(component.getContents(), datasetFactory);
+	}
+
+	protected VerticalFillList(VerticalFillList list, JRFillCloneFactory factory)
+	{
+		super(list, factory);
+		
+		this.listContents = new FillListContents(list.listContents, factory);
 	}
 
 	public FillPrepareResult prepare(int availableHeight)
@@ -160,5 +169,11 @@ public class VerticalFillList extends BaseFillList
 			overflow = listContents.willOverflow();
 		}
 		return overflow;
+	}
+
+	@Override
+	public JRFillCloneable createClone(JRFillCloneFactory factory)
+	{
+		return new VerticalFillList(this, factory);
 	}
 }

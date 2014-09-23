@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -36,7 +36,7 @@ import net.sf.jasperreports.export.annotations.ExporterProperty;
  * @see JRPdfExporter
  * 
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id: PdfExporterConfiguration.java 6709 2013-11-08 14:39:13Z teodord $
+ * @version $Id$
  */
 public interface PdfReportConfiguration extends ReportExportConfiguration
 {
@@ -145,7 +145,7 @@ public interface PdfReportConfiguration extends ReportExportConfiguration
 	public Boolean isIgnoreHyperlink();
 	
 	/**
-	 * Flag that decides whether the PDF exporter should use a {@link com.lowagie.text.SplitCharacter SplitCharacter}
+	 * Flag that decides whether the PDF exporter should use a {@link com.itextpdf.text.SplitCharacter SplitCharacter}
 	 * implementation which ensures that report texts are broken into lines by iText in the same manner as done by the
 	 * fill process.
 	 * <p>

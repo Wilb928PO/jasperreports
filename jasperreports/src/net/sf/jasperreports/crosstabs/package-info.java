@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -268,7 +268,7 @@
  * </p><p>
  * The governor threshold is given as an integer number representing the maximum number 
  * of cells multiplied by the number of measures in the generated crosstab. It can be set 
- * using the <code>net.sf.jasperreports.crosstab.bucket.measure.limit</code> configuration 
+ * using the {@link net.sf.jasperreports.crosstabs.fill.calculation.BucketingService#PROPERTY_BUCKET_MEASURE_LIMIT net.sf.jasperreports.crosstab.bucket.measure.limit} configuration 
  * property. This property defaults to -1, meaning that the crosstab governor is disabled by 
  * default. 
  * </p>

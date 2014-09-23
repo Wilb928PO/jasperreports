@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -110,17 +110,17 @@ import org.apache.commons.logging.LogFactory;
  * <li>Forcing the use of nested tables to render the content of frame elements using either
  * the {@link net.sf.jasperreports.export.DocxReportConfiguration#isFramesAsNestedTables() isFramesAsNestedTables()} 
  * exporter configuration flag or its corresponding exporter hint called
- * <code>net.sf.jasperreports.export.docx.frames.as.nested.tables</code>.</li>
+ * {@link net.sf.jasperreports.export.DocxReportConfiguration#PROPERTY_FRAMES_AS_NESTED_TABLES net.sf.jasperreports.export.docx.frames.as.nested.tables}.</li>
  * <li>Allowing table rows to adjust their height if more text is typed into their cells using
  * the Word editor. This is controlled using either the
  * {@link net.sf.jasperreports.export.DocxReportConfiguration#isFlexibleRowHeight() isFlexibleRowHeight()} 
  * exporter configuration flag, or its corresponding exporter hint called
- * <code>net.sf.jasperreports.export.docx.flexible.row.height</code>.</li>
+ * {@link net.sf.jasperreports.export.DocxReportConfiguration#PROPERTY_FLEXIBLE_ROW_HEIGHT net.sf.jasperreports.export.docx.flexible.row.height}.</li>
  * <li>Ignoring hyperlinks in generated documents if they are not intended for the DOCX output format. This can be 
  * customized using either the 
  * {@link net.sf.jasperreports.export.DocxReportConfiguration#isIgnoreHyperlink() isIgnoreHyperlink()} 
  * exporter configuration flag, or its corresponding exporter hint called
- * <code>net.sf.jasperreports.export.docx.ignore.hyperlinks</code></li>
+ * {@link net.sf.jasperreports.export.DocxReportConfiguration#PROPERTY_IGNORE_HYPERLINK net.sf.jasperreports.export.docx.ignore.hyperlink}</li>
  * </ul>
  * 
  * @see net.sf.jasperreports.export.DocxReportConfiguration

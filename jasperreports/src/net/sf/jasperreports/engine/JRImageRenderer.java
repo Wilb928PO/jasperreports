@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -61,7 +61,7 @@ import org.apache.commons.logging.LogFactory;
  * way to render images.
  * <p/>
  * The {@link net.sf.jasperreports.engine.Renderable} interface has a method called 
- * <code>render(JasperReportsContext jasperReportsContext, Graphics2D grx, Rectangle2D rectangle)</code>,
+ * {@link #render(JasperReportsContext, Graphics2D, Rectangle2D)},
  * which gets called by the engine each time it needs to draw the image
  * on a given device or graphic context. This approach provides the best quality for the
  * SVG images when they must be drawn on unknown devices or zoomed into without

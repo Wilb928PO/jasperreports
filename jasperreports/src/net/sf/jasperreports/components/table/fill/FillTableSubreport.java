@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -41,6 +41,8 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.component.FillContext;
 import net.sf.jasperreports.engine.component.FillPrepareResult;
 import net.sf.jasperreports.engine.fill.DatasetExpressionEvaluator;
+import net.sf.jasperreports.engine.fill.JRFillCloneFactory;
+import net.sf.jasperreports.engine.fill.JRFillCloneable;
 import net.sf.jasperreports.engine.fill.JRFillObjectFactory;
 import net.sf.jasperreports.engine.fill.JRFillSubreport;
 
@@ -65,6 +67,15 @@ public class FillTableSubreport extends JRFillSubreport
 		this.fillContainerContext = fillContext.getFillContainerContext();
 		this.tableReport = tableReport;
 		this.builtinEvaluatorFactory = builtinEvaluatorFactory;
+	}
+
+	public FillTableSubreport(FillTableSubreport tableSubreport, JRFillCloneFactory factory)
+	{
+		super(tableSubreport, factory);
+		
+		this.fillContainerContext = tableSubreport.fillContainerContext;
+		this.tableReport = tableSubreport.tableReport;
+		this.builtinEvaluatorFactory = tableSubreport.builtinEvaluatorFactory;
 	}
 
 	public TableJasperReport getTableReport()
@@ -186,5 +197,12 @@ public class FillTableSubreport extends JRFillSubreport
 	{
 		// overriding this for package access
 		super.cancelSubreportFill();
+	}
+
+	@Override
+	public JRFillCloneable createClone(JRFillCloneFactory factory)
+	{
+		// not actually used, but implemented for safety
+		return new FillTableSubreport(this, factory);
 	}
 }

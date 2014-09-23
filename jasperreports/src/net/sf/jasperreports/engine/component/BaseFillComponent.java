@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -27,6 +27,7 @@ import net.sf.jasperreports.engine.Deduplicable;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRPrintElement;
+import net.sf.jasperreports.engine.fill.JRFillCloneFactory;
 import net.sf.jasperreports.engine.fill.JRTemplateElement;
 import net.sf.jasperreports.engine.fill.PrintElementOriginator;
 
@@ -50,6 +51,16 @@ public abstract class BaseFillComponent implements FillComponent
 	 * @deprecated replaced by {@link #printElementOriginator}
 	 */
 	protected int elementId;
+	
+	protected BaseFillComponent()
+	{
+		//NOP
+	}
+	
+	protected BaseFillComponent(BaseFillComponent fillComponent, JRFillCloneFactory factory)
+	{
+		//NOP
+	}
 	
 	public void initialize(FillContext fillContext)
 	{

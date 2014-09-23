@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -34,9 +34,7 @@ package net.sf.jasperreports.engine.export;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.color.ICC_Profile;
 import java.awt.font.TextAttribute;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Dimension2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -112,31 +110,36 @@ import net.sf.jasperreports.repo.RepositoryUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.lowagie.text.Chunk;
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Element;
-import com.lowagie.text.Font;
-import com.lowagie.text.FontFactory;
-import com.lowagie.text.Image;
-import com.lowagie.text.Phrase;
-import com.lowagie.text.Rectangle;
-import com.lowagie.text.SplitCharacter;
-import com.lowagie.text.pdf.BaseFont;
-import com.lowagie.text.pdf.ColumnText;
-import com.lowagie.text.pdf.FontMapper;
-import com.lowagie.text.pdf.PdfAction;
-import com.lowagie.text.pdf.PdfArray;
-import com.lowagie.text.pdf.PdfBoolean;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfDestination;
-import com.lowagie.text.pdf.PdfDictionary;
-import com.lowagie.text.pdf.PdfICCBased;
-import com.lowagie.text.pdf.PdfName;
-import com.lowagie.text.pdf.PdfOutline;
-import com.lowagie.text.pdf.PdfString;
-import com.lowagie.text.pdf.PdfTemplate;
-import com.lowagie.text.pdf.PdfWriter;
+import com.itextpdf.awt.FontMapper;
+import com.itextpdf.awt.geom.AffineTransform;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.SplitCharacter;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.ColumnText;
+import com.itextpdf.text.pdf.ICC_Profile;
+import com.itextpdf.text.pdf.PdfAConformanceLevel;
+import com.itextpdf.text.pdf.PdfAWriter;
+import com.itextpdf.text.pdf.PdfAction;
+import com.itextpdf.text.pdf.PdfArray;
+import com.itextpdf.text.pdf.PdfBoolean;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfDestination;
+import com.itextpdf.text.pdf.PdfDictionary;
+import com.itextpdf.text.pdf.PdfICCBased;
+import com.itextpdf.text.pdf.PdfName;
+import com.itextpdf.text.pdf.PdfOutline;
+import com.itextpdf.text.pdf.PdfString;
+import com.itextpdf.text.pdf.PdfTemplate;
+import com.itextpdf.text.pdf.PdfWriter;
 
 
 /**
@@ -229,7 +232,7 @@ import com.lowagie.text.pdf.PdfWriter;
  * exporter configuration setting to true. Note that this feature is not turned on by default, because it affects the
  * exporter performance. This default behavior that applies in the absence of the mentioned
  * export parameter can be controlled using the
- * <code>net.sf.jasperreports.export.pdf.force.linebreak.policy</code> configuration
+ * {@link net.sf.jasperreports.export.PdfReportConfiguration#PROPERTY_FORCE_LINEBREAK_POLICY net.sf.jasperreports.export.pdf.force.linebreak.policy} configuration
  * property
  * <h3>JavaScript Actions</h3>
  * The PDF specifications provide a means for the automation of various processes, such as
@@ -294,7 +297,7 @@ import com.lowagie.text.pdf.PdfWriter;
  * attributes (<code>pdfFontName</code>, <code>pdfEncoding</code>, and <code>isPdfEmbedded</code>) 
  * to be set along with the normal font attributes every time a font setting is made for the chart 
  * title, subtitle, chart legend, or axis. This feature can be controlled system-wide using the
- * <code>net.sf.jasperreports.export.pdf.force.svg.shapes</code> configuration property.
+ * {@link net.sf.jasperreports.export.PdfReportConfiguration#PROPERTY_FORCE_SVG_SHAPES net.sf.jasperreports.export.pdf.force.svg.shapes} configuration property.
  * The {@link net.sf.jasperreports.export.PdfReportConfiguration#isForceSvgShapes() isForceSvgShapes()} 
  * export configuration setting overrides the configuration property value, if present.
  * <h3>Section 508 Compliance</h3>
@@ -313,7 +316,7 @@ import com.lowagie.text.pdf.PdfWriter;
  * <ul>
  * <li>setting to true the {@link net.sf.jasperreports.export.PdfExporterConfiguration#isTagged() isTagged()}
  * configuration flag</li>
- * <li>setting to true the <code>net.sf.jasperreports.export.pdf.tagged</code> configuration property.</li>
+ * <li>setting to true the {@link net.sf.jasperreports.export.PdfExporterConfiguration#PROPERTY_TAGGED net.sf.jasperreports.export.pdf.tagged} configuration property.</li>
  * </ul>
  * <h3>Setting the PDF File Language</h3>
  * When a full accessibility check is requested from Acrobat Professional, among the things
@@ -323,7 +326,7 @@ import com.lowagie.text.pdf.PdfWriter;
  * <ul>
  * <li>using the {@link net.sf.jasperreports.export.PdfExporterConfiguration#getTagLanguage() getTagLanguage()}
  * configuration setting to retrieve the language as a <code>java.lang.String</code> value;</li>
- * <li>using the <code>net.sf.jasperreports.export.pdf.tag.language</code> configuration property 
+ * <li>using the {@link net.sf.jasperreports.export.PdfExporterConfiguration#PROPERTY_TAG_LANGUAGE net.sf.jasperreports.export.pdf.tag.language} configuration property 
  * globally or at report level</li>
  * </ul>
  * <h3>Alternate Text for Images</h3>
@@ -407,7 +410,7 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 	/**
 	 *
 	 */
-	protected Map<Renderable,com.lowagie.text.Image> loadedImagesMap;
+	protected Map<Renderable,Image> loadedImagesMap;
 	protected Image pxImage;
 
 	private BookmarkStack bookmarkStack;
@@ -572,7 +575,10 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 					pageFormat.getPageHeight()
 				)
 			);
-
+		
+		//accessibility check: unwanted default document tag
+		document.setRole(null);
+		
 		imageTesterDocument =
 			new Document(
 				new Rectangle(
@@ -584,7 +590,24 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 		boolean closeDocuments = true;
 		try
 		{
-			pdfWriter = PdfWriter.getInstance(document, os);
+			PdfaConformanceEnum pdfaConformance = configuration.getPdfaConformance();
+			boolean gotPdfa = false;
+			if (PdfaConformanceEnum.PDFA_1A == pdfaConformance)
+			{
+				pdfWriter = PdfAWriter.getInstance(document, os, PdfAConformanceLevel.PDF_A_1A);
+				tagHelper.setConformanceLevel(PdfAConformanceLevel.PDF_A_1A);
+				gotPdfa = true;
+			}
+			else if (PdfaConformanceEnum.PDFA_1B == pdfaConformance)
+			{
+				pdfWriter = PdfAWriter.getInstance(document, os, PdfAConformanceLevel.PDF_A_1B);
+				tagHelper.setConformanceLevel(PdfAConformanceLevel.PDF_A_1B);
+				gotPdfa = true;
+			}
+			else
+			{
+				pdfWriter = PdfWriter.getInstance(document, os);
+			}
 			pdfWriter.setCloseStream(false);
 
 			tagHelper.setPdfWriter(pdfWriter);
@@ -672,21 +695,7 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 			if(language != null){
 				pdfWriter.getExtraCatalog().put(PdfName.LANG, new PdfString(language));
 			}
-			
 			// BEGIN: PDF/A support
-			PdfaConformanceEnum pdfaConformance = configuration.getPdfaConformance();
-			boolean gotPdfa = false;
-			if (PdfaConformanceEnum.PDFA_1A == pdfaConformance)
-			{
-				pdfWriter.setPDFXConformance(PdfWriter.PDFA1A);
-				gotPdfa = true;
-			}
-			else if (PdfaConformanceEnum.PDFA_1B == pdfaConformance)
-			{
-				pdfWriter.setPDFXConformance(PdfWriter.PDFA1B);
-				gotPdfa = true;
-			}
-
 			if (gotPdfa) 
 			{
 				pdfWriter.createXmpMetadata();
@@ -749,7 +758,7 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 
 				setCurrentExporterInputItem(item);
 				
-				loadedImagesMap = new HashMap<Renderable,com.lowagie.text.Image>();
+				loadedImagesMap = new HashMap<Renderable,Image>();
 				
 				pageFormat = jasperPrint.getPageFormat(0);
 
@@ -1372,7 +1381,7 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 
 			if (renderer.getTypeValue() == RenderableTypeEnum.IMAGE)
 			{
-				com.lowagie.text.Image image = null;
+				Image image = null;
 
 				float xalignFactor = getXAlignFactor(printImage);
 				float yalignFactor = getYAlignFactor(printImage);
@@ -1436,7 +1445,7 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 						//awtImage = bi.getSubimage(0, 0, minWidth, minHeight);
 
 						//image = com.lowagie.text.Image.getInstance(awtImage, printImage.getBackcolor());
-						image = com.lowagie.text.Image.getInstance(bi, null);
+						image = Image.getInstance(bi, null);
 
 						break;
 					}
@@ -1450,7 +1459,7 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 						{
 							try
 							{
-								image = com.lowagie.text.Image.getInstance(renderer.getImageData(jasperReportsContext));
+								image = Image.getInstance(renderer.getImageData(jasperReportsContext));
 								imageTesterPdfContentByte.addImage(image, 10, 0, 0, 10, 0, 0);
 							}
 							catch(Exception e)
@@ -1466,7 +1475,7 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 									break;
 								}
 								java.awt.Image awtImage = tmpRenderer.getImage(jasperReportsContext);
-								image = com.lowagie.text.Image.getInstance(awtImage, null);
+								image = Image.getInstance(awtImage, null);
 							}
 
 							if (printImage.isUsingCache())
@@ -1489,7 +1498,7 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 						{
 							try
 							{
-								image = com.lowagie.text.Image.getInstance(renderer.getImageData(jasperReportsContext));
+								image = Image.getInstance(renderer.getImageData(jasperReportsContext));
 								imageTesterPdfContentByte.addImage(image, 10, 0, 0, 10, 0, 0);
 							}
 							catch(Exception e)
@@ -1505,7 +1514,7 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 									break;
 								}
 								java.awt.Image awtImage = tmpRenderer.getImage(jasperReportsContext);
-								image = com.lowagie.text.Image.getInstance(awtImage, null);
+								image = Image.getInstance(awtImage, null);
 							}
 
 							if (printImage.isUsingCache())
@@ -1636,6 +1645,7 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 				Image image = getPxImage();
 				image.scaleAbsolute(availableImageWidth, availableImageHeight);
 				chunk = new Chunk(image, 0, 0);
+				
 				pdfWriter.releaseTemplate(template);
 			}
 
@@ -1950,7 +1960,7 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 		Color backcolor = (Color)attributes.get(TextAttribute.BACKGROUND);
 		if (backcolor != null)
 		{
-			chunk.setBackground(backcolor);
+			chunk.setBackground(new BaseColor(backcolor.getRed(),backcolor.getGreen(),backcolor.getBlue(),backcolor.getAlpha()));
 		}
 
 		Object script = attributes.get(TextAttribute.SUPERSCRIPT);
@@ -2109,17 +2119,17 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 		
 		try
 		{
+			BaseColor color = forecolor == null ? null : new BaseColor(forecolor.getRed(),forecolor.getGreen(), forecolor.getBlue(), forecolor.getAlpha());
 			font = FontFactory.getFont(
-				pdfFontName,
-				pdfEncoding,
-				isPdfEmbedded,
-				jrFont.getFontsize() * fontSizeScale,
-				pdfFontStyle,
-				forecolor
-				);
-
+					pdfFontName,
+					pdfEncoding,
+					isPdfEmbedded,
+					jrFont.getFontsize() * fontSizeScale,
+					pdfFontStyle,
+					color
+					);
 			// check if FontFactory didn't find the font
-			if (font.getBaseFont() == null && font.getFamily() == Font.UNDEFINED)
+			if (font!=null && font.getBaseFont() == null && font.getFamily() == Font.FontFamily.UNDEFINED)
 			{
 				font = null;
 			}
@@ -2172,13 +2182,14 @@ public class JRPdfExporter extends JRAbstractExporter<PdfReportConfiguration, Pd
 				throw new JRRuntimeException(e);
 			}
 
+			BaseColor color = forecolor == null ? null : new BaseColor(forecolor.getRed(),forecolor.getGreen(), forecolor.getBlue(), forecolor.getAlpha());
 			font =
-				new Font(
-					baseFont,
-					jrFont.getFontsize() * fontSizeScale,
-					pdfFontStyle,
-					forecolor
-					);
+					new Font(
+						baseFont,
+						jrFont.getFontsize() * fontSizeScale,
+						pdfFontStyle,
+						color
+						);
 		}
 
 		return font;

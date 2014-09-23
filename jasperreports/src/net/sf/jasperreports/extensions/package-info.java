@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -84,7 +84,7 @@
  * from the current <code>jasperreports_extension.properties</code> file. 
  * The signature of the single method that this factory interface exposes is as follows: 
  * </p><p>
- * <code>ExtensionsRegistry createRegistry(String registryId, JRPropertiesMap properties);</code>
+ * {@link net.sf.jasperreports.extensions.ExtensionsRegistryFactory#createRegistry(String, JRPropertiesMap) createRegistry(String, JRPropertiesMap)}
  * </p><p>
  * The extension registry obtained from the factory is able to return a list of actual 
  * extension point implementations based on extension point class type. 
@@ -119,10 +119,10 @@
  * extensions. 
  * </p><p>
  * The factory requires a property named 
- * <code>net.sf.jasperreports.extension.&lt;registry_id&gt;.spring.beans.resource</code> to 
+ * {@link net.sf.jasperreports.extensions.DefaultExtensionsRegistry#PROPERTY_REGISTRY_PREFIX net.sf.jasperreports.extension.&lt;registry_id&gt;.spring.beans.resource} to 
  * be present in the properties map passed to the 
  * </p><p>
- * <code>createRegistry(String, JRPropertiesMap)</code>
+ * <code>{@link net.sf.jasperreports.extensions.ExtensionsRegistryFactory#createRegistry(String, JRPropertiesMap) createRegistry(String, JRPropertiesMap)}</code>
  * </p><p>
  * method. The value of this property must resolve to a resource name 
  * which is loaded from the context class loader, and parsed as a Spring beans XML file. 

@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -40,6 +40,7 @@ import net.sf.jasperreports.engine.JRLineBox;
 import net.sf.jasperreports.engine.JRVisitor;
 import net.sf.jasperreports.engine.base.JRBaseElementGroup;
 import net.sf.jasperreports.engine.base.JRBaseLineBox;
+import net.sf.jasperreports.engine.type.BorderSplitType;
 import net.sf.jasperreports.engine.type.ModeEnum;
 import net.sf.jasperreports.engine.util.ElementsVisitorUtils;
 import net.sf.jasperreports.engine.util.JRBoxUtil;
@@ -61,11 +62,14 @@ public class JRDesignFrame extends JRDesignElement implements JRFrame
 	
 	public static final String PROPERTY_CHILDREN = "children";
 	
+	public static final String PROPERTY_BORDER_SPLIT_TYPE = "borderSplitType";
+	
 	private List<JRChild> children;
 
 	private JRLineBox lineBox;
 
-
+	private BorderSplitType borderSplitType;
+	
 	/**
 	 * Creates a new frame object.
 	 * 
@@ -258,6 +262,25 @@ public class JRDesignFrame extends JRDesignElement implements JRFrame
 	public Color getDefaultLineColor() 
 	{
 		return getForecolor();
+	}
+
+	@Override
+	public BorderSplitType getBorderSplitType()
+	{
+		return borderSplitType;
+	}
+
+	/**
+	 * Sets the border split type for the frame.
+	 * 
+	 * @param borderSplitType the border split type
+	 * @see JRFrame#getBorderSplitType()
+	 */
+	public void setBorderSplitType(BorderSplitType borderSplitType)
+	{
+		Object old = this.borderSplitType;
+		this.borderSplitType = borderSplitType;
+		getEventSupport().firePropertyChange(PROPERTY_BORDER_SPLIT_TYPE, old, this.borderSplitType);
 	}
 	
 	/**

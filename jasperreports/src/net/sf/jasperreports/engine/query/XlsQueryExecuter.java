@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -43,7 +43,7 @@ import org.apache.poi.ss.usermodel.Workbook;
  * XLS query executer implementation.
  * 
  * @author Narcis Marcu (narcism@users.sourceforge.net)
- * @version $Id: JRXlsQueryExecuter.java 6972 2014-03-12 11:41:51Z shertage $
+ * @version $Id$
  */
 public class XlsQueryExecuter extends AbstractXlsQueryExecuter {
 	

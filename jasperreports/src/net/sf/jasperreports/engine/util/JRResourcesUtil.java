@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -486,7 +486,7 @@ public final class JRResourcesUtil
 	 * <p/>
 	 * The following sources are tried:
 	 * <ul>
-	 * 	<li>the class loader returned by {@link #getClassLoader(ClassLoader) <code>getClassLoader(classLoader)</code>}</li>
+	 * 	<li>the class loader returned by {@link #getClassLoader(ClassLoader) getClassLoader(ClassLoader)}</li>
 	 * 	<li>the context class loader</li>
 	 * 	<li><code>clazz.getClassLoader()</code></li>
 	 * 	<li><code>clazz.getResource()</code></li>
@@ -540,7 +540,7 @@ public final class JRResourcesUtil
 	 * <p/>
 	 * The following sources are tried:
 	 * <ul>
-	 * 	<li>the class loader returned by {@link #getClassLoader(ClassLoader) <code>getClassLoader(classLoader)</code>}</li>
+	 * 	<li>the class loader returned by {@link #getClassLoader(ClassLoader) getClassLoader(ClassLoader)}</li>
 	 * 	<li>the context class loader</li>
 	 * 	<li><code>JRLoader.class.getClassLoader()</code></li>
 	 * 	<li><code>JRLoader.class.getResource()</code></li>
@@ -670,7 +670,7 @@ public final class JRResourcesUtil
 	 * The method attempts to load the resource bundle using the following classloaders
 	 * (and stops at the first successful attempt):
 	 * <ul>
-	 * 	<li>the class loader returned by {@link #getClassLoader(ClassLoader) <code>getClassLoader(classLoader)</code>}</li>
+	 * 	<li>the class loader returned by {@link #getClassLoader(ClassLoader) getClassLoader(ClassLoader)}</li>
 	 * 	<li>the context class loader</li>
 	 * 	<li><code>JRClassLoader.class.getClassLoader()</code></li>
 	 * </ul>

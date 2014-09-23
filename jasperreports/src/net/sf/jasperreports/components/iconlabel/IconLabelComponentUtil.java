@@ -1,6 +1,6 @@
 /*
-G * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * JasperReports - Free Java Reporting Library.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -38,7 +38,7 @@ import net.sf.jasperreports.engine.type.HorizontalAlignEnum;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id: TableReport.java 6461 2013-08-30 17:03:40Z teodord $
+ * @version $Id$
  */
 public class IconLabelComponentUtil
 {

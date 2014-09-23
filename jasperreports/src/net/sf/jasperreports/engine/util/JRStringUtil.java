@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -118,7 +118,7 @@ public final class JRStringUtil
 					//the invalid character is preserved
 					ret.append(c);
 				}
-				else if("".equals(invalidCharReplacement))
+				else if(invalidCharReplacement.length() == 0)
 				{
 					//the invalid character is removed
 					continue;

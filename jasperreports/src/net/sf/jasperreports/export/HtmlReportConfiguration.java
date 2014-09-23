@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -38,7 +38,7 @@ import net.sf.jasperreports.export.type.HtmlSizeUnitEnum;
  * @see HtmlExporter
  * 
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id: HtmlExporterConfiguration.java 6709 2013-11-08 14:39:13Z teodord $
+ * @version $Id$
  */
 public interface HtmlReportConfiguration extends ReportExportConfiguration
 {

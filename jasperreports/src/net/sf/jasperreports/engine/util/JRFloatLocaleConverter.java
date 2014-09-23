@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -30,7 +30,7 @@ import org.apache.commons.beanutils.ConversionException;
 import org.apache.commons.beanutils.locale.converters.DecimalLocaleConverter;
 
 /**
- * <code>FloatLocaleConverter</code> extension that fixes 
+ * <code>DecimalLocaleConverter</code> extension that fixes 
  * https://issues.apache.org/jira/browse/BEANUTILS-351
  * 
  * To be removed on upgrade to BeanUtils 1.8.1.

@@ -1,6 +1,6 @@
 /*
  * JasperReports - Free Java Reporting Library.
- * Copyright (C) 2001 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2001 - 2014 TIBCO Software Inc. All rights reserved.
  * http://www.jaspersoft.com
  *
  * Unless you have purchased a commercial license agreement from Jaspersoft,
@@ -545,6 +545,7 @@ public final class JRXmlConstants
 	 * JRFrameFactory associated constants
 	 */
 	public static final String ELEMENT_frame = "frame";
+	public static final String ATTRIBUTE_borderSplitType = "borderSplitType";
 
 	/**
 	 * JRGraphicElementFactory associated constants
