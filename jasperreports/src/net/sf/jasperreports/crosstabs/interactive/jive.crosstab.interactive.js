@@ -598,6 +598,39 @@ define(["jquery.ui", "text!jive.crosstab.templates.tmpl", "text!jive.crosstab.te
                             return false;
                         }
                     });
+                } else if (elementClass == 'jrxtcrossheader') {
+                    tbl.on('click', '.jrxtcrossheader', function(evt){
+                        // keep html links functional
+                        if(!$(evt.target).parent().is('a')) {
+                            var jo = $(this),
+                                crosstabId = jo.attr('data-jrxtid'),
+                                colIdx = jo.attr('data-jrxtcolidx'),
+                                crosstab = null,
+                                altJo;
+
+                            if (it.isfloatingRowHeader) {
+                                altJo = it.getFloatingTable('floatingRowHeader')
+                                    .find("td.jrxtrowheader[data-jrxtid='" + crosstabId + "']")
+                                    .filter("td[data-jrxtcolidx='" + colIdx + "']");
+                                jo = altJo.eq(0);
+                            } else {
+                                altJo = tbl.parent()
+                                    .find("table.jrPage td.jrxtrowheader[data-jrxtid='" + crosstabId + "']")
+                                    .filter("td[data-jrxtcolidx='" + colIdx + "']");
+                                jo = altJo.eq(0);
+                            }
+
+                            $.each(ixt.reportInstance.components.crosstab, function(i, xtab) {
+                                if (crosstabId == xtab.getFragmentId()) {
+                                    crosstab = xtab;
+                                    return false; // break each
+                                }
+                            });
+
+                            crosstab && ixt.selectRowGroup(crosstab, jo, altJo);
+                            return false;
+                        }
+                    });
                 }
 
                 var elementSelector = 'td.' + elementClass,
