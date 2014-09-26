@@ -207,8 +207,9 @@ define(["jquery.ui", "text!jive.crosstab.templates.tmpl", "text!jive.crosstab.te
 
                 it.jo.css({position: 'absolute', width: '60px'});
                 it.jo.offset({top: top, left: ixt.selected.header.offset().left});
+                it.jo.offset({top: top, left: ixt.selected.header.offset().left}); // twice
                 it.topCalculated = false;
-                if (ixt.isFloatingColumnHeader || ixt.isfloatingRowHeader) {
+                if (ixt.isFloatingColumnHeader) {
                     ixt.setToolbarPositionWhenFloating(true, it.isDashboard);
                 } else if (containerTop >= top) {
                     this.jo.offset({top: ixt.selected.header.offset().top});
