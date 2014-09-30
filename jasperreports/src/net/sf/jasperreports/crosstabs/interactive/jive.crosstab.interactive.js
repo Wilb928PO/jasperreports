@@ -707,10 +707,17 @@ define(["jquery.ui", "text!jive.crosstab.templates.tmpl", "text!jive.crosstab.te
                         for (i = 0; i < rowTDs.length; i++) {
                             rowTD = $(rowTDs.get(i));
                             if (rowTD.is('.' + elementClass) || (altElementClass && rowTD.is('.' + altElementClass))) {
-                                cloneTD = rowTD.clone();
-                                cloneTD.width(rowTD.width());
-                                cloneTD.height(rowTD.height() - (bAdjust ? adjustAmount : 0));
-                                cloneWidth[idx] = cloneWidth[idx] + rowTD.outerWidth();
+                                // put empty TDs for the rowheader to prevent rowspans from interfering
+                                if (elementClass == 'jrxtrowheader' && rowTD.is('.jrxtinteractive')) {
+                                    cloneTD = $("<td class='jrxtrowheader jrxtinteractive'></td>");
+                                    cloneTD.attr("data-jrxtid", rowTD.attr("data-jrxtid"));
+                                    cloneTD.attr("data-jrxtcolidx", rowTD.attr("data-jrxtcolidx"));
+                                } else {
+                                    cloneTD = rowTD.clone();
+                                    cloneTD.width(rowTD.width());
+                                    cloneTD.height(rowTD.height() - (bAdjust ? adjustAmount : 0));
+                                    cloneWidth[idx] = cloneWidth[idx] + rowTD.outerWidth();
+                                }
                                 clone.append(cloneTD);
 
                                 if (elementClass == 'jrxtrowheader') {
