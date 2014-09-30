@@ -28,6 +28,7 @@ import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRPart;
 import net.sf.jasperreports.engine.JRPrintPage;
 import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.fill.FillerPageAddedEvent;
 import net.sf.jasperreports.engine.fill.PartReportFiller;
 
 /**
@@ -45,7 +46,7 @@ public interface PartFillContext
 
 	void startPart(JasperPrint jasperPrint);
 
-	void addPage(JRPrintPage page);
+	void addPage(FillerPageAddedEvent pageAdded);
 
 	JRPrintPage getPage(int pageIndex);
 	

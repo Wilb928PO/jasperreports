@@ -23,26 +23,41 @@
  */
 package net.sf.jasperreports.engine.fill;
 
-import net.sf.jasperreports.engine.JRPrintPage;
-import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRVirtualizable;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
+ * Delayed evaluation action that devirtualizes a set of elements in order to
+ * evaluate one or several of them.
+ * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
-public interface FillerPageAddedEvent
+public class VirtualizedPageEvaluationAction implements EvaluationBoundAction
 {
+	private static final Log log = LogFactory.getLog(VirtualizedPageEvaluationAction.class);
+	
+	private final JRVirtualizable<?> object;
 
-	JasperPrint getJasperPrint();
-	
-	JRPrintPage getPage();
-	
-	int getPageIndex();
-	
-	boolean hasReportEnded();
-	
-	int getPageStretchHeight();
-	
-	DelayedFillActions getDelayedActions();
+	public VirtualizedPageEvaluationAction(JRVirtualizable<?> object)
+	{
+		this.object = object;
+	}
 
+	@Override
+	public void execute(BoundActionExecutionContext executionContext)
+			throws JRException
+	{
+		if (log.isDebugEnabled())
+		{
+			log.debug("Resolving delayed evaluations for virtualized page " + executionContext.getCurrentPageIndex()
+					+ " on " + executionContext.getEvaluationTime());
+		}
+		
+		// this forces devirtualization and queues the element evaluations via setElementEvaluationsToPage
+		object.ensureVirtualData();
+	}
 }

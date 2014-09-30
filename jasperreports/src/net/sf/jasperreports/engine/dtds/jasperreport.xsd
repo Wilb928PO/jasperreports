@@ -7075,6 +7075,7 @@ property.
    <enumeration value="Column"/>
    <enumeration value="Group"/>
    <enumeration value="Band"/>
+   <enumeration value="Master"/>
   </restriction>
  </simpleType>
 
@@ -7090,6 +7091,7 @@ property.
    <enumeration value="Group"/>
    <enumeration value="Band"/>
    <enumeration value="Auto"/>
+   <enumeration value="Master"/>
   </restriction>
  </simpleType>
 

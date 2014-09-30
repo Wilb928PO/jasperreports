@@ -133,7 +133,7 @@ public class PartReportFiller extends BaseReportFiller
 		boolean success = false;
 		try
 		{
-			//createBoundElemementMaps();
+			createBoundElemementMaps();
 
 /*			if (parent != null)
 			{
@@ -223,6 +223,11 @@ public class PartReportFiller extends BaseReportFiller
 		}
 	}
 
+	private void createBoundElemementMaps()
+	{
+		createBoundElementMaps(JREvaluationTime.EVALUATION_TIME_MASTER);
+	}
+
 	@Override
 	protected void virtualizationContextCreated()
 	{
@@ -281,6 +286,11 @@ public class PartReportFiller extends BaseReportFiller
 			}
 			
 			fillLastGroupFooters();
+		}
+		
+		if (isMasterReport())
+		{
+			resolveMasterBoundElements();
 		}
 	}
 
@@ -434,7 +444,7 @@ public class PartReportFiller extends BaseReportFiller
 		}
 	}
 
-	public void addPartPage(JRPrintPage page)
+	public void addPartPage(FillerPageAddedEvent pageAdded)
 	{
 		int pageIndex = jasperPrint.getPages().size();
 		if (log.isDebugEnabled())
@@ -442,8 +452,12 @@ public class PartReportFiller extends BaseReportFiller
 			log.debug("adding part page at index " + pageIndex);
 		}
 		
+		JRPrintPage page = pageAdded.getPage();
 		jasperPrint.addPage(page);
 		addLastPageBookmarks();
+		
+		//FIXMEBOOK fill element Ids & virtualization listener
+		delayedActions.moveMasterEvaluations(pageAdded.getDelayedActions(), page, pageIndex);
 		
 		if (fillListener != null)
 		{

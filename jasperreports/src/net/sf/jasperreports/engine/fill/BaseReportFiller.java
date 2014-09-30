@@ -32,9 +32,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import net.sf.jasperreports.engine.BookmarkHelper;
 import net.sf.jasperreports.engine.JRAbstractScriptlet;
 import net.sf.jasperreports.engine.JRDataSource;
@@ -55,6 +52,9 @@ import net.sf.jasperreports.engine.util.DefaultFormatFactory;
 import net.sf.jasperreports.engine.util.FormatFactory;
 import net.sf.jasperreports.engine.util.JRGraphEnvInitializer;
 import net.sf.jasperreports.engine.util.LocalJasperReportsContext;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
@@ -94,6 +94,8 @@ public abstract class BaseReportFiller implements ReportFiller
 	 * Map of datasets ({@link JRFillDataset JRFillDataset} objects} indexed by name.
 	 */
 	protected Map<String,JRFillDataset> datasetMap;
+
+	protected DelayedFillActions delayedActions;
 
 	protected JRAbstractScriptlet scriptlet;
 
@@ -173,6 +175,8 @@ public abstract class BaseReportFiller implements ReportFiller
 				JasperPrint.PROPERTY_COLLAPSE_MISSING_BOOKMARK_LEVELS, false);
 			bookmarkHelper = new BookmarkHelper(collapseMissingLevels);
 		}
+		
+		delayedActions = new DelayedFillActions(this);
 	}
 	
 	private List<String> readPrintTransferPropertyPrefixes()
@@ -230,6 +234,11 @@ public abstract class BaseReportFiller implements ReportFiller
 			dataset.initElementDatasets(factory);
 		}
 	}
+
+	protected final void createBoundElementMaps(JREvaluationTime evaluationTime)
+	{
+		delayedActions.createDelayedEvaluationTime(evaluationTime);
+	}
 	
 	/**
 	 * Adds a fill lister to be notified by events that occur during the fill.
@@ -260,6 +269,11 @@ public abstract class BaseReportFiller implements ReportFiller
 	public JasperReport getJasperReport()
 	{
 		return jasperReport;
+	}
+
+	public JasperPrint getJasperPrint()
+	{
+		return jasperPrint;
 	}
 
 	protected final void setJasperReportsContext(JasperReportsContext jasperReportsContext)
@@ -511,6 +525,11 @@ public abstract class BaseReportFiller implements ReportFiller
 		return parent != null;
 	}
 
+	protected boolean isMasterReport()
+	{
+		return parent == null;
+	}
+
 	/**
 	 * Evaluates an expression
 	 * @param expression the expression
@@ -600,6 +619,29 @@ public abstract class BaseReportFiller implements ReportFiller
 				t.interrupt();
 			}
 		}
+	}
+
+	protected void addBoundElement(JRFillElement element, JRPrintElement printElement, JREvaluationTime evaluationTime,
+			FillPageKey pageKey)
+	{
+		if (log.isDebugEnabled())
+		{
+			log.debug("Adding evaluation of " + printElement + " by " + element 
+					+ " for evaluation " + evaluationTime);
+		}
+		
+		ElementEvaluationAction action = new ElementEvaluationAction(element, printElement);
+		delayedActions.addDelayedAction(printElement, action, evaluationTime, pageKey);
+	}
+
+	protected void resolveBoundElements(JREvaluationTime evaluationTime, byte evaluation) throws JRException
+	{
+		delayedActions.runActions(evaluationTime, evaluation);
+	}
+	
+	protected void resolveMasterBoundElements() throws JRException
+	{
+		resolveBoundElements(JREvaluationTime.EVALUATION_TIME_MASTER, JRExpression.EVALUATION_DEFAULT);
 	}
 
 }

@@ -343,6 +343,22 @@ public class JRFillContext
 	{
 		return virtualizationContext;
 	}
+	
+	public void lockVirtualizationContext()
+	{
+		if (virtualizationContext != null)
+		{
+			virtualizationContext.lock();
+		}
+	}
+	
+	public void unlockVirtualizationContext()
+	{
+		if (virtualizationContext != null)
+		{
+			virtualizationContext.unlock();
+		}
+	}
 
 	
 	public FormatFactory getMasterFormatFactory()

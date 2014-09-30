@@ -23,26 +23,58 @@
  */
 package net.sf.jasperreports.engine.fill;
 
-import net.sf.jasperreports.engine.JRPrintPage;
-import net.sf.jasperreports.engine.JasperPrint;
-
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
-public interface FillerPageAddedEvent
+public class StandardBoundActionExecutionContext implements BoundActionExecutionContext
 {
-
-	JasperPrint getJasperPrint();
+	private int currentPageIndex;
+	private int totalPages;
+	private byte evaluationType;
+	private JREvaluationTime evaluationTime;
 	
-	JRPrintPage getPage();
+	@Override
+	public int getCurrentPageIndex()
+	{
+		return currentPageIndex;
+	}
 	
-	int getPageIndex();
+	public void setCurrentPageIndex(int currentPage)
+	{
+		this.currentPageIndex = currentPage;
+	}
 	
-	boolean hasReportEnded();
+	@Override
+	public int getTotalPages()
+	{
+		return totalPages;
+	}
 	
-	int getPageStretchHeight();
+	public void setTotalPages(int totalPages)
+	{
+		this.totalPages = totalPages;
+	}
 	
-	DelayedFillActions getDelayedActions();
-
+	@Override
+	public byte getExpressionEvaluationType()
+	{
+		return evaluationType;
+	}
+	
+	public void setExpressionEvaluationType(byte evaluationType)
+	{
+		this.evaluationType = evaluationType;
+	}
+	
+	@Override
+	public JREvaluationTime getEvaluationTime()
+	{
+		return evaluationTime;
+	}
+	
+	public void setEvaluationTime(JREvaluationTime evaluationTime)
+	{
+		this.evaluationTime = evaluationTime;
+	}
 }

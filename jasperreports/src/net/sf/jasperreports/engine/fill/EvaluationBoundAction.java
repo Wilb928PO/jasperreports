@@ -23,26 +23,15 @@
  */
 package net.sf.jasperreports.engine.fill;
 
-import net.sf.jasperreports.engine.JRPrintPage;
-import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JRException;
 
 /**
+ * Generic delayed evaluation action.
+ * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
-public interface FillerPageAddedEvent
+public interface EvaluationBoundAction
 {
-
-	JasperPrint getJasperPrint();
-	
-	JRPrintPage getPage();
-	
-	int getPageIndex();
-	
-	boolean hasReportEnded();
-	
-	int getPageStretchHeight();
-	
-	DelayedFillActions getDelayedActions();
-
+	void execute(BoundActionExecutionContext executionContext) throws JRException;
 }

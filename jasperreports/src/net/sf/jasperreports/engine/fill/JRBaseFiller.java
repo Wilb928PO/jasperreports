@@ -36,7 +36,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -60,16 +59,15 @@ import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.JRStyleSetter;
 import net.sf.jasperreports.engine.JRTemplate;
 import net.sf.jasperreports.engine.JRTemplateReference;
+import net.sf.jasperreports.engine.JRVariable;
 import net.sf.jasperreports.engine.JRVirtualizable;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.JasperReportsContext;
-import net.sf.jasperreports.engine.PrintElementVisitor;
 import net.sf.jasperreports.engine.ReportContext;
 import net.sf.jasperreports.engine.base.JRBasePrintPage;
 import net.sf.jasperreports.engine.base.JRVirtualPrintPage;
 import net.sf.jasperreports.engine.base.VirtualElementsData;
-import net.sf.jasperreports.engine.base.VirtualizablePageElements;
 import net.sf.jasperreports.engine.type.BandTypeEnum;
 import net.sf.jasperreports.engine.type.EvaluationTimeEnum;
 import net.sf.jasperreports.engine.type.FooterPositionEnum;
@@ -81,8 +79,6 @@ import net.sf.jasperreports.engine.type.WhenNoDataTypeEnum;
 import net.sf.jasperreports.engine.type.WhenResourceMissingTypeEnum;
 import net.sf.jasperreports.engine.util.JRDataUtils;
 import net.sf.jasperreports.engine.util.JRStyledTextParser;
-import net.sf.jasperreports.engine.util.LinkedMap;
-import net.sf.jasperreports.engine.util.UniformPrintElementVisitor;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -181,12 +177,6 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 	protected JRFillBand noData;
 
 	protected ElementEvaluationVirtualizationListener virtualizationListener;
-
-	/**
-	 * Bound element maps indexed by {@link JREvaluationTime JREvaluationTime} objects.
-	 */
-	// we can use HashMap because the map is initialized in the beginning and doesn't change afterwards
-	protected HashMap<JREvaluationTime, LinkedHashMap<PageKey, LinkedMap<Object, EvaluationBoundAction>>> boundElements;
 
 	protected JRPrintPage printPage;
 
@@ -453,14 +443,6 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 	}
 
 	/**
-	 *
-	 */
-	public JasperPrint getJasperPrint()
-	{
-		return jasperPrint;
-	}
-
-	/**
 	 * Returns the number of generated master print pages.
 	 * 
 	 * @return the number of generated master print pages
@@ -476,11 +458,6 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 	public JRStyle getDefaultStyle()
 	{
 		return defaultStyle;
-	}
-
-	protected boolean isMasterReport()
-	{
-		return parent == null;
 	}
 
 	protected boolean isSubreportRunToBottom()
@@ -833,8 +810,7 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 
 	private void createBoundElemementMaps()
 	{
-		boundElements = new HashMap<JREvaluationTime, LinkedHashMap<PageKey, LinkedMap<Object, EvaluationBoundAction>>>();
-
+		createBoundElementMaps(JREvaluationTime.EVALUATION_TIME_MASTER);
 		createBoundElementMaps(JREvaluationTime.EVALUATION_TIME_REPORT);
 		createBoundElementMaps(JREvaluationTime.EVALUATION_TIME_PAGE);
 		createBoundElementMaps(JREvaluationTime.EVALUATION_TIME_COLUMN);
@@ -852,14 +828,6 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 			JRFillBand band = (JRFillBand) i.next();
 			createBoundElementMaps(JREvaluationTime.getBandEvaluationTime(band));
 		}
-	}
-
-
-	private void createBoundElementMaps(JREvaluationTime evaluationTime)
-	{
-		LinkedHashMap<PageKey, LinkedMap<Object, EvaluationBoundAction>> boundElementsMap = 
-				new LinkedHashMap<PageKey, LinkedMap<Object, EvaluationBoundAction>>();
-		boundElements.put(evaluationTime, boundElementsMap);
 	}
 
 
@@ -923,22 +891,6 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 	{
 		virtualizationListener = new ElementEvaluationVirtualizationListener(this);
 		virtualizationContext.addListener(virtualizationListener);
-	}
-	
-	protected void lockVirtualizationContext()
-	{
-		if (virtualizationContext != null)
-		{
-			virtualizationContext.lock();
-		}
-	}
-	
-	protected void unlockVirtualizationContext()
-	{
-		if (virtualizationContext != null)
-		{
-			virtualizationContext.unlock();
-		}
 	}
 
 
@@ -1096,57 +1048,6 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 	protected boolean next() throws JRException
 	{
 		return mainDataset.next();
-	}
-
-	protected void resolveBoundElements(JREvaluationTime evaluationTime, byte evaluation) throws JRException
-	{
-		LinkedHashMap<PageKey, LinkedMap<Object, EvaluationBoundAction>> pagesMap = boundElements.get(evaluationTime);
-		
-		boolean hasEntry;
-		do
-		{
-			checkInterrupted();
-			
-			// locking once per page so that we don't hold the lock for too long
-			// (that would prevent async exporters from getting page data during a long resolve)
-			lockVirtualizationContext();
-			try
-			{
-				synchronized (pagesMap)
-				{
-					// resolve a single page
-					Iterator<Map.Entry<PageKey, LinkedMap<Object, EvaluationBoundAction>>> pagesIt = pagesMap.entrySet().iterator();
-					hasEntry = pagesIt.hasNext();
-					if (hasEntry)
-					{
-						Map.Entry<PageKey, LinkedMap<Object, EvaluationBoundAction>> pageEntry = pagesIt.next();
-						int pageIdx = pageEntry.getKey().index;
-						
-						LinkedMap<Object, EvaluationBoundAction> boundElementsMap = pageEntry.getValue();
-						// execute the actions
-						while (!boundElementsMap.isEmpty())
-						{
-							EvaluationBoundAction action = boundElementsMap.pop();
-							action.execute(evaluation, evaluationTime);
-						}
-						
-						// remove the entry from the pages map
-						pagesIt.remove();
-						
-						// call the listener to signal that the page has been modified
-						if (fillListener != null)
-						{
-							fillListener.pageUpdated(jasperPrint, pageIdx);
-						}
-					}
-				}
-			}
-			finally
-			{
-				unlockVirtualizationContext();
-			}
-		}
-		while(hasEntry);
 	}
 
 	/**
@@ -1369,9 +1270,30 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 			{
 				return ((Number) calculator.getPageNumber().getValue()).intValue() - 1;
 			}
+
+			@Override
+			public DelayedFillActions getDelayedActions()
+			{
+				return delayedActions;
+			}
 		};
 		
 		parent.addPage(pageAdded);
+	}
+
+	protected void setMasterPageVariables(int currentPageIndex, int totalPages)
+	{
+		JRFillVariable masterCurrentPage = getVariable(JRVariable.MASTER_CURRENT_PAGE);
+		if (masterCurrentPage != null)
+		{
+			masterCurrentPage.setValue(currentPageIndex + 1);
+		}
+		
+		JRFillVariable masterTotalPages = getVariable(JRVariable.MASTER_TOTAL_PAGES);
+		if (masterTotalPages != null)
+		{
+			masterTotalPages.setValue(totalPages);
+		}
 	}
 
 	protected WhenResourceMissingTypeEnum getWhenResourceMissingType()
@@ -1440,79 +1362,25 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 
 	protected void addBoundElement(JRFillElement element, JRPrintElement printElement, JREvaluationTime evaluationTime)
 	{
-		if (log.isDebugEnabled())
-		{
-			log.debug("Adding evaluation of " + printElement + " by " + element 
-					+ " for evaluation " + evaluationTime);
-		}
+		// the key contains the page and its index; the index is only stored so that we have it in resolveBoundElements
+		int pageIndex = ((Number) calculator.getPageNumber().getValue()).intValue() - 1;
+		FillPageKey pageKey = new FillPageKey(printPage, pageIndex);
 		
-		// get the pages map for the evaluation
-		LinkedHashMap<PageKey, LinkedMap<Object, EvaluationBoundAction>> pagesMap = boundElements.get(evaluationTime);
-		
-		lockVirtualizationContext();
-		try
-		{
-			synchronized (pagesMap)
-			{
-				// the key contains the page and its index; the index is only stored so that we have it in resolveBoundElements
-				int pageIndex = ((Number) calculator.getPageNumber().getValue()).intValue() - 1;
-				PageKey pageKey = new PageKey(printPage, pageIndex);
-				
-				// get the actions map for the current page, creating if it does not yet exist
-				LinkedMap<Object, EvaluationBoundAction> boundElementsMap = pagesMap.get(pageKey);
-				if (boundElementsMap == null)
-				{
-					boundElementsMap = new LinkedMap<Object, EvaluationBoundAction>();
-					pagesMap.put(pageKey, boundElementsMap);
-				}
-				
-				// add the delayed element action to the map
-				boundElementsMap.add(printElement, new ElementEvaluationAction(element, printElement));
-			}
-		}
-		finally
-		{
-			unlockVirtualizationContext();
-		}
+		addBoundElement(element, printElement, evaluationTime, pageKey);
 	}
 
 	protected void subreportPageFilled(JRPrintPage subreportPage)
 	{
-		PageKey subreportKey = new PageKey(subreportPage);
-		PageKey parentKey = new PageKey(((JRBaseFiller) parent.getFiller()).printPage);//FIXMEBOOK
+		FillPageKey subreportKey = new FillPageKey(subreportPage);
+		FillPageKey parentKey = new FillPageKey(((JRBaseFiller) parent.getFiller()).printPage);//FIXMEBOOK
 		
 		// move all delayed elements from the subreport page to the master page
 		moveBoundActions(subreportKey, parentKey);
 	}
 
-	protected void moveBoundActions(PageKey subreportKey, PageKey parentKey)
+	protected void moveBoundActions(FillPageKey subreportKey, FillPageKey parentKey)
 	{
-		for (LinkedHashMap<PageKey, LinkedMap<Object, EvaluationBoundAction>> map : boundElements.values())
-		{
-			lockVirtualizationContext();
-			try
-			{
-				synchronized (map)
-				{
-					LinkedMap<Object, EvaluationBoundAction> subreportMap = map.remove(subreportKey);
-					if (subreportMap != null && !subreportMap.isEmpty())
-					{
-						LinkedMap<Object, EvaluationBoundAction> masterMap = map.get(parentKey);
-						if (masterMap == null)
-						{
-							masterMap = new LinkedMap<Object, EvaluationBoundAction>();
-							map.put(parentKey, masterMap);
-						}
-						
-						masterMap.addAll(subreportMap);
-					}
-				}
-			}
-			finally
-			{
-				unlockVirtualizationContext();
-			}
-		}
+		delayedActions.moveActions(subreportKey, parentKey);
 		
 		if (subfillers != null)//recursive
 		{
@@ -1546,24 +1414,10 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 
 	protected boolean hasBoundActions(JRPrintPage page)
 	{
-		for (LinkedHashMap<PageKey, LinkedMap<Object, EvaluationBoundAction>> map : boundElements.values())
+		boolean hasActions = delayedActions.hasDelayedActions(page);
+		if (hasActions)
 		{
-			lockVirtualizationContext();
-			try
-			{
-				synchronized (map)
-				{
-					LinkedMap<Object, EvaluationBoundAction> boundMap = map.get(new PageKey(page));
-					if (boundMap != null && !boundMap.isEmpty())
-					{
-						return true;
-					}
-				}
-			}
-			finally
-			{
-				unlockVirtualizationContext();
-			}
+			return true;
 		}
 		
 		if (subfillers != null)
@@ -1830,84 +1684,6 @@ class SavePoint
 
 }
 
-class PageKey
-{
-	final JRPrintPage page;
-	final int index;
-	
-	public PageKey(JRPrintPage page, int index)
-	{
-		this.page = page;
-		this.index = index;
-	}
-	
-	public PageKey(JRPrintPage page)
-	{
-		this(page, 0);
-	}
-
-	@Override
-	public int hashCode()
-	{
-		return page.hashCode();
-	}
-
-	@Override
-	public boolean equals(Object obj)
-	{
-		if (!(obj instanceof PageKey))
-		{
-			return false;
-		}
-		
-		return page.equals(((PageKey) obj).page);
-	}
-}
-
-/**
- * Generic delayed evaluation action.
- */
-interface EvaluationBoundAction
-{
-	void execute(byte evaluation, JREvaluationTime evaluationTime) throws JRException;
-}
-
-/**
- * Delayed evaluation action that evaluates a print element.
- */
-class ElementEvaluationAction implements EvaluationBoundAction
-{
-	private static final Log log = LogFactory.getLog(ElementEvaluationAction.class);
-	
-	protected final JRFillElement element;
-	protected final JRPrintElement printElement;
-
-	public ElementEvaluationAction(JRFillElement element, JRPrintElement printElement)
-	{
-		this.element = element;
-		this.printElement = printElement;
-	}
-	
-	public void execute(byte evaluation, JREvaluationTime evaluationTime) throws JRException
-	{
-		if (log.isDebugEnabled())
-		{
-			log.debug("resolving element " + printElement + " by " + element
-					+ " on " + evaluationTime);
-		}
-		
-		element.resolveElement(printElement, evaluation, evaluationTime);
-	}
-
-	@Override
-	public String toString()
-	{
-		return "delayed evaluation {element: " + element
-				+ ", printElement: " + printElement
-				+ "}";
-	}
-}
-
 /**
  * Virtualization listener that looks for elements with delayed evaluations 
  * and saves/restores the evaluations and externalization/internalization.
@@ -1944,65 +1720,7 @@ class ElementEvaluationVirtualizationListener implements VirtualizationListener<
 			log.debug("filler " + filler.fillerId + " setting element evaluation for elements in " + object.getUID());
 		}
 		
-		JRVirtualPrintPage page = ((VirtualizablePageElements) object).getPage();// ugly but needed for now
-		PageKey pageKey = new PageKey(page);
-		VirtualElementsData virtualData = object.getVirtualData();
-		
-		for (Map.Entry<JREvaluationTime, LinkedHashMap<PageKey, LinkedMap<Object, EvaluationBoundAction>>> boundMapEntry : 
-			filler.boundElements.entrySet())
-		{
-			final JREvaluationTime evaluationTime = boundMapEntry.getKey();
-			LinkedHashMap<PageKey, LinkedMap<Object, EvaluationBoundAction>> map = boundMapEntry.getValue();
-			
-			synchronized (map)
-			{
-				final LinkedMap<Object, EvaluationBoundAction> actionsMap = map.get(pageKey);
-				
-				if (actionsMap != null && !actionsMap.isEmpty())
-				{
-					// collection delayed evaluations for elements that are about to be externalized.
-					// the evaluations store the ID of the fill elements in order to serialize the data.
-					final Map<JRPrintElement, Integer> elementEvaluations = new LinkedHashMap<JRPrintElement, Integer>();
-					
-					// FIXME optimize for pages with a single virtual block
-					// create a deep element visitor
-					PrintElementVisitor<Void> visitor = new UniformPrintElementVisitor<Void>(true)
-					{
-						@Override
-						protected void visitElement(JRPrintElement element, Void arg)
-						{
-							// remove the action from the map because we're saving it as part of the page.
-							// ugly cast but acceptable for now.
-							ElementEvaluationAction action = (ElementEvaluationAction) actionsMap.remove(element);
-							if (action != null)
-							{
-								elementEvaluations.put(element, action.element.printElementOriginator.getSourceElementId());
-								
-								if (log.isDebugEnabled())
-								{
-									log.debug("filler " + filler.fillerId + " saving evaluation " + evaluationTime + " of element " + element 
-											+ " on object " + object);
-								}
-							}
-						}
-					};
-					
-					for (JRPrintElement element : virtualData.getElements())
-					{
-						element.accept(visitor, null);
-					}
-					
-					if (!elementEvaluations.isEmpty())
-					{
-						// save the evaluations in the virtual data
-						virtualData.setElementEvaluations(filler.fillerId, evaluationTime, elementEvaluations);
-						
-						// add an action for the page so that it gets devirtualized on resolveBoundElements
-						actionsMap.add(null, new VirtualizedPageEvaluationAction(object));
-					}
-				}
-			}
-		}
+		filler.delayedActions.setElementEvaluationsToPage(object);
 		
 		if (filler.subfillers != null)//recursive
 		{
@@ -2034,48 +1752,7 @@ class ElementEvaluationVirtualizationListener implements VirtualizationListener<
 			log.debug("filler " + filler.fillerId + " recreating element evaluation for elements in " + object.getUID());
 		}
 		
-		JRVirtualPrintPage page = ((VirtualizablePageElements) object).getPage();// ugly but needed for now
-		PageKey pageKey = new PageKey(page);
-		VirtualElementsData elementsData = object.getVirtualData();
-		
-		for (Map.Entry<JREvaluationTime, LinkedHashMap<PageKey, LinkedMap<Object, EvaluationBoundAction>>> boundMapEntry : 
-			filler.boundElements.entrySet())
-		{
-			JREvaluationTime evaluationTime = boundMapEntry.getKey();
-			LinkedHashMap<PageKey, LinkedMap<Object, EvaluationBoundAction>> map = boundMapEntry.getValue();
-			
-			synchronized (map)
-			{
-				LinkedMap<Object, EvaluationBoundAction> actionsMap = map.get(pageKey);
-				
-				// get the delayed evaluations from the devirtualized data and add it back
-				// to the filler delayed evaluation maps.
-				Map<JRPrintElement, Integer> elementEvaluations = elementsData.getElementEvaluations(filler.fillerId, evaluationTime);
-				if (elementEvaluations != null)
-				{
-					for (Map.Entry<JRPrintElement, Integer> entry : elementEvaluations.entrySet())
-					{
-						JRPrintElement element = entry.getKey();
-						int fillElementId = entry.getValue();
-						JRFillElement fillElement = filler.fillElements.get(fillElementId);
-						
-						if (log.isDebugEnabled())
-						{
-							log.debug("filler " + filler.fillerId + " got evaluation " + evaluationTime + " on " + element 
-									+ " from object " + object + ", using " + fillElement);
-						}
-						
-						if (fillElement == null)
-						{
-							throw new JRRuntimeException("Fill element with id " + fillElementId + " not found");
-						}
-						
-						// add first so that it will be executed immediately
-						actionsMap.addFirst(element, new ElementEvaluationAction(fillElement, element));
-					}
-				}
-			}
-		}
+		filler.delayedActions.getElementEvaluationsFromPage(object);
 		
 		if (filler.subfillers != null)//recursive
 		{
@@ -2084,26 +1761,5 @@ class ElementEvaluationVirtualizationListener implements VirtualizationListener<
 				getElementEvaluationsFromPage(subfiller, object);
 			}
 		}
-	}
-}
-
-/**
- * Delayed evaluation action that devirtualizes a set of elements in order to
- * evaluate one of several of them.
- */
-class VirtualizedPageEvaluationAction implements EvaluationBoundAction
-{
-	private final JRVirtualizable<?> object;
-
-	public VirtualizedPageEvaluationAction(JRVirtualizable<?> object)
-	{
-		this.object = object;
-	}
-
-	public void execute(byte evaluation, JREvaluationTime evaluationTime)
-			throws JRException
-	{
-		// this forces devirtualization and queues the element evaluations via setElementEvaluationsToPage
-		object.ensureVirtualData();
 	}
 }

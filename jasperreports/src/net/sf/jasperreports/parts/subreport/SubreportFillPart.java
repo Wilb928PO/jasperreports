@@ -223,7 +223,7 @@ public class SubreportFillPart extends BasePartFillComponent
 				fillContext.startPart(pageAdded.getJasperPrint());
 			}
 			
-			fillContext.addPage(pageAdded.getPage());
+			fillContext.addPage(pageAdded);
 			
 			//FIXMEBOOK styles
 		}

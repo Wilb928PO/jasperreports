@@ -20,19 +20,12 @@
 	</detail>
 	<pageFooter>
 		<band height="40">
-			<textField>
-				<reportElement positionType="Float" mode="Opaque" x="5" y="5" width="270" height="30" forecolor="#333399" uuid="2f829088-792d-4db0-90a7-cdcc90eedee3"/>
-				<textElement textAlignment="Right">
+			<textField evaluationTime="Master">
+				<reportElement positionType="Float" mode="Opaque" x="5" y="5" width="545" height="30" forecolor="#333399" uuid="2f829088-792d-4db0-90a7-cdcc90eedee3"/>
+				<textElement textAlignment="Center">
 					<font size="22" isBold="true" pdfFontName="Helvetica-Bold"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Page " + $V{PAGE_NUMBER} + " of "]]></textFieldExpression>
-			</textField>
-			<textField evaluationTime="Report">
-				<reportElement positionType="Float" mode="Opaque" x="280" y="5" width="272" height="30" forecolor="#333399" uuid="422f4be3-5e2c-4971-93a3-089f22b5ba28"/>
-				<textElement>
-					<font size="22" isBold="true" pdfFontName="Helvetica-Bold"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Page " + $V{MASTER_CURRENT_PAGE} + " of " + $V{MASTER_TOTAL_PAGES}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageFooter>

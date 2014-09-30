@@ -23,26 +23,17 @@
  */
 package net.sf.jasperreports.engine.fill;
 
-import net.sf.jasperreports.engine.JRPrintPage;
-import net.sf.jasperreports.engine.JasperPrint;
-
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
-public interface FillerPageAddedEvent
+public interface BoundActionExecutionContext
 {
-
-	JasperPrint getJasperPrint();
+	int getCurrentPageIndex();
 	
-	JRPrintPage getPage();
+	int getTotalPages();
 	
-	int getPageIndex();
+	byte getExpressionEvaluationType();
 	
-	boolean hasReportEnded();
-	
-	int getPageStretchHeight();
-	
-	DelayedFillActions getDelayedActions();
-
+	JREvaluationTime getEvaluationTime();
 }

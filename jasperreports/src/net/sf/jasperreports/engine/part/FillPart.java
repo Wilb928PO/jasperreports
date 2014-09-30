@@ -31,6 +31,7 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.component.Component;
 import net.sf.jasperreports.engine.component.ComponentKey;
+import net.sf.jasperreports.engine.fill.FillerPageAddedEvent;
 import net.sf.jasperreports.engine.fill.JRFillExpressionEvaluator;
 import net.sf.jasperreports.engine.fill.JRFillObjectFactory;
 import net.sf.jasperreports.engine.fill.PartReportFiller;
@@ -139,9 +140,9 @@ public class FillPart
 		}
 
 		@Override
-		public void addPage(JRPrintPage page)
+		public void addPage(FillerPageAddedEvent pageAdded)
 		{
-			reportFiller.addPartPage(page);
+			reportFiller.addPartPage(pageAdded);
 		}
 
 		@Override

@@ -1051,6 +1051,10 @@ public class JRVerticalFiller extends JRBaseFiller
 		resolveColumnBoundElements(JRExpression.EVALUATION_DEFAULT);
 		resolvePageBoundElements(JRExpression.EVALUATION_DEFAULT);
 		resolveReportBoundElements();
+		if (isMasterReport())
+		{
+			resolveMasterBoundElements();
+		}
 	}
 
 

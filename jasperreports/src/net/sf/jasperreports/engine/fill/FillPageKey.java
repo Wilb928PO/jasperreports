@@ -24,25 +24,41 @@
 package net.sf.jasperreports.engine.fill;
 
 import net.sf.jasperreports.engine.JRPrintPage;
-import net.sf.jasperreports.engine.JasperPrint;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
-public interface FillerPageAddedEvent
+public class FillPageKey
 {
+	final JRPrintPage page;
+	final int index;
+	
+	public FillPageKey(JRPrintPage page, int index)
+	{
+		this.page = page;
+		this.index = index;
+	}
+	
+	public FillPageKey(JRPrintPage page)
+	{
+		this(page, 0);
+	}
 
-	JasperPrint getJasperPrint();
-	
-	JRPrintPage getPage();
-	
-	int getPageIndex();
-	
-	boolean hasReportEnded();
-	
-	int getPageStretchHeight();
-	
-	DelayedFillActions getDelayedActions();
+	@Override
+	public int hashCode()
+	{
+		return page.hashCode();
+	}
 
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (!(obj instanceof FillPageKey))
+		{
+			return false;
+		}
+		
+		return page.equals(((FillPageKey) obj).page);
+	}
 }
