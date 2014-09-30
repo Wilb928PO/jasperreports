@@ -40,12 +40,38 @@ define(["jquery.ui", "text!jive.crosstab.templates.tmpl", "text!jive.crosstab.te
         reportInstance: null,
         isIE: /msie/i.test(navigator.userAgent),
         isFirefox: /firefox/i.test(navigator.userAgent),
+        canFloat: true,
 		init: function(report) {
 			var ic = this;
 			ic.reportInstance = report;
             ic.isDashboard = $('body').is('.dashboardViewFrame');
 
 			if (!ic.initialized) {
+                /**
+                 * "beforeSearchAdvance" event triggered from the viewer, before highlighting search results
+                 * with function "element.scrollIntoView(false)" which seems to be asynchronous;
+                 * that's why the setTimeout is used here to delay the release of the canFloat flag
+                */
+                ic.reportInstance.on("beforeSearchAdvance", function(evt) {
+                    ic.canFloat = false;
+
+                    // hide floating parts
+                    if (ic.isFloatingColumnHeader) {
+                        ic.getFloatingTable('floatingColumnHeader').hide();
+                    }
+                    if (ic.isFloatingRowHeader) {
+                        ic.getFloatingTable('floatingRowHeader').hide();
+                    }
+                    if (ic.isFloatingCrossHeader) {
+                        ic.getFloatingTable('floatingCrossHeader').hide();
+                    }
+
+                    // releasing this flag after 1.5 seconds
+                    setTimeout(function() {
+                        ic.canFloat = true;
+                    }, 1500);
+                });
+
 				$('head').append('<style id="jivext-stylesheet">' + templateCss + '</style>');
 			
 				$('#jivext_components').length == 0 &&  $('body').append('<div id="jivext_components"></div>');
@@ -246,7 +272,7 @@ define(["jquery.ui", "text!jive.crosstab.templates.tmpl", "text!jive.crosstab.te
         zoom: function(o) {
             var it = this;
             it.active && it.hide();
-            if (it.isFloatingColumnHeader || it.isfloatingRowHeader || it.isfloatingCrossHeader) {
+            if (it.isFloatingColumnHeader || it.isFloatingRowHeader || it.isFloatingCrossHeader) {
                 it.scrollHeaders(it.isDashboard, true);
             }
         },
@@ -323,6 +349,10 @@ define(["jquery.ui", "text!jive.crosstab.templates.tmpl", "text!jive.crosstab.te
             });
         },
         scrollHeaders: function(isDashboard, forceScroll) {
+            if (!this.canFloat) {
+                return;
+            }
+
             var it = this,
                 scrollContainer = $('div#reportViewFrame .body'),
                 scrolledTop = false,
@@ -471,7 +501,7 @@ define(["jquery.ui", "text!jive.crosstab.templates.tmpl", "text!jive.crosstab.te
                     it.justHide();
                 }
 
-                it.scrollData.bRowMoved = it.isfloatingRowHeader = true;
+                it.scrollData.bRowMoved = it.isFloatingRowHeader = true;
 
             } else if (it.scrollData.bRowMoved && headerLeft-containerLeft < 0 && diff > 0) {
                 floatingTbl.show();
@@ -504,7 +534,7 @@ define(["jquery.ui", "text!jive.crosstab.templates.tmpl", "text!jive.crosstab.te
                 if (it.active && it.justHidden) {
                     it.reApplySelection();
                 }
-                it.scrollData.bRowMoved = it.isfloatingRowHeader = false;
+                it.scrollData.bRowMoved = it.isFloatingRowHeader = false;
             }
         },
         scrollCrossSection: function(isDashboard, scrolledLeft, scrolledTop) {
@@ -539,11 +569,11 @@ define(["jquery.ui", "text!jive.crosstab.templates.tmpl", "text!jive.crosstab.te
 
 //                it.setToolbarPositionWhenFloating(it.active, isDashboard);
 
-                it.scrollData.bCrossMoved = it.isfloatingCrossHeader = true;
+                it.scrollData.bCrossMoved = it.isFloatingCrossHeader = true;
 
             } else if (it.scrollData.bCrossMoved) {
                 floatingCrossTbl.hide();
-                it.scrollData.bCrossMoved = it.isfloatingCrossHeader = false;
+                it.scrollData.bCrossMoved = it.isFloatingCrossHeader = false;
             }
         },
         getFloatingTable: function(tableClass, elementClass, altElementClass) {
@@ -609,7 +639,7 @@ define(["jquery.ui", "text!jive.crosstab.templates.tmpl", "text!jive.crosstab.te
                                 crosstab = null,
                                 altJo;
 
-                            if (it.isfloatingRowHeader) {
+                            if (it.isFloatingRowHeader) {
                                 altJo = it.getFloatingTable('floatingRowHeader')
                                     .find("td.jrxtrowheader[data-jrxtid='" + crosstabId + "']")
                                     .filter("td[data-jrxtcolidx='" + colIdx + "']");
