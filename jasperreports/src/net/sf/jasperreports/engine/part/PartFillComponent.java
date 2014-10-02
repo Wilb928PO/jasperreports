@@ -54,7 +54,7 @@ public interface PartFillComponent
 	 * 
 	 * <p>
 	 * This method would evaluate the component expressions and store the
-	 * results to be used in {@link #fill()}.
+	 * results to be used in {@link #fill(PartOutput)}.
 	 * 
 	 * @param evaluation the evaluation type
 	 * @throws JRException
@@ -65,7 +65,7 @@ public interface PartFillComponent
 	 * Fills the component by creating a print element which will be included
 	 * in the generated report.
 	 */
-	void fill() throws JRException;
+	void fill(PartOutput output) throws JRException;
 
 	boolean isPageFinal(int pageIndex);
 

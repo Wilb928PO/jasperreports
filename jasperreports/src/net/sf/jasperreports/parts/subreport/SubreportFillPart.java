@@ -48,6 +48,7 @@ import net.sf.jasperreports.engine.fill.JRHorizontalFiller;
 import net.sf.jasperreports.engine.fill.JRVerticalFiller;
 import net.sf.jasperreports.engine.fill.PartReportFiller;
 import net.sf.jasperreports.engine.part.BasePartFillComponent;
+import net.sf.jasperreports.engine.part.PartOutput;
 import net.sf.jasperreports.engine.type.SectionTypeEnum;
 
 /**
@@ -101,9 +102,9 @@ public class SubreportFillPart extends BasePartFillComponent
 	}
 
 	@Override
-	public void fill() throws JRException
+	public void fill(PartOutput output) throws JRException
 	{
-		subreportFiller = createSubreportFiller();
+		subreportFiller = createSubreportFiller(output);
 		
 		JRFillDataset subreportDataset = subreportFiller.getMainDataset();
 		subreportDataset.setFillPosition(datasetPosition);
@@ -125,12 +126,12 @@ public class SubreportFillPart extends BasePartFillComponent
 		return filler.isPageFinal(pageIndex);
 	}
 	
-	protected BaseReportFiller createSubreportFiller() throws JRException
+	protected BaseReportFiller createSubreportFiller(final PartOutput output) throws JRException
 	{
 		SectionTypeEnum sectionType = jasperReport.getSectionType();
 		sectionType = sectionType == null ? SectionTypeEnum.BAND : sectionType;
 		
-		FillerParent parent = new PartParent();
+		FillerParent parent = new PartParent(output);
 		
 		JasperReportsContext jasperReportsContext = fillContext.getFiller().getJasperReportsContext();
 		BaseReportFiller filler;
@@ -167,7 +168,7 @@ public class SubreportFillPart extends BasePartFillComponent
 			@Override
 			public void pageUpdated(JasperPrint jasperPrint, int pageIndex)
 			{
-				fillContext.partPageUpdated(pageIndex);
+				output.partPageUpdated(pageIndex);
 			}
 		});
 		
@@ -176,6 +177,12 @@ public class SubreportFillPart extends BasePartFillComponent
 	
 	protected class PartParent implements FillerParent
 	{
+		private final PartOutput output;
+
+		protected PartParent(PartOutput output)
+		{
+			this.output = output;
+		}
 
 		@Override
 		public BaseReportFiller getFiller()
@@ -220,10 +227,10 @@ public class SubreportFillPart extends BasePartFillComponent
 			if (pageAdded.getPageIndex() == 0)
 			{
 				//first page, adding the part info
-				fillContext.startPart(pageAdded.getJasperPrint());
+				output.startPart(pageAdded.getJasperPrint());
 			}
 			
-			fillContext.addPage(pageAdded);
+			output.addPage(pageAdded);
 			
 			//FIXMEBOOK styles
 		}
@@ -231,7 +238,7 @@ public class SubreportFillPart extends BasePartFillComponent
 		@Override
 		public JRPrintPage getPage(int pageIndex)
 		{
-			return fillContext.getPage(pageIndex);
+			return output.getPage(pageIndex);
 		}
 		
 	}

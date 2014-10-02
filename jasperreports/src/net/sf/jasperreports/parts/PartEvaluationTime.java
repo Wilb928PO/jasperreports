@@ -21,24 +21,19 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with JasperReports. If not, see <http://www.gnu.org/licenses/>.
  */
-package net.sf.jasperreports.engine.part;
+package net.sf.jasperreports.parts;
 
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRExpression;
-import net.sf.jasperreports.engine.JRPart;
-import net.sf.jasperreports.engine.fill.PartReportFiller;
+import net.sf.jasperreports.engine.type.PartEvaluationTimeType;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
-public interface PartFillContext
+public interface PartEvaluationTime
 {
+
+	PartEvaluationTimeType getEvaluationTimeType();
 	
-	JRPart getPart();
-	
-	PartReportFiller getFiller();
-	
-	Object evaluate(JRExpression expression, byte evaluation) throws JRException;
+	String getEvaluationGroup();
 
 }

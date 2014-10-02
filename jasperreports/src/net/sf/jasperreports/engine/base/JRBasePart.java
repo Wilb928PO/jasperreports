@@ -41,6 +41,7 @@ import net.sf.jasperreports.engine.design.events.JRPropertyChangeSupport;
 import net.sf.jasperreports.engine.part.PartComponentManager;
 import net.sf.jasperreports.engine.part.PartComponentsEnvironment;
 import net.sf.jasperreports.engine.util.JRCloneUtils;
+import net.sf.jasperreports.parts.PartEvaluationTime;
 
 /**
  * A read-only {@link JRPart} implementation which is included
@@ -62,6 +63,8 @@ public class JRBasePart implements JRPart, Serializable, JRChangeEventsSupport
 	protected ComponentKey componentKey;
 	protected Component component;
 	
+	protected PartEvaluationTime evaluationTime;
+	
 	protected JRBasePart()
 	{
 	}
@@ -73,6 +76,7 @@ public class JRBasePart implements JRPart, Serializable, JRChangeEventsSupport
 		this.uuid = part.getUUID();
 		this.propertiesMap = JRPropertiesMap.getPropertiesClone(part);
 		this.printWhenExpression = factory.getExpression(part.getPrintWhenExpression());
+		this.evaluationTime = part.getEvaluationTime();
 
 		componentKey = part.getComponentKey();
 		
@@ -104,6 +108,12 @@ public class JRBasePart implements JRPart, Serializable, JRChangeEventsSupport
 	public ComponentKey getComponentKey()
 	{
 		return componentKey;
+	}
+
+	@Override
+	public PartEvaluationTime getEvaluationTime()
+	{
+		return evaluationTime;
 	}
 
 	/**

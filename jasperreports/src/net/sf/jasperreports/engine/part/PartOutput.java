@@ -23,22 +23,23 @@
  */
 package net.sf.jasperreports.engine.part;
 
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRExpression;
-import net.sf.jasperreports.engine.JRPart;
-import net.sf.jasperreports.engine.fill.PartReportFiller;
+import net.sf.jasperreports.engine.JRPrintPage;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.fill.FillerPageAddedEvent;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
-public interface PartFillContext
+public interface PartOutput
 {
+
+	void startPart(JasperPrint jasperPrint);
+
+	void addPage(FillerPageAddedEvent pageAdded);
+
+	JRPrintPage getPage(int pageIndex);
 	
-	JRPart getPart();
-	
-	PartReportFiller getFiller();
-	
-	Object evaluate(JRExpression expression, byte evaluation) throws JRException;
+	void partPageUpdated(int partPageIndex);
 
 }

@@ -557,6 +557,7 @@ public class JRFillContext
 	public void updateBookmark(JRPrintElement element)
 	{
 		// bookmarks are in the master filler
+		//FIXMEBOOK the bookmark might not have reached the master filler
 		masterFiller.updateBookmark(element);
 	}
 	

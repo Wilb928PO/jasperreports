@@ -21,52 +21,49 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with JasperReports. If not, see <http://www.gnu.org/licenses/>.
  */
-package net.sf.jasperreports.engine;
+package net.sf.jasperreports.engine.type;
 
-import net.sf.jasperreports.engine.component.Component;
-import net.sf.jasperreports.engine.component.ComponentKey;
+import net.sf.jasperreports.engine.JRConstants;
 import net.sf.jasperreports.parts.PartEvaluationTime;
 
-
 /**
- * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id: JRBand.java 7045 2014-04-24 14:20:46Z shertage $
+ * @author Lucian Chirita (lucianc@users.sourceforge.net)
+ * @version $Id$
  */
-public interface JRPart extends JRPropertiesHolder, JRCloneable, JRIdentifiable
+public enum PartEvaluationTimeType implements NamedEnum
 {
+	/**
+	 * Evaluate the part immediatelly.
+	 */
+	NOW("Now"),
+	/**
+	 * Evaluate the part when a group breaks.
+	 * 
+	 * @see PartEvaluationTime#getEvaluationGroup()
+	 */
+	GROUP("Group"),
+	/**
+	 * Evaluate the part when the report ends.
+	 */
+	REPORT("Report");
 	
-
-	/**
-	 * Returns the boolean expression that specifies if the part will be displayed.
-	 */
-	public JRExpression getPrintWhenExpression();
-
-		
-	/**
-	 * Returns the component type key for this part.
-	 * 
-	 * <p>
-	 * The component type key needs to be set in order to locate the
-	 * component manager. 
-	 * 
-	 * @return the component type key
-	 */
-	ComponentKey getComponentKey();
+	private static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
 	
-
-	/**
-	 * Returns the component instance wrapped by this part.
-	 * 
-	 * @return the component instance
-	 */
-	Component getComponent();
-
-
-	/**
-	 * Determines the moment at which this part is to be evaluated.
-	 * 
-	 * @return the evaluation time of this part
-	 */
-	PartEvaluationTime getEvaluationTime();
+	private final String name;
 	
+	private PartEvaluationTimeType(String name)
+	{
+		this.name = name;
+	}
+
+	@Override
+	public String getName()
+	{
+		return name;
+	}
+
+	public static PartEvaluationTimeType byName(String name)
+	{
+		return EnumUtil.getEnumByName(values(), name);
+	}
 }

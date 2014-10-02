@@ -193,6 +193,7 @@ import net.sf.jasperreports.engine.type.WhenNoDataTypeEnum;
 import net.sf.jasperreports.engine.type.WhenResourceMissingTypeEnum;
 import net.sf.jasperreports.engine.util.JRXmlWriteHelper;
 import net.sf.jasperreports.engine.util.XmlNamespace;
+import net.sf.jasperreports.parts.PartEvaluationTime;
 
 
 /**
@@ -844,6 +845,12 @@ public class JRXmlWriter extends JRXmlBaseWriter
 		if (componentXmlWriter.isToWrite(part, this))
 		{
 			writer.startElement(JRXmlConstants.ELEMENT_part, getNamespace());
+			PartEvaluationTime evaluationTime = part.getEvaluationTime();
+			if (evaluationTime != null)
+			{
+				writer.addAttribute(JRXmlConstants.ATTRIBUTE_evaluationTime, evaluationTime.getEvaluationTimeType());
+				writer.addAttribute(JRXmlConstants.ATTRIBUTE_evaluationGroup, evaluationTime.getEvaluationGroup());
+			}
 			writer.addAttribute(JRXmlConstants.ATTRIBUTE_uuid, part.getUUID().toString());
 
 			writeProperties(part);

@@ -30,6 +30,7 @@ import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.base.JRBasePart;
 import net.sf.jasperreports.engine.component.Component;
 import net.sf.jasperreports.engine.component.ComponentKey;
+import net.sf.jasperreports.parts.PartEvaluationTime;
 
 
 /**
@@ -48,6 +49,7 @@ public class JRDesignPart extends JRBasePart
 	public static final String PROPERTY_PRINT_WHEN_EXPRESSION = "printWhenExpression";
 	public static final String PROPERTY_COMPONENT = "component";
 	public static final String PROPERTY_COMPONENT_KEY = "componentKey";
+	public static final String PROPERTY_EVALUATION_TIME = "evaluationTime";
 	
 	/**
 	 * Creates an empty report part.
@@ -106,6 +108,13 @@ public class JRDesignPart extends JRBasePart
 		Object old = this.component;
 		this.component = component;
 		getEventSupport().firePropertyChange(PROPERTY_COMPONENT, old, this.component);
+	}
+	
+	public void setEvaluationTime(PartEvaluationTime evaluationTime)
+	{
+		Object old = this.evaluationTime;
+		this.evaluationTime = evaluationTime;
+		getEventSupport().firePropertyChange(PROPERTY_EVALUATION_TIME, old, this.evaluationTime);
 	}
 
 }

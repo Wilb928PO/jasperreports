@@ -27,9 +27,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExpression;
@@ -41,16 +40,17 @@ import net.sf.jasperreports.engine.JRScriptletException;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.JasperReportsContext;
+import net.sf.jasperreports.engine.PrintPart;
 import net.sf.jasperreports.engine.ReportContext;
-import net.sf.jasperreports.engine.SimplePrintPageFormat;
-import net.sf.jasperreports.engine.SimplePrintPart;
 import net.sf.jasperreports.engine.part.FillPart;
+import net.sf.jasperreports.engine.part.FillPartOutput;
 import net.sf.jasperreports.engine.part.FillParts;
 import net.sf.jasperreports.engine.part.GroupFillParts;
 import net.sf.jasperreports.engine.type.IncrementTypeEnum;
 import net.sf.jasperreports.engine.type.ResetTypeEnum;
 import net.sf.jasperreports.engine.type.SectionTypeEnum;
 import net.sf.jasperreports.engine.util.JRDataUtils;
+import net.sf.jasperreports.parts.PartEvaluationTime;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -65,9 +65,10 @@ public class PartReportFiller extends BaseReportFiller
 	
 	private FillParts detailParts;
 	private List<GroupFillParts> groupParts;
+	private Map<String, GroupFillParts> groupPartsByName;
 	
-	private ReadWriteLock currentFillPartLock = new ReentrantReadWriteLock();
-	private FillPart currentFillingPart;
+	private List<FillPartOutput> outputs;
+	private List<FillPartOutput> reportEvaluatedOutputs;
 	
 	public PartReportFiller(JasperReportsContext jasperReportsContext, JasperReport jasperReport) throws JRException
 	{
@@ -91,16 +92,22 @@ public class PartReportFiller extends BaseReportFiller
 		if (reportGroups == null || reportGroups.length == 0)
 		{
 			groupParts = Collections.emptyList();
+			groupPartsByName = Collections.emptyMap();
 		}
 		else
 		{
 			groupParts = new ArrayList<GroupFillParts>(reportGroups.length);
+			groupPartsByName = new HashMap<String, GroupFillParts>();
 			for (JRGroup reportGroup : reportGroups)
 			{
 				GroupFillParts groupFillParts = new GroupFillParts(reportGroup, factory);
 				groupParts.add(groupFillParts);
+				groupPartsByName.put(reportGroup.getName(), groupFillParts);
 			}
 		}
+		
+		outputs = new ArrayList<FillPartOutput>();
+		reportEvaluatedOutputs = new ArrayList<FillPartOutput>();
 	}
 
 	@Override
@@ -269,27 +276,31 @@ public class PartReportFiller extends BaseReportFiller
 		if (mainDataset.next())
 		{
 			fillFirstGroupHeaders();
-			detail();
-			fillParts(detailParts, JRExpression.EVALUATION_DEFAULT);
+			calculateDetail();
+			fillDetail();
 
 			while (mainDataset.next())
 			{
 				checkInterrupted();
 				estimateGroups();
 				fillChangedGroupFooters();
+				fillChangedGroupEvaluatedOutputs();
 				
-				groups();
+				calculateGroups();
 				fillChangedGroupHeaders();
 				
-				detail();
-				fillParts(detailParts, JRExpression.EVALUATION_DEFAULT);
+				calculateDetail();
+				fillDetail();
 			}
 			
 			fillLastGroupFooters();
+			fillLastGroupEvaluatedOutputs();
 		}
 		
 		if (isMasterReport())
 		{
+			fillReportEvaluatedOutputs();
+			copyOutputs();
 			resolveMasterBoundElements();
 		}
 	}
@@ -301,7 +312,7 @@ public class PartReportFiller extends BaseReportFiller
 		scriptlet.callAfterReportInit();
 	}
 
-	protected void detail() throws JRScriptletException, JRException
+	protected void calculateDetail() throws JRScriptletException, JRException
 	{
 		scriptlet.callBeforeDetailEval();
 		calculator.calculateVariables();
@@ -313,11 +324,16 @@ public class PartReportFiller extends BaseReportFiller
 		calculator.estimateGroupRuptures();
 	}
 	
-	protected void groups() throws JRException
+	protected void calculateGroups() throws JRException
 	{
 		scriptlet.callBeforeGroupInit();
 		calculator.initializeVariables(ResetTypeEnum.GROUP, IncrementTypeEnum.GROUP);
 		scriptlet.callAfterGroupInit();
+	}
+
+	protected void fillDetail() throws JRException
+	{
+		fillParts(detailParts, JRExpression.EVALUATION_DEFAULT);
 	}
 
 	protected void fillFirstGroupHeaders() throws JRException
@@ -369,47 +385,35 @@ public class PartReportFiller extends BaseReportFiller
 
 	protected void fillPart(FillPart part, byte evaluation) throws JRException
 	{
-		int startPageIndex = jasperPrint.getPages().size();
+		FillPartOutput output = new FillPartOutput(part);
+		outputs.add(output);
 		
-		currentFillPartLock.writeLock().lock();
-		try
+		PartEvaluationTime evaluationTime = part.getEvaluationTime();
+		switch (evaluationTime.getEvaluationTimeType())
 		{
-			part.prepareFill(startPageIndex);
-			currentFillingPart = part;
+		case NOW:
+			output.fill(evaluation);
+			break;
+		case REPORT:
+			reportEvaluatedOutputs.add(output);
+			break;
+		case GROUP:
+			GroupFillParts groupFillParts = groupPartsByName.get(evaluationTime.getEvaluationGroup());
+			if (groupFillParts == null)//FIXMEBOOK validate
+			{
+				throw new JRRuntimeException("Part evaluation group " + evaluationTime.getEvaluationGroup() + " not found");
+			}
+			groupFillParts.addGroupEvaluatedOutput(output);
+			break;
+		default:
+			throw new JRRuntimeException("Unknown evaluation time type " + evaluationTime.getEvaluationTimeType());
 		}
-		finally
-		{
-			currentFillPartLock.writeLock().unlock();
-		}
-		
-		part.fill(evaluation);
 	}
 
 	@Override
 	public boolean isPageFinal(int pageIndex)
 	{
-		currentFillPartLock.readLock().lock();
-		try
-		{
-			FillPart fillingPart = currentFillingPart;
-			if (fillingPart == null)
-			{
-				//FIXMEBOOK
-				return true;
-			}
-			
-			int partStartPageIndex = fillingPart.getStartPageIndex();
-			if (pageIndex < partStartPageIndex)
-			{
-				return true;
-			}
-			
-			return fillingPart.isPageFinal(pageIndex);
-		}
-		finally
-		{
-			currentFillPartLock.readLock().unlock();
-		}
+		return true;
 	}
 
 	public void partPageUpdated(int pageIndex)
@@ -420,21 +424,72 @@ public class PartReportFiller extends BaseReportFiller
 		}
 	}
 
-	public void startPart(JasperPrint partPrint)
+	protected void fillReportEvaluatedOutputs() throws JRException
 	{
-		SimplePrintPart part = new SimplePrintPart();
-		part.setName(partPrint.getName());
-		
-		SimplePrintPageFormat pageFormat = new SimplePrintPageFormat();
-		pageFormat.setPageWidth(partPrint.getPageWidth());
-		pageFormat.setPageHeight(partPrint.getPageHeight());
-		pageFormat.setOrientation(partPrint.getOrientationValue());
-		pageFormat.setLeftMargin(partPrint.getLeftMargin());
-		pageFormat.setTopMargin(partPrint.getTopMargin());
-		pageFormat.setRightMargin(partPrint.getRightMargin());
-		pageFormat.setBottomMargin(partPrint.getBottomMargin());
-		part.setPageFormat(pageFormat);
-		
+		fillDelayedEvaluatedOutputs(reportEvaluatedOutputs, JRExpression.EVALUATION_DEFAULT);
+	}
+
+	protected void fillChangedGroupEvaluatedOutputs() throws JRException
+	{
+		for (GroupFillParts group : groupParts)
+		{
+			if (group.hasChanged())
+			{
+				fillDelayedEvaluatedOutputs(group.getGroupEvaluatedOutputs(), JRExpression.EVALUATION_OLD);
+			}
+		}
+	}
+
+	protected void fillLastGroupEvaluatedOutputs() throws JRException
+	{
+		for (GroupFillParts group : groupParts)
+		{
+			fillDelayedEvaluatedOutputs(group.getGroupEvaluatedOutputs(), JRExpression.EVALUATION_DEFAULT);
+		}
+	}
+
+	protected void fillGroupReportEvaluatedOutputs() throws JRException
+	{
+		fillDelayedEvaluatedOutputs(reportEvaluatedOutputs, JRExpression.EVALUATION_DEFAULT);
+	}
+	
+	protected void fillDelayedEvaluatedOutputs(List<FillPartOutput> outputs, byte evaluation) throws JRException
+	{
+		for (ListIterator<FillPartOutput> it = outputs.listIterator(); it.hasNext();)
+		{
+			FillPartOutput output = it.next();
+			it.remove();
+			
+			output.fill(evaluation);
+		}
+	}
+
+	protected void copyOutputs()
+	{
+		for (FillPartOutput output : outputs)
+		{
+			PrintPart printPart = output.getPrintPart();
+			if (printPart != null)
+			{
+				int startPageIndex = jasperPrint.getPages().size();
+				if (log.isDebugEnabled())
+				{
+					log.debug("starting part " + printPart.getName() + " at index " + startPageIndex);
+				}
+				
+				jasperPrint.addPart(startPageIndex, printPart);
+				
+				List<JRPrintPage> partPages = output.getPages();
+				for (JRPrintPage partPage : partPages)
+				{
+					addPartPage(partPage, output.getDelayedActions());
+				}
+			}
+		}
+	}
+	
+	public void startPart(PrintPart part)
+	{
 		int startIndex = jasperPrint.getPages().size();
 		jasperPrint.addPart(startIndex, part);
 		
@@ -444,7 +499,7 @@ public class PartReportFiller extends BaseReportFiller
 		}
 	}
 
-	public void addPartPage(FillerPageAddedEvent pageAdded)
+	public void addPartPage(JRPrintPage page, DelayedFillActions delayedActionsSource)
 	{
 		int pageIndex = jasperPrint.getPages().size();
 		if (log.isDebugEnabled())
@@ -452,22 +507,16 @@ public class PartReportFiller extends BaseReportFiller
 			log.debug("adding part page at index " + pageIndex);
 		}
 		
-		JRPrintPage page = pageAdded.getPage();
 		jasperPrint.addPage(page);
 		addLastPageBookmarks();
 		
 		//FIXMEBOOK fill element Ids & virtualization listener
-		delayedActions.moveMasterEvaluations(pageAdded.getDelayedActions(), page, pageIndex);
+		delayedActions.moveMasterEvaluations(delayedActionsSource, page, pageIndex);
 		
 		if (fillListener != null)
 		{
 			fillListener.pageGenerated(jasperPrint, pageIndex);
 		}
-	}
-
-	public JRPrintPage getPrintPage(int pageIndex)
-	{
-		return jasperPrint.getPages().get(pageIndex);
 	}
 
 }

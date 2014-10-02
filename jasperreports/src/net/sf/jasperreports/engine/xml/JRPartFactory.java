@@ -24,6 +24,9 @@
 package net.sf.jasperreports.engine.xml;
 
 import net.sf.jasperreports.engine.design.JRDesignPart;
+import net.sf.jasperreports.engine.type.PartEvaluationTimeType;
+import net.sf.jasperreports.parts.PartEvaluationTime;
+import net.sf.jasperreports.parts.StandardPartEvaluationTime;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,7 +48,29 @@ public class JRPartFactory extends JRBaseFactory
 	{
 		JRDesignPart part = new JRDesignPart();
 		
+		PartEvaluationTime evaluationTime = readEvaluationTime(atts);
+		part.setEvaluationTime(evaluationTime);
+		
 		return part;
+	}
+
+	protected PartEvaluationTime readEvaluationTime(Attributes atts)
+	{
+		PartEvaluationTime evaluationTime = null;
+		String evaluationTimeAttr = atts.getValue(JRXmlConstants.ATTRIBUTE_evaluationTime);
+		if (evaluationTimeAttr != null)
+		{
+			if (evaluationTimeAttr.equals(PartEvaluationTimeType.GROUP.getName()))
+			{
+				String evaluationGroupAttr = atts.getValue(JRXmlConstants.ATTRIBUTE_evaluationGroup);
+				evaluationTime = StandardPartEvaluationTime.forGroup(evaluationGroupAttr);
+			}
+			else
+			{
+				evaluationTime = StandardPartEvaluationTime.forType(evaluationTimeAttr);
+			}
+		}
+		return evaluationTime;
 	}
 	
 

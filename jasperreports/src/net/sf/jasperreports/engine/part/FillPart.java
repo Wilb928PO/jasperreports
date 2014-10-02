@@ -26,15 +26,14 @@ package net.sf.jasperreports.engine.part;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRPart;
-import net.sf.jasperreports.engine.JRPrintPage;
-import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.component.Component;
 import net.sf.jasperreports.engine.component.ComponentKey;
-import net.sf.jasperreports.engine.fill.FillerPageAddedEvent;
 import net.sf.jasperreports.engine.fill.JRFillExpressionEvaluator;
 import net.sf.jasperreports.engine.fill.JRFillObjectFactory;
 import net.sf.jasperreports.engine.fill.PartReportFiller;
+import net.sf.jasperreports.parts.PartEvaluationTime;
+import net.sf.jasperreports.parts.StandardPartEvaluationTime;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
@@ -48,8 +47,6 @@ public class FillPart
 	private PartReportFiller reportFiller;
 	
 	private PartFillComponent fillComponent;
-	
-	private int startPageIndex;
 
 	public FillPart(JRPart part, JRFillObjectFactory fillFactory)
 	{
@@ -69,13 +66,8 @@ public class FillPart
 		this.fillComponent = componentFactory.toFillComponent(component, fillFactory);
 		fillComponent.initialize(new Context());
 	}
-
-	public void prepareFill(int startPageIndex)
-	{
-		this.startPageIndex = startPageIndex;
-	}
 	
-	public void fill(byte evaluation) throws JRException
+	public void fill(byte evaluation, PartOutput output) throws JRException
 	{
 		boolean toPrint = evaluatePrintWhenExpression(evaluation);
 		if (!toPrint)
@@ -84,7 +76,7 @@ public class FillPart
 		}
 		
 		fillComponent.evaluate(evaluation);
-		fillComponent.fill();
+		fillComponent.fill(output);
 	}
 
 	protected boolean evaluatePrintWhenExpression(byte evaluation) throws JRException
@@ -108,11 +100,17 @@ public class FillPart
 		return fillComponent.isPageFinal(pageIndex);
 	}
 
-	public int getStartPageIndex()
+	public PartEvaluationTime getEvaluationTime()
 	{
-		return startPageIndex;
+		PartEvaluationTime evaluationTime = reportPart.getEvaluationTime();
+		return evaluationTime == null ? StandardPartEvaluationTime.EVALUATION_NOW : evaluationTime;
 	}
-
+	
+	public PartReportFiller getFiller()
+	{
+		return reportFiller;
+	}
+	
 	protected class Context implements PartFillContext
 	{
 		@Override
@@ -131,30 +129,6 @@ public class FillPart
 		public Object evaluate(JRExpression expression, byte evaluation) throws JRException
 		{
 			return reportFiller.evaluateExpression(expression, evaluation);
-		}
-
-		@Override
-		public void startPart(JasperPrint jasperPrint)
-		{
-			reportFiller.startPart(jasperPrint);
-		}
-
-		@Override
-		public void addPage(FillerPageAddedEvent pageAdded)
-		{
-			reportFiller.addPartPage(pageAdded);
-		}
-
-		@Override
-		public JRPrintPage getPage(int pageIndex)
-		{
-			return reportFiller.getPrintPage(startPageIndex + pageIndex);
-		}
-
-		@Override
-		public void partPageUpdated(int partPageIndex)
-		{
-			reportFiller.partPageUpdated(startPageIndex + partPageIndex);
 		}
 	}
 }

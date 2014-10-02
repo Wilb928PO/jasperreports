@@ -23,6 +23,9 @@
  */
 package net.sf.jasperreports.engine.part;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.sf.jasperreports.engine.JRGroup;
 import net.sf.jasperreports.engine.fill.JRFillGroup;
 import net.sf.jasperreports.engine.fill.JRFillObjectFactory;
@@ -37,6 +40,7 @@ public class GroupFillParts
 	private JRFillGroup fillGroup;
 	private FillParts headerParts;
 	private FillParts footerParts;
+	private List<FillPartOutput> groupEvaluatedOutputs;
 
 	public GroupFillParts(JRGroup group, JRFillObjectFactory fillFactory)
 	{
@@ -45,6 +49,8 @@ public class GroupFillParts
 		
 		headerParts = new FillParts(group.getGroupHeaderSection(), fillFactory);
 		footerParts = new FillParts(group.getGroupFooterSection(), fillFactory);
+		
+		groupEvaluatedOutputs = new ArrayList<FillPartOutput>();
 	}
 	
 	public boolean hasChanged()
@@ -60,5 +66,15 @@ public class GroupFillParts
 	public FillParts getFooterParts()
 	{
 		return footerParts;
+	}
+
+	public void addGroupEvaluatedOutput(FillPartOutput output)
+	{
+		groupEvaluatedOutputs.add(output);
+	}
+
+	public List<FillPartOutput> getGroupEvaluatedOutputs()
+	{
+		return groupEvaluatedOutputs;
 	}
 }

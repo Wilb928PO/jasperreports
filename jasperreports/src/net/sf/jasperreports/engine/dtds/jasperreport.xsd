@@ -1831,6 +1831,35 @@
 	 <documentation>This attribute is auto-generated and is used to uniquely identify parts.</documentation>
 	</annotation>
    </attribute>  
+   <attribute name="evaluationTime" use="optional">
+     <annotation>
+       <documentation>Determines the time at which the part is to be evaluated.</documentation>
+     </annotation>
+     <simpleType>
+       <restriction base="string">
+         <enumeration value="Now">
+           <annotation>
+             <documentation>The part is to be evaluated immediatelly.</documentation>
+           </annotation>
+         </enumeration>
+         <enumeration value="Report">
+           <annotation>
+             <documentation>The part is to be evaluated when the report ends.</documentation>
+           </annotation>
+         </enumeration>
+         <enumeration value="Group">
+           <annotation>
+             <documentation>The part is to be evaluated when a group breaks.</documentation>
+           </annotation>
+         </enumeration>
+       </restriction>
+     </simpleType>
+   </attribute>  
+   <attribute name="evaluationGroup" type="string" use="optional">
+     <annotation>
+       <documentation>Specifies the group at which to evaluate the part when <code>evaluationTime</code> is Group.</documentation>
+     </annotation>
+   </attribute>  
   </complexType>
  </element>
 
