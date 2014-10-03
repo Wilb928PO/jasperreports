@@ -796,10 +796,10 @@ public class JRGridLayout
 			JRPrintPage page = pages.get(pageIndex);
 			addXCuts(nature, page.getElements(), offsetX, xCuts);
 		}
-		
+
 		// add a cut at the page width if there are not parts and if no element goes beyond the page width
 		SortedMap<Integer, PrintPart> parts = jasperPrint.getParts(); 
-		if (parts == null || parts.size() > 0)
+		if (parts == null || parts.size() == 0)
 		{
 			int width = jasperPrint.getPageWidth();
 			int lastCut = xCuts.getLastCutOffset();
