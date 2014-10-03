@@ -23,9 +23,6 @@
  */
 package net.sf.jasperreports.engine.part;
 
-import net.sf.jasperreports.engine.JRPrintPage;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.fill.FillerPageAddedEvent;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
@@ -34,11 +31,7 @@ import net.sf.jasperreports.engine.fill.FillerPageAddedEvent;
 public interface PartOutput
 {
 
-	void startPart(JasperPrint jasperPrint);
-
-	void addPage(FillerPageAddedEvent pageAdded);
-
-	JRPrintPage getPage(int pageIndex);
+	PartPrintOutput getPrintOutput();
 	
 	void partPageUpdated(int partPageIndex);
 

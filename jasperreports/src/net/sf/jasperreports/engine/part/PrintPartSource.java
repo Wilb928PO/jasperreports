@@ -21,18 +21,60 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with JasperReports. If not, see <http://www.gnu.org/licenses/>.
  */
-package net.sf.jasperreports.engine.fill;
+package net.sf.jasperreports.engine.part;
 
+import net.sf.jasperreports.engine.JRException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
-public interface FillerParent
+public class PrintPartSource
 {
+	private static final Log log = LogFactory.getLog(PrintPartSource.class);
 
-	BaseReportFiller getFiller();
+	private final FillPart part;
 	
-	DatasetExpressionEvaluator getCachedEvaluator();//FIXMEBOOK change name?
+	private final FillPartPrintOutput printOutput;
+	
+	public PrintPartSource(FillPart part)
+	{
+		this.part = part;
+		this.printOutput = new FillPartPrintOutput(part.getFiller());
+	}
 
+	public void fill(byte evaluation) throws JRException
+	{
+		Output output = new Output();
+		part.fill(evaluation, output);
+	}
+
+	public FillPartPrintOutput getPrintOutput()
+	{
+		return printOutput;
+	}
+
+	public boolean isPageFinal(int pageIndex)
+	{
+		return part.isPageFinal(pageIndex);
+	}
+	
+	protected class Output implements PartOutput
+	{
+		@Override
+		public PartPrintOutput getPrintOutput()
+		{
+			return printOutput;
+		}
+
+		@Override
+		public void partPageUpdated(int partPageIndex)
+		{
+			//FIXMEBOOK part.getFiller().partPageUpdated(startPageIndex + partPageIndex);
+		}
+	}
+	
 }

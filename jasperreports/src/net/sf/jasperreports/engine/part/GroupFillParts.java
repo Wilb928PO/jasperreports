@@ -40,7 +40,7 @@ public class GroupFillParts
 	private JRFillGroup fillGroup;
 	private FillParts headerParts;
 	private FillParts footerParts;
-	private List<FillPartOutput> groupEvaluatedOutputs;
+	private List<PrintPartSource> groupEvaluatedParts;
 
 	public GroupFillParts(JRGroup group, JRFillObjectFactory fillFactory)
 	{
@@ -50,7 +50,7 @@ public class GroupFillParts
 		headerParts = new FillParts(group.getGroupHeaderSection(), fillFactory);
 		footerParts = new FillParts(group.getGroupFooterSection(), fillFactory);
 		
-		groupEvaluatedOutputs = new ArrayList<FillPartOutput>();
+		groupEvaluatedParts = new ArrayList<PrintPartSource>();
 	}
 	
 	public boolean hasChanged()
@@ -68,13 +68,13 @@ public class GroupFillParts
 		return footerParts;
 	}
 
-	public void addGroupEvaluatedOutput(FillPartOutput output)
+	public void addGroupEvaluatedPart(PrintPartSource output)
 	{
-		groupEvaluatedOutputs.add(output);
+		groupEvaluatedParts.add(output);
 	}
 
-	public List<FillPartOutput> getGroupEvaluatedOutputs()
+	public List<PrintPartSource> getGroupEvaluatedParts()
 	{
-		return groupEvaluatedOutputs;
+		return groupEvaluatedParts;
 	}
 }

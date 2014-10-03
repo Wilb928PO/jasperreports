@@ -34,7 +34,7 @@ import net.sf.jasperreports.engine.JRRuntimeException;
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
-public class FillerSubreportParent implements FillerParent
+public class FillerSubreportParent implements BandReportFillerParent
 {
 	
 	private static final Log log = LogFactory.getLog(FillerSubreportParent.class);

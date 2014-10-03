@@ -23,16 +23,26 @@
  */
 package net.sf.jasperreports.engine.fill;
 
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRPrintPage;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
-public interface FillerParent
+public interface BandReportFillerParent extends FillerParent
 {
 
-	BaseReportFiller getFiller();
+	void registerSubfiller(JRBaseFiller filler);
+
+	void unregisterSubfiller(JRBaseFiller jrBaseFiller);
 	
-	DatasetExpressionEvaluator getCachedEvaluator();//FIXMEBOOK change name?
+	boolean isRunToBottom();
+
+	boolean isPageBreakInhibited();
+
+	void addPage(FillerPageAddedEvent pageAdded) throws JRException;
+
+	JRPrintPage getPage(int pageIndex);
 
 }

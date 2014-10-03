@@ -73,7 +73,7 @@ public class JRHorizontalFiller extends JRBaseFiller
 	public JRHorizontalFiller(
 		JasperReportsContext jasperReportsContext, 
 		JasperReport jasperReport, 
-		FillerParent parent 
+		BandReportFillerParent parent 
 		) throws JRException
 	{
 		super(jasperReportsContext, jasperReport, parent);

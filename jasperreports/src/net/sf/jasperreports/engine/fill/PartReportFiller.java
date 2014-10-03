@@ -43,7 +43,9 @@ import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.PrintPart;
 import net.sf.jasperreports.engine.ReportContext;
 import net.sf.jasperreports.engine.part.FillPart;
-import net.sf.jasperreports.engine.part.FillPartOutput;
+import net.sf.jasperreports.engine.part.PrintPartSource;
+import net.sf.jasperreports.engine.part.FillPartPrintOutput;
+import net.sf.jasperreports.engine.part.PartPrintOutput;
 import net.sf.jasperreports.engine.part.FillParts;
 import net.sf.jasperreports.engine.part.GroupFillParts;
 import net.sf.jasperreports.engine.type.IncrementTypeEnum;
@@ -51,6 +53,7 @@ import net.sf.jasperreports.engine.type.ResetTypeEnum;
 import net.sf.jasperreports.engine.type.SectionTypeEnum;
 import net.sf.jasperreports.engine.util.JRDataUtils;
 import net.sf.jasperreports.parts.PartEvaluationTime;
+import net.sf.jasperreports.parts.PartFillerParent;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -67,15 +70,18 @@ public class PartReportFiller extends BaseReportFiller
 	private List<GroupFillParts> groupParts;
 	private Map<String, GroupFillParts> groupPartsByName;
 	
-	private List<FillPartOutput> outputs;
-	private List<FillPartOutput> reportEvaluatedOutputs;
+	private List<PrintPartSource> parts;
+	private List<PrintPartSource> reportEvaluatedParts;
+	
+	private PartPrintOutput printOutput;
 	
 	public PartReportFiller(JasperReportsContext jasperReportsContext, JasperReport jasperReport) throws JRException
 	{
 		this(jasperReportsContext, jasperReport, null);
 	}
 	
-	public PartReportFiller(JasperReportsContext jasperReportsContext, JasperReport jasperReport, FillerParent parent) throws JRException
+	public PartReportFiller(JasperReportsContext jasperReportsContext, JasperReport jasperReport, 
+			PartFillerParent parent) throws JRException
 	{
 		super(jasperReportsContext, jasperReport, parent);
 		
@@ -106,8 +112,10 @@ public class PartReportFiller extends BaseReportFiller
 		
 		initDatasets();
 		
-		outputs = new ArrayList<FillPartOutput>();
-		reportEvaluatedOutputs = new ArrayList<FillPartOutput>();
+		parts = new ArrayList<PrintPartSource>();
+		reportEvaluatedParts = new ArrayList<PrintPartSource>();
+		
+		this.printOutput = parent == null ? new JasperPrintPartOutput() : parent.getPrintOutput();
 	}
 
 	@Override
@@ -284,7 +292,7 @@ public class PartReportFiller extends BaseReportFiller
 				checkInterrupted();
 				estimateGroups();
 				fillChangedGroupFooters();
-				fillChangedGroupEvaluatedOutputs();
+				fillChangedGroupEvaluatedParts();
 				
 				calculateGroups();
 				fillChangedGroupHeaders();
@@ -294,13 +302,14 @@ public class PartReportFiller extends BaseReportFiller
 			}
 			
 			fillLastGroupFooters();
-			fillLastGroupEvaluatedOutputs();
+			fillLastGroupEvaluatedParts();
 		}
+		
+		fillReportEvaluatedParts();
+		copyOutputs();
 		
 		if (isMasterReport())
 		{
-			fillReportEvaluatedOutputs();
-			copyOutputs();
 			resolveMasterBoundElements();
 		}
 	}
@@ -385,17 +394,17 @@ public class PartReportFiller extends BaseReportFiller
 
 	protected void fillPart(FillPart part, byte evaluation) throws JRException
 	{
-		FillPartOutput output = new FillPartOutput(part);
-		outputs.add(output);
+		PrintPartSource partSource = new PrintPartSource(part);
+		parts.add(partSource);
 		
 		PartEvaluationTime evaluationTime = part.getEvaluationTime();
 		switch (evaluationTime.getEvaluationTimeType())
 		{
 		case NOW:
-			output.fill(evaluation);
+			partSource.fill(evaluation);
 			break;
 		case REPORT:
-			reportEvaluatedOutputs.add(output);
+			reportEvaluatedParts.add(partSource);
 			break;
 		case GROUP:
 			GroupFillParts groupFillParts = groupPartsByName.get(evaluationTime.getEvaluationGroup());
@@ -403,7 +412,7 @@ public class PartReportFiller extends BaseReportFiller
 			{
 				throw new JRRuntimeException("Part evaluation group " + evaluationTime.getEvaluationGroup() + " not found");
 			}
-			groupFillParts.addGroupEvaluatedOutput(output);
+			groupFillParts.addGroupEvaluatedPart(partSource);
 			break;
 		default:
 			throw new JRRuntimeException("Unknown evaluation time type " + evaluationTime.getEvaluationTimeType());
@@ -424,62 +433,47 @@ public class PartReportFiller extends BaseReportFiller
 		}
 	}
 
-	protected void fillReportEvaluatedOutputs() throws JRException
+	protected void fillReportEvaluatedParts() throws JRException
 	{
-		fillDelayedEvaluatedOutputs(reportEvaluatedOutputs, JRExpression.EVALUATION_DEFAULT);
+		fillDelayedEvaluatedParts(reportEvaluatedParts, JRExpression.EVALUATION_DEFAULT);
 	}
 
-	protected void fillChangedGroupEvaluatedOutputs() throws JRException
+	protected void fillChangedGroupEvaluatedParts() throws JRException
 	{
 		for (GroupFillParts group : groupParts)//FIXMEBOOK order?
 		{
 			if (group.hasChanged())
 			{
-				fillDelayedEvaluatedOutputs(group.getGroupEvaluatedOutputs(), JRExpression.EVALUATION_OLD);
+				fillDelayedEvaluatedParts(group.getGroupEvaluatedParts(), JRExpression.EVALUATION_OLD);
 			}
 		}
 	}
 
-	protected void fillLastGroupEvaluatedOutputs() throws JRException
+	protected void fillLastGroupEvaluatedParts() throws JRException
 	{
 		for (GroupFillParts group : groupParts)
 		{
-			fillDelayedEvaluatedOutputs(group.getGroupEvaluatedOutputs(), JRExpression.EVALUATION_DEFAULT);
+			fillDelayedEvaluatedParts(group.getGroupEvaluatedParts(), JRExpression.EVALUATION_DEFAULT);
 		}
 	}
 	
-	protected void fillDelayedEvaluatedOutputs(List<FillPartOutput> outputs, byte evaluation) throws JRException
+	protected void fillDelayedEvaluatedParts(List<PrintPartSource> parts, byte evaluation) throws JRException
 	{
-		for (ListIterator<FillPartOutput> it = outputs.listIterator(); it.hasNext();)
+		for (ListIterator<PrintPartSource> it = parts.listIterator(); it.hasNext();)
 		{
-			FillPartOutput output = it.next();
+			PrintPartSource part = it.next();
 			it.remove();
 			
-			output.fill(evaluation);
+			part.fill(evaluation);
 		}
 	}
 
 	protected void copyOutputs()
 	{
-		for (FillPartOutput output : outputs)
+		for (PrintPartSource part : parts)
 		{
-			PrintPart printPart = output.getPrintPart();
-			if (printPart != null)
-			{
-				int startPageIndex = jasperPrint.getPages().size();
-				if (log.isDebugEnabled())
-				{
-					log.debug("starting part " + printPart.getName() + " at index " + startPageIndex);
-				}
-				
-				jasperPrint.addPart(startPageIndex, printPart);
-				
-				List<JRPrintPage> partPages = output.getPages();
-				for (JRPrintPage partPage : partPages)
-				{
-					addPartPage(partPage, output.getDelayedActions());
-				}
-			}
+			FillPartPrintOutput partOutput = part.getPrintOutput();
+			partOutput.appendTo(printOutput);
 		}
 	}
 	
@@ -511,6 +505,27 @@ public class PartReportFiller extends BaseReportFiller
 		if (fillListener != null)
 		{
 			fillListener.pageGenerated(jasperPrint, pageIndex);
+		}
+	}
+	
+	protected class JasperPrintPartOutput implements PartPrintOutput
+	{
+		@Override
+		public void startPart(PrintPart part)
+		{
+			PartReportFiller.this.startPart(part);
+		}
+		
+		@Override
+		public void addPage(JRPrintPage page, DelayedFillActions delayedActions)
+		{
+			PartReportFiller.this.addPartPage(page, delayedActions);
+		}
+		
+		@Override
+		public JRPrintPage getPage(int pageIndex)
+		{
+			return jasperPrint.getPages().get(pageIndex);
 		}
 	}
 

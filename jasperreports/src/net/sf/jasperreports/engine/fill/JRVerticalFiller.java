@@ -68,7 +68,7 @@ public class JRVerticalFiller extends JRBaseFiller
 	public JRVerticalFiller(
 		JasperReportsContext jasperReportsContext,
 		JasperReport jasperReport, 
-		FillerParent parent 
+		BandReportFillerParent parent 
 		) throws JRException
 	{
 		super(jasperReportsContext, jasperReport, parent);

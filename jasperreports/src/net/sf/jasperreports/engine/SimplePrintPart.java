@@ -33,6 +33,24 @@ import java.io.Serializable;
 public class SimplePrintPart implements PrintPart, Serializable
 {
 	private static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
+	
+	public static SimplePrintPart fromJasperPrint(JasperPrint partJasperPrint)
+	{
+		SimplePrintPart printPart = new SimplePrintPart();
+		printPart.setName(partJasperPrint.getName());
+		
+		SimplePrintPageFormat pageFormat = new SimplePrintPageFormat();
+		pageFormat.setPageWidth(partJasperPrint.getPageWidth());
+		pageFormat.setPageHeight(partJasperPrint.getPageHeight());
+		pageFormat.setOrientation(partJasperPrint.getOrientationValue());
+		pageFormat.setLeftMargin(partJasperPrint.getLeftMargin());
+		pageFormat.setTopMargin(partJasperPrint.getTopMargin());
+		pageFormat.setRightMargin(partJasperPrint.getRightMargin());
+		pageFormat.setBottomMargin(partJasperPrint.getBottomMargin());
+		printPart.setPageFormat(pageFormat);
+		
+		return printPart;
+	}
 
 	private String name;
 	private PrintPageFormat pageFormat;

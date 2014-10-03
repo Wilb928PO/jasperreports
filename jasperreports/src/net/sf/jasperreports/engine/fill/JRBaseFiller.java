@@ -95,6 +95,8 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 	
 	private static final int PAGE_HEIGHT_PAGINATION_IGNORED = 0x7d000000;//less than Integer.MAX_VALUE to avoid 
 
+	protected BandReportFillerParent bandReportParent;
+	
 	protected Map<Integer, JRFillElement> fillElements;
 
 	private JRStyledTextParser styledTextParser = JRStyledTextParser.getInstance();
@@ -228,7 +230,7 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 	protected JRBaseFiller(
 		JasperReportsContext jasperReportsContext, 
 		JasperReport jasperReport, 
-		FillerParent parent 
+		BandReportFillerParent parent 
 		) throws JRException
 	{
 		super(jasperReportsContext, jasperReport, parent);
@@ -238,6 +240,8 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 		{
 			throw new JRRuntimeException("Unsupported report section type " + jasperReport.getSectionType());
 		}
+		
+		this.bandReportParent = parent;
 
 		/*   */
 		name = jasperReport.getName();
@@ -462,7 +466,7 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 
 	protected boolean isSubreportRunToBottom()
 	{
-		return parent != null && parent.isRunToBottom();
+		return bandReportParent != null && bandReportParent.isRunToBottom();
 	}
 	
 	/**
@@ -506,7 +510,7 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 
 			if (parent != null)
 			{
-				parent.registerSubfiller(this);
+				bandReportParent.registerSubfiller(this);
 			}
 
 			setParameters(parameterValues);
@@ -570,7 +574,7 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 
 			if (parent != null)
 			{
-				parent.unregisterSubfiller(this);
+				bandReportParent.unregisterSubfiller(this);
 			}
 			
 			if (fillContext.isUsingVirtualizer())
@@ -1263,7 +1267,7 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 			}
 		};
 		
-		parent.addPage(pageAdded);
+		bandReportParent.addPage(pageAdded);
 	}
 
 	protected void setMasterPageVariables(int currentPageIndex, int totalPages)
@@ -1392,7 +1396,7 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 		}
 		else
 		{
-			page = parent.getPage(pageIndex);
+			page = bandReportParent.getPage(pageIndex);
 		}
 		return page;
 	}

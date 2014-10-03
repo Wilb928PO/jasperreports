@@ -21,18 +21,23 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with JasperReports. If not, see <http://www.gnu.org/licenses/>.
  */
-package net.sf.jasperreports.engine.fill;
+package net.sf.jasperreports.engine.part;
 
+import net.sf.jasperreports.engine.JRPrintPage;
+import net.sf.jasperreports.engine.PrintPart;
+import net.sf.jasperreports.engine.fill.DelayedFillActions;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
-public interface FillerParent
+public interface PartPrintOutput
 {
 
-	BaseReportFiller getFiller();
-	
-	DatasetExpressionEvaluator getCachedEvaluator();//FIXMEBOOK change name?
+	void startPart(PrintPart part);
 
+	void addPage(JRPrintPage page, DelayedFillActions delayedActions);
+
+	JRPrintPage getPage(int pageIndex);
+	
 }

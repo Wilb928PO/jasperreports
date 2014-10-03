@@ -21,18 +21,18 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with JasperReports. If not, see <http://www.gnu.org/licenses/>.
  */
-package net.sf.jasperreports.engine.fill;
+package net.sf.jasperreports.parts;
 
+import net.sf.jasperreports.engine.fill.FillerParent;
+import net.sf.jasperreports.engine.part.PartPrintOutput;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
-public interface FillerParent
+public interface PartFillerParent extends FillerParent
 {
 
-	BaseReportFiller getFiller();
-	
-	DatasetExpressionEvaluator getCachedEvaluator();//FIXMEBOOK change name?
+	PartPrintOutput getPrintOutput();
 
 }
