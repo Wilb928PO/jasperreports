@@ -42,6 +42,7 @@ import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JRPrintElement;
 import net.sf.jasperreports.engine.JRPrintPage;
 import net.sf.jasperreports.engine.JRPropertiesUtil;
+import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JRVirtualizer;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
@@ -510,9 +511,24 @@ public abstract class BaseReportFiller implements ReportFiller
 	 * @param variableName the variable name
 	 * @return the variable
 	 */
-	protected JRFillVariable getVariable(String variableName)
+	public JRFillVariable getVariable(String variableName)
 	{
 		return mainDataset.getVariable(variableName);
+	}
+
+	/**
+	 * Returns the value of a variable.
+	 *
+	 * @param variableName
+	 *            the variable name
+	 *
+	 * @return the variable value
+	 *
+	 * @throws JRRuntimeException when the variable does not exist
+	 */
+	public Object getVariableValue(String variableName)
+	{
+		return mainDataset.getVariableValue(variableName);
 	}
 
 	protected JRFillExpressionEvaluator getExpressionEvaluator()

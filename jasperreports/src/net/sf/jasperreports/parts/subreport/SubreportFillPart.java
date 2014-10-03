@@ -30,6 +30,7 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRPrintPage;
 import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.JRRuntimeException;
+import net.sf.jasperreports.engine.JRVariable;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.JasperReportsContext;
@@ -37,6 +38,7 @@ import net.sf.jasperreports.engine.fill.BaseReportFiller;
 import net.sf.jasperreports.engine.fill.DatasetExpressionEvaluator;
 import net.sf.jasperreports.engine.fill.FillDatasetPosition;
 import net.sf.jasperreports.engine.fill.FillListener;
+import net.sf.jasperreports.engine.fill.FillReturnValues;
 import net.sf.jasperreports.engine.fill.FillerPageAddedEvent;
 import net.sf.jasperreports.engine.fill.FillerParent;
 import net.sf.jasperreports.engine.fill.JRBaseFiller;
@@ -60,6 +62,8 @@ public class SubreportFillPart extends BasePartFillComponent
 
 	private SubreportPartComponent subreportPart;
 	private JRFillExpressionEvaluator expressionEvaluator;
+	private FillReturnValues returnValues;
+	private FillReturnValues.SourceContext returnValuesSource;
 
 	private JasperReport jasperReport;
 	private Map<String, Object> parameterValues;
@@ -72,7 +76,23 @@ public class SubreportFillPart extends BasePartFillComponent
 	public SubreportFillPart(SubreportPartComponent subreportPart, JRFillObjectFactory factory)
 	{
 		this.subreportPart = subreportPart;
-		expressionEvaluator = factory.getExpressionEvaluator();
+		this.expressionEvaluator = factory.getExpressionEvaluator();
+		
+		this.returnValues = new FillReturnValues(subreportPart.getReturnValues(), factory, factory.getReportFiller());
+		this.returnValuesSource = new FillReturnValues.SourceContext()
+		{
+			@Override
+			public JRVariable getVariable(String name)
+			{
+				return subreportFiller.getVariable(name);
+			}
+			
+			@Override
+			public Object getVariableValue(String name)
+			{
+				return subreportFiller.getVariableValue(name);
+			}
+		};
 	}
 
 	@Override
@@ -98,19 +118,21 @@ public class SubreportFillPart extends BasePartFillComponent
 	private JasperReport evaluateReport(byte evaluation) throws JRException
 	{
 		Object reportSource = fillContext.evaluate(subreportPart.getExpression(), evaluation);
-		return JRFillSubreport.loadReport(reportSource, fillContext.getFiller());
+		return JRFillSubreport.loadReport(reportSource, fillContext.getFiller());//FIXMEBOOK cache
 	}
 
 	@Override
 	public void fill(PartOutput output) throws JRException
 	{
 		subreportFiller = createSubreportFiller(output);
+		returnValues.checkReturnValues(returnValuesSource);
 		
 		JRFillDataset subreportDataset = subreportFiller.getMainDataset();
 		subreportDataset.setFillPosition(datasetPosition);
 		subreportDataset.setCacheSkipped(!cacheIncluded);
 		
 		subreportFiller.fill(parameterValues);
+		returnValues.copyValues(returnValuesSource);
 	}
 
 	@Override

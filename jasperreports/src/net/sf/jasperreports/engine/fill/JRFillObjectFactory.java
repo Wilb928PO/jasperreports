@@ -1275,7 +1275,7 @@ public class JRFillObjectFactory extends JRAbstractObjectFactory
 			fillReturnValue = (JRFillSubreportReturnValue) get(returnValue);
 			if (fillReturnValue == null)
 			{
-				fillReturnValue = new JRFillSubreportReturnValue(returnValue, this, filler);
+				fillReturnValue = new JRFillSubreportReturnValue(returnValue, this, reportFiller);
 			}
 		}
 

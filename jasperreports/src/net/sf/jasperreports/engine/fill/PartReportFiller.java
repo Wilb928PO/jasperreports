@@ -84,8 +84,6 @@ public class PartReportFiller extends BaseReportFiller
 			throw new JRRuntimeException("Unsupported report section type " + jasperReport.getSectionType());
 		}
 		
-		initDatasets();
-		
 		detailParts = new FillParts(jasperReport.getDetailSection(), factory);
 		
 		JRGroup[] reportGroups = jasperReport.getGroups();
@@ -105,6 +103,8 @@ public class PartReportFiller extends BaseReportFiller
 				groupPartsByName.put(reportGroup.getName(), groupFillParts);
 			}
 		}
+		
+		initDatasets();
 		
 		outputs = new ArrayList<FillPartOutput>();
 		reportEvaluatedOutputs = new ArrayList<FillPartOutput>();

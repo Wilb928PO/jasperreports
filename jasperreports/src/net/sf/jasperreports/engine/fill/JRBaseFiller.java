@@ -1123,21 +1123,6 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 	}
 
 	/**
-	 * Returns the value of a variable.
-	 *
-	 * @param variableName
-	 *            the variable name
-	 *
-	 * @return the variable value
-	 *
-	 * @throws JRRuntimeException when the variable does not exist
-	 */
-	public Object getVariableValue(String variableName)
-	{
-		return mainDataset.getVariableValue(variableName);
-	}
-
-	/**
 	 * Resloves elements which are to be evaluated at band level.
 	 *
 	 * @param band
