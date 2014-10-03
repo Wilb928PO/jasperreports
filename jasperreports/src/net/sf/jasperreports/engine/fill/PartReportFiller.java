@@ -431,7 +431,7 @@ public class PartReportFiller extends BaseReportFiller
 
 	protected void fillChangedGroupEvaluatedOutputs() throws JRException
 	{
-		for (GroupFillParts group : groupParts)
+		for (GroupFillParts group : groupParts)//FIXMEBOOK order?
 		{
 			if (group.hasChanged())
 			{
@@ -446,11 +446,6 @@ public class PartReportFiller extends BaseReportFiller
 		{
 			fillDelayedEvaluatedOutputs(group.getGroupEvaluatedOutputs(), JRExpression.EVALUATION_DEFAULT);
 		}
-	}
-
-	protected void fillGroupReportEvaluatedOutputs() throws JRException
-	{
-		fillDelayedEvaluatedOutputs(reportEvaluatedOutputs, JRExpression.EVALUATION_DEFAULT);
 	}
 	
 	protected void fillDelayedEvaluatedOutputs(List<FillPartOutput> outputs, byte evaluation) throws JRException
