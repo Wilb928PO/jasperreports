@@ -25,7 +25,7 @@ package net.sf.jasperreports.engine;
 
 import net.sf.jasperreports.engine.component.Component;
 import net.sf.jasperreports.engine.component.ComponentKey;
-import net.sf.jasperreports.parts.PartEvaluationTime;
+import net.sf.jasperreports.engine.part.PartEvaluationTime;
 
 
 /**

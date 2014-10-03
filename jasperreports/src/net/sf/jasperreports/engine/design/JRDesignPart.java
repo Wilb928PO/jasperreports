@@ -30,7 +30,7 @@ import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.base.JRBasePart;
 import net.sf.jasperreports.engine.component.Component;
 import net.sf.jasperreports.engine.component.ComponentKey;
-import net.sf.jasperreports.parts.PartEvaluationTime;
+import net.sf.jasperreports.engine.part.PartEvaluationTime;
 
 
 /**

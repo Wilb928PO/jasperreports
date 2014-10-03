@@ -32,8 +32,6 @@ import net.sf.jasperreports.engine.component.ComponentKey;
 import net.sf.jasperreports.engine.fill.JRFillExpressionEvaluator;
 import net.sf.jasperreports.engine.fill.JRFillObjectFactory;
 import net.sf.jasperreports.engine.fill.PartReportFiller;
-import net.sf.jasperreports.parts.PartEvaluationTime;
-import net.sf.jasperreports.parts.StandardPartEvaluationTime;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)

@@ -169,6 +169,7 @@ import net.sf.jasperreports.engine.component.ComponentXmlWriter;
 import net.sf.jasperreports.engine.component.ComponentsEnvironment;
 import net.sf.jasperreports.engine.part.PartComponentXmlWriter;
 import net.sf.jasperreports.engine.part.PartComponentsEnvironment;
+import net.sf.jasperreports.engine.part.PartEvaluationTime;
 import net.sf.jasperreports.engine.query.JRJdbcQueryExecuterFactory;
 import net.sf.jasperreports.engine.type.BreakTypeEnum;
 import net.sf.jasperreports.engine.type.CalculationEnum;
@@ -193,7 +194,6 @@ import net.sf.jasperreports.engine.type.WhenNoDataTypeEnum;
 import net.sf.jasperreports.engine.type.WhenResourceMissingTypeEnum;
 import net.sf.jasperreports.engine.util.JRXmlWriteHelper;
 import net.sf.jasperreports.engine.util.XmlNamespace;
-import net.sf.jasperreports.parts.PartEvaluationTime;
 
 
 /**

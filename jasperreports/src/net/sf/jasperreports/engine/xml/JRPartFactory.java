@@ -24,9 +24,9 @@
 package net.sf.jasperreports.engine.xml;
 
 import net.sf.jasperreports.engine.design.JRDesignPart;
+import net.sf.jasperreports.engine.part.PartEvaluationTime;
+import net.sf.jasperreports.engine.part.StandardPartEvaluationTime;
 import net.sf.jasperreports.engine.type.PartEvaluationTimeType;
-import net.sf.jasperreports.parts.PartEvaluationTime;
-import net.sf.jasperreports.parts.StandardPartEvaluationTime;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

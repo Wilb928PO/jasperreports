@@ -48,6 +48,7 @@ import net.sf.jasperreports.engine.part.FillPart;
 import net.sf.jasperreports.engine.part.FillParts;
 import net.sf.jasperreports.engine.part.FillingPrintPart;
 import net.sf.jasperreports.engine.part.GroupFillParts;
+import net.sf.jasperreports.engine.part.PartEvaluationTime;
 import net.sf.jasperreports.engine.part.PartPrintOutput;
 import net.sf.jasperreports.engine.part.PrintPartSource;
 import net.sf.jasperreports.engine.part.PrintPartSourceQueue;
@@ -55,7 +56,6 @@ import net.sf.jasperreports.engine.type.IncrementTypeEnum;
 import net.sf.jasperreports.engine.type.ResetTypeEnum;
 import net.sf.jasperreports.engine.type.SectionTypeEnum;
 import net.sf.jasperreports.engine.util.JRDataUtils;
-import net.sf.jasperreports.parts.PartEvaluationTime;
 import net.sf.jasperreports.parts.PartFillerParent;
 
 import org.apache.commons.logging.Log;

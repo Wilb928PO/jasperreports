@@ -40,8 +40,8 @@ import net.sf.jasperreports.engine.design.events.JRChangeEventsSupport;
 import net.sf.jasperreports.engine.design.events.JRPropertyChangeSupport;
 import net.sf.jasperreports.engine.part.PartComponentManager;
 import net.sf.jasperreports.engine.part.PartComponentsEnvironment;
+import net.sf.jasperreports.engine.part.PartEvaluationTime;
 import net.sf.jasperreports.engine.util.JRCloneUtils;
-import net.sf.jasperreports.parts.PartEvaluationTime;
 
 /**
  * A read-only {@link JRPart} implementation which is included

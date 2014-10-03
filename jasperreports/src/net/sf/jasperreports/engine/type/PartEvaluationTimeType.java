@@ -24,7 +24,7 @@
 package net.sf.jasperreports.engine.type;
 
 import net.sf.jasperreports.engine.JRConstants;
-import net.sf.jasperreports.parts.PartEvaluationTime;
+import net.sf.jasperreports.engine.part.PartEvaluationTime;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
