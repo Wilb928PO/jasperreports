@@ -70,7 +70,6 @@ public abstract class BaseReportFiller implements ReportFiller
 
 	protected JRFillContext fillContext;
 	
-	//FIXMEBOOK replace these with a parent context
 	protected FillerParent parent;
 	
 	protected final int fillerId;
