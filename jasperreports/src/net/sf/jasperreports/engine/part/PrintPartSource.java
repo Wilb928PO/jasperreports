@@ -38,23 +38,46 @@ public class PrintPartSource
 
 	private final FillPart part;
 	
-	private final FillPartPrintOutput printOutput;
+	private PrintPartSource nextPart;
+
+	private FillPartPrintOutput localOutput;
 	
 	public PrintPartSource(FillPart part)
 	{
 		this.part = part;
-		this.printOutput = new FillPartPrintOutput(part.getFiller());
+	}
+
+	public PrintPartSource getNextPart()
+	{
+		return nextPart;
+	}
+
+	public void setNextPart(PrintPartSource nextPart)
+	{
+		this.nextPart = nextPart;
 	}
 
 	public void fill(byte evaluation) throws JRException
 	{
-		Output output = new Output();
-		part.fill(evaluation, output);
+		localOutput = new FillPartPrintOutput(part.getFiller());
+		fill(evaluation, localOutput);
 	}
 
-	public FillPartPrintOutput getPrintOutput()
+	public void fill(byte evaluation, PartPrintOutput printOutput) throws JRException
 	{
-		return printOutput;
+		Output output = new Output(printOutput);
+		part.fill(evaluation, output);
+	}
+	
+	public boolean appendLocalOutput(PartPrintOutput printOutput)
+	{
+		if (localOutput == null)
+		{
+			return false;
+		}
+		
+		localOutput.appendTo(printOutput);
+		return true;
 	}
 
 	public boolean isPageFinal(int pageIndex)
@@ -64,6 +87,13 @@ public class PrintPartSource
 	
 	protected class Output implements PartOutput
 	{
+		private PartPrintOutput printOutput;
+
+		public Output(PartPrintOutput printOutput)
+		{
+			this.printOutput = printOutput;
+		}
+
 		@Override
 		public PartPrintOutput getPrintOutput()
 		{

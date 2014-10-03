@@ -43,11 +43,11 @@ import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.PrintPart;
 import net.sf.jasperreports.engine.ReportContext;
 import net.sf.jasperreports.engine.part.FillPart;
-import net.sf.jasperreports.engine.part.PrintPartSource;
-import net.sf.jasperreports.engine.part.FillPartPrintOutput;
-import net.sf.jasperreports.engine.part.PartPrintOutput;
 import net.sf.jasperreports.engine.part.FillParts;
 import net.sf.jasperreports.engine.part.GroupFillParts;
+import net.sf.jasperreports.engine.part.PartPrintOutput;
+import net.sf.jasperreports.engine.part.PrintPartSource;
+import net.sf.jasperreports.engine.part.PrintPartSourceQueue;
 import net.sf.jasperreports.engine.type.IncrementTypeEnum;
 import net.sf.jasperreports.engine.type.ResetTypeEnum;
 import net.sf.jasperreports.engine.type.SectionTypeEnum;
@@ -70,7 +70,8 @@ public class PartReportFiller extends BaseReportFiller
 	private List<GroupFillParts> groupParts;
 	private Map<String, GroupFillParts> groupPartsByName;
 	
-	private List<PrintPartSource> parts;
+	private PrintPartSourceQueue partQueue;
+	
 	private List<PrintPartSource> reportEvaluatedParts;
 	
 	private PartPrintOutput printOutput;
@@ -112,10 +113,10 @@ public class PartReportFiller extends BaseReportFiller
 		
 		initDatasets();
 		
-		parts = new ArrayList<PrintPartSource>();
 		reportEvaluatedParts = new ArrayList<PrintPartSource>();
 		
-		this.printOutput = parent == null ? new JasperPrintPartOutput() : parent.getPrintOutput();
+		printOutput = parent == null ? new JasperPrintPartOutput() : parent.getPrintOutput();
+		partQueue = new PrintPartSourceQueue();
 	}
 
 	@Override
@@ -306,7 +307,7 @@ public class PartReportFiller extends BaseReportFiller
 		}
 		
 		fillReportEvaluatedParts();
-		copyOutputs();
+		assert partQueue.isEmpty();
 		
 		if (isMasterReport())
 		{
@@ -395,16 +396,28 @@ public class PartReportFiller extends BaseReportFiller
 	protected void fillPart(FillPart part, byte evaluation) throws JRException
 	{
 		PrintPartSource partSource = new PrintPartSource(part);
-		parts.add(partSource);
 		
+		boolean addToQueue;
 		PartEvaluationTime evaluationTime = part.getEvaluationTime();
 		switch (evaluationTime.getEvaluationTimeType())
 		{
 		case NOW:
-			partSource.fill(evaluation);
+			if (partQueue.isEmpty())
+			{
+				// no previous parts, filling directly to the filler output
+				partSource.fill(evaluation, printOutput);
+				addToQueue = false;
+			}
+			else
+			{
+				// filling to a local output
+				partSource.fill(evaluation);
+				addToQueue = true;
+			}
 			break;
 		case REPORT:
 			reportEvaluatedParts.add(partSource);
+			addToQueue = true;
 			break;
 		case GROUP:
 			GroupFillParts groupFillParts = groupPartsByName.get(evaluationTime.getEvaluationGroup());
@@ -412,17 +425,25 @@ public class PartReportFiller extends BaseReportFiller
 			{
 				throw new JRRuntimeException("Part evaluation group " + evaluationTime.getEvaluationGroup() + " not found");
 			}
+			
 			groupFillParts.addGroupEvaluatedPart(partSource);
+			addToQueue = true;
 			break;
 		default:
 			throw new JRRuntimeException("Unknown evaluation time type " + evaluationTime.getEvaluationTimeType());
+		}
+		
+		if (addToQueue)
+		{
+			partQueue.append(partSource);
 		}
 	}
 
 	@Override
 	public boolean isPageFinal(int pageIndex)
 	{
-		return true;
+		//FIXMEBOOK
+		return false;
 	}
 
 	public void partPageUpdated(int pageIndex)
@@ -464,16 +485,38 @@ public class PartReportFiller extends BaseReportFiller
 			PrintPartSource part = it.next();
 			it.remove();
 			
-			part.fill(evaluation);
+			fillDelayedPart(evaluation, part);
 		}
 	}
 
-	protected void copyOutputs()
+	protected void fillDelayedPart(byte evaluation, PrintPartSource part) throws JRException
 	{
-		for (PrintPartSource part : parts)
+		if (partQueue.isHead(part))
 		{
-			FillPartPrintOutput partOutput = part.getPrintOutput();
-			partOutput.appendTo(printOutput);
+			// first part in the queue, filling directly to the filler output
+			part.fill(evaluation, printOutput);
+			// remove the part that we just filled
+			partQueue.removeHead();
+			
+			// go through the next parts if copy the ones that are already filled
+			while (!partQueue.isEmpty())
+			{
+				PrintPartSource queuedPart = partQueue.head();
+				boolean appended = queuedPart.appendLocalOutput(printOutput);
+				if (appended)
+				{
+					partQueue.removeHead();
+				}
+				else
+				{
+					break;
+				}
+			}
+		}
+		else
+		{
+			// filling to a local output and keeping in queue
+			part.fill(evaluation);
 		}
 	}
 	
