@@ -33,7 +33,6 @@ import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JRVariable;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.SimplePrintPart;
 import net.sf.jasperreports.engine.fill.BandReportFillerParent;
 import net.sf.jasperreports.engine.fill.BaseReportFiller;
@@ -51,8 +50,8 @@ import net.sf.jasperreports.engine.fill.JRHorizontalFiller;
 import net.sf.jasperreports.engine.fill.JRVerticalFiller;
 import net.sf.jasperreports.engine.fill.PartReportFiller;
 import net.sf.jasperreports.engine.part.BasePartFillComponent;
+import net.sf.jasperreports.engine.part.FillingPrintPart;
 import net.sf.jasperreports.engine.part.PartPrintOutput;
-import net.sf.jasperreports.engine.part.PartOutput;
 import net.sf.jasperreports.engine.type.SectionTypeEnum;
 import net.sf.jasperreports.parts.PartFillerParent;
 
@@ -125,7 +124,7 @@ public class SubreportFillPart extends BasePartFillComponent
 	}
 
 	@Override
-	public void fill(PartOutput output) throws JRException
+	public void fill(PartPrintOutput output) throws JRException
 	{
 		subreportFiller = createSubreportFiller(output);
 		returnValues.checkReturnValues(returnValuesSource);
@@ -137,52 +136,45 @@ public class SubreportFillPart extends BasePartFillComponent
 		subreportFiller.fill(parameterValues);
 		returnValues.copyValues(returnValuesSource);
 	}
-
-	@Override
-	public boolean isPageFinal(int pageIndex)
-	{
-		BaseReportFiller filler = subreportFiller;
-		if (filler == null)
-		{
-			//FIXMEBOOK
-			return true;
-		}
-		
-		return filler.isPageFinal(pageIndex);
-	}
 	
-	protected BaseReportFiller createSubreportFiller(final PartOutput output) throws JRException
+	protected BaseReportFiller createSubreportFiller(final PartPrintOutput output) throws JRException
 	{
 		SectionTypeEnum sectionType = jasperReport.getSectionType();
 		sectionType = sectionType == null ? SectionTypeEnum.BAND : sectionType;
 		
-		JasperReportsContext jasperReportsContext = fillContext.getFiller().getJasperReportsContext();
 		BaseReportFiller filler;
 		switch (sectionType)
 		{
 		case BAND:
-			BandReportFillerParent bandParent = new PartBandParent(output);
-			switch (jasperReport.getPrintOrderValue())
-			{
-			case HORIZONTAL:
-				filler = new JRHorizontalFiller(jasperReportsContext, jasperReport, bandParent);
-				break;
-			case VERTICAL:
-				filler = new JRVerticalFiller(jasperReportsContext, jasperReport, bandParent);
-				break;
-			default:
-				throw new JRRuntimeException("Unknown report section type " + sectionType);
-			}
+			filler = createBandSubfiller(output);
 			break;
 		case PART:
-			PartParent partParent = new PartParent(output.getPrintOutput());
-			filler = new PartReportFiller(jasperReportsContext, jasperReport, partParent);
+			filler = createPartSubfiller(output);
 			break;
 		default:
 			throw new JRRuntimeException("Unknown report section type " + sectionType);
 		}
 		
-		filler.addFillListener(new FillListener()
+		return filler;
+	}
+
+	protected JRBaseFiller createBandSubfiller(final PartPrintOutput output) throws JRException
+	{
+		BandReportFillerParent bandParent = new PartBandParent(output);
+		JRBaseFiller bandFiller;
+		switch (jasperReport.getPrintOrderValue())
+		{
+		case HORIZONTAL:
+			bandFiller = new JRHorizontalFiller(getJasperReportsContext(), jasperReport, bandParent);
+			break;
+		case VERTICAL:
+			bandFiller = new JRVerticalFiller(getJasperReportsContext(), jasperReport, bandParent);
+			break;
+		default:
+			throw new JRRuntimeException("Unknown report print order " + jasperReport.getPrintOrderValue());
+		}
+		
+		bandFiller.addFillListener(new FillListener()
 		{
 			@Override
 			public void pageGenerated(JasperPrint jasperPrint, int pageIndex)
@@ -193,18 +185,25 @@ public class SubreportFillPart extends BasePartFillComponent
 			@Override
 			public void pageUpdated(JasperPrint jasperPrint, int pageIndex)
 			{
-				output.partPageUpdated(pageIndex);
+				output.pageUpdated(pageIndex);
 			}
 		});
-		
-		return filler;
+
+		return bandFiller;
+	}
+
+	protected BaseReportFiller createPartSubfiller(PartPrintOutput output) throws JRException
+	{
+		PartParent partParent = new PartParent(output);
+		PartReportFiller partFiller = new PartReportFiller(getJasperReportsContext(), jasperReport, partParent);
+		return partFiller;
 	}
 	
 	protected class PartBandParent implements BandReportFillerParent
 	{
-		private final PartOutput output;
+		private final PartPrintOutput output;
 
-		protected PartBandParent(PartOutput output)
+		protected PartBandParent(PartPrintOutput output)
 		{
 			this.output = output;
 		}
@@ -229,7 +228,7 @@ public class SubreportFillPart extends BasePartFillComponent
 		}
 
 		@Override
-		public void unregisterSubfiller(JRBaseFiller jrBaseFiller)
+		public void unregisterSubfiller(JRBaseFiller filler)
 		{
 			//FIXMEBOOK
 		}
@@ -249,15 +248,15 @@ public class SubreportFillPart extends BasePartFillComponent
 		@Override
 		public void addPage(FillerPageAddedEvent pageAdded) throws JRException
 		{
-			PartPrintOutput printOutput = output.getPrintOutput();
 			if (pageAdded.getPageIndex() == 0)
 			{
 				//first page, adding the part info
 				SimplePrintPart printPart = SimplePrintPart.fromJasperPrint(pageAdded.getJasperPrint());
-				printOutput.startPart(printPart);
+				FillerPrintPart fillingPart = new FillerPrintPart(pageAdded.getFiller());//FIXMEBOOK strange
+				output.startPart(printPart, fillingPart);
 			}
 			
-			printOutput.addPage(pageAdded.getPage(), pageAdded.getDelayedActions());
+			output.addPage(pageAdded.getPage(), pageAdded.getDelayedActions());
 			
 			//FIXMEBOOK styles
 		}
@@ -265,7 +264,23 @@ public class SubreportFillPart extends BasePartFillComponent
 		@Override
 		public JRPrintPage getPage(int pageIndex)
 		{
-			return output.getPrintOutput().getPage(pageIndex);
+			return output.getPage(pageIndex);
+		}
+	}
+	
+	protected static class FillerPrintPart implements FillingPrintPart
+	{
+		private final JRBaseFiller filler;
+		
+		protected FillerPrintPart(JRBaseFiller filler)
+		{
+			this.filler = filler;
+		}
+
+		@Override
+		public boolean isPageFinal(JRPrintPage page)
+		{
+			return filler.isPageFinal(page);
 		}
 	}
 	

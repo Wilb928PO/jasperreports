@@ -29,6 +29,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExpression;
@@ -44,6 +46,7 @@ import net.sf.jasperreports.engine.PrintPart;
 import net.sf.jasperreports.engine.ReportContext;
 import net.sf.jasperreports.engine.part.FillPart;
 import net.sf.jasperreports.engine.part.FillParts;
+import net.sf.jasperreports.engine.part.FillingPrintPart;
 import net.sf.jasperreports.engine.part.GroupFillParts;
 import net.sf.jasperreports.engine.part.PartPrintOutput;
 import net.sf.jasperreports.engine.part.PrintPartSource;
@@ -442,11 +445,16 @@ public class PartReportFiller extends BaseReportFiller
 	@Override
 	public boolean isPageFinal(int pageIndex)
 	{
-		//FIXMEBOOK
-		return false;
+		if (isSubreport())
+		{
+			// shouldn't be called
+			return false;
+		}
+		
+		return ((JasperPrintPartOutput) printOutput).isPageFinal(pageIndex);
 	}
 
-	public void partPageUpdated(int pageIndex)
+	protected void partPageUpdated(int pageIndex)
 	{
 		if (fillListener != null)
 		{
@@ -520,55 +528,95 @@ public class PartReportFiller extends BaseReportFiller
 		}
 	}
 	
-	public void startPart(PrintPart part)
-	{
-		int startIndex = jasperPrint.getPages().size();
-		jasperPrint.addPart(startIndex, part);
-		
-		if (log.isDebugEnabled())
-		{
-			log.debug("added part " + part.getName() + " at index " + startIndex);
-		}
-	}
-
-	public void addPartPage(JRPrintPage page, DelayedFillActions delayedActionsSource)
-	{
-		int pageIndex = jasperPrint.getPages().size();
-		if (log.isDebugEnabled())
-		{
-			log.debug("adding part page at index " + pageIndex);
-		}
-		
-		jasperPrint.addPage(page);
-		addLastPageBookmarks();
-		
-		//FIXMEBOOK fill element Ids & virtualization listener
-		delayedActions.moveMasterEvaluations(delayedActionsSource, page, pageIndex);
-		
-		if (fillListener != null)
-		{
-			fillListener.pageGenerated(jasperPrint, pageIndex);
-		}
-	}
-	
 	protected class JasperPrintPartOutput implements PartPrintOutput
 	{
-		@Override
-		public void startPart(PrintPart part)
-		{
-			PartReportFiller.this.startPart(part);
-		}
+		private final ReadWriteLock currentFillPartLock = new ReentrantReadWriteLock();
+		private transient int currentPartStartIndex;
+		private FillingPrintPart currentFillingPart;
 		
 		@Override
-		public void addPage(JRPrintPage page, DelayedFillActions delayedActions)
+		public void startPart(PrintPart part, FillingPrintPart fillingPart)
 		{
-			PartReportFiller.this.addPartPage(page, delayedActions);
+			int startIndex = jasperPrint.getPages().size();
+			jasperPrint.addPart(startIndex, part);
+
+			currentFillPartLock.writeLock().lock();
+			try
+			{
+				currentPartStartIndex = startIndex;
+				currentFillingPart = fillingPart;
+			}
+			finally
+			{
+				currentFillPartLock.writeLock().unlock();
+			}
+			
+			if (log.isDebugEnabled())
+			{
+				log.debug("added part " + part.getName() + " at index " + startIndex);
+			}
+		}
+		
+		public boolean isPageFinal(int pageIndex)
+		{
+			currentFillPartLock.readLock().lock();
+			try
+			{
+				JRPrintPage page = getPage(pageIndex);
+				boolean hasMasterActions = delayedActions.hasDelayedActions(page);
+				if (hasMasterActions)
+				{
+					return false;
+				}
+				
+				boolean isFinal;
+				if (pageIndex < currentPartStartIndex)
+				{
+					isFinal = true;
+				}
+				else
+				{
+					isFinal = currentFillingPart.isPageFinal(page);
+				}
+				return isFinal;
+			}
+			finally
+			{
+				currentFillPartLock.readLock().unlock();
+			}
+		}
+
+		@Override
+		public void addPage(JRPrintPage page, DelayedFillActions delayedActionsSource)
+		{
+			int pageIndex = jasperPrint.getPages().size();
+			if (log.isDebugEnabled())
+			{
+				log.debug("adding part page at index " + pageIndex);
+			}
+			
+			jasperPrint.addPage(page);
+			addLastPageBookmarks();
+			
+			//FIXMEBOOK fill element Ids & virtualization listener
+			delayedActions.moveMasterEvaluations(delayedActionsSource, page, pageIndex);
+			
+			if (fillListener != null)
+			{
+				fillListener.pageGenerated(jasperPrint, pageIndex);
+			}
 		}
 		
 		@Override
 		public JRPrintPage getPage(int pageIndex)
 		{
 			return jasperPrint.getPages().get(pageIndex);
+		}
+
+		@Override
+		public void pageUpdated(int partPageIndex)
+		{
+			partPageUpdated(currentPartStartIndex + partPageIndex);
 		}
 	}
 

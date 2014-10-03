@@ -60,7 +60,7 @@ public class FillPartPrintOutput implements PartPrintOutput
 	}
 
 	@Override
-	public void startPart(PrintPart printPart)
+	public void startPart(PrintPart printPart, FillingPrintPart fillingPart)
 	{
 		int startIndex = pages.size();
 		parts.put(startIndex, printPart);
@@ -109,7 +109,7 @@ public class FillPartPrintOutput implements PartPrintOutput
 			prevPartStart = partStart;
 			
 			PrintPart part = partEntry.getValue();
-			output.startPart(part);
+			output.startPart(part, FinalFillingPrintPart.instance());
 		}
 
 		// add the pages that belong to the last part
@@ -118,5 +118,11 @@ public class FillPartPrintOutput implements PartPrintOutput
 			JRPrintPage page = pagesIterator.next();
 			output.addPage(page, delayedActions);
 		}
+	}
+
+	@Override
+	public void pageUpdated(int partPageIndex)
+	{
+		//NOP
 	}
 }

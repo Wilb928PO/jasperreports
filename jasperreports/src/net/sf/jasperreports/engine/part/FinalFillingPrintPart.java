@@ -23,16 +23,31 @@
  */
 package net.sf.jasperreports.engine.part;
 
+import net.sf.jasperreports.engine.JRPrintPage;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
-public interface PartOutput
+public class FinalFillingPrintPart implements FillingPrintPart
 {
-
-	PartPrintOutput getPrintOutput();
 	
-	void partPageUpdated(int partPageIndex);
+	private static final FinalFillingPrintPart INSTANCE = new FinalFillingPrintPart();
+	
+	public static FinalFillingPrintPart instance()
+	{
+		return INSTANCE;
+	}
+	
+	protected FinalFillingPrintPart()
+	{
+		//NOP
+	}
+
+	@Override
+	public boolean isPageFinal(JRPrintPage page)
+	{
+		return true;
+	}
 
 }

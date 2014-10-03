@@ -23,6 +23,8 @@
  */
 package net.sf.jasperreports.engine.part;
 
+import net.sf.jasperreports.engine.JasperReportsContext;
+
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
@@ -36,6 +38,11 @@ public abstract class BasePartFillComponent implements PartFillComponent
 	public void initialize(PartFillContext fillContext)
 	{
 		this.fillContext = fillContext;
+	}
+	
+	protected JasperReportsContext getJasperReportsContext()
+	{
+		return fillContext.getFiller().getJasperReportsContext();
 	}
 
 }

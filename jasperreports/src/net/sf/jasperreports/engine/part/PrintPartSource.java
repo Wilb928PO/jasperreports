@@ -65,8 +65,7 @@ public class PrintPartSource
 
 	public void fill(byte evaluation, PartPrintOutput printOutput) throws JRException
 	{
-		Output output = new Output(printOutput);
-		part.fill(evaluation, output);
+		part.fill(evaluation, printOutput);
 	}
 	
 	public boolean appendLocalOutput(PartPrintOutput printOutput)
@@ -78,33 +77,6 @@ public class PrintPartSource
 		
 		localOutput.appendTo(printOutput);
 		return true;
-	}
-
-	public boolean isPageFinal(int pageIndex)
-	{
-		return part.isPageFinal(pageIndex);
-	}
-	
-	protected class Output implements PartOutput
-	{
-		private PartPrintOutput printOutput;
-
-		public Output(PartPrintOutput printOutput)
-		{
-			this.printOutput = printOutput;
-		}
-
-		@Override
-		public PartPrintOutput getPrintOutput()
-		{
-			return printOutput;
-		}
-
-		@Override
-		public void partPageUpdated(int partPageIndex)
-		{
-			//FIXMEBOOK part.getFiller().partPageUpdated(startPageIndex + partPageIndex);
-		}
 	}
 	
 }

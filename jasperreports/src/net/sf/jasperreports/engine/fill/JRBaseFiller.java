@@ -1261,12 +1261,19 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 			}
 
 			@Override
+			public JRBaseFiller getFiller()
+			{
+				return JRBaseFiller.this;
+			}
+
+			@Override
 			public DelayedFillActions getDelayedActions()
 			{
 				return delayedActions;
 			}
 		};
 		
+		//FIXMEBOOK use a fill listener instead of this?
 		bandReportParent.addPage(pageAdded);
 	}
 
@@ -1383,24 +1390,15 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 	@Override
 	public boolean isPageFinal(int pageIdx)
 	{
-		JRPrintPage page = getPrintPage(pageIdx);
+		JRPrintPage page = jasperPrint.getPages().get(pageIdx);
+		return !hasBoundActions(page);
+	}
+
+	public boolean isPageFinal(JRPrintPage page)
+	{
 		return !hasBoundActions(page);
 	}
 	
-	protected JRPrintPage getPrintPage(int pageIndex)
-	{
-		JRPrintPage page;
-		if (isMasterReport())
-		{
-			page = jasperPrint.getPages().get(pageIndex);
-		}
-		else
-		{
-			page = bandReportParent.getPage(pageIndex);
-		}
-		return page;
-	}
-
 	protected boolean hasBoundActions(JRPrintPage page)
 	{
 		boolean hasActions = delayedActions.hasDelayedActions(page);

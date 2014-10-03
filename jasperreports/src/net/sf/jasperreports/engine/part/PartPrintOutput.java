@@ -34,10 +34,12 @@ import net.sf.jasperreports.engine.fill.DelayedFillActions;
 public interface PartPrintOutput
 {
 
-	void startPart(PrintPart part);
+	void startPart(PrintPart part, FillingPrintPart fillingPart);
 
 	void addPage(JRPrintPage page, DelayedFillActions delayedActions);
 
 	JRPrintPage getPage(int pageIndex);
+	
+	void pageUpdated(int partPageIndex);
 	
 }

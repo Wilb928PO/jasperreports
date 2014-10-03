@@ -65,8 +65,6 @@ public interface PartFillComponent
 	 * Fills the component by creating a print element which will be included
 	 * in the generated report.
 	 */
-	void fill(PartOutput output) throws JRException;
-
-	boolean isPageFinal(int pageIndex);
+	void fill(PartPrintOutput output) throws JRException;
 
 }

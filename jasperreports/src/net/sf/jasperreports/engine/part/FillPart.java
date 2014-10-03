@@ -67,7 +67,7 @@ public class FillPart
 		fillComponent.initialize(new Context());
 	}
 	
-	public void fill(byte evaluation, PartOutput output) throws JRException
+	public void fill(byte evaluation, PartPrintOutput output) throws JRException
 	{
 		boolean toPrint = evaluatePrintWhenExpression(evaluation);
 		if (!toPrint)
@@ -93,11 +93,6 @@ public class FillPart
 			result = expressionResult != null && expressionResult;
 		}
 		return result;
-	}
-
-	public boolean isPageFinal(int pageIndex)
-	{
-		return fillComponent.isPageFinal(pageIndex);
 	}
 
 	public PartEvaluationTime getEvaluationTime()
