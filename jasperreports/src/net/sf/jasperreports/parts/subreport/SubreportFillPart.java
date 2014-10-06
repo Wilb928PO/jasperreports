@@ -149,7 +149,7 @@ public class SubreportFillPart extends BasePartFillComponent
 			filler = createBandSubfiller(output);
 			break;
 		case PART:
-			filler = createPartSubfiller(output);
+			filler = createPartSubfiller();
 			break;
 		default:
 			throw new JRRuntimeException("Unknown report section type " + sectionType);
@@ -192,9 +192,9 @@ public class SubreportFillPart extends BasePartFillComponent
 		return bandFiller;
 	}
 
-	protected BaseReportFiller createPartSubfiller(PartPrintOutput output) throws JRException
+	protected BaseReportFiller createPartSubfiller() throws JRException
 	{
-		PartParent partParent = new PartParent(output);
+		PartParent partParent = new PartParent();
 		PartReportFiller partFiller = new PartReportFiller(getJasperReportsContext(), jasperReport, partParent);
 		return partFiller;
 	}
@@ -286,15 +286,12 @@ public class SubreportFillPart extends BasePartFillComponent
 	
 	protected class PartParent implements PartFillerParent
 	{
-		private PartPrintOutput printOutput;
-
-		public PartParent(PartPrintOutput printDestination)
+		public PartParent()
 		{
-			this.printOutput = printDestination;
 		}
 
 		@Override
-		public BaseReportFiller getFiller()
+		public PartReportFiller getFiller()
 		{
 			return fillContext.getFiller();
 		}
@@ -304,12 +301,6 @@ public class SubreportFillPart extends BasePartFillComponent
 		{
 			//FIXMEBOOK
 			return null;
-		}
-
-		@Override
-		public PartPrintOutput getPrintOutput()
-		{
-			return printOutput;
 		}
 	}
 

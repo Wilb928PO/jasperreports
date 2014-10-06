@@ -21,18 +21,42 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with JasperReports. If not, see <http://www.gnu.org/licenses/>.
  */
-package net.sf.jasperreports.parts;
-
-import net.sf.jasperreports.engine.fill.FillerParent;
-import net.sf.jasperreports.engine.fill.PartReportFiller;
+package net.sf.jasperreports.engine.part;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
-public interface PartFillerParent extends FillerParent
+public abstract class FillPrintPart
 {
 	
-	PartReportFiller getFiller();
+	private FillPrintPart previousPart;
+	private FillPrintPart nextPart;
+	
+	public FillPrintPart()
+	{
+	}
+	
+	public FillPrintPart previousPart()
+	{
+		return previousPart;
+	}
 
+	public void setPreviousPart(FillPrintPart previousPart)
+	{
+		this.previousPart = previousPart;
+	}
+	
+	public FillPrintPart nextPart()
+	{
+		return nextPart;
+	}
+
+	public void setNextPart(FillPrintPart nextPart)
+	{
+		this.nextPart = nextPart;
+	}
+	
+	public abstract PartPrintOutput getOutput();
+	
 }

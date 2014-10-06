@@ -23,60 +23,29 @@
  */
 package net.sf.jasperreports.engine.part;
 
-import net.sf.jasperreports.engine.JRException;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
-public class PrintPartSource
+public class DelayedPrintPart extends FillPrintPart
 {
-	private static final Log log = LogFactory.getLog(PrintPartSource.class);
 
-	private final FillPart part;
-	
-	private PrintPartSource nextPart;
+	private final FillPart fillPart;
 
-	private FillPartPrintOutput localOutput;
-	
-	public PrintPartSource(FillPart part)
+	public DelayedPrintPart(FillPart fillPart)
 	{
-		this.part = part;
+		this.fillPart = fillPart;
 	}
 
-	public PrintPartSource getNextPart()
+	public FillPart getFillPart()
 	{
-		return nextPart;
+		return fillPart;
 	}
 
-	public void setNextPart(PrintPartSource nextPart)
+	@Override
+	public PartPrintOutput getOutput()
 	{
-		this.nextPart = nextPart;
-	}
-
-	public void fill(byte evaluation) throws JRException
-	{
-		localOutput = new FillPartPrintOutput(part.getFiller());
-		fill(evaluation, localOutput);
-	}
-
-	public void fill(byte evaluation, PartPrintOutput printOutput) throws JRException
-	{
-		part.fill(evaluation, printOutput);
-	}
-	
-	public boolean appendLocalOutput(PartPrintOutput printOutput)
-	{
-		if (localOutput == null)
-		{
-			return false;
-		}
-		
-		localOutput.appendTo(printOutput);
-		return true;
+		return null;
 	}
 	
 }

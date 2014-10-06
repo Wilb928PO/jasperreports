@@ -44,14 +44,15 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.PrintPart;
 import net.sf.jasperreports.engine.ReportContext;
+import net.sf.jasperreports.engine.part.DelayedPrintPart;
 import net.sf.jasperreports.engine.part.FillPart;
+import net.sf.jasperreports.engine.part.FillPartPrintOutput;
 import net.sf.jasperreports.engine.part.FillParts;
+import net.sf.jasperreports.engine.part.FillPrintPartQueue;
 import net.sf.jasperreports.engine.part.FillingPrintPart;
 import net.sf.jasperreports.engine.part.GroupFillParts;
 import net.sf.jasperreports.engine.part.PartEvaluationTime;
 import net.sf.jasperreports.engine.part.PartPrintOutput;
-import net.sf.jasperreports.engine.part.PrintPartSource;
-import net.sf.jasperreports.engine.part.PrintPartSourceQueue;
 import net.sf.jasperreports.engine.type.IncrementTypeEnum;
 import net.sf.jasperreports.engine.type.ResetTypeEnum;
 import net.sf.jasperreports.engine.type.SectionTypeEnum;
@@ -73,11 +74,9 @@ public class PartReportFiller extends BaseReportFiller
 	private List<GroupFillParts> groupParts;
 	private Map<String, GroupFillParts> groupPartsByName;
 	
-	private PrintPartSourceQueue partQueue;
+	private FillPrintPartQueue partQueue;
 	
-	private List<PrintPartSource> reportEvaluatedParts;
-	
-	private PartPrintOutput printOutput;
+	private List<DelayedPrintPart> reportEvaluatedParts;
 	
 	public PartReportFiller(JasperReportsContext jasperReportsContext, JasperReport jasperReport) throws JRException
 	{
@@ -116,10 +115,17 @@ public class PartReportFiller extends BaseReportFiller
 		
 		initDatasets();
 		
-		reportEvaluatedParts = new ArrayList<PrintPartSource>();
+		reportEvaluatedParts = new ArrayList<DelayedPrintPart>();
 		
-		printOutput = parent == null ? new JasperPrintPartOutput() : parent.getPrintOutput();
-		partQueue = new PrintPartSourceQueue();
+		if (parent == null)
+		{
+			JasperPrintPartOutput jasperPrintOutput = new JasperPrintPartOutput();
+			partQueue = new FillPrintPartQueue(jasperPrintOutput);
+		}
+		else
+		{
+			partQueue = parent.getFiller().partQueue;
+		}
 	}
 
 	@Override
@@ -310,7 +316,7 @@ public class PartReportFiller extends BaseReportFiller
 		}
 		
 		fillReportEvaluatedParts();
-		assert partQueue.isEmpty();
+		assert partQueue.isCollapsed();
 		
 		if (isMasterReport())
 		{
@@ -398,47 +404,48 @@ public class PartReportFiller extends BaseReportFiller
 
 	protected void fillPart(FillPart part, byte evaluation) throws JRException
 	{
-		PrintPartSource partSource = new PrintPartSource(part);
-		
-		boolean addToQueue;
 		PartEvaluationTime evaluationTime = part.getEvaluationTime();
 		switch (evaluationTime.getEvaluationTimeType())
 		{
 		case NOW:
-			if (partQueue.isEmpty())
+		{
+			PartPrintOutput appendOutput = partQueue.tail().getOutput();
+			if (appendOutput != null)
 			{
-				// no previous parts, filling directly to the filler output
-				partSource.fill(evaluation, printOutput);
-				addToQueue = false;
+				// can write directly to the previous output
+				part.fill(evaluation, appendOutput);
 			}
 			else
 			{
-				// filling to a local output
-				partSource.fill(evaluation);
-				addToQueue = true;
+				// previous part is delayed, creating a new part with local output
+				FillPartPrintOutput localOutput = new FillPartPrintOutput(this);
+				part.fill(evaluation, localOutput);
+				
+				// adding to the queue
+				partQueue.appendOutput(localOutput);
 			}
 			break;
+		}
 		case REPORT:
-			reportEvaluatedParts.add(partSource);
-			addToQueue = true;
+		{
+			DelayedPrintPart delayedPart = partQueue.appendDelayed(part);
+			reportEvaluatedParts.add(delayedPart);
 			break;
+		}
 		case GROUP:
+		{
 			GroupFillParts groupFillParts = groupPartsByName.get(evaluationTime.getEvaluationGroup());
 			if (groupFillParts == null)//FIXMEBOOK validate
 			{
 				throw new JRRuntimeException("Part evaluation group " + evaluationTime.getEvaluationGroup() + " not found");
 			}
 			
-			groupFillParts.addGroupEvaluatedPart(partSource);
-			addToQueue = true;
+			DelayedPrintPart delayedPart = partQueue.appendDelayed(part);
+			groupFillParts.addGroupEvaluatedPart(delayedPart);
 			break;
+		}
 		default:
 			throw new JRRuntimeException("Unknown evaluation time type " + evaluationTime.getEvaluationTimeType());
-		}
-		
-		if (addToQueue)
-		{
-			partQueue.append(partSource);
 		}
 	}
 
@@ -451,7 +458,7 @@ public class PartReportFiller extends BaseReportFiller
 			return false;
 		}
 		
-		return ((JasperPrintPartOutput) printOutput).isPageFinal(pageIndex);
+		return ((JasperPrintPartOutput) partQueue.head().getOutput()).isPageFinal(pageIndex);
 	}
 
 	protected void partPageUpdated(int pageIndex)
@@ -486,46 +493,20 @@ public class PartReportFiller extends BaseReportFiller
 		}
 	}
 	
-	protected void fillDelayedEvaluatedParts(List<PrintPartSource> parts, byte evaluation) throws JRException
+	protected void fillDelayedEvaluatedParts(List<DelayedPrintPart> parts, byte evaluation) throws JRException
 	{
-		for (ListIterator<PrintPartSource> it = parts.listIterator(); it.hasNext();)
+		for (ListIterator<DelayedPrintPart> it = parts.listIterator(); it.hasNext();)
 		{
-			PrintPartSource part = it.next();
+			DelayedPrintPart part = it.next();
 			it.remove();
 			
 			fillDelayedPart(evaluation, part);
 		}
 	}
 
-	protected void fillDelayedPart(byte evaluation, PrintPartSource part) throws JRException
+	protected void fillDelayedPart(byte evaluation, DelayedPrintPart part) throws JRException
 	{
-		if (partQueue.isHead(part))
-		{
-			// first part in the queue, filling directly to the filler output
-			part.fill(evaluation, printOutput);
-			// remove the part that we just filled
-			partQueue.removeHead();
-			
-			// go through the next parts if copy the ones that are already filled
-			while (!partQueue.isEmpty())
-			{
-				PrintPartSource queuedPart = partQueue.head();
-				boolean appended = queuedPart.appendLocalOutput(printOutput);
-				if (appended)
-				{
-					partQueue.removeHead();
-				}
-				else
-				{
-					break;
-				}
-			}
-		}
-		else
-		{
-			// filling to a local output and keeping in queue
-			part.fill(evaluation);
-		}
+		partQueue.fillDelayed(part, this, evaluation);
 	}
 	
 	protected class JasperPrintPartOutput implements PartPrintOutput

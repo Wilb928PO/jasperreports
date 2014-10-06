@@ -27,51 +27,20 @@ package net.sf.jasperreports.engine.part;
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
-public class PrintPartSourceQueue
+public class FilledPrintPart extends FillPrintPart
 {
 
-	private PrintPartSource head;
-	private PrintPartSource tail;
+	private final PartPrintOutput output;
 
-	public PrintPartSourceQueue()
+	public FilledPrintPart(PartPrintOutput output)
 	{
-	}
-	
-	public boolean isEmpty()
-	{
-		return head == null;
+		this.output = output;
 	}
 
-	public void append(PrintPartSource part)
+	@Override
+	public PartPrintOutput getOutput()
 	{
-		if (head == null)
-		{
-			head = tail = part;
-		}
-		else
-		{
-			tail.setNextPart(part);
-			tail = part;
-		}
-	}
-	
-	public boolean isHead(PrintPartSource part)
-	{
-		return part == head;// == is fine
-	}
-
-	public PrintPartSource head()
-	{
-		return head;
-	}
-
-	public void removeHead()
-	{
-		head = head.getNextPart();
-		if (head == null)
-		{
-			tail = null;
-		}
+		return output;
 	}
 	
 }
