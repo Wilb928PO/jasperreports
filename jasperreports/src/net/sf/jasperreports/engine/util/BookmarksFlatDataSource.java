@@ -21,30 +21,57 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with JasperReports. If not, see <http://www.gnu.org/licenses/>.
  */
-package net.sf.jasperreports.engine.part;
+package net.sf.jasperreports.engine.util;
 
 import net.sf.jasperreports.engine.BookmarkHelper;
-import net.sf.jasperreports.engine.JRPrintPage;
-import net.sf.jasperreports.engine.PrintPart;
-import net.sf.jasperreports.engine.fill.DelayedFillActions;
+import net.sf.jasperreports.engine.BookmarkIterator;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRField;
+import net.sf.jasperreports.engine.base.BasePrintBookmark;
+import net.sf.jasperreports.engine.data.JRAbstractBeanDataSource;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
-public interface PartPrintOutput
+public class BookmarksFlatDataSource extends JRAbstractBeanDataSource
 {
 
-	void startPart(PrintPart part, FillingPrintPart fillingPart);
+	private boolean first;
+	private BookmarkIterator bookmarkIterator;
 
-	void addPage(JRPrintPage page, DelayedFillActions delayedActions);
+	public BookmarksFlatDataSource(BookmarkHelper bookmarks)
+	{
+		super(false);
+		
+		bookmarkIterator = bookmarks.bookmarkIterator();
+		first = true;
+	}
 
-	JRPrintPage getPage(int pageIndex);
-	
-	void pageUpdated(int partPageIndex);
-	
-	void append(FillPartPrintOutput output);
-	
-	BookmarkHelper getBookmarkHelper();
-	
+	@Override
+	public void moveFirst() throws JRException
+	{
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public boolean next() throws JRException
+	{
+		if (first)
+		{
+			first = false;
+			return bookmarkIterator.hasBookmark();
+		}
+		
+		bookmarkIterator.next();
+		return bookmarkIterator.hasBookmark();
+	}
+
+	@Override
+	public Object getFieldValue(JRField field) throws JRException
+	{
+		BasePrintBookmark bookmark = bookmarkIterator.bookmark();
+		return getFieldValue(bookmark, field);
+	}
+
 }

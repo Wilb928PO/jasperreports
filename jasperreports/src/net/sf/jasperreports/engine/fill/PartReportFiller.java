@@ -50,6 +50,7 @@ import net.sf.jasperreports.engine.part.DelayedPrintPart;
 import net.sf.jasperreports.engine.part.FillPart;
 import net.sf.jasperreports.engine.part.FillPartPrintOutput;
 import net.sf.jasperreports.engine.part.FillParts;
+import net.sf.jasperreports.engine.part.FillPrintPart;
 import net.sf.jasperreports.engine.part.FillPrintPartQueue;
 import net.sf.jasperreports.engine.part.FillingPrintPart;
 import net.sf.jasperreports.engine.part.FinalFillingPrintPart;
@@ -511,6 +512,23 @@ public class PartReportFiller extends BaseReportFiller
 	{
 		partQueue.fillDelayed(part, this, evaluation);
 	}
+
+	public BookmarkHelper getFirstBookmarkHelper()
+	{
+		for(FillPrintPart part = partQueue.head(); part != null; part = part.nextPart())
+		{
+			PartPrintOutput output = part.getOutput();
+			if (output != null)
+			{
+				BookmarkHelper bookmarks = output.getBookmarkHelper();
+				if (bookmarks.hasBookmarks())
+				{
+					return bookmarks;
+				}
+			}
+		}
+		return null;
+	}
 	
 	protected class JasperPrintPartOutput implements PartPrintOutput
 	{
@@ -661,6 +679,7 @@ public class PartReportFiller extends BaseReportFiller
 						&& sourceBookmarkIterator.bookmark().getPageIndex() == sourcePageIndex)
 				{
 					bookmarkHelper.addBookmark(sourceBookmarkIterator.bookmark(), pageOffset);
+					sourceBookmarkIterator.next();
 				}
 			}
 			
@@ -671,6 +690,12 @@ public class PartReportFiller extends BaseReportFiller
 			{
 				fillListener.pageGenerated(jasperPrint, pageIndex);
 			}
+		}
+
+		@Override
+		public BookmarkHelper getBookmarkHelper()
+		{
+			return bookmarkHelper;
 		}
 	}
 

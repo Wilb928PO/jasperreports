@@ -83,6 +83,11 @@ public class BookmarkHelper
 	{
 		return bookmarkStack.bookmarkIterator();
 	}
+	
+	public boolean hasBookmarks()
+	{
+		return bookmarkStack.hasBookmarks();
+	}
 }
 
 
@@ -107,6 +112,12 @@ class BookmarkStack
 		push(root);
 		
 		updateableBookmarks = new HashMap<PrintElementId, BasePrintBookmark>();
+	}
+
+	public boolean hasBookmarks()
+	{
+		List<PrintBookmark> bookmarks = stack.getFirst().getBookmarks();
+		return bookmarks != null && !bookmarks.isEmpty();
 	}
 
 	public void push(BasePrintBookmark bookmark)

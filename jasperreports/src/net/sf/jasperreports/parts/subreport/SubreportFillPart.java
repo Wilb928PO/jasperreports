@@ -26,7 +26,9 @@ package net.sf.jasperreports.parts.subreport;
 import java.util.Map;
 
 import net.sf.jasperreports.data.cache.DataCacheHandler;
+import net.sf.jasperreports.engine.BookmarkHelper;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRPart;
 import net.sf.jasperreports.engine.JRPrintPage;
 import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.JRRuntimeException;
@@ -53,6 +55,7 @@ import net.sf.jasperreports.engine.part.BasePartFillComponent;
 import net.sf.jasperreports.engine.part.FillingPrintPart;
 import net.sf.jasperreports.engine.part.PartPrintOutput;
 import net.sf.jasperreports.engine.type.SectionTypeEnum;
+import net.sf.jasperreports.engine.util.BookmarksFlatDataSource;
 import net.sf.jasperreports.parts.PartFillerParent;
 
 /**
@@ -62,6 +65,8 @@ import net.sf.jasperreports.parts.PartFillerParent;
 public class SubreportFillPart extends BasePartFillComponent
 {
 
+	public static final String PROPERTY_BOOKMARKS_DATA_SOURCE_PARAMETER = JRPropertiesUtil.PROPERTY_PREFIX + "bookmarks.data.source.parameter";
+	
 	private SubreportPartComponent subreportPart;
 	private JRFillExpressionEvaluator expressionEvaluator;
 	private FillReturnValues returnValues;
@@ -115,12 +120,28 @@ public class SubreportFillPart extends BasePartFillComponent
 				subreportPart.getParametersMapExpression(), subreportPart.getParameters(), 
 				evaluation, false, 
 				jasperReport.getResourceBundle() != null, jasperReport.getFormatFactoryClass() != null);
+		
+		setBookmarksParameter();
 	}
 
 	private JasperReport evaluateReport(byte evaluation) throws JRException
 	{
 		Object reportSource = fillContext.evaluate(subreportPart.getExpression(), evaluation);
 		return JRFillSubreport.loadReport(reportSource, fillContext.getFiller());//FIXMEBOOK cache
+	}
+
+	private void setBookmarksParameter()
+	{
+		JRPart part = fillContext.getPart();
+		String bookmarksParameter = part.hasProperties() ? part.getPropertiesMap().getProperty(PROPERTY_BOOKMARKS_DATA_SOURCE_PARAMETER) : null;
+		if (bookmarksParameter == null)
+		{
+			return;
+		}
+		
+		BookmarkHelper bookmarks = fillContext.getFiller().getFirstBookmarkHelper();
+		BookmarksFlatDataSource bookmarksDataSource = new BookmarksFlatDataSource(bookmarks);
+		parameterValues.put(bookmarksParameter, bookmarksDataSource);
 	}
 
 	@Override
