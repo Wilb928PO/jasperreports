@@ -44,7 +44,7 @@ public class FillPrintPartQueue
 
 	public FillPrintPart head()
 	{
-		return head();
+		return head;
 	}
 	
 	public FillPrintPart tail()
@@ -145,7 +145,7 @@ public class FillPrintPartQueue
 		FillPrintPart next = part.nextPart();
 		while (next != null && next.getOutput() != null)
 		{
-			((FillPartPrintOutput) next.getOutput()).appendTo(output);//FIXMEBOOK
+			output.append((FillPartPrintOutput) next.getOutput());
 			next = next.nextPart();
 		}
 		

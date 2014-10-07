@@ -32,6 +32,8 @@ import java.util.Map;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import net.sf.jasperreports.engine.BookmarkHelper;
+import net.sf.jasperreports.engine.BookmarkIterator;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRGroup;
@@ -50,6 +52,7 @@ import net.sf.jasperreports.engine.part.FillPartPrintOutput;
 import net.sf.jasperreports.engine.part.FillParts;
 import net.sf.jasperreports.engine.part.FillPrintPartQueue;
 import net.sf.jasperreports.engine.part.FillingPrintPart;
+import net.sf.jasperreports.engine.part.FinalFillingPrintPart;
 import net.sf.jasperreports.engine.part.GroupFillParts;
 import net.sf.jasperreports.engine.part.PartEvaluationTime;
 import net.sf.jasperreports.engine.part.PartPrintOutput;
@@ -598,6 +601,76 @@ public class PartReportFiller extends BaseReportFiller
 		public void pageUpdated(int partPageIndex)
 		{
 			partPageUpdated(currentPartStartIndex + partPageIndex);
+		}
+
+		@Override
+		public void append(FillPartPrintOutput output)
+		{
+			int pageOffset = jasperPrint.getPages().size();
+			BookmarkHelper outputBookmarks = output.getBookmarkHelper();
+			BookmarkIterator bookmarkIterator = null;
+			if (bookmarkHelper != null && outputBookmarks != null)
+			{
+				bookmarkIterator = outputBookmarks.bookmarkIterator();
+			}
+			
+			DelayedFillActions sourceActions = output.getDelayedActions();
+			
+			// adding in an organic order: for each part the pages that belong to the part,
+			// and for each page the bookmarks that belong to the page
+			ListIterator<JRPrintPage> pagesIterator = output.getPages().listIterator();
+			int prevPartStart = 0;
+			for (Map.Entry<Integer, PrintPart> partEntry : output.getParts().entrySet())
+			{
+				int partStart = partEntry.getKey();
+				// add the pages that belong to the previous part
+				for (int i = prevPartStart; i < partStart; i++)
+				{
+					JRPrintPage page = pagesIterator.next();
+					addPage(page, pageOffset, sourceActions, bookmarkIterator);
+				}
+				prevPartStart = partStart;
+				
+				PrintPart part = partEntry.getValue();
+				startPart(part, FinalFillingPrintPart.instance());
+			}
+
+			// add the pages that belong to the last part
+			while (pagesIterator.hasNext())
+			{
+				JRPrintPage page = pagesIterator.next();
+				addPage(page, pageOffset, sourceActions, bookmarkIterator);
+			}
+		}
+		
+		protected void addPage(JRPrintPage page, int pageOffset, 
+				DelayedFillActions sourceActions, BookmarkIterator sourceBookmarkIterator)
+		{
+			int pageIndex = jasperPrint.getPages().size();
+			if (log.isDebugEnabled())
+			{
+				log.debug("adding part page at index " + pageIndex);
+			}
+			
+			jasperPrint.addPage(page);
+			
+			if (sourceBookmarkIterator != null)
+			{
+				int sourcePageIndex = pageIndex - pageOffset;
+				while (sourceBookmarkIterator.hasBookmark() 
+						&& sourceBookmarkIterator.bookmark().getPageIndex() == sourcePageIndex)
+				{
+					bookmarkHelper.addBookmark(sourceBookmarkIterator.bookmark(), pageOffset);
+				}
+			}
+			
+			//FIXMEBOOK fill element Ids & virtualization listener
+			delayedActions.moveMasterEvaluations(sourceActions, page, pageIndex);
+			
+			if (fillListener != null)
+			{
+				fillListener.pageGenerated(jasperPrint, pageIndex);
+			}
 		}
 	}
 

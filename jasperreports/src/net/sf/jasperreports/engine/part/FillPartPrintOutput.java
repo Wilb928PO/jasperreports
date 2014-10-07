@@ -24,11 +24,12 @@
 package net.sf.jasperreports.engine.part;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.TreeMap;
 
+import net.sf.jasperreports.engine.BookmarkHelper;
 import net.sf.jasperreports.engine.JRPrintPage;
 import net.sf.jasperreports.engine.PrintPart;
 import net.sf.jasperreports.engine.fill.BaseReportFiller;
@@ -49,6 +50,7 @@ public class FillPartPrintOutput implements PartPrintOutput
 	private TreeMap<Integer, PrintPart> parts;
 	private List<JRPrintPage> pages;
 	private DelayedFillActions delayedActions;
+	private BookmarkHelper bookmarkHelper;
 
 	public FillPartPrintOutput(BaseReportFiller filler)
 	{
@@ -57,6 +59,11 @@ public class FillPartPrintOutput implements PartPrintOutput
 		
 		delayedActions = new DelayedFillActions(filler);
 		delayedActions.createDelayedEvaluationTime(JREvaluationTime.EVALUATION_TIME_MASTER);
+		
+		if (filler.getFillContext().isCollectingBookmarks())
+		{
+			bookmarkHelper = new BookmarkHelper(true);
+		}
 	}
 
 	@Override
@@ -81,7 +88,10 @@ public class FillPartPrintOutput implements PartPrintOutput
 		}
 		
 		pages.add(page);
-		//addLastPageBookmarks();//FIXMEBOOK needed?
+		if (bookmarkHelper != null)
+		{
+			bookmarkHelper.addBookmarks(page, pageIndex);
+		}
 		
 		//FIXMEBOOK fill element Ids & virtualization listener
 		delayedActions.moveMasterEvaluations(delayedActionsSource, page, pageIndex);
@@ -93,36 +103,52 @@ public class FillPartPrintOutput implements PartPrintOutput
 		return pages.get(pageIndex);
 	}
 
-	public void appendTo(PartPrintOutput output)
-	{
-		Iterator<JRPrintPage> pagesIterator = pages.iterator();
-		int prevPartStart = 0;
-		for (Map.Entry<Integer, PrintPart> partEntry : parts.entrySet())
-		{
-			int partStart = partEntry.getKey();
-			// add the pages that belong to the previous part
-			for (int i = prevPartStart; i < partStart; i++)
-			{
-				JRPrintPage page = pagesIterator.next();
-				output.addPage(page, delayedActions);
-			}
-			prevPartStart = partStart;
-			
-			PrintPart part = partEntry.getValue();
-			output.startPart(part, FinalFillingPrintPart.instance());
-		}
-
-		// add the pages that belong to the last part
-		while (pagesIterator.hasNext())
-		{
-			JRPrintPage page = pagesIterator.next();
-			output.addPage(page, delayedActions);
-		}
-	}
-
 	@Override
 	public void pageUpdated(int partPageIndex)
 	{
 		//NOP
+	}
+
+	@Override
+	public void append(FillPartPrintOutput output)
+	{
+		int pageOffset = pages.size();
+		for (Map.Entry<Integer, PrintPart> partEntry : output.parts.entrySet())
+		{
+			parts.put(pageOffset + partEntry.getKey(), partEntry.getValue());
+		}
+		
+		for (ListIterator<JRPrintPage> it = output.pages.listIterator(); it.hasNext();)
+		{
+			JRPrintPage page = it.next();
+			pages.add(page);
+			delayedActions.moveMasterEvaluations(output.delayedActions, page, pageOffset + it.previousIndex());
+		}
+
+		if (bookmarkHelper != null && output.bookmarkHelper != null)
+		{
+			// adding in bulk
+			bookmarkHelper.appendBookmarks(output.bookmarkHelper, pageOffset);
+		}
+	}
+
+	public TreeMap<Integer, PrintPart> getParts()
+	{
+		return parts;
+	}
+
+	public List<JRPrintPage> getPages()
+	{
+		return pages;
+	}
+
+	public DelayedFillActions getDelayedActions()
+	{
+		return delayedActions;
+	}
+
+	public BookmarkHelper getBookmarkHelper()
+	{
+		return bookmarkHelper;
 	}
 }

@@ -42,4 +42,6 @@ public interface PartPrintOutput
 	
 	void pageUpdated(int partPageIndex);
 	
+	void append(FillPartPrintOutput output);
+	
 }

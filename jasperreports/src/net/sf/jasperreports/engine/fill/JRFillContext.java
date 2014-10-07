@@ -586,4 +586,9 @@ public class JRFillContext
 	{
 		void dispose();
 	}
+
+	public boolean isCollectingBookmarks()
+	{
+		return getMasterFiller().bookmarkHelper != null;
+	}
 }
