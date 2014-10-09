@@ -24,6 +24,8 @@
 package net.sf.jasperreports.engine.part;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -31,6 +33,7 @@ import java.util.TreeMap;
 
 import net.sf.jasperreports.engine.BookmarkHelper;
 import net.sf.jasperreports.engine.JRPrintPage;
+import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.PrintPart;
 import net.sf.jasperreports.engine.fill.BaseReportFiller;
 import net.sf.jasperreports.engine.fill.DelayedFillActions;
@@ -51,6 +54,7 @@ public class FillPartPrintOutput implements PartPrintOutput
 	private List<JRPrintPage> pages;
 	private DelayedFillActions delayedActions;
 	private BookmarkHelper bookmarkHelper;
+	private LinkedHashMap<String, JRStyle> styles;
 
 	public FillPartPrintOutput(BaseReportFiller filler)
 	{
@@ -64,6 +68,8 @@ public class FillPartPrintOutput implements PartPrintOutput
 		{
 			bookmarkHelper = new BookmarkHelper(true);
 		}
+		
+		styles = new LinkedHashMap<String, JRStyle>();
 	}
 
 	@Override
@@ -130,6 +136,8 @@ public class FillPartPrintOutput implements PartPrintOutput
 			// adding in bulk
 			bookmarkHelper.appendBookmarks(output.bookmarkHelper, pageOffset);
 		}
+		
+		addStyles(output.styles.values());
 	}
 
 	public TreeMap<Integer, PrintPart> getParts()
@@ -151,5 +159,31 @@ public class FillPartPrintOutput implements PartPrintOutput
 	public BookmarkHelper getBookmarkHelper()
 	{
 		return bookmarkHelper;
+	}
+
+	@Override
+	public void addStyles(Collection<JRStyle> stylesList)
+	{
+		for (JRStyle style : stylesList)
+		{
+			if (styles.containsKey(style.getName()))
+			{
+				log.debug("style " + style.getName() + " alread present");
+			}
+			else
+			{
+				if (log.isDebugEnabled())
+				{
+					log.debug("added style " + style.getName());
+				}
+				
+				styles.put(style.getName(), style);
+			}
+		}
+	}
+
+	public Collection<JRStyle> getStyles()
+	{
+		return styles.values();
 	}
 }

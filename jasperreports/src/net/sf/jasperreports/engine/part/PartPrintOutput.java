@@ -23,8 +23,11 @@
  */
 package net.sf.jasperreports.engine.part;
 
+import java.util.Collection;
+
 import net.sf.jasperreports.engine.BookmarkHelper;
 import net.sf.jasperreports.engine.JRPrintPage;
+import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.PrintPart;
 import net.sf.jasperreports.engine.fill.DelayedFillActions;
 
@@ -46,5 +49,7 @@ public interface PartPrintOutput
 	void append(FillPartPrintOutput output);
 	
 	BookmarkHelper getBookmarkHelper();
+
+	void addStyles(Collection<JRStyle> stylesList);
 	
 }

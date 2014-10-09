@@ -24,6 +24,7 @@
 package net.sf.jasperreports.engine.fill;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +41,7 @@ import net.sf.jasperreports.engine.JRGroup;
 import net.sf.jasperreports.engine.JRPrintPage;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JRScriptletException;
+import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.JasperReportsContext;
@@ -600,6 +602,8 @@ public class PartReportFiller extends BaseReportFiller
 		@Override
 		public void append(FillPartPrintOutput output)
 		{
+			addStyles(output.getStyles());
+			
 			int pageOffset = jasperPrint.getPages().size();
 			BookmarkHelper outputBookmarks = output.getBookmarkHelper();
 			BookmarkIterator bookmarkIterator = null;
@@ -672,6 +676,23 @@ public class PartReportFiller extends BaseReportFiller
 		public BookmarkHelper getBookmarkHelper()
 		{
 			return bookmarkHelper;
+		}
+
+		@Override
+		public void addStyles(Collection<JRStyle> stylesList)
+		{
+			for (JRStyle style : stylesList)
+			{
+				try
+				{
+					jasperPrint.addStyle(style, true);
+				}
+				catch (JRException e)
+				{
+					// should not happen
+					throw new JRRuntimeException(e);
+				}
+			}
 		}
 	}
 

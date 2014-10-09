@@ -285,7 +285,10 @@ public class SubreportFillPart extends BasePartFillComponent
 			
 			output.addPage(pageAdded.getPage(), pageAdded.getDelayedActions());
 			
-			//FIXMEBOOK styles
+			if (pageAdded.hasReportEnded())
+			{
+				output.addStyles(pageAdded.getJasperPrint().getStylesList());
+			}
 		}
 	}
 	
