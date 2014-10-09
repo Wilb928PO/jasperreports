@@ -34,10 +34,10 @@ import net.sf.jasperreports.engine.JRPropertiesHolder;
 import net.sf.jasperreports.engine.JRPropertiesMap;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JRVisitable;
-import net.sf.jasperreports.engine.component.Component;
 import net.sf.jasperreports.engine.component.ComponentKey;
 import net.sf.jasperreports.engine.design.events.JRChangeEventsSupport;
 import net.sf.jasperreports.engine.design.events.JRPropertyChangeSupport;
+import net.sf.jasperreports.engine.part.PartComponent;
 import net.sf.jasperreports.engine.part.PartComponentManager;
 import net.sf.jasperreports.engine.part.PartComponentsEnvironment;
 import net.sf.jasperreports.engine.part.PartEvaluationTime;
@@ -61,7 +61,7 @@ public class JRBasePart implements JRPart, Serializable, JRChangeEventsSupport
 	protected JRExpression printWhenExpression;
 
 	protected ComponentKey componentKey;
-	protected Component component;
+	protected PartComponent component;
 	
 	protected PartEvaluationTime evaluationTime;
 	
@@ -100,7 +100,7 @@ public class JRBasePart implements JRPart, Serializable, JRChangeEventsSupport
 		return uuid;
 	}
 
-	public Component getComponent()
+	public PartComponent getComponent()
 	{
 		return component;
 	}

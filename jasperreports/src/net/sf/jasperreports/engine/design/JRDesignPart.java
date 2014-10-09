@@ -28,8 +28,8 @@ import java.util.UUID;
 import net.sf.jasperreports.engine.JRConstants;
 import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.base.JRBasePart;
-import net.sf.jasperreports.engine.component.Component;
 import net.sf.jasperreports.engine.component.ComponentKey;
+import net.sf.jasperreports.engine.part.PartComponent;
 import net.sf.jasperreports.engine.part.PartEvaluationTime;
 
 
@@ -94,7 +94,7 @@ public class JRDesignPart extends JRBasePart
 	 * @param component the component instance
 	 * @see #getComponent()
 	 */
-	public void setComponent(Component component)
+	public void setComponent(PartComponent component)
 	{
 //FIXMEBOOK
 //		ContextAwareComponent contextAwareComponent = component instanceof ContextAwareComponent ? (ContextAwareComponent)component : null;

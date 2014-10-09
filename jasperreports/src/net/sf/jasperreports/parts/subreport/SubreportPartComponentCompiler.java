@@ -26,9 +26,9 @@ package net.sf.jasperreports.parts.subreport;
 import net.sf.jasperreports.engine.JRExpressionCollector;
 import net.sf.jasperreports.engine.JRSubreportParameter;
 import net.sf.jasperreports.engine.base.JRBaseObjectFactory;
-import net.sf.jasperreports.engine.component.Component;
-import net.sf.jasperreports.engine.component.ComponentCompiler;
 import net.sf.jasperreports.engine.design.JRVerifier;
+import net.sf.jasperreports.engine.part.PartComponent;
+import net.sf.jasperreports.engine.part.PartComponentCompiler;
 
 /**
  * Compile-time handler of {@link SubreportPartComponent list component} instances.
@@ -36,10 +36,10 @@ import net.sf.jasperreports.engine.design.JRVerifier;
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id: ListComponentCompiler.java 5877 2013-01-07 19:51:14Z teodord $
  */
-public class SubreportPartComponentCompiler implements ComponentCompiler
+public class SubreportPartComponentCompiler implements PartComponentCompiler
 {
 
-	public void collectExpressions(Component component, JRExpressionCollector collector)
+	public void collectExpressions(PartComponent component, JRExpressionCollector collector)
 	{
 		SubreportPartComponent subreport = (SubreportPartComponent) component;
 		
@@ -57,7 +57,7 @@ public class SubreportPartComponentCompiler implements ComponentCompiler
 		collector.addExpression(subreport.getExpression());
 	}
 
-	public Component toCompiledComponent(Component component,
+	public PartComponent toCompiledComponent(PartComponent component,
 			JRBaseObjectFactory baseFactory)
 	{
 		SubreportPartComponent subreportComponent = (SubreportPartComponent) component;
@@ -66,7 +66,7 @@ public class SubreportPartComponentCompiler implements ComponentCompiler
 		return compiledComponent;
 	}
 
-	public void verify(Component component, JRVerifier verifier)
+	public void verify(PartComponent component, JRVerifier verifier)
 	{
 //FIXMEBOOK
 //		SubreportPartComponent listComponent = (SubreportPartComponent) component;

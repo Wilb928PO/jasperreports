@@ -27,7 +27,6 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRPart;
 import net.sf.jasperreports.engine.JasperReportsContext;
-import net.sf.jasperreports.engine.component.Component;
 import net.sf.jasperreports.engine.component.ComponentKey;
 import net.sf.jasperreports.engine.fill.JRFillExpressionEvaluator;
 import net.sf.jasperreports.engine.fill.JRFillObjectFactory;
@@ -53,7 +52,7 @@ public class FillPart
 		reportFiller = (PartReportFiller) fillFactory.getReportFiller();//FIXMEBOOK
 		
 		ComponentKey componentKey = part.getComponentKey();
-		Component component = part.getComponent();
+		PartComponent component = part.getComponent();
 		
 		JasperReportsContext jasperReportsContext = fillFactory.getReportFiller().getJasperReportsContext();
 		PartComponentsEnvironment partsEnv = PartComponentsEnvironment.getInstance(jasperReportsContext);

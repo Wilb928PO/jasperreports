@@ -24,9 +24,9 @@
 package net.sf.jasperreports.parts.subreport;
 
 import net.sf.jasperreports.components.list.BaseFillList;
-import net.sf.jasperreports.engine.component.Component;
 import net.sf.jasperreports.engine.fill.JRFillCloneFactory;
 import net.sf.jasperreports.engine.fill.JRFillObjectFactory;
+import net.sf.jasperreports.engine.part.PartComponent;
 import net.sf.jasperreports.engine.part.PartComponentFillFactory;
 import net.sf.jasperreports.engine.part.PartFillComponent;
 
@@ -46,7 +46,7 @@ public class FillSubreportPartFactory implements PartComponentFillFactory
 		throw new UnsupportedOperationException();
 	}
 
-	public PartFillComponent toFillComponent(Component component,
+	public PartFillComponent toFillComponent(PartComponent component,
 			JRFillObjectFactory factory)
 	{
 		SubreportPartComponent subreportPart = (SubreportPartComponent) component;

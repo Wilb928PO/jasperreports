@@ -24,14 +24,14 @@
 package net.sf.jasperreports.engine.xml;
 
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.component.Component;
 import net.sf.jasperreports.engine.component.ComponentKey;
 import net.sf.jasperreports.engine.design.JRDesignPart;
+import net.sf.jasperreports.engine.part.PartComponent;
 
 import org.apache.commons.digester.Rule;
 
 /**
- * A digester rule that links a {@link Component} object with its parent
+ * A digester rule that links a {@link PartComponent} object with its parent
  * {@link JRDesignPart}.
  * 
  * <p>
@@ -56,13 +56,13 @@ public class JRPartComponentRule extends Rule
 	public void end(String namespace, String name) throws JRException
 	{
 		Object top = getDigester().peek();
-		if (!(top instanceof Component))
+		if (!(top instanceof PartComponent))
 		{
 			throw new JRException("Object of type " + top.getClass().getName() + " is not a "
-					+ Component.class.getName() + " instance");
+					+ PartComponent.class.getName() + " instance");
 		}
 
-		Component component = (Component) top;
+		PartComponent component = (PartComponent) top;
 		JRDesignPart part = (JRDesignPart) getDigester().peek(1);
 		String namespacePrefix = ((JRXmlDigester) getDigester()).getLastNamespacePrefix();
 		ComponentKey componentKey = new ComponentKey(namespace, namespacePrefix, name);

@@ -31,8 +31,8 @@ import net.sf.jasperreports.engine.JRPart;
 import net.sf.jasperreports.engine.JRSubreportParameter;
 import net.sf.jasperreports.engine.JRSubreportReturnValue;
 import net.sf.jasperreports.engine.JasperReportsContext;
-import net.sf.jasperreports.engine.component.Component;
 import net.sf.jasperreports.engine.component.ComponentKey;
+import net.sf.jasperreports.engine.part.PartComponent;
 import net.sf.jasperreports.engine.util.JRXmlWriteHelper;
 import net.sf.jasperreports.engine.util.XmlNamespace;
 import net.sf.jasperreports.engine.xml.JRXmlConstants;
@@ -58,7 +58,7 @@ public class PartComponentsXmlWriter extends AbstractPartComponentXmlWriter
 
 	public void writeToXml(JRPart part, JRXmlWriter reportWriter) throws IOException
 	{
-		Component component = part.getComponent();
+		PartComponent component = part.getComponent();
 		if (component instanceof SubreportPartComponent)
 		{
 			writeSubreport(part, reportWriter);

@@ -1826,7 +1826,7 @@
    <sequence>
     <element ref="jr:property" minOccurs="0" maxOccurs="unbounded"/>
     <element ref="jr:printWhenExpression" minOccurs="0" maxOccurs="1"/>
-    <element ref="jr:component"/>
+    <element ref="jr:partComponent"/>
    </sequence>
    <attribute name="uuid" type="string" use="optional">
 	<annotation>
@@ -1864,6 +1864,18 @@
    </attribute>  
   </complexType>
  </element>
+
+ <element name="partComponent" type="jr:partComponentType" abstract="true">
+  <annotation>
+   <documentation></documentation>
+  </annotation>
+ </element>
+  
+ <complexType name="partComponentType" abstract="true">
+  <annotation>
+   <documentation></documentation>
+  </annotation>
+ </complexType>
 
  <element name="break">
   <annotation>

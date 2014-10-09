@@ -23,40 +23,46 @@
  */
 package net.sf.jasperreports.engine.part;
 
-import net.sf.jasperreports.engine.fill.JRFillCloneFactory;
-import net.sf.jasperreports.engine.fill.JRFillObjectFactory;
+import net.sf.jasperreports.engine.JRExpressionCollector;
+import net.sf.jasperreports.engine.base.JRBaseObjectFactory;
+import net.sf.jasperreports.engine.design.JRVerifier;
 
 /**
- * A factory of part fill component instances.
+ * Responsible with handling a part componet during report compile.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id: ComponentFillFactory.java 5878 2013-01-07 20:23:13Z teodord $
- * @see PartComponentManager
- * @see PartFillComponent
+ * @version $Id$
  */
-public interface PartComponentFillFactory
+public interface PartComponentCompiler
 {
 
 	/**
-	 * Creates a fill component instance for a component.
+	 * Collects report expressions from a component.
 	 * 
 	 * @param component the component
-	 * @param factory the fill objects factory
-	 * @return the fill component instance
+	 * @param collector the expression collector
 	 */
-	PartFillComponent toFillComponent(PartComponent component, JRFillObjectFactory factory);
+	void collectExpressions(PartComponent component, JRExpressionCollector collector);
 
 	/**
-	 * Creates a clone of a fill component.
+	 * Logically verifies a component.
 	 * 
-	 * <p>
-	 * Fill components clones are currently only created when the component
-	 * element is placed inside a crosstab.
-	 * 
-	 * @param component the fill component
-	 * @param factory the clone factory
-	 * @return a clone of the fill component
+	 * @param component the component
+	 * @param verifier the verifier object, which can be used to raise validation
+	 * errors
+	 * @see JRVerifier#getCurrentComponentElement()
 	 */
-	PartFillComponent cloneFillComponent(PartFillComponent component, JRFillCloneFactory factory);
-	
+	void verify(PartComponent component, JRVerifier verifier);
+
+	/**
+	 * Provides a "compiled" component instance that will be included in the
+	 * compiled report.
+	 * 
+	 * @param component the component from the design report
+	 * @param baseFactory the factory of base/compiled report elements
+	 * @return a component instance that is to be included in the compiled
+	 * report
+	 */
+	PartComponent toCompiledComponent(PartComponent component, JRBaseObjectFactory baseFactory);
+
 }

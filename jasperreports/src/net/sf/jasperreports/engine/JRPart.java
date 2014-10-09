@@ -23,8 +23,8 @@
  */
 package net.sf.jasperreports.engine;
 
-import net.sf.jasperreports.engine.component.Component;
 import net.sf.jasperreports.engine.component.ComponentKey;
+import net.sf.jasperreports.engine.part.PartComponent;
 import net.sf.jasperreports.engine.part.PartEvaluationTime;
 
 
@@ -59,7 +59,7 @@ public interface JRPart extends JRPropertiesHolder, JRCloneable, JRIdentifiable
 	 * 
 	 * @return the component instance
 	 */
-	Component getComponent();
+	PartComponent getComponent();
 
 
 	/**

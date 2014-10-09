@@ -24,7 +24,6 @@
 package net.sf.jasperreports.engine.part;
 
 import net.sf.jasperreports.engine.JasperReportsContext;
-import net.sf.jasperreports.engine.component.ComponentCompiler;
 import net.sf.jasperreports.engine.component.ComponentDesignConverter;
 import net.sf.jasperreports.engine.component.ComponentKey;
 import net.sf.jasperreports.engine.component.ComponentsBundle;
@@ -47,7 +46,7 @@ public interface PartComponentManager
 	 * 
 	 * @return the component compiler
 	 */
-	ComponentCompiler getComponentCompiler(JasperReportsContext jasperReportsContext);
+	PartComponentCompiler getComponentCompiler(JasperReportsContext jasperReportsContext);
 
 	/**
 	 * Returns the component XML writer.
@@ -74,6 +73,7 @@ public interface PartComponentManager
 	 * @return the design component preview converter, or <code>null</code>
 	 * if no such converter exists for the component.
 	 */
+	//FIXMEBOOK
 	ComponentDesignConverter getDesignConverter(JasperReportsContext jasperReportsContext);
 	
 }

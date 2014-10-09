@@ -8,10 +8,10 @@
 
 	<import namespace="http://jasperreports.sourceforge.net/jasperreports" />
 
-	<element name="subreportPart" substitutionGroup="jr:component">
+	<element name="subreportPart" substitutionGroup="jr:partComponent">
 		<complexType>
 			<complexContent>
-				<extension base="jr:componentType">
+				<extension base="jr:partComponentType">
 					<sequence>
 						<element ref="jr:parametersMapExpression" minOccurs="0" maxOccurs="1"/>
 						<element ref="jr:subreportParameter" minOccurs="0" maxOccurs="unbounded"/>

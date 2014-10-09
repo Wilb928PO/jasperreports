@@ -24,7 +24,6 @@
 package net.sf.jasperreports.engine.part;
 
 import net.sf.jasperreports.engine.JasperReportsContext;
-import net.sf.jasperreports.engine.component.ComponentCompiler;
 import net.sf.jasperreports.engine.component.ComponentDesignConverter;
 
 /**
@@ -36,7 +35,7 @@ import net.sf.jasperreports.engine.component.ComponentDesignConverter;
 public class DefaultPartComponentManager implements PartComponentManager
 {
 
-	private ComponentCompiler componentCompiler;
+	private PartComponentCompiler componentCompiler;
 	private PartComponentXmlWriter componentXmlWriter;
 	private PartComponentFillFactory componentFillFactory;
 	private ComponentDesignConverter componentDesignConverter;
@@ -58,7 +57,7 @@ public class DefaultPartComponentManager implements PartComponentManager
 	}
 
 	
-	public ComponentCompiler getComponentCompiler(JasperReportsContext jasperReportsContext)
+	public PartComponentCompiler getComponentCompiler(JasperReportsContext jasperReportsContext)
 	{
 		return componentCompiler;
 	}
@@ -69,7 +68,7 @@ public class DefaultPartComponentManager implements PartComponentManager
 	 * @param componentCompiler the component compiler
 	 * @see #getComponentCompiler(JasperReportsContext)
 	 */
-	public void setComponentCompiler(ComponentCompiler componentCompiler)
+	public void setComponentCompiler(PartComponentCompiler componentCompiler)
 	{
 		this.componentCompiler = componentCompiler;
 	}

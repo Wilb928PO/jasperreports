@@ -23,40 +23,17 @@
  */
 package net.sf.jasperreports.engine.part;
 
-import net.sf.jasperreports.engine.fill.JRFillCloneFactory;
-import net.sf.jasperreports.engine.fill.JRFillObjectFactory;
+import net.sf.jasperreports.engine.JRPart;
 
 /**
- * A factory of part fill component instances.
+ * A marker interface that is to be implemented by classes that can be used
+ * as report part components.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id: ComponentFillFactory.java 5878 2013-01-07 20:23:13Z teodord $
- * @see PartComponentManager
- * @see PartFillComponent
+ * @version $Id$
+ * @see JRPart
  */
-public interface PartComponentFillFactory
+public interface PartComponent
 {
 
-	/**
-	 * Creates a fill component instance for a component.
-	 * 
-	 * @param component the component
-	 * @param factory the fill objects factory
-	 * @return the fill component instance
-	 */
-	PartFillComponent toFillComponent(PartComponent component, JRFillObjectFactory factory);
-
-	/**
-	 * Creates a clone of a fill component.
-	 * 
-	 * <p>
-	 * Fill components clones are currently only created when the component
-	 * element is placed inside a crosstab.
-	 * 
-	 * @param component the fill component
-	 * @param factory the clone factory
-	 * @return a clone of the fill component
-	 */
-	PartFillComponent cloneFillComponent(PartFillComponent component, JRFillCloneFactory factory);
-	
 }

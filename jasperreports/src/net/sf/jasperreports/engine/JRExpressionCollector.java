@@ -86,6 +86,7 @@ import net.sf.jasperreports.engine.component.ComponentCompiler;
 import net.sf.jasperreports.engine.component.ComponentKey;
 import net.sf.jasperreports.engine.component.ComponentManager;
 import net.sf.jasperreports.engine.component.ComponentsEnvironment;
+import net.sf.jasperreports.engine.part.PartComponent;
 import net.sf.jasperreports.engine.part.PartComponentManager;
 import net.sf.jasperreports.engine.part.PartComponentsEnvironment;
 
@@ -685,7 +686,7 @@ public class JRExpressionCollector
 
 			ComponentKey componentKey = part.getComponentKey();
 			PartComponentManager manager = PartComponentsEnvironment.getInstance(jasperReportsContext).getManager(componentKey);
-			Component component = part.getComponent();
+			PartComponent component = part.getComponent();
 			manager.getComponentCompiler(jasperReportsContext).collectExpressions(component, this);
 		}
 	}
