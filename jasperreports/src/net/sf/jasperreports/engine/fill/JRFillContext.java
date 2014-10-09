@@ -541,13 +541,6 @@ public class JRFillContext
 		return canceled;
 	}
 	
-	public void updateBookmark(JRPrintElement element)
-	{
-		// bookmarks are in the master filler
-		//FIXMEBOOK the bookmark might not have reached the master filler
-		masterFiller.updateBookmark(element);
-	}
-	
 	public Object getFillCache(String key)
 	{
 		return fillCaches.get(key);

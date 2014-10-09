@@ -23,6 +23,8 @@
  */
 package net.sf.jasperreports.engine.fill;
 
+import net.sf.jasperreports.engine.JRPrintElement;
+
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
@@ -34,5 +36,7 @@ public interface FillerParent
 	BaseReportFiller getFiller();
 	
 	DatasetExpressionEvaluator getCachedEvaluator();//FIXMEBOOK change name?
+
+	void updateBookmark(JRPrintElement element);
 
 }

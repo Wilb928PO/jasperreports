@@ -29,6 +29,7 @@ import net.sf.jasperreports.data.cache.DataCacheHandler;
 import net.sf.jasperreports.engine.BookmarkHelper;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRPart;
+import net.sf.jasperreports.engine.JRPrintElement;
 import net.sf.jasperreports.engine.JRPrintPage;
 import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.JRRuntimeException;
@@ -170,7 +171,7 @@ public class SubreportFillPart extends BasePartFillComponent
 			filler = createBandSubfiller(output);
 			break;
 		case PART:
-			filler = createPartSubfiller();
+			filler = createPartSubfiller(output);
 			break;
 		default:
 			throw new JRRuntimeException("Unknown report section type " + sectionType);
@@ -213,9 +214,9 @@ public class SubreportFillPart extends BasePartFillComponent
 		return bandFiller;
 	}
 
-	protected BaseReportFiller createPartSubfiller() throws JRException
+	protected BaseReportFiller createPartSubfiller(PartPrintOutput output) throws JRException
 	{
-		PartParent partParent = new PartParent();
+		PartParent partParent = new PartParent(output);
 		PartReportFiller partFiller = new PartReportFiller(getJasperReportsContext(), jasperReport, partParent);
 		return partFiller;
 	}
@@ -290,6 +291,16 @@ public class SubreportFillPart extends BasePartFillComponent
 				output.addStyles(pageAdded.getJasperPrint().getStylesList());
 			}
 		}
+
+		@Override
+		public void updateBookmark(JRPrintElement element)
+		{
+			BookmarkHelper bookmarkHelper = output.getBookmarkHelper();
+			if (bookmarkHelper != null)
+			{
+				bookmarkHelper.updateBookmark(element);
+			}
+		}
 	}
 	
 	protected static class FillerPrintPart implements FillingPrintPart
@@ -310,8 +321,11 @@ public class SubreportFillPart extends BasePartFillComponent
 	
 	protected class PartParent implements PartFillerParent
 	{
-		public PartParent()
+		private PartPrintOutput output;
+
+		public PartParent(PartPrintOutput output)
 		{
+			this.output = output;
 		}
 
 		@Override
@@ -325,6 +339,16 @@ public class SubreportFillPart extends BasePartFillComponent
 		{
 			//FIXMEBOOK
 			return null;
+		}
+
+		@Override
+		public void updateBookmark(JRPrintElement element)
+		{
+			BookmarkHelper bookmarkHelper = output.getBookmarkHelper();
+			if (bookmarkHelper != null)
+			{
+				bookmarkHelper.updateBookmark(element);
+			}
 		}
 	}
 

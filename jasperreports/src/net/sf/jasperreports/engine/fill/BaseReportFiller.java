@@ -645,11 +645,18 @@ public abstract class BaseReportFiller implements ReportFiller
 		}
 	}
 
-	protected void updateBookmark(JRPrintElement element)
+	public void updateBookmark(JRPrintElement element)
 	{
-		if (bookmarkHelper != null)
+		if (isMasterReport())
 		{
-			bookmarkHelper.updateBookmark(element);
+			if (bookmarkHelper != null)
+			{
+				bookmarkHelper.updateBookmark(element);
+			}
+		}
+		else
+		{
+			parent.updateBookmark(element);
 		}
 	}
 

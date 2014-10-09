@@ -24,6 +24,7 @@
 package net.sf.jasperreports.engine.fill;
 
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRPrintElement;
 import net.sf.jasperreports.engine.JRRuntimeException;
 
 import org.apache.commons.logging.Log;
@@ -135,6 +136,12 @@ public class FillerSubreportParent implements BandReportFillerParent
 	public int getCurrentPageStretchHeight()
 	{
 		return currentPageStretchHeight;
+	}
+
+	@Override
+	public void updateBookmark(JRPrintElement element)
+	{
+		parentFiller.updateBookmark(element);
 	}
 
 }
