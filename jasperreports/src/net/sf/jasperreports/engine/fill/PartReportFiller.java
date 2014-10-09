@@ -480,7 +480,7 @@ public class PartReportFiller extends BaseReportFiller
 
 	protected void fillChangedGroupEvaluatedParts() throws JRException
 	{
-		for (GroupFillParts group : groupParts)//FIXMEBOOK order?
+		for (GroupFillParts group : groupParts)
 		{
 			if (group.hasChanged())
 			{
