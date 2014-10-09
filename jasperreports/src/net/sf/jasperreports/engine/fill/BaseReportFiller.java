@@ -47,6 +47,7 @@ import net.sf.jasperreports.engine.JRVirtualizer;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.JasperReportsContext;
+import net.sf.jasperreports.engine.ReportContext;
 import net.sf.jasperreports.engine.base.JRVirtualPrintPage;
 import net.sf.jasperreports.engine.type.CalculationEnum;
 import net.sf.jasperreports.engine.util.DefaultFormatFactory;
@@ -401,6 +402,60 @@ public abstract class BaseReportFiller implements ReportFiller
 	{
 		mainDataset.setDatasourceParameterValue(parameterValues, ds);
 	}
+	
+	protected void setParameters(Map<String,Object> parameterValues) throws JRException
+	{
+		initVirtualizationContext(parameterValues);
+
+		setFormatFactory(parameterValues);
+
+		setIgnorePagination(parameterValues);
+
+		if (parent == null)
+		{
+			ReportContext reportContext = (ReportContext) parameterValues.get(JRParameter.REPORT_CONTEXT);
+			fillContext.setReportContext(reportContext);
+		}
+
+		mainDataset.setParameterValues(parameterValues);
+		mainDataset.initDatasource();
+
+		this.scriptlet = mainDataset.delegateScriptlet;
+
+		if (!isSubreport())
+		{
+			fillContext.setMasterFormatFactory(getFormatFactory());
+			fillContext.setMasterLocale(getLocale());
+			fillContext.setMasterTimeZone(getTimeZone());
+		}
+	}
+
+	protected void setIgnorePagination(Map<String,Object> parameterValues)
+	{
+		if (parent == null)//pagination is driven by the master
+		{
+			Boolean isIgnorePaginationParam = (Boolean) parameterValues.get(JRParameter.IS_IGNORE_PAGINATION);
+			if (isIgnorePaginationParam != null)
+			{
+				fillContext.setIgnorePagination(isIgnorePaginationParam.booleanValue());
+			}
+			else
+			{
+				boolean ignorePagination = jasperReport.isIgnorePagination();
+				fillContext.setIgnorePagination(ignorePagination);
+				parameterValues.put(JRParameter.IS_IGNORE_PAGINATION, ignorePagination ? Boolean.TRUE : Boolean.FALSE);
+			}
+		}
+		else
+		{
+			boolean ignorePagination = fillContext.isIgnorePagination();
+			parameterValues.put(JRParameter.IS_IGNORE_PAGINATION, ignorePagination ? Boolean.TRUE : Boolean.FALSE);
+		}
+		
+		ignorePaginationSet();
+	}
+	
+	protected abstract void ignorePaginationSet();
 	
 	protected boolean isInterrupted()
 	{

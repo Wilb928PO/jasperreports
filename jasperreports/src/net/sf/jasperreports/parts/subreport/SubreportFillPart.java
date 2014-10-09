@@ -261,6 +261,12 @@ public class SubreportFillPart extends BasePartFillComponent
 		}
 
 		@Override
+		public boolean isParentPagination()
+		{
+			return false;
+		}
+
+		@Override
 		public boolean isPageBreakInhibited()
 		{
 			return false;

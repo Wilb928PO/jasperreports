@@ -221,6 +221,11 @@ public class JRHorizontalFiller extends JRBaseFiller
 			}
 		}
 
+		if (fillContext.isIgnorePagination())
+		{
+			jasperPrint.setPageHeight(offsetY + bottomMargin);
+		}
+
 		if (isSubreport())
 		{
 			addPageToParent(true);
@@ -228,11 +233,6 @@ public class JRHorizontalFiller extends JRBaseFiller
 		else
 		{
 			addLastPageBookmarks();
-		}
-
-		if (fillContext.isIgnorePagination())
-		{
-			jasperPrint.setPageHeight(offsetY + bottomMargin);
 		}
 		
 		if (bookmarkHelper != null)

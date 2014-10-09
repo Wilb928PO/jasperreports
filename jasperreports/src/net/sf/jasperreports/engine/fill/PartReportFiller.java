@@ -37,7 +37,6 @@ import net.sf.jasperreports.engine.BookmarkIterator;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRGroup;
-import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JRPrintPage;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JRScriptletException;
@@ -45,7 +44,6 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.PrintPart;
-import net.sf.jasperreports.engine.ReportContext;
 import net.sf.jasperreports.engine.part.DelayedPrintPart;
 import net.sf.jasperreports.engine.part.FillPart;
 import net.sf.jasperreports.engine.part.FillPartPrintOutput;
@@ -262,33 +260,11 @@ public class PartReportFiller extends BaseReportFiller
 	{
 		//NOP
 	}
-	
-	protected void setParameters(Map<String,Object> parameterValues) throws JRException
+
+	@Override
+	protected void ignorePaginationSet()
 	{
-		//FIXMEBOOK copied from JRBaseFiller
-		initVirtualizationContext(parameterValues);
-
-		setFormatFactory(parameterValues);
-
-		//setIgnorePagination(parameterValues);
-
-		if (parent == null)
-		{
-			ReportContext reportContext = (ReportContext) parameterValues.get(JRParameter.REPORT_CONTEXT);
-			fillContext.setReportContext(reportContext);
-		}
-
-		mainDataset.setParameterValues(parameterValues);
-		mainDataset.initDatasource();
-
-		this.scriptlet = mainDataset.delegateScriptlet;
-
-		if (!isSubreport())
-		{
-			fillContext.setMasterFormatFactory(getFormatFactory());
-			fillContext.setMasterLocale(getLocale());
-			fillContext.setMasterTimeZone(getTimeZone());
-		}
+		//NOP
 	}
 	
 	protected void fillReport() throws JRException

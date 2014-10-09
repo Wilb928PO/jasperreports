@@ -860,36 +860,6 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 	 */
 	protected abstract void fillReport() throws JRException;
 
-	/**
-	 *
-	 */
-	protected void setParameters(Map<String,Object> parameterValues) throws JRException
-	{
-		initVirtualizationContext(parameterValues);
-
-		setFormatFactory(parameterValues);
-
-		setIgnorePagination(parameterValues);
-
-		if (parent == null)
-		{
-			ReportContext reportContext = (ReportContext) parameterValues.get(JRParameter.REPORT_CONTEXT);
-			fillContext.setReportContext(reportContext);
-		}
-
-		mainDataset.setParameterValues(parameterValues);
-		mainDataset.initDatasource();
-
-		this.scriptlet = mainDataset.delegateScriptlet;
-
-		if (!isSubreport())
-		{
-			fillContext.setMasterFormatFactory(getFormatFactory());
-			fillContext.setMasterLocale(getLocale());
-			fillContext.setMasterTimeZone(getTimeZone());
-		}
-	}
-
 	@Override
 	protected void virtualizationContextCreated()
 	{
@@ -897,29 +867,9 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 		virtualizationContext.addListener(virtualizationListener);
 	}
 
-
-	private void setIgnorePagination(Map<String,Object> parameterValues)
+	@Override
+	protected void ignorePaginationSet()
 	{
-		if (parent == null)//pagination is driven by the master
-		{
-			Boolean isIgnorePaginationParam = (Boolean) parameterValues.get(JRParameter.IS_IGNORE_PAGINATION);
-			if (isIgnorePaginationParam != null)
-			{
-				fillContext.setIgnorePagination(isIgnorePaginationParam.booleanValue());
-			}
-			else
-			{
-				boolean ignorePagination = jasperReport.isIgnorePagination();
-				fillContext.setIgnorePagination(ignorePagination);
-				parameterValues.put(JRParameter.IS_IGNORE_PAGINATION, ignorePagination ? Boolean.TRUE : Boolean.FALSE);
-			}
-		}
-		else
-		{
-			boolean ignorePagination = fillContext.isIgnorePagination();
-			parameterValues.put(JRParameter.IS_IGNORE_PAGINATION, ignorePagination ? Boolean.TRUE : Boolean.FALSE);
-		}
-
 		if (fillContext.isIgnorePagination())
 		{
 			isTitleNewPage = false;
@@ -934,7 +884,7 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 				}
 			}
 			
-			if (isMasterReport())//subreport page height is already set by master
+			if (isMasterReport() || !bandReportParent.isParentPagination())//subreport page height is already set by band master
 			{
 				setPageHeight(PAGE_HEIGHT_PAGINATION_IGNORED);
 			}
