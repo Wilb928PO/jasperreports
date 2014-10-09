@@ -287,12 +287,6 @@ public class SubreportFillPart extends BasePartFillComponent
 			
 			//FIXMEBOOK styles
 		}
-
-		@Override
-		public JRPrintPage getPage(int pageIndex)
-		{
-			return output.getPage(pageIndex);
-		}
 	}
 	
 	protected static class FillerPrintPart implements FillingPrintPart

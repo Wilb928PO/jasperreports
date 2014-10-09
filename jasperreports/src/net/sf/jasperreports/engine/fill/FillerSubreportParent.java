@@ -23,12 +23,11 @@
  */
 package net.sf.jasperreports.engine.fill;
 
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRRuntimeException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRPrintPage;
-import net.sf.jasperreports.engine.JRRuntimeException;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
@@ -115,13 +114,6 @@ public class FillerSubreportParent implements BandReportFillerParent
 
 			suspendSubreportRunner(pageAdded);
 		}
-	}
-
-	@Override
-	public JRPrintPage getPage(int pageIndex)
-	{
-		//FIXMEBOOK not used
-		return null;
 	}
 
 	protected void suspendSubreportRunner(FillerPageAddedEvent pageAdded) throws JRException

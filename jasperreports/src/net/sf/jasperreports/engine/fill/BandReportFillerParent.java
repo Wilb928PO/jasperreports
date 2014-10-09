@@ -24,7 +24,6 @@
 package net.sf.jasperreports.engine.fill;
 
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRPrintPage;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
@@ -44,7 +43,5 @@ public interface BandReportFillerParent extends FillerParent
 	boolean isPageBreakInhibited();
 
 	void addPage(FillerPageAddedEvent pageAdded) throws JRException;
-
-	JRPrintPage getPage(int pageIndex);
 
 }
