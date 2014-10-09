@@ -368,7 +368,6 @@ public class JRFillBand extends JRFillElementContainer implements JRBand, JROrig
 		) throws JRException
 	{
 		filler.checkInterrupted();
-		filler.fillContext.ensureMasterPageAvailable();
 
 		filler.setBandOverFlowAllowed(isOverflowAllowed);
 
