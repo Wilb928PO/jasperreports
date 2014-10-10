@@ -54,18 +54,6 @@ public class PartComponentsXmlDigesterConfigurer implements XmlDigesterConfigure
 		String subreportPattern = "*/part/subreportPart";
 		digester.addObjectCreate(subreportPattern, StandardSubreportPartComponent.class);
 		digester.addSetProperties(subreportPattern);
-		//FIXMEBOOK
-//		digester.addSetProperties(subreportPattern,
-//				//properties to be ignored by this rule
-//				new String[]{"printOrder"}, 
-//				new String[0]);
-//		digester.addRule(subreportPattern, new XmlConstantPropertyRule(
-//				"printOrder", "printOrderValue", PrintOrderEnum.values()));
-		
-//		String listContentsPattern = listPattern + "/listContents";
-//		digester.addObjectCreate(listContentsPattern, DesignListContents.class);
-//		digester.addSetProperties(listContentsPattern);
-//		digester.addSetNext(listContentsPattern, "setContents");
 
 		String partNamespace = digester.getRuleNamespaceURI();
 		String jrNamespace = JRXmlConstants.JASPERREPORTS_NAMESPACE;
@@ -74,7 +62,7 @@ public class PartComponentsXmlDigesterConfigurer implements XmlDigesterConfigure
 
 		String paramMapExpressionPattern = subreportPattern + "/parametersMapExpression";
 		digester.addFactoryCreate(paramMapExpressionPattern, 
-				JRExpressionFactory.StringExpressionFactory.class.getName());
+				JRExpressionFactory.class.getName());
 		digester.addCallMethod(paramMapExpressionPattern, "setText", 0);
 		digester.addSetNext(paramMapExpressionPattern, "setParametersMapExpression", 
 				JRExpression.class.getName());
@@ -84,7 +72,7 @@ public class PartComponentsXmlDigesterConfigurer implements XmlDigesterConfigure
 		digester.addSetNext("*/subreportPart/subreportParameter", "addParameter", JRSubreportParameter.class.getName());
 
 		/*   */
-		digester.addFactoryCreate("*/subreportPart/subreportParameter/subreportParameterExpression", JRExpressionFactory.ObjectExpressionFactory.class.getName());
+		digester.addFactoryCreate("*/subreportPart/subreportParameter/subreportParameterExpression", JRExpressionFactory.class.getName());
 		digester.addSetNext("*/subreportPart/subreportParameter/subreportParameterExpression", "setExpression", JRExpression.class.getName());
 		digester.addCallMethod("*/subreportPart/subreportParameter/subreportParameterExpression", "setText", 0);
 
@@ -94,7 +82,7 @@ public class PartComponentsXmlDigesterConfigurer implements XmlDigesterConfigure
 
 		String subreportExpressionPattern = subreportPattern + "/subreportExpression";
 		digester.addFactoryCreate(subreportExpressionPattern, 
-				JRExpressionFactory.StringExpressionFactory.class.getName());
+				JRExpressionFactory.class.getName());
 		digester.addCallMethod(subreportExpressionPattern, "setText", 0);
 		digester.addSetNext(subreportExpressionPattern, "setExpression", 
 				JRExpression.class.getName());
