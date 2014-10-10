@@ -47,6 +47,7 @@ public class JRDesignPart extends JRBasePart
 	private static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
 
 	public static final String PROPERTY_PRINT_WHEN_EXPRESSION = "printWhenExpression";
+	public static final String PROPERTY_PART_NAME_EXPRESSION = "partNameExpression";
 	public static final String PROPERTY_COMPONENT = "component";
 	public static final String PROPERTY_COMPONENT_KEY = "componentKey";
 	public static final String PROPERTY_EVALUATION_TIME = "evaluationTime";
@@ -71,6 +72,13 @@ public class JRDesignPart extends JRBasePart
 		Object old = this.printWhenExpression;
 		this.printWhenExpression = expression;
 		getEventSupport().firePropertyChange(PROPERTY_PRINT_WHEN_EXPRESSION, old, this.printWhenExpression);
+	}
+	
+	public void setPartNameExpression(JRExpression expression)
+	{
+		Object old = this.partNameExpression;
+		this.partNameExpression = expression;
+		getEventSupport().firePropertyChange(PROPERTY_PART_NAME_EXPRESSION, old, this.partNameExpression);
 	}
 	
 

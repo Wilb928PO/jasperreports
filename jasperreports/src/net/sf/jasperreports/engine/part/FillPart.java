@@ -44,6 +44,7 @@ public class FillPart
 	private PartReportFiller reportFiller;
 	
 	private PartFillComponent fillComponent;
+	private String partName;
 
 	public FillPart(JRPart part, JRFillObjectFactory fillFactory)
 	{
@@ -72,6 +73,7 @@ public class FillPart
 			return;
 		}
 		
+		evaluatePartNameExpression(evaluation);
 		fillComponent.evaluate(evaluation);
 		fillComponent.fill(output);
 	}
@@ -92,15 +94,21 @@ public class FillPart
 		return result;
 	}
 
+	protected void evaluatePartNameExpression(byte evaluation) throws JRException
+	{
+		JRExpression expression = reportPart.getPartNameExpression();
+		partName = expression == null ? null : (String) expressionEvaluator.evaluate(expression, evaluation);
+	}
+
 	public PartEvaluationTime getEvaluationTime()
 	{
 		PartEvaluationTime evaluationTime = reportPart.getEvaluationTime();
 		return evaluationTime == null ? StandardPartEvaluationTime.EVALUATION_NOW : evaluationTime;
 	}
-	
-	public PartReportFiller getFiller()
+
+	public String getPartName()
 	{
-		return reportFiller;
+		return partName;
 	}
 	
 	protected class Context implements PartFillContext
@@ -109,6 +117,12 @@ public class FillPart
 		public JRPart getPart()
 		{
 			return reportPart;
+		}
+
+		@Override
+		public FillPart getFillPart()
+		{
+			return FillPart.this;
 		}
 
 		@Override

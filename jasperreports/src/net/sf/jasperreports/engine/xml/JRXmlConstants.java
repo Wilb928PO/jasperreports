@@ -185,6 +185,7 @@ public final class JRXmlConstants
 	 * JRPartFactory associated constants
 	 */
 	public static final String ELEMENT_part = "part";
+	public static final String ELEMENT_partNameExpression = "partNameExpression";
 
 	/**
 	 * JRPenFactory associated constants

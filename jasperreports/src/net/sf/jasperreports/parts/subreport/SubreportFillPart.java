@@ -221,6 +221,11 @@ public class SubreportFillPart extends BasePartFillComponent
 		return partFiller;
 	}
 	
+	protected String getPartName()
+	{
+		return fillContext.getFillPart().getPartName();
+	}
+	
 	protected class PartBandParent implements BandReportFillerParent
 	{
 		private final PartPrintOutput output;
@@ -279,7 +284,7 @@ public class SubreportFillPart extends BasePartFillComponent
 			if (pageAdded.getPageIndex() == 0)
 			{
 				//first page, adding the part info
-				SimplePrintPart printPart = SimplePrintPart.fromJasperPrint(pageAdded.getJasperPrint());
+				SimplePrintPart printPart = SimplePrintPart.fromJasperPrint(pageAdded.getJasperPrint(), getPartName());
 				FillerPrintPart fillingPart = new FillerPrintPart(pageAdded.getFiller());//FIXMEBOOK strange
 				output.startPart(printPart, fillingPart);
 			}

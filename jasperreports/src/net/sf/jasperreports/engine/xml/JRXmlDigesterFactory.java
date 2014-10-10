@@ -568,6 +568,8 @@ public final class JRXmlDigesterFactory
 		digester.addRule("*/part", new UuidPropertyRule("uuid", "UUID"));
 		digester.addSetNext("*/part", "addPart", JRPart.class.getName());
 
+		addExpressionRules(digester, "*/part/" + JRXmlConstants.ELEMENT_partNameExpression, "setPartNameExpression");
+
 		Collection<PartComponentsBundle> components = PartComponentsEnvironment.getInstance(DefaultJasperReportsContext.getInstance()).getBundles();
 		for (Iterator<PartComponentsBundle> it = components.iterator(); it.hasNext();)
 		{

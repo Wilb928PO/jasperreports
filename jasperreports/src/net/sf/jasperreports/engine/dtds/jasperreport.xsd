@@ -1826,6 +1826,7 @@
    <sequence>
     <element ref="jr:property" minOccurs="0" maxOccurs="unbounded"/>
     <element ref="jr:printWhenExpression" minOccurs="0" maxOccurs="1"/>
+    <element ref="jr:partNameExpression" minOccurs="0" maxOccurs="1"/>
     <element ref="jr:partComponent"/>
    </sequence>
    <attribute name="uuid" type="string" use="optional">
@@ -1862,6 +1863,14 @@
        <documentation>Specifies the group at which to evaluate the part when <code>evaluationTime</code> is Group.</documentation>
      </annotation>
    </attribute>  
+  </complexType>
+ </element>
+
+ <element name="partNameExpression">
+  <annotation>
+   <documentation>An expression that will provide a name for a report part.</documentation>
+  </annotation>
+  <complexType mixed="true">
   </complexType>
  </element>
 

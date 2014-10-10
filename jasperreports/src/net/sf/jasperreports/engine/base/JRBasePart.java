@@ -59,6 +59,7 @@ public class JRBasePart implements JRPart, Serializable, JRChangeEventsSupport
 	private JRPropertiesMap propertiesMap;
 
 	protected JRExpression printWhenExpression;
+	protected JRExpression partNameExpression;
 
 	protected ComponentKey componentKey;
 	protected PartComponent component;
@@ -76,6 +77,7 @@ public class JRBasePart implements JRPart, Serializable, JRChangeEventsSupport
 		this.uuid = part.getUUID();
 		this.propertiesMap = JRPropertiesMap.getPropertiesClone(part);
 		this.printWhenExpression = factory.getExpression(part.getPrintWhenExpression());
+		this.partNameExpression = factory.getExpression(part.getPartNameExpression());
 		this.evaluationTime = part.getEvaluationTime();
 
 		componentKey = part.getComponentKey();
@@ -122,6 +124,12 @@ public class JRBasePart implements JRPart, Serializable, JRChangeEventsSupport
 	public JRExpression getPrintWhenExpression()
 	{
 		return this.printWhenExpression;
+	}
+
+	@Override
+	public JRExpression getPartNameExpression()
+	{
+		return partNameExpression;
 	}
 
 	public boolean hasProperties()
@@ -175,6 +183,7 @@ public class JRBasePart implements JRPart, Serializable, JRChangeEventsSupport
 		}
 
 		clone.printWhenExpression = JRCloneUtils.nullSafeClone(printWhenExpression);
+		clone.partNameExpression = JRCloneUtils.nullSafeClone(partNameExpression);
 		clone.propertiesMap = JRPropertiesMap.getPropertiesClone(this);
 		clone.uuid = null;
 		clone.eventSupport = null;

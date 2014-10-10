@@ -39,8 +39,9 @@ public interface JRPart extends JRPropertiesHolder, JRCloneable, JRIdentifiable
 	/**
 	 * Returns the boolean expression that specifies if the part will be displayed.
 	 */
-	public JRExpression getPrintWhenExpression();
+	JRExpression getPrintWhenExpression();
 
+	JRExpression getPartNameExpression();
 		
 	/**
 	 * Returns the component type key for this part.

@@ -683,6 +683,7 @@ public class JRExpressionCollector
 		if (part != null)
 		{
 			addExpression(part.getPrintWhenExpression());
+			addExpression(part.getPartNameExpression());
 
 			ComponentKey componentKey = part.getComponentKey();
 			PartComponentManager manager = PartComponentsEnvironment.getInstance(jasperReportsContext).getManager(componentKey);

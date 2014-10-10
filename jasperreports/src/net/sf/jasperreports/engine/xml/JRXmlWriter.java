@@ -855,6 +855,7 @@ public class JRXmlWriter extends JRXmlBaseWriter
 
 			writeProperties(part);
 			writeExpression(JRXmlConstants.ELEMENT_printWhenExpression, part.getPrintWhenExpression(), false);
+			writeExpression(JRXmlConstants.ELEMENT_partNameExpression, part.getPartNameExpression(), false);
 			
 			componentXmlWriter.writeToXml(part, this);
 

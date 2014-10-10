@@ -34,10 +34,15 @@ public class SimplePrintPart implements PrintPart, Serializable
 {
 	private static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
 	
-	public static SimplePrintPart fromJasperPrint(JasperPrint partJasperPrint)
+	public static SimplePrintPart fromJasperPrint(JasperPrint partJasperPrint, String partName)
 	{
 		SimplePrintPart printPart = new SimplePrintPart();
-		printPart.setName(partJasperPrint.getName());
+		
+		if (partName == null)
+		{
+			partName = partJasperPrint.getName();
+		}
+		printPart.setName(partName);
 		
 		SimplePrintPageFormat pageFormat = new SimplePrintPageFormat();
 		pageFormat.setPageWidth(partJasperPrint.getPageWidth());

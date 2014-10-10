@@ -37,6 +37,8 @@ public interface PartFillContext
 	
 	JRPart getPart();
 	
+	FillPart getFillPart();
+	
 	PartReportFiller getFiller();
 	
 	Object evaluate(JRExpression expression, byte evaluation) throws JRException;
