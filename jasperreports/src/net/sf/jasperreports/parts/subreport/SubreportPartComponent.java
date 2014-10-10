@@ -27,7 +27,6 @@ import net.sf.jasperreports.engine.JRCloneable;
 import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRSubreportParameter;
 import net.sf.jasperreports.engine.JRSubreportReturnValue;
-import net.sf.jasperreports.engine.JRVisitable;
 import net.sf.jasperreports.engine.part.PartComponent;
 
 /**
@@ -36,7 +35,7 @@ import net.sf.jasperreports.engine.part.PartComponent;
  * @author Teodor Danciu (teodord@users.sourceforge.net)
  * @version $Id: ListComponent.java 5877 2013-01-07 19:51:14Z teodord $
  */
-public interface SubreportPartComponent extends PartComponent, JRCloneable, JRVisitable
+public interface SubreportPartComponent extends PartComponent, JRCloneable
 {
 
 	/**

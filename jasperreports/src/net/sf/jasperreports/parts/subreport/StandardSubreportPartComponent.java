@@ -36,7 +36,6 @@ import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JRSubreportParameter;
 import net.sf.jasperreports.engine.JRSubreportReturnValue;
-import net.sf.jasperreports.engine.JRVisitor;
 import net.sf.jasperreports.engine.base.JRBaseObjectFactory;
 import net.sf.jasperreports.engine.base.JRBaseSubreport;
 import net.sf.jasperreports.engine.design.JRDesignSubreport;
@@ -306,16 +305,6 @@ public class StandardSubreportPartComponent implements Serializable, SubreportPa
 		}
 		
 		return eventSupport;
-	}
-
-	@Override
-	public void visit(JRVisitor visitor)
-	{
-//FIXMEBOOK
-//		if (ElementsVisitorUtils.visitDeepElements(visitor) && contents != null)
-//		{
-//			ElementsVisitorUtils.visitElements(visitor, contents.getChildren());
-//		}
 	}
 	
 }
