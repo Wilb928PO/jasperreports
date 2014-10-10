@@ -1318,10 +1318,17 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 	protected void subreportPageFilled(JRPrintPage subreportPage)
 	{
 		FillPageKey subreportKey = new FillPageKey(subreportPage);
-		FillPageKey parentKey = new FillPageKey(((JRBaseFiller) parent.getFiller()).printPage);//FIXMEBOOK
+		
+		// this method is only called when the parent is a band report
+		JRBaseFiller parentFiller = (JRBaseFiller) parent.getFiller();
+		//FIXMEBOOK the index is only correct when the parent is the master, see fillListener.pageUpdated
+		int parentPageIndex = parentFiller.getJasperPrint().getPages().size() - 1;
+		FillPageKey parentKey = new FillPageKey(parentFiller.printPage, parentPageIndex);
 		
 		// move all delayed elements from the subreport page to the master page
 		moveBoundActions(subreportKey, parentKey);
+		// move all master evaluations to the parent
+		parent.getFiller().delayedActions.moveMasterEvaluations(delayedActions, parentKey);
 	}
 
 	protected void moveBoundActions(FillPageKey subreportKey, FillPageKey parentKey)

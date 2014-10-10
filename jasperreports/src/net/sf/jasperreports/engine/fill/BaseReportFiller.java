@@ -178,6 +178,10 @@ public abstract class BaseReportFiller implements ReportFiller
 		}
 		
 		delayedActions = new DelayedFillActions(this);
+		if (log.isDebugEnabled())
+		{
+			log.debug("created " + delayedActions + " for filler " + fillerId);
+		}
 	}
 	
 	private List<String> readPrintTransferPropertyPrefixes()

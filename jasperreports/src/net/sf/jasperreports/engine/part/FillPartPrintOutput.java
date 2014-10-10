@@ -63,6 +63,10 @@ public class FillPartPrintOutput implements PartPrintOutput
 		
 		delayedActions = new DelayedFillActions(filler);
 		delayedActions.createDelayedEvaluationTime(JREvaluationTime.EVALUATION_TIME_MASTER);
+		if (log.isDebugEnabled())
+		{
+			log.debug(this + " created " + delayedActions);
+		}
 		
 		if (filler.getFillContext().isCollectingBookmarks())
 		{

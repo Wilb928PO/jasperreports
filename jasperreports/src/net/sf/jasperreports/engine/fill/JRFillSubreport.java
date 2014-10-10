@@ -299,6 +299,12 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 	{
 		if (printPage != null)
 		{
+			if (subreportFiller.delayedActions.hasMasterDelayedActions(printPage))
+			{
+				// if there are master delayed evaluations, the evaluator needs to keep the current variables and cannot be reused
+				evictReportEvaluator();
+			}
+
 			subreportFiller.subreportPageFilled(printPage);
 		}
 	}
@@ -475,6 +481,11 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 			}
 		}
 		return evaluator;
+	}
+	
+	protected void evictReportEvaluator()
+	{
+		loadedEvaluators.remove(jasperReport);
 	}
 
 

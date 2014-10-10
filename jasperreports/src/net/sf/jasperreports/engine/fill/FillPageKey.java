@@ -61,4 +61,9 @@ public class FillPageKey
 		
 		return page.equals(((FillPageKey) obj).page);
 	}
+	
+	public String toString()
+	{
+		return "page " + page + ", index " + index;
+	}
 }

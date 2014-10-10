@@ -75,6 +75,11 @@ public class DelayedFillActions
 	public void addDelayedAction(Object actionKey, EvaluationBoundAction action, 
 			JREvaluationTime evaluationTime, FillPageKey pageKey)
 	{
+		if (log.isDebugEnabled())
+		{
+			log.debug(this + " adding delayed action " + action + " at " + evaluationTime + ", key " + pageKey);
+		}
+			
 		// get the pages map for the evaluation
 		LinkedHashMap<FillPageKey, LinkedMap<Object, EvaluationBoundAction>> pagesMap = actionsMap.get(evaluationTime);
 		
@@ -171,6 +176,7 @@ public class DelayedFillActions
 	
 	public boolean hasDelayedActions(JRPrintPage page)
 	{
+		FillPageKey pageKey = new FillPageKey(page);
 		for (LinkedHashMap<FillPageKey, LinkedMap<Object, EvaluationBoundAction>> map : actionsMap.values())
 		{
 			fillContext.lockVirtualizationContext();
@@ -178,7 +184,7 @@ public class DelayedFillActions
 			{
 				synchronized (map)
 				{
-					LinkedMap<Object, EvaluationBoundAction> boundMap = map.get(new FillPageKey(page));
+					LinkedMap<Object, EvaluationBoundAction> boundMap = map.get(pageKey);
 					if (boundMap != null && !boundMap.isEmpty())
 					{
 						return true;
@@ -194,8 +200,22 @@ public class DelayedFillActions
 		return false;
 	}
 	
+	protected boolean hasMasterDelayedActions(JRPrintPage page)
+	{
+		LinkedHashMap<FillPageKey, LinkedMap<Object, EvaluationBoundAction>> masterActions = actionsMap.get(JREvaluationTime.EVALUATION_TIME_MASTER);
+		FillPageKey pageKey = new FillPageKey(page);
+		//FIXMEBOOK lock/sync?
+		LinkedMap<Object, EvaluationBoundAction> pageMasterActions = masterActions.get(pageKey);
+		return pageMasterActions != null && !pageMasterActions.isEmpty();
+	}
+	
 	public void moveActions(FillPageKey fromKey, FillPageKey toKey)
 	{
+		if (log.isDebugEnabled())
+		{
+			log.debug(this + " moving actions from " + fromKey + " to " + toKey);
+		}
+		
 		for (LinkedHashMap<FillPageKey, LinkedMap<Object, EvaluationBoundAction>> map : actionsMap.values())
 		{
 			fillContext.lockVirtualizationContext();
@@ -335,20 +355,44 @@ public class DelayedFillActions
 
 	public void moveMasterEvaluations(DelayedFillActions sourceActions, JRPrintPage page, int pageIndex)
 	{
+		FillPageKey sourcePageKey = new FillPageKey(page);
+		FillPageKey destinationPageKey = new FillPageKey(page, pageIndex);
+		moveMasterEvaluations(sourceActions, sourcePageKey, destinationPageKey);
+	}
+	
+	public void moveMasterEvaluations(DelayedFillActions sourceActions, FillPageKey pageKey)
+	{
+		moveMasterEvaluations(sourceActions, pageKey, pageKey);
+	}
+
+	protected void moveMasterEvaluations(DelayedFillActions sourceActions, FillPageKey sourcePageKey, FillPageKey destinationPageKey)
+	{
+		if (log.isDebugEnabled())
+		{
+			log.debug(this + " moving master actions from " + sourceActions
+					+ ", source " + sourcePageKey + ", destination " + destinationPageKey);
+		}
+		
 		LinkedHashMap<FillPageKey, LinkedMap<Object, EvaluationBoundAction>> actions = 
 				sourceActions.actionsMap.get(JREvaluationTime.EVALUATION_TIME_MASTER);
 		
-		FillPageKey sourcePageKey = new FillPageKey(page);
 		LinkedMap<Object, EvaluationBoundAction> pageActions = actions.remove(sourcePageKey);
 		if (pageActions == null || pageActions.isEmpty())
 		{
 			return;
 		}
 		
-		FillPageKey pageKey = new FillPageKey(page, pageIndex);
 		LinkedHashMap<FillPageKey, LinkedMap<Object, EvaluationBoundAction>> masterActions = 
 				actionsMap.get(JREvaluationTime.EVALUATION_TIME_MASTER);
-		masterActions.put(pageKey, pageActions);
+		LinkedMap<Object, EvaluationBoundAction> masterCurrent = masterActions.get(destinationPageKey);
+		if (masterCurrent == null)
+		{
+			masterActions.put(destinationPageKey, pageActions);
+		}
+		else
+		{
+			masterCurrent.addAll(pageActions);
+		}
 	}
 	
 }
