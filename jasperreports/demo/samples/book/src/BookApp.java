@@ -101,77 +101,7 @@ public class BookApp extends AbstractSampleApp
 	public void fill() throws JRException
 	{
 		long start = System.currentTimeMillis();
-//		JasperPrint jasperPrint1 = JasperFillManager.fillReport(
-//			"build/reports/Report1.jasper",
-//			null, 
-//			new JREmptyDataSource(2)
-//			);
-//		JasperPrint jasperPrint2 = JasperFillManager.fillReport(
-//			"build/reports/Report2.jasper",
-//			null, 
-//			new JREmptyDataSource(2)
-//			);
-//		JasperPrint jasperPrint3 = JasperFillManager.fillReport(
-//			"build/reports/Report3.jasper",
-//			null, 
-//			new JREmptyDataSource(2)
-//			);
-//		
-//		SimplePrintPart printPart = new SimplePrintPart();
-//		printPart.setName(jasperPrint2.getName());
-//		SimplePrintPageFormat pageFormat = new SimplePrintPageFormat();
-//		pageFormat.setPageWidth(jasperPrint2.getPageWidth());
-//		pageFormat.setPageHeight(jasperPrint2.getPageHeight());
-//		pageFormat.setTopMargin(jasperPrint2.getTopMargin());
-//		pageFormat.setLeftMargin(jasperPrint2.getLeftMargin());
-//		pageFormat.setBottomMargin(jasperPrint2.getBottomMargin());
-//		pageFormat.setRightMargin(jasperPrint2.getRightMargin());
-//		pageFormat.setOrientation(jasperPrint2.getOrientationValue());
-//		printPart.setPageFormat(pageFormat);
-//		jasperPrint1.addPart(jasperPrint1.getPages().size(), printPart);
-//
-//		for (JRPrintPage page : jasperPrint2.getPages())
-//		{
-//			jasperPrint1.addPage(page);
-//		}
-//		
-//		printPart = new SimplePrintPart();
-//		printPart.setName(jasperPrint3.getName());
-//		pageFormat = new SimplePrintPageFormat();
-//		pageFormat.setPageWidth(jasperPrint3.getPageWidth());
-//		pageFormat.setPageHeight(jasperPrint3.getPageHeight());
-//		pageFormat.setTopMargin(jasperPrint3.getTopMargin());
-//		pageFormat.setLeftMargin(jasperPrint3.getLeftMargin());
-//		pageFormat.setBottomMargin(jasperPrint3.getBottomMargin());
-//		pageFormat.setRightMargin(jasperPrint3.getRightMargin());
-//		pageFormat.setOrientation(jasperPrint3.getOrientationValue());
-//		printPart.setPageFormat(pageFormat);
-//		jasperPrint1.addPart(jasperPrint1.getPages().size(), printPart);
-//
-//		for (JRPrintPage page : jasperPrint3.getPages())
-//		{
-//			jasperPrint1.addPage(page);
-//		}
-//		
-//		List<PrintBookmark> bookmarks = new ArrayList<PrintBookmark>();
-//		PrintBookmark bookmark = new BasePrintBookmark("Unu", 0, "0");
-//		bookmarks.add(bookmark);
-//		jasperPrint1.setBookmarks(bookmarks);
-//		
-//		JRSaver.saveObject(jasperPrint1, "build/reports/BookReport.jrprint");
-		
-//		JasperViewer.viewReport(jasperPrint1);
-		
-
-		
-////		JasperDesign report = JRXmlLoader.load("reports/BookReport.jrxml");
-//		JasperCompileManager.compileReportToFile("reports/BookReport.jrxml");
-//		JasperReport report = (JasperReport)JRLoader.loadObjectFromFile("reports/BookReport.jasper");
-//		JRXmlWriter.writeReport(report, "reports/BookReport.design.jrxml", "UTF-8");
-////		JRXmlWriter.writeReport(report, "build/reports/BookReport.jasper.jrxml", "UTF-8");
-//		
-////		long start = System.currentTimeMillis();
-		JasperFillManager.fillReportToFile("build/reports/BookReport.jasper", null, new JREmptyDataSource());
+		JasperFillManager.fillReportToFile("build/reports/BookReport.jasper", null, getDemoHsqldbConnection());
 		System.err.println("Filling time : " + (System.currentTimeMillis() - start));
 	}
 	
