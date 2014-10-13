@@ -60,14 +60,11 @@ import net.sf.jasperreports.engine.JRStyleSetter;
 import net.sf.jasperreports.engine.JRTemplate;
 import net.sf.jasperreports.engine.JRTemplateReference;
 import net.sf.jasperreports.engine.JRVariable;
-import net.sf.jasperreports.engine.JRVirtualizable;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.JasperReportsContext;
-import net.sf.jasperreports.engine.ReportContext;
 import net.sf.jasperreports.engine.base.JRBasePrintPage;
 import net.sf.jasperreports.engine.base.JRVirtualPrintPage;
-import net.sf.jasperreports.engine.base.VirtualElementsData;
 import net.sf.jasperreports.engine.type.BandTypeEnum;
 import net.sf.jasperreports.engine.type.EvaluationTimeEnum;
 import net.sf.jasperreports.engine.type.FooterPositionEnum;
@@ -96,8 +93,6 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 	private static final int PAGE_HEIGHT_PAGINATION_IGNORED = 0x7d000000;//less than Integer.MAX_VALUE to avoid 
 
 	protected BandReportFillerParent bandReportParent;
-	
-	protected Map<Integer, JRFillElement> fillElements;
 
 	private JRStyledTextParser styledTextParser = JRStyledTextParser.getInstance();
 
@@ -177,8 +172,6 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 	protected JRFillBand summary;
 
 	protected JRFillBand noData;
-
-	protected ElementEvaluationVirtualizationListener virtualizationListener;
 
 	protected JRPrintPage printPage;
 
@@ -309,7 +302,6 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 		
 		// needed when creating group bands
 		defaultStyleListeners = new ArrayList<DefaultStyleListener>();
-		fillElements = new HashMap<Integer, JRFillElement>();
 		
 		missingFillBand = new JRFillBand(this, null, fillFactory);
 		missingFillSection = new JRFillSection(this, null, fillFactory);
@@ -577,11 +569,7 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 				bandReportParent.unregisterSubfiller(this);
 			}
 			
-			if (fillContext.isUsingVirtualizer())
-			{
-				// removing the listener
-				virtualizationContext.removeListener(virtualizationListener);
-			}
+			delayedActions.dispose();
 
 			fillingThread = null;
 
@@ -859,13 +847,6 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 	 *
 	 */
 	protected abstract void fillReport() throws JRException;
-
-	@Override
-	protected void virtualizationContextCreated()
-	{
-		virtualizationListener = new ElementEvaluationVirtualizationListener(this);
-		virtualizationContext.addListener(virtualizationListener);
-	}
 
 	@Override
 	protected void ignorePaginationSet()
@@ -1207,6 +1188,7 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 			@Override
 			public int getPageIndex()
 			{
+				//FIXMEBOOK NPE when whenNoDataType="BlankPage"
 				return ((Number) calculator.getPageNumber().getValue()).intValue() - 1;
 			}
 
@@ -1522,8 +1504,6 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 	protected PrintElementOriginator assignElementId(JRFillElement fillElement)
 	{
 		int id = getFillContext().generateFillElementId();
-		fillElements.put(id, fillElement);
-		
 		DefaultPrintElementOriginator originator = new DefaultPrintElementOriginator(id);
 		return originator;
 	}
@@ -1626,84 +1606,4 @@ class SavePoint
 		}
 	}
 
-}
-
-/**
- * Virtualization listener that looks for elements with delayed evaluations 
- * and saves/restores the evaluations and externalization/internalization.
- */
-class ElementEvaluationVirtualizationListener implements VirtualizationListener<VirtualElementsData>
-{
-	private static final Log log = LogFactory.getLog(ElementEvaluationAction.class);
-	
-	private final JRBaseFiller mainFiller;
-	
-	public ElementEvaluationVirtualizationListener(JRBaseFiller filler)
-	{
-		this.mainFiller = filler;
-	}
-
-	public void beforeExternalization(JRVirtualizable<VirtualElementsData> object)
-	{
-		JRVirtualizationContext virtualizationContext = object.getContext();
-		virtualizationContext.lock();
-		try
-		{
-			setElementEvaluationsToPage(mainFiller, object);
-		}
-		finally
-		{
-			virtualizationContext.unlock();
-		}
-	}
-
-	protected void setElementEvaluationsToPage(final JRBaseFiller filler, final JRVirtualizable<VirtualElementsData> object)
-	{
-		if (log.isDebugEnabled())
-		{
-			log.debug("filler " + filler.fillerId + " setting element evaluation for elements in " + object.getUID());
-		}
-		
-		filler.delayedActions.setElementEvaluationsToPage(object);
-		
-		if (filler.subfillers != null)//recursive
-		{
-			for (JRBaseFiller subfiller : filler.subfillers.values())
-			{
-				setElementEvaluationsToPage(subfiller, object);
-			}
-		}
-	}
-	
-	public void afterInternalization(JRVirtualizable<VirtualElementsData> object)
-	{
-		JRVirtualizationContext virtualizationContext = object.getContext();
-		virtualizationContext.lock();
-		try
-		{
-			getElementEvaluationsFromPage(mainFiller, object);
-		}
-		finally
-		{
-			virtualizationContext.unlock();
-		}
-	}
-
-	protected void getElementEvaluationsFromPage(JRBaseFiller filler, JRVirtualizable<VirtualElementsData> object)
-	{
-		if (log.isDebugEnabled())
-		{
-			log.debug("filler " + filler.fillerId + " recreating element evaluation for elements in " + object.getUID());
-		}
-		
-		filler.delayedActions.getElementEvaluationsFromPage(object);
-		
-		if (filler.subfillers != null)//recursive
-		{
-			for (JRBaseFiller subfiller : filler.subfillers.values())
-			{
-				getElementEvaluationsFromPage(subfiller, object);
-			}
-		}
-	}
 }

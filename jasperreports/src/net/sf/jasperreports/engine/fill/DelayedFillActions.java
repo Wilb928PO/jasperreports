@@ -24,9 +24,12 @@
 package net.sf.jasperreports.engine.fill;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRPrintElement;
@@ -48,21 +51,51 @@ import org.apache.commons.logging.LogFactory;
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
  * @version $Id$
  */
-public class DelayedFillActions
+public class DelayedFillActions implements VirtualizationListener<VirtualElementsData>
 {
 	private static final Log log = LogFactory.getLog(DelayedFillActions.class);
 	
+	protected static final String FILL_CACHE_KEY_ID = DelayedFillActions.class.getName() + "#id";
+	
+	private final int id;
 	private final BaseReportFiller reportFiller;
 	private final JRFillContext fillContext;
 
 	// we can use HashMap because the map is initialized in the beginning and doesn't change afterwards
 	private final HashMap<JREvaluationTime, LinkedHashMap<FillPageKey, LinkedMap<Object, EvaluationBoundAction>>> actionsMap;
 	
+	private Map<Integer, JRFillElement> fillElements;
+	
+	private Set<JRVirtualizationContext> listenedContexts;
+	
+	private Set<Integer> transferredIds;
+	
 	public DelayedFillActions(BaseReportFiller reportFiller)
 	{
+		this.id = assignId(reportFiller);
 		this.reportFiller = reportFiller;
 		this.fillContext = reportFiller.fillContext;
 		this.actionsMap = new HashMap<JREvaluationTime, LinkedHashMap<FillPageKey,LinkedMap<Object,EvaluationBoundAction>>>();
+		this.fillElements = new HashMap<Integer, JRFillElement>();
+		this.listenedContexts = new HashSet<JRVirtualizationContext>();
+	}
+	
+	private static int assignId(BaseReportFiller reportFiller)
+	{
+		AtomicInteger counter = (AtomicInteger) reportFiller.fillContext.getFillCache(FILL_CACHE_KEY_ID);
+		if (counter == null)
+		{
+			// we just need a mutable integer, there's no actual concurrency here
+			counter = new AtomicInteger();
+			reportFiller.fillContext.setFillCache(FILL_CACHE_KEY_ID, counter);
+		}
+		
+		return counter.incrementAndGet();
+	}
+
+	public int getId()
+	{
+		return id;
 	}
 
 	public void createDelayedEvaluationTime(JREvaluationTime evaluationTime)
@@ -72,14 +105,77 @@ public class DelayedFillActions
 		actionsMap.put(evaluationTime, evaluationActions);
 	}
 
+	protected void registerPage(JRPrintPage page)
+	{
+		if (page instanceof JRVirtualPrintPage)
+		{
+			JRVirtualizationContext virtualizationContext = ((JRVirtualPrintPage) page).getVirtualizationContext();
+			if (!listenedContexts.contains(virtualizationContext))
+			{
+				virtualizationContext.addListener(this);
+				listenedContexts.add(virtualizationContext);
+				
+				if (log.isDebugEnabled())
+				{
+					log.debug(id + " registered virtualization listener on " + virtualizationContext);
+				}
+			}
+		}
+	}
+	
+	public void dispose()
+	{
+		for (JRVirtualizationContext virtualizationContext : listenedContexts)
+		{
+			virtualizationContext.removeListener(this);
+			
+			if (log.isDebugEnabled())
+			{
+				log.debug(id + " unregistered virtualization listener on " + virtualizationContext);
+			}
+		}
+	}
+	
+	public void addDelayedAction(JRFillElement element, JRPrintElement printElement, JREvaluationTime evaluationTime, FillPageKey pageKey)
+	{
+		registerFillElement(element);
+		
+		ElementEvaluationAction action = new ElementEvaluationAction(element, printElement);
+		addDelayedAction(printElement, action, evaluationTime, pageKey);
+	}
+
+	protected void registerFillElement(JRFillElement element)
+	{
+		int fillElementId = element.printElementOriginator.getSourceElementId();
+		if (!fillElements.containsKey(fillElementId))
+		{
+			fillElements.put(fillElementId, element);
+		}
+	}
+	
+	protected void registerTransferredId(int sourceId)
+	{
+		if (transferredIds == null)
+		{
+			transferredIds = new HashSet<Integer>();
+		}
+		
+		// duplicates are handled
+		boolean added = transferredIds.add(sourceId);
+		if (added && log.isDebugEnabled())
+		{
+			log.debug(id + " transferred id " + sourceId);
+		}
+	}
+	
 	public void addDelayedAction(Object actionKey, EvaluationBoundAction action, 
 			JREvaluationTime evaluationTime, FillPageKey pageKey)
 	{
 		if (log.isDebugEnabled())
 		{
-			log.debug(this + " adding delayed action " + action + " at " + evaluationTime + ", key " + pageKey);
+			log.debug(id + " adding delayed action " + action + " at " + evaluationTime + ", key " + pageKey);
 		}
-			
+
 		// get the pages map for the evaluation
 		LinkedHashMap<FillPageKey, LinkedMap<Object, EvaluationBoundAction>> pagesMap = actionsMap.get(evaluationTime);
 		
@@ -89,12 +185,7 @@ public class DelayedFillActions
 			synchronized (pagesMap)
 			{
 				// get the actions map for the current page, creating if it does not yet exist
-				LinkedMap<Object, EvaluationBoundAction> boundElementsMap = pagesMap.get(pageKey);
-				if (boundElementsMap == null)
-				{
-					boundElementsMap = new LinkedMap<Object, EvaluationBoundAction>();
-					pagesMap.put(pageKey, boundElementsMap);
-				}
+				LinkedMap<Object, EvaluationBoundAction> boundElementsMap = pageActionsMap(pagesMap, pageKey);
 				
 				// add the delayed element action to the map
 				boundElementsMap.add(actionKey, action);
@@ -105,12 +196,26 @@ public class DelayedFillActions
 			fillContext.unlockVirtualizationContext();
 		}
 	}
+
+	protected LinkedMap<Object, EvaluationBoundAction> pageActionsMap(
+			LinkedHashMap<FillPageKey, LinkedMap<Object, EvaluationBoundAction>> map, FillPageKey pageKey)
+	{
+		LinkedMap<Object, EvaluationBoundAction> pageMap = map.get(pageKey);
+		if (pageMap == null)
+		{
+			pageMap = new LinkedMap<Object, EvaluationBoundAction>();
+			map.put(pageKey, pageMap);
+			
+			registerPage(pageKey.page);
+		}
+		return pageMap;
+	}
 	
 	public void runActions(JREvaluationTime evaluationTime, byte evaluation) throws JRException
 	{
 		if (log.isDebugEnabled())
 		{
-			log.debug("running delayed actions on " + evaluationTime);
+			log.debug(id + " running delayed actions on " + evaluationTime);
 		}
 		
 		LinkedHashMap<FillPageKey, LinkedMap<Object, EvaluationBoundAction>> pagesMap = actionsMap.get(evaluationTime);
@@ -137,7 +242,7 @@ public class DelayedFillActions
 						
 						if (log.isDebugEnabled())
 						{
-							log.debug("running actions for page " + pageIdx);
+							log.debug(id + " running actions for page " + pageEntry.getKey().page + " at " + pageIdx);
 						}
 						
 						StandardBoundActionExecutionContext context = new StandardBoundActionExecutionContext();
@@ -213,7 +318,7 @@ public class DelayedFillActions
 	{
 		if (log.isDebugEnabled())
 		{
-			log.debug(this + " moving actions from " + fromKey + " to " + toKey);
+			log.debug(id + " moving actions from " + fromKey + " to " + toKey);
 		}
 		
 		for (LinkedHashMap<FillPageKey, LinkedMap<Object, EvaluationBoundAction>> map : actionsMap.values())
@@ -226,13 +331,7 @@ public class DelayedFillActions
 					LinkedMap<Object, EvaluationBoundAction> subreportMap = map.remove(fromKey);
 					if (subreportMap != null && !subreportMap.isEmpty())
 					{
-						LinkedMap<Object, EvaluationBoundAction> masterMap = map.get(toKey);
-						if (masterMap == null)
-						{
-							masterMap = new LinkedMap<Object, EvaluationBoundAction>();
-							map.put(toKey, masterMap);
-						}
-						
+						LinkedMap<Object, EvaluationBoundAction> masterMap = pageActionsMap(map, toKey);
 						masterMap.addAll(subreportMap);
 					}
 				}
@@ -243,9 +342,29 @@ public class DelayedFillActions
 			}
 		}
 	}
-	
-	public void setElementEvaluationsToPage(final JRVirtualizable<VirtualElementsData> object)
+
+	@Override
+	public void beforeExternalization(JRVirtualizable<VirtualElementsData> object)
 	{
+		JRVirtualizationContext virtualizationContext = object.getContext();
+		virtualizationContext.lock();//FIXMEBOOK should we lock upper in the stack?
+		try
+		{
+			writeElementEvaluations(object);
+		}
+		finally
+		{
+			virtualizationContext.unlock();
+		}
+	}
+	
+	protected void writeElementEvaluations(final JRVirtualizable<VirtualElementsData> object)
+	{
+		if (log.isDebugEnabled())
+		{
+			log.debug(id + " setting element evaluation for elements in " + object.getUID());
+		}
+		
 		JRVirtualPrintPage page = ((VirtualizablePageElements) object).getPage();// ugly but needed for now
 		FillPageKey pageKey = new FillPageKey(page);
 		VirtualElementsData virtualData = object.getVirtualData();
@@ -282,7 +401,7 @@ public class DelayedFillActions
 								
 								if (log.isDebugEnabled())
 								{
-									log.debug("filler " + reportFiller.fillerId + " saving evaluation " + evaluationTime + " of element " + element 
+									log.debug(id + " saving evaluation " + evaluationTime + " of element " + element 
 											+ " on object " + object);
 								}
 							}
@@ -297,21 +416,41 @@ public class DelayedFillActions
 					if (!elementEvaluations.isEmpty())
 					{
 						// save the evaluations in the virtual data
-						virtualData.setElementEvaluations(reportFiller.fillerId, evaluationTime, elementEvaluations);
+						virtualData.setElementEvaluations(id, evaluationTime, elementEvaluations);
 						
 						// add an action for the page so that it gets devirtualized on resolveBoundElements
-						actionsMap.add(null, new VirtualizedPageEvaluationAction(object));
+						VirtualizedPageEvaluationAction virtualizedAction = new VirtualizedPageEvaluationAction(object, id);
+						actionsMap.add(null, virtualizedAction);
+						
+						if (log.isDebugEnabled())
+						{
+							log.debug(id + " created action " + virtualizedAction);
+						}
 					}
 				}
 			}
 		}
 	}
+
+	@Override
+	public void afterInternalization(JRVirtualizable<VirtualElementsData> object)
+	{
+		JRVirtualizationContext virtualizationContext = object.getContext();
+		virtualizationContext.lock();
+		try
+		{
+			readElementEvaluations(object);
+		}
+		finally
+		{
+			virtualizationContext.unlock();
+		}
+	}
 	
-	public void getElementEvaluationsFromPage(JRVirtualizable<VirtualElementsData> object)
+	protected void readElementEvaluations(JRVirtualizable<VirtualElementsData> object)
 	{
 		JRVirtualPrintPage page = ((VirtualizablePageElements) object).getPage();// ugly but needed for now
 		FillPageKey pageKey = new FillPageKey(page);
-		VirtualElementsData elementsData = object.getVirtualData();
 		
 		for (Map.Entry<JREvaluationTime, LinkedHashMap<FillPageKey, LinkedMap<Object, EvaluationBoundAction>>> boundMapEntry : 
 			actionsMap.entrySet())
@@ -322,33 +461,48 @@ public class DelayedFillActions
 			synchronized (map)
 			{
 				LinkedMap<Object, EvaluationBoundAction> actionsMap = map.get(pageKey);
+				readElementEvaluations(object, id, evaluationTime, actionsMap);
 				
-				// get the delayed evaluations from the devirtualized data and add it back
-				// to the filler delayed evaluation maps.
-				Map<JRPrintElement, Integer> elementEvaluations = elementsData.getElementEvaluations(reportFiller.fillerId, evaluationTime);
-				if (elementEvaluations != null)
+				if (transferredIds != null)
 				{
-					for (Map.Entry<JRPrintElement, Integer> entry : elementEvaluations.entrySet())
+					//FIXMEBOOK does this have any effect on the order of the actions?
+					for (Integer transferredId : transferredIds)
 					{
-						JRPrintElement element = entry.getKey();
-						int fillElementId = entry.getValue();
-						JRFillElement fillElement = ((JRBaseFiller) reportFiller).fillElements.get(fillElementId);//FIXMEBOOK
-						
-						if (log.isDebugEnabled())
-						{
-							log.debug("filler " + reportFiller.fillerId + " got evaluation " + evaluationTime + " on " + element 
-									+ " from object " + object + ", using " + fillElement);
-						}
-						
-						if (fillElement == null)
-						{
-							throw new JRRuntimeException("Fill element with id " + fillElementId + " not found");
-						}
-						
-						// add first so that it will be executed immediately
-						actionsMap.addFirst(element, new ElementEvaluationAction(fillElement, element));
+						readElementEvaluations(object, transferredId, evaluationTime, actionsMap);
 					}
 				}
+			}
+		}
+	}
+
+	protected void readElementEvaluations(JRVirtualizable<VirtualElementsData> object, int sourceId, 
+			JREvaluationTime evaluationTime, LinkedMap<Object, EvaluationBoundAction> actionsMap)
+	{
+		// get the delayed evaluations from the devirtualized data and add it back
+		// to the filler delayed evaluation maps.
+		VirtualElementsData elementsData = object.getVirtualData();
+		Map<JRPrintElement, Integer> elementEvaluations = elementsData.getElementEvaluations(sourceId, evaluationTime);
+		if (elementEvaluations != null)
+		{
+			for (Map.Entry<JRPrintElement, Integer> entry : elementEvaluations.entrySet())
+			{
+				JRPrintElement element = entry.getKey();
+				int fillElementId = entry.getValue();
+				JRFillElement fillElement = fillElements.get(fillElementId);
+				
+				if (log.isDebugEnabled())
+				{
+					log.debug(id + " got evaluation " + evaluationTime + ", source id" + sourceId + ", on " + element 
+							+ ", from object " + object + ", using " + fillElement);
+				}
+				
+				if (fillElement == null)
+				{
+					throw new JRRuntimeException("Fill element with id " + fillElementId + " not found");
+				}
+				
+				// add first so that it will be executed immediately
+				actionsMap.addFirst(element, new ElementEvaluationAction(fillElement, element));
 			}
 		}
 	}
@@ -369,14 +523,14 @@ public class DelayedFillActions
 	{
 		if (log.isDebugEnabled())
 		{
-			log.debug(this + " moving master actions from " + sourceActions
+			log.debug(id + " moving master actions from " + sourceActions.id
 					+ ", source " + sourcePageKey + ", destination " + destinationPageKey);
 		}
 		
 		LinkedHashMap<FillPageKey, LinkedMap<Object, EvaluationBoundAction>> actions = 
 				sourceActions.actionsMap.get(JREvaluationTime.EVALUATION_TIME_MASTER);
 		
-		LinkedMap<Object, EvaluationBoundAction> pageActions = actions.remove(sourcePageKey);
+		LinkedMap<Object, EvaluationBoundAction> pageActions = actions.remove(sourcePageKey);//FIXMEBOOK deregister virt listener
 		if (pageActions == null || pageActions.isEmpty())
 		{
 			return;
@@ -384,14 +538,30 @@ public class DelayedFillActions
 		
 		LinkedHashMap<FillPageKey, LinkedMap<Object, EvaluationBoundAction>> masterActions = 
 				actionsMap.get(JREvaluationTime.EVALUATION_TIME_MASTER);
-		LinkedMap<Object, EvaluationBoundAction> masterCurrent = masterActions.get(destinationPageKey);
-		if (masterCurrent == null)
+		LinkedMap<Object, EvaluationBoundAction> masterPageActions = pageActionsMap(masterActions, destinationPageKey);
+		
+		while (!pageActions.isEmpty())
 		{
-			masterActions.put(destinationPageKey, pageActions);
-		}
-		else
-		{
-			masterCurrent.addAll(pageActions);
+			Map.Entry<Object, EvaluationBoundAction> entry = pageActions.popEntry();
+			Object key = entry.getKey();
+			EvaluationBoundAction action = entry.getValue();
+			masterPageActions.add(key, action);
+			
+			if (log.isDebugEnabled())
+			{
+				log.debug(id + " moved action " + action);
+			}
+			
+			if (action instanceof ElementEvaluationAction)//ugly
+			{
+				JRFillElement fillElement = ((ElementEvaluationAction) action).element;
+				registerFillElement(fillElement);
+			}
+			else if (action instanceof VirtualizedPageEvaluationAction)
+			{
+				int sourceId = ((VirtualizedPageEvaluationAction) action).getSourceId();
+				registerTransferredId(sourceId);
+			}
 		}
 	}
 	

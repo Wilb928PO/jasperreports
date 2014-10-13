@@ -145,7 +145,10 @@ public class FillPrintPartQueue
 		FillPrintPart next = part.nextPart();
 		while (next != null && next.getOutput() != null)
 		{
-			output.append((FillPartPrintOutput) next.getOutput());
+			FillPartPrintOutput nextOutput = (FillPartPrintOutput) next.getOutput();
+			output.append(nextOutput);
+			nextOutput.getDelayedActions().dispose();
+			
 			next = next.nextPart();
 		}
 		

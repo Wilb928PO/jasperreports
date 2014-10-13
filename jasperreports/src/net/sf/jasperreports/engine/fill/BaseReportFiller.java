@@ -180,7 +180,7 @@ public abstract class BaseReportFiller implements ReportFiller
 		delayedActions = new DelayedFillActions(this);
 		if (log.isDebugEnabled())
 		{
-			log.debug("created " + delayedActions + " for filler " + fillerId);
+			log.debug("created delayed actions " + delayedActions.getId() + " for filler " + fillerId);
 		}
 	}
 	
@@ -306,12 +306,11 @@ public abstract class BaseReportFiller implements ReportFiller
 				// this allows setting a separate listener, and guarantees that
 				// the current subreport page is not externalized.
 				//FIXMEBOOK prevent part reports from storing one page per part
+				//FIXMEBOOK JasperPrint will contain pages from several contexts, readOnly might not work
 				virtualizationContext = new JRVirtualizationContext(fillContext.getVirtualizationContext());//FIXME lucianc clear this context from the virtualizer
 				
 				// setting per subreport page size
 				setVirtualPageSize(parameterValues);
-				
-				virtualizationContextCreated();
 			}
 		}
 		else
@@ -335,9 +334,12 @@ public abstract class BaseReportFiller implements ReportFiller
 			
 			setVirtualPageSize(parameterValues);
 			
-			virtualizationContextCreated();
-			
 			JRVirtualizationContext.register(virtualizationContext, jasperPrint);
+		}
+		
+		if (virtualizationContext != null && log.isDebugEnabled())
+		{
+			log.debug("filler " + fillerId + " created virtualization context " + virtualizationContext);
 		}
 	}
 
@@ -368,8 +370,6 @@ public abstract class BaseReportFiller implements ReportFiller
 			virtualizationContext.setPageElementSize(virtualPageSize);
 		}
 	}
-
-	protected abstract void virtualizationContextCreated();
 
 	@Override
 	public JasperPrint fill(Map<String,Object> parameterValues, Connection conn) throws JRException
@@ -711,8 +711,7 @@ public abstract class BaseReportFiller implements ReportFiller
 					+ " for evaluation " + evaluationTime);
 		}
 		
-		ElementEvaluationAction action = new ElementEvaluationAction(element, printElement);
-		delayedActions.addDelayedAction(printElement, action, evaluationTime, pageKey);
+		delayedActions.addDelayedAction(element, printElement, evaluationTime, pageKey);
 	}
 
 	protected void resolveBoundElements(JREvaluationTime evaluationTime, byte evaluation) throws JRException

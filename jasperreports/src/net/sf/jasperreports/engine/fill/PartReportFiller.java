@@ -230,13 +230,8 @@ public class PartReportFiller extends BaseReportFiller
 			{
 				parent.unregisterSubfiller(this);
 			}
-			
-			if (fillContext.isUsingVirtualizer())
-			{
-				// removing the listener
-				virtualizationContext.removeListener(virtualizationListener);
-			}
 */			
+			delayedActions.dispose();
 
 			fillingThread = null;
 
@@ -255,12 +250,6 @@ public class PartReportFiller extends BaseReportFiller
 	private void createBoundElemementMaps()
 	{
 		createBoundElementMaps(JREvaluationTime.EVALUATION_TIME_MASTER);
-	}
-
-	@Override
-	protected void virtualizationContextCreated()
-	{
-		//NOP
 	}
 
 	@Override

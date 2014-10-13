@@ -41,10 +41,12 @@ public class VirtualizedPageEvaluationAction implements EvaluationBoundAction
 	private static final Log log = LogFactory.getLog(VirtualizedPageEvaluationAction.class);
 	
 	private final JRVirtualizable<?> object;
+	private final int sourceId;
 
-	public VirtualizedPageEvaluationAction(JRVirtualizable<?> object)
+	public VirtualizedPageEvaluationAction(JRVirtualizable<?> object, int sourceId)
 	{
 		this.object = object;
+		this.sourceId = sourceId;
 	}
 
 	@Override
@@ -53,11 +55,16 @@ public class VirtualizedPageEvaluationAction implements EvaluationBoundAction
 	{
 		if (log.isDebugEnabled())
 		{
-			log.debug("Resolving delayed evaluations for virtualized page " + executionContext.getCurrentPageIndex()
+			log.debug(this + " Resolving delayed evaluations for virtualized page " + executionContext.getCurrentPageIndex()
 					+ " on " + executionContext.getEvaluationTime());
 		}
 		
 		// this forces devirtualization and queues the element evaluations via setElementEvaluationsToPage
 		object.ensureVirtualData();
+	}
+
+	public int getSourceId()
+	{
+		return sourceId;
 	}
 }
