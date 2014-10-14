@@ -37,10 +37,8 @@ import net.sf.jasperreports.engine.JasperPrint;
 public interface ReportFiller
 {
 
-	//FIXMEBOOK skip this?
 	JasperPrint fill(Map<String, Object> parameters, Connection connection) throws JRException;
 
-	//FIXMEBOOK skip this?
 	JasperPrint fill(Map<String, Object> parameters, JRDataSource dataSource) throws JRException;
 
 	JasperPrint fill(Map<String, Object> parameters) throws JRException;
@@ -51,7 +49,6 @@ public interface ReportFiller
 
 	boolean isPageFinal(int pageIndex);
 
-	//FIXMEBOOK needed in JRS?
 	JRFillContext getFillContext();
 
 }
