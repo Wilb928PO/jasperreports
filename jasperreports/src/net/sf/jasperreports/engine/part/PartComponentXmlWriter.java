@@ -52,7 +52,7 @@ public interface PartComponentXmlWriter
 	/**
 	 * Outputs the XML representation of a component.
 	 * 
-	 * @param componentElement the component element
+	 * @param part the part
 	 * @param reportWriter the report writer to which output is to be written
 	 * @throws IOException exceptions produced while writing to the
 	 * output stream

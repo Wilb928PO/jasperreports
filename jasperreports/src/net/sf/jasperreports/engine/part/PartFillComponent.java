@@ -54,7 +54,7 @@ public interface PartFillComponent
 	 * 
 	 * <p>
 	 * This method would evaluate the component expressions and store the
-	 * results to be used in {@link #fill(PartOutput)}.
+	 * results to be used in {@link #fill(PartPrintOutput)}.
 	 * 
 	 * @param evaluation the evaluation type
 	 * @throws JRException
