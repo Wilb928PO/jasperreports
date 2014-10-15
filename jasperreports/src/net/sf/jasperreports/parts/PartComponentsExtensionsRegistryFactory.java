@@ -36,7 +36,6 @@ import net.sf.jasperreports.extensions.ExtensionsRegistryFactory;
 import net.sf.jasperreports.extensions.ListExtensionsRegistry;
 import net.sf.jasperreports.parts.subreport.FillSubreportPartFactory;
 import net.sf.jasperreports.parts.subreport.SubreportPartComponentCompiler;
-import net.sf.jasperreports.parts.subreport.SubreportPartDesignConverter;
 
 /**
  * Extension registry factory that includes built-in part component implementations.
@@ -77,7 +76,6 @@ public class PartComponentsExtensionsRegistryFactory implements
 		HashMap<String, PartComponentManager> componentManagers = new HashMap<String, PartComponentManager>();
 		
 		PartComponentsManager reportManager = new PartComponentsManager();
-		reportManager.setDesignConverter(new SubreportPartDesignConverter());
 		reportManager.setComponentCompiler(new SubreportPartComponentCompiler());
 		//listManager.setComponentXmlWriter(xmlHandler);
 		reportManager.setComponentFillFactory(new FillSubreportPartFactory());

@@ -126,8 +126,7 @@ public class FillerSubreportParent implements BandReportFillerParent
 
 		if (log.isDebugEnabled())
 		{
-			//FIXMEBOOK subfiller Id
-			log.debug("Fill " + parentFiller.fillerId + ": suspeding subreport runner");
+			log.debug("Fill " + pageAdded.getFiller().fillerId + ": suspeding subreport runner");
 		}
 
 		subreportRunner.suspend();

@@ -103,7 +103,6 @@ public class FillPartPrintOutput implements PartPrintOutput
 			bookmarkHelper.addBookmarks(page, pageIndex);
 		}
 		
-		//FIXMEBOOK fill element Ids & virtualization listener
 		delayedActions.moveMasterEvaluations(delayedActionsSource, page, pageIndex);
 	}
 

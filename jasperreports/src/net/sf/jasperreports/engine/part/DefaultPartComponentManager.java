@@ -24,7 +24,6 @@
 package net.sf.jasperreports.engine.part;
 
 import net.sf.jasperreports.engine.JasperReportsContext;
-import net.sf.jasperreports.engine.component.ComponentDesignConverter;
 
 /**
  * A default {@link PartComponentManager component manager} implementation.
@@ -38,7 +37,6 @@ public class DefaultPartComponentManager implements PartComponentManager
 	private PartComponentCompiler componentCompiler;
 	private PartComponentXmlWriter componentXmlWriter;
 	private PartComponentFillFactory componentFillFactory;
-	private ComponentDesignConverter componentDesignConverter;
 
 	public PartComponentFillFactory getComponentFillFactory(JasperReportsContext jasperReportsContext)
 	{
@@ -87,21 +85,6 @@ public class DefaultPartComponentManager implements PartComponentManager
 	public void setComponentXmlWriter(PartComponentXmlWriter componentXmlWriter)
 	{
 		this.componentXmlWriter = componentXmlWriter;
-	}
-
-	public ComponentDesignConverter getDesignConverter(JasperReportsContext jasperReportsContext)
-	{
-		return componentDesignConverter;
-	}
-
-	/**
-	 * Sets the design component preview converter.
-	 * 
-	 * @param designConverter the design component preview converter
-	 */
-	public void setDesignConverter(ComponentDesignConverter designConverter)
-	{
-		this.componentDesignConverter = designConverter;
 	}
 
 }

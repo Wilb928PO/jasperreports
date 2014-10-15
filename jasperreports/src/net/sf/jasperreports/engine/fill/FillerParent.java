@@ -35,7 +35,7 @@ public interface FillerParent
 
 	BaseReportFiller getFiller();
 	
-	DatasetExpressionEvaluator getCachedEvaluator();//FIXMEBOOK change name?
+	DatasetExpressionEvaluator getCachedEvaluator();
 
 	void updateBookmark(JRPrintElement element);
 

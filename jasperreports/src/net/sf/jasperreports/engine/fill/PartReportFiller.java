@@ -567,7 +567,6 @@ public class PartReportFiller extends BaseReportFiller
 			jasperPrint.addPage(page);
 			addLastPageBookmarks();
 			
-			//FIXMEBOOK fill element Ids & virtualization listener
 			delayedActions.moveMasterEvaluations(delayedActionsSource, page, pageIndex);
 			
 			if (fillListener != null)
@@ -652,7 +651,6 @@ public class PartReportFiller extends BaseReportFiller
 				}
 			}
 			
-			//FIXMEBOOK fill element Ids & virtualization listener
 			delayedActions.moveMasterEvaluations(sourceActions, page, pageIndex);
 			
 			if (fillListener != null)

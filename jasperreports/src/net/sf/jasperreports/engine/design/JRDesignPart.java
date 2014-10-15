@@ -104,15 +104,6 @@ public class JRDesignPart extends JRBasePart
 	 */
 	public void setComponent(PartComponent component)
 	{
-//FIXMEBOOK
-//		ContextAwareComponent contextAwareComponent = component instanceof ContextAwareComponent ? (ContextAwareComponent)component : null;
-//		if (contextAwareComponent != null)
-//		{
-//			BaseComponentContext context = new BaseComponentContext();
-//			context.setComponentElement(this);
-//			contextAwareComponent.setContext(context);
-//		}
-		
 		Object old = this.component;
 		this.component = component;
 		getEventSupport().firePropertyChange(PROPERTY_COMPONENT, old, this.component);

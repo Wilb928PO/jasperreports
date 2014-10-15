@@ -1015,7 +1015,6 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 				topMargin += parentFiller.jasperReport.getTopMargin();
 				bottomMargin += parentFiller.jasperReport.getBottomMargin();
 				
-				//parentFiller = parentFiller.parent == null ? null : (JRBaseFiller) parentFiller.parent.getFiller();//FIXMEBOOK
 				parentFiller = parentFiller.parent instanceof JRBaseFiller ? (JRBaseFiller) parentFiller.parent.getFiller() : null;//FIXMEBOOK
 			}
 			while (parentFiller != null);

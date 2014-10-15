@@ -24,7 +24,6 @@
 package net.sf.jasperreports.engine.part;
 
 import net.sf.jasperreports.engine.JasperReportsContext;
-import net.sf.jasperreports.engine.component.ComponentDesignConverter;
 import net.sf.jasperreports.engine.component.ComponentKey;
 import net.sf.jasperreports.engine.component.ComponentsBundle;
 import net.sf.jasperreports.engine.component.ComponentsEnvironment;
@@ -61,19 +60,5 @@ public interface PartComponentManager
 	 * @return the factory of fill component instances
 	 */
 	PartComponentFillFactory getComponentFillFactory(JasperReportsContext jasperReportsContext);
-
-	
-	/**
-	 * Returns the design component preview converter.
-	 * 
-	 * <p>
-	 * May be <code>null</code>, in which case a static icon is used when
-	 * previewing a report that contains an instance of the component.
-	 * 
-	 * @return the design component preview converter, or <code>null</code>
-	 * if no such converter exists for the component.
-	 */
-	//FIXMEBOOK
-	ComponentDesignConverter getDesignConverter(JasperReportsContext jasperReportsContext);
 	
 }
