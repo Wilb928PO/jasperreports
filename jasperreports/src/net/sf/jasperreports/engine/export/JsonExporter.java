@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.SortedMap;
+import java.util.Map;
 
 import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRAbstractExporter;
@@ -43,6 +43,7 @@ import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.PrintBookmark;
 import net.sf.jasperreports.engine.PrintPart;
+import net.sf.jasperreports.engine.PrintParts;
 import net.sf.jasperreports.engine.ReportContext;
 import net.sf.jasperreports.engine.util.HyperlinkData;
 import net.sf.jasperreports.export.ExporterInputItem;
@@ -303,9 +304,9 @@ public class JsonExporter extends JRAbstractExporter<JsonReportConfiguration, Js
 
 	protected void exportParts() throws IOException
 	{
-		SortedMap<Integer, PrintPart> parts = jasperPrint.getParts();
+		PrintParts parts = jasperPrint.getParts();
 
-		if (parts != null && parts.size() > 0)
+		if (parts != null && parts.hasParts())
 		{
 			if (gotFirstJsonFragment)
 			{
@@ -320,25 +321,27 @@ public class JsonExporter extends JRAbstractExporter<JsonReportConfiguration, Js
 			writer.write("\"type\": \"reportparts\",");
 			writer.write("\"parts\": [");
 
-			if (parts.firstKey() > 0)
+			if (!parts.startsAtZero())
 			{
 				writer.write("{\"idx\": 0, \"name\": \"");
 				writer.write(JsonStringEncoder.getInstance().quoteAsString(jasperPrint.getName()));
 				writer.write("\"}");
-				if (parts.size() > 1)
+				if (parts.partCount() > 1)
 				{
 					writer.write(",");
 				}
 			}
 
-			Iterator<Integer> it = parts.keySet().iterator();
-			Integer idx;
+			Iterator<Map.Entry<Integer, PrintPart>> it = parts.partsIterator();
 
 			while (it.hasNext())
 			{
-				idx = it.next();
+				Map.Entry<Integer, PrintPart> partsEntry = it.next();
+				int idx = partsEntry.getKey();
+				PrintPart part = partsEntry.getValue();
+				
 				writer.write("{\"idx\": " + idx + ", \"name\": \"");
-				writer.write(JsonStringEncoder.getInstance().quoteAsString(parts.get(idx).getName()));
+				writer.write(JsonStringEncoder.getInstance().quoteAsString(part.getName()));
 				writer.write("\"}");
 				if (it.hasNext())
 				{

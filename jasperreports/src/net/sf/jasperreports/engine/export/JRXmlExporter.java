@@ -42,7 +42,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedMap;
 
 import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRAbstractExporter;
@@ -79,6 +78,7 @@ import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.PrintBookmark;
 import net.sf.jasperreports.engine.PrintPageFormat;
 import net.sf.jasperreports.engine.PrintPart;
+import net.sf.jasperreports.engine.PrintParts;
 import net.sf.jasperreports.engine.Renderable;
 import net.sf.jasperreports.engine.TabStop;
 import net.sf.jasperreports.engine.type.HyperlinkTargetEnum;
@@ -404,15 +404,14 @@ public class JRXmlExporter extends JRAbstractExporter<ReportExportConfiguration,
 
 		exportBookmarks(jasperPrint.getBookmarks());
 		
-		SortedMap<Integer, PrintPart> parts = jasperPrint.getParts();
-		if (parts != null && pages.size() > 0)
+		PrintParts parts = jasperPrint.getParts();
+		if (parts != null && parts.hasParts())
 		{
-			for (Integer pageIndex : parts.keySet())
+			for (Iterator<Map.Entry<Integer, PrintPart>> it = parts.partsIterator(); it.hasNext();)
 			{
-				PrintPart part = parts.get(pageIndex);
-	
+				Map.Entry<Integer, PrintPart> partsEntry = it.next();
 				/*   */
-				exportPart(pageIndex, part);
+				exportPart(partsEntry.getKey(), partsEntry.getValue());
 			}
 		}
 

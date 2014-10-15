@@ -40,9 +40,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
+import net.sf.jasperreports.engine.base.StandardPrintParts;
 import net.sf.jasperreports.engine.type.OrientationEnum;
 
 
@@ -168,7 +167,7 @@ public class JasperPrint implements Serializable, JRPropertiesHolder
 	private Map<JROrigin, Integer> originsMap = new HashMap<JROrigin, Integer>();
 	private List<JROrigin> originsList = new ArrayList<JROrigin>();
 
-	private TreeMap<Integer, PrintPart> parts;
+	private PrintParts parts;
 	//FIXME unsynchronize on serialization?
 	private List<JRPrintPage> pages = Collections.synchronizedList(new ArrayList<JRPrintPage>());
 
@@ -217,20 +216,20 @@ public class JasperPrint implements Serializable, JRPropertiesHolder
 	 */
 	public PrintPageFormat getPageFormat(int pageIndex)
 	{
-		if (parts == null || parts.size() == 0)
+		if (parts == null || !parts.hasParts())
 		{
 			return getPageFormat();
 		}
 		else
 		{
-			Map.Entry<Integer, PrintPart> partEntry = parts.floorEntry(pageIndex);
-			if (partEntry == null)
+			PrintPageFormat partPageFormat = parts.getPageFormat(pageIndex);
+			if (partPageFormat == null)
 			{
 				return getPageFormat();
 			}
 			else
 			{
-				return partEntry.getValue().getPageFormat();
+				return partPageFormat;
 			}
 		}
 	}
@@ -592,10 +591,20 @@ public class JasperPrint implements Serializable, JRPropertiesHolder
 	}
 
 	/**
+	 * Determines whether this document contains parts.
+	 * 
+	 * @return whether this document contains parts
+	 * @see #getParts()
+	 */
+	public boolean hasParts()
+	{
+		return parts != null && parts.hasParts();
+	}
+	
+	/**
 	 * Returns a list of all parts in the filled report.
 	 */
-	//FIXMEBOOK
-	public SortedMap<Integer, PrintPart> getParts()
+	public PrintParts getParts()
 	{
 		return parts;
 	}
@@ -607,10 +616,10 @@ public class JasperPrint implements Serializable, JRPropertiesHolder
 	{
 		if (parts == null)
 		{
-			parts = new TreeMap<Integer, PrintPart>();
+			parts = new StandardPrintParts();
 		}
 
-		parts.put(pageIndex, part);
+		parts.addPart(pageIndex, part);
 	}
 
 	/**
@@ -623,7 +632,7 @@ public class JasperPrint implements Serializable, JRPropertiesHolder
 			return null;
 		}
 
-		return parts.remove(pageIndex);
+		return parts.removePart(pageIndex);
 	}
 
 	/**

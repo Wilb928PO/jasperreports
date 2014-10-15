@@ -63,7 +63,6 @@ import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.SortedMap;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
@@ -93,6 +92,7 @@ import net.sf.jasperreports.engine.JasperPrintManager;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.PrintPageFormat;
 import net.sf.jasperreports.engine.PrintPart;
+import net.sf.jasperreports.engine.PrintParts;
 import net.sf.jasperreports.engine.Renderable;
 import net.sf.jasperreports.engine.export.JRGraphics2DExporter;
 import net.sf.jasperreports.engine.type.HyperlinkTypeEnum;
@@ -1457,20 +1457,12 @@ public class JRViewer extends javax.swing.JPanel implements JRHyperlinkListener
 			Integer partIndex = pnlTabs.getSelectedIndex();
 			if (partIndex > 0)
 			{
-				SortedMap<Integer, PrintPart> parts = jasperPrint == null ? null : jasperPrint.getParts();
+				PrintParts parts = jasperPrint == null ? null : jasperPrint.getParts();
 				
-				if (parts != null)
+				if (parts != null && parts.hasParts())
 				{
-					partIndex = parts.firstKey() == 0 ? partIndex : partIndex - 1;
-					
-					Iterator<Integer> it = parts.keySet().iterator();
-
-					int i = 0;
-					while (i <= partIndex && it.hasNext())
-					{
-						pgIdx = it.next();
-						i++;
-					}
+					partIndex = parts.startsAtZero() ? partIndex : partIndex - 1;
+					pgIdx = parts.getStartPageIndex(partIndex);
 				}
 			}
 
@@ -1547,21 +1539,11 @@ public class JRViewer extends javax.swing.JPanel implements JRHyperlinkListener
 						)
 					);
 				
-				SortedMap<Integer, PrintPart> parts = jasperPrint.getParts();
-				if (parts != null && parts.size() > 0)
+				if (jasperPrint.hasParts())
 				{
-					Integer partIndex = 0;
-					Iterator<Integer> it = parts.keySet().iterator();
-					while (it.hasNext())
-					{
-						Integer pgIdx = it.next(); 
-						if (pageIndex < pgIdx)
-						{
-							break;
-						}
-						partIndex++;
-					}
-					int tabIndex = partIndex - (parts.firstKey() == 0 ? 1 : 0);
+					PrintParts parts = jasperPrint.getParts();
+					int partIndex = parts.getPartIndex(pageIndex);
+					int tabIndex = partIndex - (parts.startsAtZero() ? 1 : 0);
 					if (tabIndex < pnlTabs.getComponentCount())
 					{
 						pnlTabsChangeListenerEnabled = false;
@@ -1672,14 +1654,14 @@ public class JRViewer extends javax.swing.JPanel implements JRHyperlinkListener
 		pnlTabs.removeAll();
 		pnlMain.removeAll();
 
-		SortedMap<Integer, PrintPart> parts = jasperPrint == null ? null : jasperPrint.getParts();
-		if (parts == null || parts.size() == 0)
+		if (jasperPrint == null || !jasperPrint.hasParts())
 		{
 			pnlMain.add(scrollPane, java.awt.BorderLayout.CENTER);
 		}
 		else
 		{
-			if (parts.firstKey() > 0)
+			PrintParts parts = jasperPrint.getParts();
+			if (!parts.startsAtZero())
 			{
 				JPanel partTab = new JPanel();
 				partTab.setLayout(new BorderLayout());
@@ -1687,8 +1669,9 @@ public class JRViewer extends javax.swing.JPanel implements JRHyperlinkListener
 				pnlTabs.add(partTab);
 			}
 			
-			for (PrintPart part : parts.values())
+			for (Iterator<Map.Entry<Integer, PrintPart>> it = parts.partsIterator(); it.hasNext();)
 			{
+				PrintPart part = it.next().getValue();
 				JPanel partTab = new JPanel();
 				partTab.setLayout(new BorderLayout());
 				partTab.setName(part.getName());

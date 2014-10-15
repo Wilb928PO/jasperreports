@@ -35,7 +35,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
-import java.util.SortedMap;
 
 import net.sf.jasperreports.engine.JRBoxContainer;
 import net.sf.jasperreports.engine.JRLineBox;
@@ -43,7 +42,6 @@ import net.sf.jasperreports.engine.JRPrintElement;
 import net.sf.jasperreports.engine.JRPrintFrame;
 import net.sf.jasperreports.engine.JRPrintPage;
 import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.PrintPart;
 import net.sf.jasperreports.engine.type.ModeEnum;
 import net.sf.jasperreports.engine.util.JRBoxUtil;
 import net.sf.jasperreports.engine.util.Pair;
@@ -798,8 +796,7 @@ public class JRGridLayout
 		}
 
 		// add a cut at the page width if there are not parts and if no element goes beyond the page width
-		SortedMap<Integer, PrintPart> parts = jasperPrint.getParts(); 
-		if (parts == null || parts.size() == 0)
+		if (!jasperPrint.hasParts())
 		{
 			int width = jasperPrint.getPageWidth();
 			int lastCut = xCuts.getLastCutOffset();
