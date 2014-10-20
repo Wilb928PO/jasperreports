@@ -10,26 +10,27 @@
 	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
-	<style name="Title" hAlign="Right" fontSize="32">
+	<style name="Default" fontName="DejaVu Sans"/>
+	<style name="Title" hAlign="Right" fontSize="32" style="Default">
 		<box>
 			<topPen lineWidth="1.0"/>
 		</box>
 	</style>
-	<style name="Heading1" fontSize="16" isBold="true">
+	<style name="Heading1" fontSize="16" isBold="true" style="Default">
 		<box>
 			<bottomPen lineWidth="0.5" lineStyle="Dashed"/>
 		</box>
 	</style>
 	<style name="HeadingLabel1" style="Heading1"/>
 	<style name="HeadingIndex1" style="Heading1"/>
-	<style name="Heading2" fontSize="16">
+	<style name="Heading2" fontSize="16" style="Default">
 		<box>
 			<bottomPen lineWidth="0.5" lineStyle="Dashed"/>
 		</box>
 	</style>
 	<style name="HeadingLabel2" style="Heading2"/>
 	<style name="HeadingIndex2" style="Heading2"/>
-	<style name="Heading3" fontSize="12">
+	<style name="Heading3" fontSize="12" style="Default">
 		<box>
 			<bottomPen lineWidth="0.0" lineStyle="Dashed"/>
 		</box>
