@@ -44,7 +44,7 @@ public class BookmarksFlatDataSource extends JRAbstractBeanDataSource
 	{
 		super(false);
 		
-		bookmarkIterator = bookmarks.bookmarkIterator();
+		bookmarkIterator = bookmarks == null ? null : bookmarks.bookmarkIterator();
 		first = true;
 	}
 
@@ -60,7 +60,7 @@ public class BookmarksFlatDataSource extends JRAbstractBeanDataSource
 		if (first)
 		{
 			first = false;
-			return bookmarkIterator.hasBookmark();
+			return bookmarkIterator != null && bookmarkIterator.hasBookmark();
 		}
 		
 		bookmarkIterator.next();
