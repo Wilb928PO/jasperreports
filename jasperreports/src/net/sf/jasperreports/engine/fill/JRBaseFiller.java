@@ -1188,8 +1188,12 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 			@Override
 			public int getPageIndex()
 			{
-				//FIXMEBOOK NPE when whenNoDataType="BlankPage"
-				return ((Number) calculator.getPageNumber().getValue()).intValue() - 1;
+				Number pageNumber = (Number) calculator.getPageNumber().getValue();
+				if (pageNumber == null)//this happens when whenNoDataType="BlankPage"
+				{
+					return 0;
+				}
+				return pageNumber.intValue() - 1;
 			}
 
 			@Override
