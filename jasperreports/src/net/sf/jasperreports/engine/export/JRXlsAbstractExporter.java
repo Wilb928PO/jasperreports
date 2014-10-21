@@ -72,6 +72,7 @@ import net.sf.jasperreports.engine.util.JRStringUtil;
 import net.sf.jasperreports.engine.util.JRStyledText;
 import net.sf.jasperreports.export.ExporterInputItem;
 import net.sf.jasperreports.export.OutputStreamExporterOutput;
+import net.sf.jasperreports.export.PrintPartUnrollExporterInput;
 import net.sf.jasperreports.export.ReportExportConfiguration;
 import net.sf.jasperreports.export.XlsExporterConfiguration;
 import net.sf.jasperreports.export.XlsReportConfiguration;
@@ -672,6 +673,20 @@ public abstract class JRXlsAbstractExporter<RC extends XlsReportConfiguration, C
 			getExporterOutput().close();
 			resetExportContext();
 		}
+	}
+
+	
+	/**
+	 *
+	 */
+	@Override
+	protected void ensureInput()
+	{
+		super.ensureInput();
+
+		exporterInput = new PrintPartUnrollExporterInput(exporterInput);
+		
+		jasperPrint = exporterInput.getItems().get(0).getJasperPrint();//this is just for the sake of getCurrentConfiguration() calls made prior to any setCurrentExporterInputItem() call
 	}
 
 
