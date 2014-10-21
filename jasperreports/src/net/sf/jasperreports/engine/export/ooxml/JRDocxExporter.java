@@ -1151,7 +1151,7 @@ public class JRDocxExporter extends JRAbstractExporter<DocxReportConfiguration, 
 					case LOCAL_PAGE:
 					case LOCAL_ANCHOR:
 					{
-						relsHelper.exportImageLink(rId, "#"+url, targetMode);
+						relsHelper.exportImageLink(rId, "#"+url.replaceAll("\\W", ""), targetMode);
 						break;
 					}
 					
@@ -1518,7 +1518,7 @@ public class JRDocxExporter extends JRAbstractExporter<DocxReportConfiguration, 
 					{
 						if (link.getHyperlinkAnchor() != null)
 						{
-							href = link.getHyperlinkAnchor();
+							href = link.getHyperlinkAnchor().replaceAll("\\W", "");
 						}
 						break;
 					}
@@ -1578,7 +1578,7 @@ public class JRDocxExporter extends JRAbstractExporter<DocxReportConfiguration, 
 	protected void insertBookmark(String bookmark, BaseHelper helper)
 	{
 		helper.write("<w:bookmarkStart w:id=\"" + bookmarkIndex);
-		helper.write("\" w:name=\"" + bookmark);
+		helper.write("\" w:name=\"" + (bookmark == null ? null : bookmark.replaceAll("\\W", "")));
 		helper.write("\"/><w:bookmarkEnd w:id=\"" + bookmarkIndex++);
 		helper.write("\"/>");
 	}
