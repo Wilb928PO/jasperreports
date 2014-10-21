@@ -52,10 +52,10 @@ public class PrintPartUnrollExporterInput implements ExporterInput
 		{
 			JasperPrint jasperPrint = item.getJasperPrint();
 			ReportExportConfiguration configuration = item.getConfiguration();
-			PrintParts parts = jasperPrint.getParts();
 			//SortedMap<Integer, PrintPart> parts = jasperPrint.getParts();
-			if (parts.hasParts())
+			if (jasperPrint.hasParts())
 			{
+				PrintParts parts = jasperPrint.getParts();
 				Iterator<Map.Entry<Integer, PrintPart>> it = parts.partsIterator();
 				int startPageIndex = 0;
 				Integer partPageIndex = null;
@@ -80,6 +80,10 @@ public class PrintPartUnrollExporterInput implements ExporterInput
 						configuration
 						)
 					);
+			}
+			else
+			{
+				partItems.add(item);
 			}
 		}
 	}
