@@ -1189,7 +1189,7 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 			public int getPageIndex()
 			{
 				Number pageNumber = (Number) calculator.getPageNumber().getValue();
-				if (pageNumber == null)//this happens when whenNoDataType="BlankPage"
+				if (pageNumber == null)//this happens when whenNoDataType="BlankPage" //FIXMEBOOK maybe we should set the variable?
 				{
 					return 0;
 				}
