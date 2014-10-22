@@ -253,7 +253,7 @@ class BookmarkStack
 	{
 		// we're creating new objects though we could add the existing ones and update the page indices
 		// depth first to preserve parent/children relations in the new objects
-		for (BookmarkIterator iterator = bookmarkIterator(); iterator.hasBookmark(); iterator.next())
+		for (BookmarkIterator iterator = bookmarkStack.bookmarkIterator(); iterator.hasBookmark(); iterator.next())
 		{
 			BasePrintBookmark bookmark = iterator.bookmark();
 			addBookmark(bookmark, pageOffset);
