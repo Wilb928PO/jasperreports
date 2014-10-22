@@ -406,7 +406,7 @@ public class PartReportFiller extends BaseReportFiller
 		case GROUP:
 		{
 			GroupFillParts groupFillParts = groupPartsByName.get(evaluationTime.getEvaluationGroup());
-			if (groupFillParts == null)//FIXMEBOOK validate
+			if (groupFillParts == null)//verified at compile time, checking twice nonetheless
 			{
 				throw new JRRuntimeException("Part evaluation group " + evaluationTime.getEvaluationGroup() + " not found");
 			}

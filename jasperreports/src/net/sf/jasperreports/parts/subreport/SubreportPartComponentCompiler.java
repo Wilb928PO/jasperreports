@@ -25,6 +25,7 @@ package net.sf.jasperreports.parts.subreport;
 
 import net.sf.jasperreports.engine.JRExpressionCollector;
 import net.sf.jasperreports.engine.JRSubreportParameter;
+import net.sf.jasperreports.engine.JRSubreportReturnValue;
 import net.sf.jasperreports.engine.base.JRBaseObjectFactory;
 import net.sf.jasperreports.engine.design.JRVerifier;
 import net.sf.jasperreports.engine.part.PartComponent;
@@ -68,7 +69,45 @@ public class SubreportPartComponentCompiler implements PartComponentCompiler
 
 	public void verify(PartComponent component, JRVerifier verifier)
 	{
-//FIXMEBOOK
+		// largely copied from JRVerifier.verifySubreport
+		SubreportPartComponent subreportComponent = (SubreportPartComponent) component;
+		JRSubreportParameter[] parameters = subreportComponent.getParameters();
+		if (parameters != null && parameters.length > 0)
+		{
+			for(int index = 0; index < parameters.length; index++)
+			{
+				JRSubreportParameter parameter = parameters[index];
+
+				if (parameter.getName() == null || parameter.getName().trim().length() == 0)
+				{
+					verifier.addBrokenRule("Subreport part parameter name missing.", parameter);
+				}
+			}
+		}
+
+		JRSubreportReturnValue[] returnValues = subreportComponent.getReturnValues();
+		if (returnValues != null && returnValues.length > 0)
+		{
+			for (int i = 0; i < returnValues.length; i++)
+			{
+				JRSubreportReturnValue returnValue = returnValues[i];
+
+				if (returnValue.getSubreportVariable() == null || returnValue.getSubreportVariable().trim().length() == 0)
+				{
+					verifier.addBrokenRule("Subreport part return value variable name missing.", returnValue);
+				}
+
+				if (returnValue.getToVariable() == null || returnValue.getToVariable().trim().length() == 0)
+				{
+					verifier.addBrokenRule("Subreport part return value to variable name missing.", returnValue);
+				}
+
+				if (!verifier.getReportDesign().getVariablesMap().containsKey(returnValue.getToVariable()))
+				{
+					verifier.addBrokenRule("Subreport part return value to variable not found.", returnValue);
+				}
+			}
+		}
 	}
 
 }
