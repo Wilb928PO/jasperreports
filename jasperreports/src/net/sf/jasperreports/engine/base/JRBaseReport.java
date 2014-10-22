@@ -104,7 +104,7 @@ public class JRBaseReport implements JRReport, Serializable, JRChangeEventsSuppo
 	protected boolean isSummaryNewPage;
 	protected boolean isSummaryWithPageHeaderAndFooter;
 	protected boolean isFloatColumnFooter;
-	protected boolean ignorePagination;
+	protected boolean ignorePagination;//FIXMEBOOK remove default
 
 	/**
 	 *

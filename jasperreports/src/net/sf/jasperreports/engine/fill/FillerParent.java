@@ -35,6 +35,8 @@ public interface FillerParent
 
 	BaseReportFiller getFiller();
 	
+	boolean isParentPagination();
+	
 	DatasetExpressionEvaluator getCachedEvaluator();
 
 	void updateBookmark(JRPrintElement element);

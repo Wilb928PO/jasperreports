@@ -786,7 +786,7 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 		
 		int pageHeight;
 		OverflowType overflowType = getOverflowType();
-		if (overflowType == OverflowType.NO_STRETCH && !filler.getFillContext().isIgnorePagination())
+		if (overflowType == OverflowType.NO_STRETCH && !filler.isIgnorePagination())
 		{
 			// not allowed to stretch beyond the element height
 			// note that we always have elementHeight <= availableHeight - getRelativeY(), it's tested above
@@ -999,7 +999,7 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 	
 	protected void verifyBandHeights() throws JRException
 	{
-		if (!filler.fillContext.isIgnorePagination())
+		if (!filler.isIgnorePagination())
 		{
 			int pageHeight;
 			int topMargin = jasperReport.getTopMargin();

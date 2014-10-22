@@ -37,8 +37,6 @@ public interface BandReportFillerParent extends FillerParent
 	void unregisterSubfiller(JRBaseFiller filler);
 	
 	boolean isRunToBottom();
-	
-	boolean isParentPagination();
 
 	boolean isPageBreakInhibited();
 

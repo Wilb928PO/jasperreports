@@ -68,7 +68,6 @@ public class JRFillContext
 	private DeduplicableRegistry deduplicableRegistry;
 	private boolean usingVirtualizer;
 	private JRPrintPage printPage;
-	private boolean ignorePagination;
 	private JRQueryExecuter queryExecuter;
 	
 	private JasperReportsContext jasperReportsContext;
@@ -255,27 +254,15 @@ public class JRFillContext
 	
 	
 	/**
-	 * Sets the flag that decides whether pagination should be ignored during filling.
-	 * 
-	 * @param ignorePagination
-	 * @see #isIgnorePagination()
-	 */
-	public void setIgnorePagination(boolean ignorePagination)
-	{
-		this.ignorePagination  = ignorePagination;
-	}
-	
-	
-	/**
 	 * Decides whether the filling should ignore pagination.
 	 *  
 	 * @return whether the filling should ignore pagination
-	 * @see #setIgnorePagination(boolean)
 	 * @see net.sf.jasperreports.engine.JRParameter#IS_IGNORE_PAGINATION
+	 * @see JRBaseFiller#isIgnorePagination()
 	 */
 	public boolean isIgnorePagination()
 	{
-		return ignorePagination;
+		return masterFiller.isIgnorePagination();
 	}
 	
 	

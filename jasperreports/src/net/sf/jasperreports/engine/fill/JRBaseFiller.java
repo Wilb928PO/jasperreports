@@ -851,7 +851,7 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 	@Override
 	protected void ignorePaginationSet()
 	{
-		if (fillContext.isIgnorePagination())
+		if (ignorePagination)
 		{
 			isTitleNewPage = false;
 			isSummaryNewPage = false;

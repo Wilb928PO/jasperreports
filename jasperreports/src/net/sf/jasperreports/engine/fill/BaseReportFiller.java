@@ -102,6 +102,8 @@ public abstract class BaseReportFiller implements ReportFiller
 
 	protected FormatFactory formatFactory;
 	
+	protected boolean ignorePagination;
+	
 	protected BookmarkHelper bookmarkHelper;
 	
 	protected JRVirtualizationContext virtualizationContext;
@@ -436,30 +438,63 @@ public abstract class BaseReportFiller implements ReportFiller
 
 	protected void setIgnorePagination(Map<String,Object> parameterValues)
 	{
-		if (parent == null)//pagination is driven by the master
+		boolean ignore;
+		if (parent == null)
 		{
-			Boolean isIgnorePaginationParam = (Boolean) parameterValues.get(JRParameter.IS_IGNORE_PAGINATION);
-			if (isIgnorePaginationParam != null)
-			{
-				fillContext.setIgnorePagination(isIgnorePaginationParam.booleanValue());
-			}
-			else
-			{
-				boolean ignorePagination = jasperReport.isIgnorePagination();
-				fillContext.setIgnorePagination(ignorePagination);
-				parameterValues.put(JRParameter.IS_IGNORE_PAGINATION, ignorePagination ? Boolean.TRUE : Boolean.FALSE);
-			}
+			ignore = getOwnIgnorePagination(parameterValues, false);
 		}
 		else
 		{
-			boolean ignorePagination = fillContext.isIgnorePagination();
-			parameterValues.put(JRParameter.IS_IGNORE_PAGINATION, ignorePagination ? Boolean.TRUE : Boolean.FALSE);
+			if (parent.isParentPagination())
+			{
+				// the parent drives pagination, not looking at parameter and flag
+				ignore = parent.getFiller().ignorePagination;
+			}
+			else
+			{
+				// subreport parts are allowed to ignore pagination even if the parent does not have the flag
+				// the report attribute overrides the parent only when set to true
+				Boolean ownIgnorePagination = getOwnIgnorePagination(parameterValues, true);
+				if (ownIgnorePagination != null)
+				{
+					ignore = ownIgnorePagination;
+				}
+				else
+				{
+					// default to the parent
+					ignore = parent.getFiller().ignorePagination;
+				}
+			}
 		}
 		
+		ignorePagination = ignore;
+		parameterValues.put(JRParameter.IS_IGNORE_PAGINATION, ignorePagination);
 		ignorePaginationSet();
 	}
 	
+	protected Boolean getOwnIgnorePagination(Map<String,Object> parameterValues, boolean onlySetAttribute)
+	{
+		Boolean isIgnorePaginationParam = (Boolean) parameterValues.get(JRParameter.IS_IGNORE_PAGINATION);
+		if (isIgnorePaginationParam != null)
+		{
+			return isIgnorePaginationParam;
+		}
+		
+		boolean ignorePaginationAttribute = jasperReport.isIgnorePagination();
+		if (ignorePaginationAttribute)
+		{
+			return ignorePaginationAttribute;
+		}
+		
+		return onlySetAttribute ? null : false;
+	}
+	
 	protected abstract void ignorePaginationSet();
+	
+	public boolean isIgnorePagination()
+	{
+		return ignorePagination;
+	}
 	
 	protected boolean isInterrupted()
 	{

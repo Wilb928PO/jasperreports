@@ -355,6 +355,12 @@ public class SubreportFillPart extends BasePartFillComponent
 				bookmarkHelper.updateBookmark(element);
 			}
 		}
+
+		@Override
+		public boolean isParentPagination()
+		{
+			return false;
+		}
 	}
 
 }
