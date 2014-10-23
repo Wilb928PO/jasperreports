@@ -209,7 +209,7 @@ public class JRDesignSection extends JRBaseSection
 	{
 		partsList.add(part);
 		
-		getEventSupport().fireCollectionElementAddedEvent(PROPERTY_BANDS, part, partsList.size() - 1);
+		getEventSupport().fireCollectionElementAddedEvent(PROPERTY_PARTS, part, partsList.size() - 1);
 	}
 
 	/**
@@ -222,7 +222,7 @@ public class JRDesignSection extends JRBaseSection
 	{
 		partsList.add(index, part);
 		
-		getEventSupport().fireCollectionElementAddedEvent(PROPERTY_BANDS, part, index);
+		getEventSupport().fireCollectionElementAddedEvent(PROPERTY_PARTS, part, index);
 	}
 
 	/**
@@ -239,7 +239,7 @@ public class JRDesignSection extends JRBaseSection
 			if (idx >= 0)
 			{
 				partsList.remove(idx);
-				getEventSupport().fireCollectionElementRemovedEvent(PROPERTY_BANDS, part, idx);
+				getEventSupport().fireCollectionElementRemovedEvent(PROPERTY_PARTS, part, idx);
 			}
 		}
 
@@ -256,7 +256,7 @@ public class JRDesignSection extends JRBaseSection
 	{
 		JRPart part = partsList.remove(index);
 
-		getEventSupport().fireCollectionElementRemovedEvent(PROPERTY_BANDS, part, index);
+		getEventSupport().fireCollectionElementRemovedEvent(PROPERTY_PARTS, part, index);
 
 		return part;
 	}
