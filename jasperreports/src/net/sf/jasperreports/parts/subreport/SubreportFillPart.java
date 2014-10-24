@@ -294,6 +294,7 @@ public class SubreportFillPart extends BasePartFillComponent
 			if (pageAdded.hasReportEnded())
 			{
 				output.addStyles(pageAdded.getJasperPrint().getStylesList());
+				output.addOrigins(pageAdded.getJasperPrint().getOriginsList());
 			}
 		}
 

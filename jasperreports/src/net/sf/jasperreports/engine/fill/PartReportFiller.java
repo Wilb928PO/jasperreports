@@ -38,6 +38,7 @@ import net.sf.jasperreports.engine.BookmarkIterator;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRGroup;
+import net.sf.jasperreports.engine.JROrigin;
 import net.sf.jasperreports.engine.JRPrintPage;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JRScriptletException;
@@ -591,6 +592,7 @@ public class PartReportFiller extends BaseReportFiller
 		public void append(FillPartPrintOutput output)
 		{
 			addStyles(output.getStyles());
+			addOrigins(output.getOrigins());
 			
 			int pageOffset = jasperPrint.getPages().size();
 			BookmarkHelper outputBookmarks = output.getBookmarkHelper();
@@ -679,6 +681,15 @@ public class PartReportFiller extends BaseReportFiller
 					// should not happen
 					throw new JRRuntimeException(e);
 				}
+			}
+		}
+
+		@Override
+		public void addOrigins(Collection<JROrigin> origins)
+		{
+			for (JROrigin origin : origins)
+			{
+				jasperPrint.addOrigin(origin);
 			}
 		}
 	}

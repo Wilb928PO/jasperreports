@@ -26,12 +26,14 @@ package net.sf.jasperreports.engine.part;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.TreeMap;
 
 import net.sf.jasperreports.engine.BookmarkHelper;
+import net.sf.jasperreports.engine.JROrigin;
 import net.sf.jasperreports.engine.JRPrintPage;
 import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.PrintPart;
@@ -55,6 +57,7 @@ public class FillPartPrintOutput implements PartPrintOutput
 	private DelayedFillActions delayedActions;
 	private BookmarkHelper bookmarkHelper;
 	private LinkedHashMap<String, JRStyle> styles;
+	private LinkedHashSet<JROrigin> origins;
 
 	public FillPartPrintOutput(BaseReportFiller filler)
 	{
@@ -74,6 +77,7 @@ public class FillPartPrintOutput implements PartPrintOutput
 		}
 		
 		styles = new LinkedHashMap<String, JRStyle>();
+		origins = new LinkedHashSet<JROrigin>();
 	}
 
 	@Override
@@ -141,6 +145,7 @@ public class FillPartPrintOutput implements PartPrintOutput
 		}
 		
 		addStyles(output.styles.values());
+		addOrigins(output.origins);
 	}
 
 	public TreeMap<Integer, PrintPart> getParts()
@@ -188,5 +193,16 @@ public class FillPartPrintOutput implements PartPrintOutput
 	public Collection<JRStyle> getStyles()
 	{
 		return styles.values();
+	}
+
+	@Override
+	public void addOrigins(Collection<JROrigin> origins)
+	{
+		this.origins.addAll(origins);
+	}
+
+	public Collection<JROrigin> getOrigins()
+	{
+		return origins;
 	}
 }

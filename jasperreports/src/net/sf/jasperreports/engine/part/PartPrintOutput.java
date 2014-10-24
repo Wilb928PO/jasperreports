@@ -26,6 +26,7 @@ package net.sf.jasperreports.engine.part;
 import java.util.Collection;
 
 import net.sf.jasperreports.engine.BookmarkHelper;
+import net.sf.jasperreports.engine.JROrigin;
 import net.sf.jasperreports.engine.JRPrintPage;
 import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.PrintPart;
@@ -50,6 +51,8 @@ public interface PartPrintOutput
 	
 	BookmarkHelper getBookmarkHelper();
 
-	void addStyles(Collection<JRStyle> stylesList);
+	void addStyles(Collection<JRStyle> styles);
+
+	void addOrigins(Collection<JROrigin> origins);
 	
 }
