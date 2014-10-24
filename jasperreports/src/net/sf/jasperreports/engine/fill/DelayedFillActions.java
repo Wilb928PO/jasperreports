@@ -309,9 +309,20 @@ public class DelayedFillActions implements VirtualizationListener<VirtualElement
 	{
 		LinkedHashMap<FillPageKey, LinkedMap<Object, EvaluationBoundAction>> masterActions = actionsMap.get(JREvaluationTime.EVALUATION_TIME_MASTER);
 		FillPageKey pageKey = new FillPageKey(page);
-		//FIXMEBOOK lock/sync?
-		LinkedMap<Object, EvaluationBoundAction> pageMasterActions = masterActions.get(pageKey);
-		return pageMasterActions != null && !pageMasterActions.isEmpty();
+		
+		fillContext.lockVirtualizationContext();
+		try
+		{
+			synchronized (masterActions)//FIXME is this necessary?
+			{
+				LinkedMap<Object, EvaluationBoundAction> pageMasterActions = masterActions.get(pageKey);
+				return pageMasterActions != null && !pageMasterActions.isEmpty();
+			}
+		}
+		finally
+		{
+			fillContext.unlockVirtualizationContext();
+		}
 	}
 	
 	public void moveActions(FillPageKey fromKey, FillPageKey toKey)
@@ -521,48 +532,69 @@ public class DelayedFillActions implements VirtualizationListener<VirtualElement
 
 	protected void moveMasterEvaluations(DelayedFillActions sourceActions, FillPageKey sourcePageKey, FillPageKey destinationPageKey)
 	{
-		//FIXMEBOOK lock/sync?
 		if (log.isDebugEnabled())
 		{
 			log.debug(id + " moving master actions from " + sourceActions.id
 					+ ", source " + sourcePageKey + ", destination " + destinationPageKey);
 		}
 		
-		LinkedHashMap<FillPageKey, LinkedMap<Object, EvaluationBoundAction>> actions = 
-				sourceActions.actionsMap.get(JREvaluationTime.EVALUATION_TIME_MASTER);
-		
-		LinkedMap<Object, EvaluationBoundAction> pageActions = actions.remove(sourcePageKey);//FIXMEBOOK deregister virt listener
-		if (pageActions == null || pageActions.isEmpty())
+		fillContext.lockVirtualizationContext();
+		try
 		{
-			return;
+			LinkedHashMap<FillPageKey, LinkedMap<Object, EvaluationBoundAction>> actions = 
+					sourceActions.actionsMap.get(JREvaluationTime.EVALUATION_TIME_MASTER);
+			synchronized (actions)
+			{
+				LinkedMap<Object, EvaluationBoundAction> pageActions = actions.remove(sourcePageKey);//FIXMEBOOK deregister virt listener
+				if (pageActions == null || pageActions.isEmpty())
+				{
+					return;
+				}
+				
+				moveMasterActions(pageActions, destinationPageKey);
+			}
 		}
-		
+		finally
+		{
+			fillContext.unlockVirtualizationContext();
+		}
+	}
+
+	protected void moveMasterActions(LinkedMap<Object, EvaluationBoundAction> sourceActions, FillPageKey destinationPageKey)
+	{
 		LinkedHashMap<FillPageKey, LinkedMap<Object, EvaluationBoundAction>> masterActions = 
 				actionsMap.get(JREvaluationTime.EVALUATION_TIME_MASTER);
-		LinkedMap<Object, EvaluationBoundAction> masterPageActions = pageActionsMap(masterActions, destinationPageKey);
-		
-		while (!pageActions.isEmpty())
+		synchronized (masterActions)
 		{
-			Map.Entry<Object, EvaluationBoundAction> entry = pageActions.popEntry();
-			Object key = entry.getKey();
-			EvaluationBoundAction action = entry.getValue();
-			masterPageActions.add(key, action);
+			LinkedMap<Object, EvaluationBoundAction> masterPageActions = pageActionsMap(masterActions, destinationPageKey);
 			
-			if (log.isDebugEnabled())
+			while (!sourceActions.isEmpty())
 			{
-				log.debug(id + " moved action " + action);
+				Map.Entry<Object, EvaluationBoundAction> entry = sourceActions.popEntry();
+				Object key = entry.getKey();
+				EvaluationBoundAction action = entry.getValue();
+				masterPageActions.add(key, action);
+				actionMoved(action);
+				
+				if (log.isDebugEnabled())
+				{
+					log.debug(id + " moved action " + action);
+				}
 			}
-			
-			if (action instanceof ElementEvaluationAction)//ugly
-			{
-				JRFillElement fillElement = ((ElementEvaluationAction) action).element;
-				registerFillElement(fillElement);
-			}
-			else if (action instanceof VirtualizedPageEvaluationAction)
-			{
-				int sourceId = ((VirtualizedPageEvaluationAction) action).getSourceId();
-				registerTransferredId(sourceId);
-			}
+		}
+	}
+
+	protected void actionMoved(EvaluationBoundAction action)
+	{
+		if (action instanceof ElementEvaluationAction)//ugly
+		{
+			JRFillElement fillElement = ((ElementEvaluationAction) action).element;
+			registerFillElement(fillElement);
+		}
+		else if (action instanceof VirtualizedPageEvaluationAction)
+		{
+			int sourceId = ((VirtualizedPageEvaluationAction) action).getSourceId();
+			registerTransferredId(sourceId);
 		}
 	}
 	
