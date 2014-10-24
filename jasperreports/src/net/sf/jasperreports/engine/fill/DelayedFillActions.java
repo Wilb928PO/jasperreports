@@ -347,7 +347,7 @@ public class DelayedFillActions implements VirtualizationListener<VirtualElement
 	public void beforeExternalization(JRVirtualizable<VirtualElementsData> object)
 	{
 		JRVirtualizationContext virtualizationContext = object.getContext();
-		virtualizationContext.lock();//FIXMEBOOK should we lock upper in the stack?
+		virtualizationContext.lock();//already locked in ElementsBlock.beforeExternalization()
 		try
 		{
 			writeElementEvaluations(object);
