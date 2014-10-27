@@ -137,14 +137,10 @@
 			<line>
 				<reportElement x="0" y="10" width="515" height="1" uuid="f3769a72-329a-4c05-bb0e-93a430fe1c99"/>
 			</line>
-			<textField>
-				<reportElement x="200" y="20" width="80" height="15" uuid="c768ea70-8165-4afd-b13d-df34d5456803"/>
-				<textElement textAlignment="Right"/>
-				<textFieldExpression><![CDATA["Page " + String.valueOf($V{PAGE_NUMBER}) + " of"]]></textFieldExpression>
-			</textField>
-			<textField evaluationTime="Group" evaluationGroup="SummaryDummyGroup">
-				<reportElement x="280" y="20" width="75" height="15" uuid="5cbc63c5-32d9-4169-b7c2-0298b82b539c"/>
-				<textFieldExpression><![CDATA[" " + String.valueOf($V{PAGE_NUMBER})]]></textFieldExpression>
+			<textField evaluationTime="Master">
+				<reportElement x="0" y="20" width="515" height="15" uuid="c768ea70-8165-4afd-b13d-df34d5456803"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA["Page " + $V{MASTER_CURRENT_PAGE} + " of " + $V{MASTER_TOTAL_PAGES}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageFooter>
