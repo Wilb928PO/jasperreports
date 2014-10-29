@@ -41,6 +41,7 @@ import net.sf.jasperreports.engine.PrintElementVisitor;
 import net.sf.jasperreports.engine.base.JRVirtualPrintPage;
 import net.sf.jasperreports.engine.base.VirtualElementsData;
 import net.sf.jasperreports.engine.base.VirtualizablePageElements;
+import net.sf.jasperreports.engine.type.EvaluationTimeEnum;
 import net.sf.jasperreports.engine.util.LinkedMap;
 import net.sf.jasperreports.engine.util.UniformPrintElementVisitor;
 
@@ -65,6 +66,7 @@ public class DelayedFillActions implements VirtualizationListener<VirtualElement
 	private final HashMap<JREvaluationTime, LinkedHashMap<FillPageKey, LinkedMap<Object, EvaluationBoundAction>>> actionsMap;
 	
 	private Map<Integer, JRFillElement> fillElements;
+	private Set<Integer> masterFillElementIds;
 	
 	private Set<JRVirtualizationContext> listenedContexts;
 	
@@ -77,6 +79,7 @@ public class DelayedFillActions implements VirtualizationListener<VirtualElement
 		this.fillContext = reportFiller.fillContext;
 		this.actionsMap = new HashMap<JREvaluationTime, LinkedHashMap<FillPageKey,LinkedMap<Object,EvaluationBoundAction>>>();
 		this.fillElements = new HashMap<Integer, JRFillElement>();
+		this.masterFillElementIds = new HashSet<Integer>();
 		this.listenedContexts = new HashSet<JRVirtualizationContext>();
 	}
 	
@@ -138,18 +141,23 @@ public class DelayedFillActions implements VirtualizationListener<VirtualElement
 	
 	public void addDelayedAction(JRFillElement element, JRPrintElement printElement, JREvaluationTime evaluationTime, FillPageKey pageKey)
 	{
-		registerFillElement(element);
+		registerFillElement(element, evaluationTime);
 		
 		ElementEvaluationAction action = new ElementEvaluationAction(element, printElement);
 		addDelayedAction(printElement, action, evaluationTime, pageKey);
 	}
 
-	protected void registerFillElement(JRFillElement element)
+	protected void registerFillElement(JRFillElement element, JREvaluationTime evaluationTime)
 	{
 		int fillElementId = element.printElementOriginator.getSourceElementId();
 		if (!fillElements.containsKey(fillElementId))
 		{
 			fillElements.put(fillElementId, element);
+			
+			if (evaluationTime.getType() == EvaluationTimeEnum.MASTER)
+			{
+				masterFillElementIds.add(fillElementId);
+			}
 		}
 	}
 	
@@ -552,6 +560,16 @@ public class DelayedFillActions implements VirtualizationListener<VirtualElement
 				}
 				
 				moveMasterActions(pageActions, destinationPageKey);
+				
+				// copy fill elements Ids for all master actions
+				for (Integer elementId : sourceActions.masterFillElementIds)
+				{
+					if (!fillElements.containsKey(elementId))
+					{
+						fillElements.put(elementId, sourceActions.fillElements.get(elementId));
+						masterFillElementIds.add(elementId);
+					}
+				}
 			}
 		}
 		finally
@@ -586,12 +604,7 @@ public class DelayedFillActions implements VirtualizationListener<VirtualElement
 
 	protected void actionMoved(EvaluationBoundAction action)
 	{
-		if (action instanceof ElementEvaluationAction)//ugly
-		{
-			JRFillElement fillElement = ((ElementEvaluationAction) action).element;
-			registerFillElement(fillElement);
-		}
-		else if (action instanceof VirtualizedPageEvaluationAction)
+		if (action instanceof VirtualizedPageEvaluationAction)//ugly
 		{
 			int sourceId = ((VirtualizedPageEvaluationAction) action).getSourceId();
 			registerTransferredId(sourceId);
