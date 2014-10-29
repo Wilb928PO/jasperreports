@@ -115,6 +115,7 @@ public class DelayedFillActions implements VirtualizationListener<VirtualElement
 			JRVirtualizationContext virtualizationContext = ((JRVirtualPrintPage) page).getVirtualizationContext();
 			if (!listenedContexts.contains(virtualizationContext))
 			{
+				//FIXMEBOOK part reports use a single context which will collect all listeners
 				virtualizationContext.addListener(this);
 				listenedContexts.add(virtualizationContext);
 				

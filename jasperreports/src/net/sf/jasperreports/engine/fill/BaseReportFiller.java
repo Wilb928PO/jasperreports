@@ -304,15 +304,22 @@ public abstract class BaseReportFiller implements ReportFiller
 		{
 			if (fillContext.isUsingVirtualizer())
 			{
-				// creating a subcontext for the subreport.
-				// this allows setting a separate listener, and guarantees that
-				// the current subreport page is not externalized.
-				//FIXMEBOOK prevent part reports from storing one page per part
-				//FIXMEBOOK JasperPrint will contain pages from several contexts, readOnly might not work
-				virtualizationContext = new JRVirtualizationContext(fillContext.getVirtualizationContext());//FIXME lucianc clear this context from the virtualizer
-				
-				// setting per subreport page size
-				setVirtualPageSize(parameterValues);
+				if (parent.isParentPagination())// using this method to tell between part and band parents 
+				{
+					// this is a filler of a subreport in a band parent, creating a subcontext for the subreport.
+					// this allows setting a separate listener, and guarantees that
+					// the current subreport page is not externalized.
+					virtualizationContext = new JRVirtualizationContext(fillContext.getVirtualizationContext());//FIXME lucianc clear this context from the virtualizer
+					
+					// setting per subreport page size
+					setVirtualPageSize(parameterValues);
+				}
+				else
+				{
+					// the parent is a part filler, using the master virtualization context
+					//FIXMEBOOK JRVirtualPrintPage.PROPERTY_VIRTUAL_PAGE_ELEMENT_SIZE at part level is not used
+					virtualizationContext = fillContext.getVirtualizationContext();
+				}
 			}
 		}
 		else
