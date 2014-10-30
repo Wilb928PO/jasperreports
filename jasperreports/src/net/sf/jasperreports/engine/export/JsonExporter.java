@@ -239,11 +239,22 @@ public class JsonExporter extends JRAbstractExporter<JsonReportConfiguration, Js
 	protected void exportPage(JRPrintPage page) throws IOException
 	{
 		Collection<JRPrintElement> elements = page.getElements();
-		exportElements(elements);
+		Boolean exportReportComponentsOnly = getCurrentConfiguration().isReportComponentsExportOnly();
+
+		if (exportReportComponentsOnly == null)
+		{
+			exportReportComponentsOnly = false;
+		}
+
+		if (!exportReportComponentsOnly)
+		{
+			exportElements(elements);
+			exportWebFonts();
+			exportHyperlinks();
+		}
+
 		exportBookmarks();
 		exportParts();
-		exportWebFonts();
-		exportHyperlinks();
 
 		JRExportProgressMonitor progressMonitor = getCurrentItemConfiguration().getProgressMonitor();
 		if (progressMonitor != null)

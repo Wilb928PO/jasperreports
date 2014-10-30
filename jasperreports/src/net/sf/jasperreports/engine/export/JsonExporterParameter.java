@@ -21,54 +21,34 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with JasperReports. If not, see <http://www.gnu.org/licenses/>.
  */
-package net.sf.jasperreports.export;
+package net.sf.jasperreports.engine.export;
+
+import net.sf.jasperreports.engine.JRExporterParameter;
 
 
 /**
- * @author Teodor Danciu (teodord@users.sourceforge.net)
+ * Contains parameters useful for export in JSON format.
+ *
+ * @deprecated Replaced by {@link net.sf.jasperreports.export.JsonExporterConfiguration}.
+ * @author Narcis Marcu (narcism@users.sourceforge.net)
  * @version $Id$
  */
-public class SimpleJsonExporterConfiguration extends SimpleExporterConfiguration implements JsonExporterConfiguration
+public class JsonExporterParameter extends JRExporterParameter
 {
-	private Boolean flushOutput;
-	private Boolean reportComponentsExportOnly;
 
-	/**
-	 * 
-	 */
-	public SimpleJsonExporterConfiguration()
-	{
-	}
-	
-	/**
-	 * 
-	 */
-	public Boolean isFlushOutput()
-	{
-		return flushOutput;
-	}
-
-	/**
-	 * 
-	 */
-	public void setFlushOutput(Boolean flushOutput)
-	{
-		this.flushOutput = flushOutput;
-	}
 
 	/**
 	 *
 	 */
-	public Boolean isReportComponentsExportOnly()
+	public JsonExporterParameter(String name)
 	{
-		return reportComponentsExportOnly;
+		super(name);
 	}
 
+
 	/**
-	 *
+	 * @deprecated Replaced by {@link net.sf.jasperreports.export.JsonExporterConfiguration#isReportComponentsExportOnly()}.
 	 */
-	public void setReportComponentsExportOnly(Boolean reportComponentsExportOnly)
-	{
-		this.reportComponentsExportOnly = reportComponentsExportOnly;
-	}
+	public static final JsonExporterParameter REPORT_COMPONENTS_EXPORT_ONLY = new JsonExporterParameter("Report Components Export Only");
+
 }
