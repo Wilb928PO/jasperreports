@@ -28,6 +28,7 @@ import java.util.Map;
 import net.sf.jasperreports.data.cache.DataCacheHandler;
 import net.sf.jasperreports.engine.BookmarkHelper;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JRPart;
 import net.sf.jasperreports.engine.JRPrintElement;
 import net.sf.jasperreports.engine.JRPrintPage;
@@ -138,6 +139,14 @@ public class SubreportFillPart extends BasePartFillComponent
 		if (bookmarksParameter == null)
 		{
 			return;
+		}
+		
+		if (bookmarksParameter.equals(JRParameter.REPORT_DATA_SOURCE))
+		{
+			// if the bookmarks data source is created as main data source for the part report,
+			// automatically exclude it from data snapshots as jive actions might result in different bookmarks.
+			// if the data source is not the main report data source people will have to manually inhibit data caching.
+			cacheIncluded = false;
 		}
 		
 		BookmarkHelper bookmarks = fillContext.getFiller().getFirstBookmarkHelper();
