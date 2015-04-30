@@ -23,12 +23,9 @@
  */
 package net.sf.jasperreports.engine.type;
 
-import net.sf.jasperreports.engine.JRConstants;
-
 
 /**
  * @author sanda zaharia (shertage@users.sourceforge.net)
- * @version $Id$
  */
 public enum RotationEnum implements JREnum
 {
@@ -55,7 +52,6 @@ public enum RotationEnum implements JREnum
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
 	private final transient byte value;
 	private final transient String name;
 
@@ -66,7 +62,7 @@ public enum RotationEnum implements JREnum
 	}
 
 	/**
-	 *
+	 * @deprecated Used only by deprecated serialized fields.
 	 */
 	public Byte getValueByte()
 	{
@@ -74,7 +70,7 @@ public enum RotationEnum implements JREnum
 	}
 	
 	/**
-	 *
+	 * @deprecated Used only by deprecated serialized fields.
 	 */
 	public final byte getValue()
 	{
@@ -94,11 +90,11 @@ public enum RotationEnum implements JREnum
 	 */
 	public static RotationEnum getByName(String name)
 	{
-		return (RotationEnum)EnumUtil.getByName(values(), name);
+		return EnumUtil.getEnumByName(values(), name);
 	}
 	
 	/**
-	 *
+	 * @deprecated Used only by deprecated serialized fields.
 	 */
 	public static RotationEnum getByValue(Byte value)
 	{
@@ -106,11 +102,10 @@ public enum RotationEnum implements JREnum
 	}
 	
 	/**
-	 *
+	 * @deprecated Used only by deprecated serialized fields.
 	 */
 	public static RotationEnum getByValue(byte value)
 	{
 		return getByValue(new Byte(value));
 	}
-
 }

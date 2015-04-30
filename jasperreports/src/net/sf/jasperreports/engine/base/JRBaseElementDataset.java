@@ -41,7 +41,6 @@ import net.sf.jasperreports.engine.util.JRCloneUtils;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class JRBaseElementDataset implements JRElementDataset, Serializable
 {
@@ -164,6 +163,7 @@ public class JRBaseElementDataset implements JRElementDataset, Serializable
 	 */
 	private byte incrementType;
 	
+	@SuppressWarnings("deprecation")
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
 	{
 		in.defaultReadObject();

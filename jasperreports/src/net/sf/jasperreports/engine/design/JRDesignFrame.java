@@ -50,7 +50,6 @@ import net.sf.jasperreports.engine.util.JRStyleResolver;
  * Implementation of {@link net.sf.jasperreports.engine.JRFrame JRFrame} to be used at design time.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class JRDesignFrame extends JRDesignElement implements JRFrame
 {
@@ -369,6 +368,7 @@ public class JRDesignFrame extends JRDesignElement implements JRFrame
 	 */
 	private Integer rightPadding;
 	
+	@SuppressWarnings("deprecation")
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
 	{
 		in.defaultReadObject();

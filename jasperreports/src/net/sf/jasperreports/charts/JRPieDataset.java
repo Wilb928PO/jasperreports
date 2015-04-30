@@ -26,6 +26,7 @@ package net.sf.jasperreports.charts;
 import net.sf.jasperreports.engine.JRChartDataset;
 import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRHyperlink;
+import net.sf.jasperreports.engine.JRPropertiesUtil;
 
 
 /**
@@ -33,10 +34,13 @@ import net.sf.jasperreports.engine.JRHyperlink;
  * comes in the form of key-value pairs. Each pair represents a slice in the pie chart.
  * 
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public interface JRPieDataset extends JRChartDataset
 {
+	/**
+	 * 
+	 */
+	public static final String PROPERTY_IGNORE_DUPLICATED_KEY = JRPropertiesUtil.PROPERTY_PREFIX + "chart.pie.ignore.duplicated.key";
 	
 	/**
 	 * 

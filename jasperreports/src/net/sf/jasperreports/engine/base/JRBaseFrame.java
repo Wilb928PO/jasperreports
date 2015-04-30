@@ -47,7 +47,6 @@ import net.sf.jasperreports.engine.util.JRStyleResolver;
  * Base read-only implementation of {@link net.sf.jasperreports.engine.JRFrame JRFrame}.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class JRBaseFrame extends JRBaseElement implements JRFrame
 {
@@ -205,6 +204,7 @@ public class JRBaseFrame extends JRBaseElement implements JRFrame
 	 */
 	private Integer rightPadding;
 	
+	@SuppressWarnings("deprecation")
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
 	{
 		in.defaultReadObject();

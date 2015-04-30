@@ -35,7 +35,6 @@ import net.sf.jasperreports.engine.query.ExcelQueryExecuterFactory;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class ExcelDataAdapterService extends AbstractXlsDataAdapterService 
 {
@@ -83,8 +82,7 @@ public class ExcelDataAdapterService extends AbstractXlsDataAdapterService
 		{
 			dataSource =
 				new ExcelDataSource(
-					getJasperReportsContext(),
-					excelDataAdapter.getFileName(),
+					dataStream,
 					excelDataAdapter.getFormat()
 					);
 		}

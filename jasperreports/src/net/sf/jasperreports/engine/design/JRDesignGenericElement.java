@@ -44,7 +44,6 @@ import net.sf.jasperreports.engine.util.JRCloneUtils;
  * design time.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class JRDesignGenericElement extends JRDesignElement implements
 		JRGenericElement
@@ -252,6 +251,7 @@ public class JRDesignGenericElement extends JRDesignElement implements
 	 */
 	private byte evaluationTime;
 	
+	@SuppressWarnings("deprecation")
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
 	{
 		in.defaultReadObject();

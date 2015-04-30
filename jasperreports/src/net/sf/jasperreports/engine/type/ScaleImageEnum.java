@@ -23,7 +23,6 @@
  */
 package net.sf.jasperreports.engine.type;
 
-import net.sf.jasperreports.engine.JRConstants;
 import net.sf.jasperreports.engine.JRImage;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.Renderable;
@@ -31,7 +30,6 @@ import net.sf.jasperreports.engine.Renderable;
 
 /**
  * @author sanda zaharia (shertage@users.sourceforge.net)
- * @version $Id$
  */
 public enum ScaleImageEnum implements JREnum
 {
@@ -91,7 +89,6 @@ public enum ScaleImageEnum implements JREnum
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
 	private final transient byte value;
 	private final transient String name;
 
@@ -102,7 +99,7 @@ public enum ScaleImageEnum implements JREnum
 	}
 
 	/**
-	 *
+	 * @deprecated Used only by deprecated serialized fields.
 	 */
 	public Byte getValueByte()
 	{
@@ -110,7 +107,7 @@ public enum ScaleImageEnum implements JREnum
 	}
 	
 	/**
-	 *
+	 * @deprecated Used only by deprecated serialized fields.
 	 */
 	public final byte getValue()
 	{
@@ -130,11 +127,11 @@ public enum ScaleImageEnum implements JREnum
 	 */
 	public static ScaleImageEnum getByName(String name)
 	{
-		return (ScaleImageEnum)EnumUtil.getByName(values(), name);
+		return EnumUtil.getEnumByName(values(), name);
 	}
 	
 	/**
-	 *
+	 * @deprecated Used only by deprecated serialized fields.
 	 */
 	public static ScaleImageEnum getByValue(Byte value)
 	{
@@ -142,11 +139,10 @@ public enum ScaleImageEnum implements JREnum
 	}
 	
 	/**
-	 *
+	 * @deprecated Used only by deprecated serialized fields.
 	 */
 	public static ScaleImageEnum getByValue(byte value)
 	{
 		return getByValue(new Byte(value));
 	}
-
 }

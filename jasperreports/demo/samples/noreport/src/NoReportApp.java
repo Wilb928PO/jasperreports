@@ -48,7 +48,7 @@ import net.sf.jasperreports.engine.export.oasis.JROdtExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRDocxExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRPptxExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
-import net.sf.jasperreports.engine.type.HorizontalAlignEnum;
+import net.sf.jasperreports.engine.type.HorizontalTextAlignEnum;
 import net.sf.jasperreports.engine.type.ScaleImageEnum;
 import net.sf.jasperreports.engine.util.AbstractSampleApp;
 import net.sf.jasperreports.engine.util.JRLoader;
@@ -64,7 +64,6 @@ import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class NoReportApp extends AbstractSampleApp
 {
@@ -484,7 +483,7 @@ public class NoReportApp extends AbstractSampleApp
 		text.setWidth(345);
 		text.setHeight(30);
 		text.setTextHeight(text.getHeight());
-		text.setHorizontalAlignment(HorizontalAlignEnum.RIGHT);
+		text.setHorizontalTextAlign(HorizontalTextAlignEnum.RIGHT);
 		text.setLineSpacingFactor(1.3133681f);
 		text.setLeadingOffset(-4.955078f);
 		text.setStyle(boldStyle);
@@ -498,7 +497,7 @@ public class NoReportApp extends AbstractSampleApp
 		text.setWidth(325);
 		text.setHeight(15);
 		text.setTextHeight(text.getHeight());
-		text.setHorizontalAlignment(HorizontalAlignEnum.RIGHT);
+		text.setHorizontalTextAlign(HorizontalTextAlignEnum.RIGHT);
 		text.setLineSpacingFactor(1.329241f);
 		text.setLeadingOffset(-4.076172f);
 		text.setStyle(italicStyle);
@@ -512,7 +511,7 @@ public class NoReportApp extends AbstractSampleApp
 		text.setWidth(515);
 		text.setHeight(200);
 		text.setTextHeight(text.getHeight());
-		text.setHorizontalAlignment(HorizontalAlignEnum.JUSTIFIED);
+		text.setHorizontalTextAlign(HorizontalTextAlignEnum.JUSTIFIED);
 		text.setLineSpacingFactor(1.329241f);
 		text.setLeadingOffset(-4.076172f);
 		text.setStyle(normalStyle);

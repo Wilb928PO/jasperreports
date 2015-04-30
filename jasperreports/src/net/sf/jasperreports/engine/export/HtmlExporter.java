@@ -93,7 +93,7 @@ import net.sf.jasperreports.engine.export.tabulator.Tabulator;
 import net.sf.jasperreports.engine.fonts.FontFamily;
 import net.sf.jasperreports.engine.fonts.FontInfo;
 import net.sf.jasperreports.engine.fonts.FontUtil;
-import net.sf.jasperreports.engine.type.HorizontalAlignEnum;
+import net.sf.jasperreports.engine.type.HorizontalImageAlignEnum;
 import net.sf.jasperreports.engine.type.HyperlinkTypeEnum;
 import net.sf.jasperreports.engine.type.LineDirectionEnum;
 import net.sf.jasperreports.engine.type.LineSpacingEnum;
@@ -103,7 +103,7 @@ import net.sf.jasperreports.engine.type.RenderableTypeEnum;
 import net.sf.jasperreports.engine.type.RotationEnum;
 import net.sf.jasperreports.engine.type.RunDirectionEnum;
 import net.sf.jasperreports.engine.type.ScaleImageEnum;
-import net.sf.jasperreports.engine.type.VerticalAlignEnum;
+import net.sf.jasperreports.engine.type.VerticalImageAlignEnum;
 import net.sf.jasperreports.engine.util.HyperlinkData;
 import net.sf.jasperreports.engine.util.JRCloneUtils;
 import net.sf.jasperreports.engine.util.JRColorUtil;
@@ -111,6 +111,7 @@ import net.sf.jasperreports.engine.util.JRStringUtil;
 import net.sf.jasperreports.engine.util.JRStyledText;
 import net.sf.jasperreports.engine.util.JRTextAttribute;
 import net.sf.jasperreports.engine.util.Pair;
+import net.sf.jasperreports.export.ExportInterruptedException;
 import net.sf.jasperreports.export.ExporterInputItem;
 import net.sf.jasperreports.export.HtmlExporterConfiguration;
 import net.sf.jasperreports.export.HtmlExporterOutput;
@@ -128,11 +129,13 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class HtmlExporter extends AbstractHtmlExporter<HtmlReportConfiguration, HtmlExporterConfiguration>
 {
 	private static final Log log = LogFactory.getLog(HtmlExporter.class);
+	
+	private static final String EXCEPTION_MESSAGE_KEY_INTERNAL_ERROR = "export.html.internal.error";
+	private static final String EXCEPTION_MESSAGE_KEY_UNEXPECTED_ROTATION_VALUE = "export.html.unexpected.rotation.value";
 	
 	/**
 	 * The exporter key, as used in
@@ -237,7 +240,11 @@ public class HtmlExporter extends AbstractHtmlExporter<HtmlReportConfiguration, 
 		}
 		catch (IOException e)
 		{
-			throw new JRException("Error writing to output writer : " + jasperPrint.getName(), e);
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_OUTPUT_WRITER_ERROR,
+					new Object[]{jasperPrint.getName()}, 
+					e);
 		}
 		finally
 		{
@@ -367,7 +374,7 @@ public class HtmlExporter extends AbstractHtmlExporter<HtmlReportConfiguration, 
 				{
 					if (Thread.interrupted())
 					{
-						throw new JRException("Current thread interrupted.");
+						throw new ExportInterruptedException();
 					}
 
 					page = pages.get(pageIndex);
@@ -611,7 +618,7 @@ public class HtmlExporter extends AbstractHtmlExporter<HtmlReportConfiguration, 
 
 		String verticalAlignment = HTML_VERTICAL_ALIGN_TOP;
 
-		switch (text.getVerticalAlignmentValue())
+		switch (text.getVerticalTextAlign())
 		{
 			case BOTTOM :
 			{
@@ -638,7 +645,7 @@ public class HtmlExporter extends AbstractHtmlExporter<HtmlReportConfiguration, 
 		String horizontalAlignment = CSS_TEXT_ALIGN_LEFT;
 		if (textLength > 0)
 		{
-			switch (text.getHorizontalAlignmentValue())
+			switch (text.getHorizontalTextAlign())
 			{
 				case RIGHT :
 				{
@@ -808,7 +815,11 @@ public class HtmlExporter extends AbstractHtmlExporter<HtmlReportConfiguration, 
 			case NONE :
 			default :
 			{
-				throw new JRRuntimeException("Unexpected rotation value " + text.getRotationValue());
+				throw 
+					new JRRuntimeException(
+						EXCEPTION_MESSAGE_KEY_UNEXPECTED_ROTATION_VALUE,  
+						new Object[]{text.getRotationValue()}
+						);
 			}
 		}
 
@@ -1034,9 +1045,9 @@ public class HtmlExporter extends AbstractHtmlExporter<HtmlReportConfiguration, 
 					int positionLeft;
 					int positionTop;
 					
-					HorizontalAlignEnum horizontalAlign = image.getHorizontalAlignmentValue();
-					VerticalAlignEnum verticalAlign = image.getVerticalAlignmentValue();
-					if (horizontalAlign == HorizontalAlignEnum.LEFT && verticalAlign == VerticalAlignEnum.TOP)
+					HorizontalImageAlignEnum horizontalAlign = image.getHorizontalImageAlign();
+					VerticalImageAlignEnum verticalAlign = image.getVerticalImageAlign();
+					if (horizontalAlign == HorizontalImageAlignEnum.LEFT && verticalAlign == VerticalImageAlignEnum.TOP)
 					{
 						// no need to compute anything
 						positionLeft = 0;
@@ -1047,10 +1058,10 @@ public class HtmlExporter extends AbstractHtmlExporter<HtmlReportConfiguration, 
 						double[] normalSize = getImageNormalSize(image, originalRenderer, imageWidth, imageHeight);
 						// these calculations assume that the image td does not stretch due to other cells.
 						// when that happens, the image will not be properly aligned.
-						float xAlignFactor = horizontalAlign == HorizontalAlignEnum.RIGHT ? 1f
-								: (horizontalAlign == HorizontalAlignEnum.CENTER ? 0.5f : 0f);
-						float yAlignFactor = verticalAlign == VerticalAlignEnum.BOTTOM ? 1f
-								: (verticalAlign == VerticalAlignEnum.MIDDLE ? 0.5f : 0f);
+						float xAlignFactor = horizontalAlign == HorizontalImageAlignEnum.RIGHT ? 1f
+								: (horizontalAlign == HorizontalImageAlignEnum.CENTER ? 0.5f : 0f);
+						float yAlignFactor = verticalAlign == VerticalImageAlignEnum.BOTTOM ? 1f
+								: (verticalAlign == VerticalImageAlignEnum.MIDDLE ? 0.5f : 0f);
 						positionLeft = (int) (xAlignFactor * (imageWidth - normalSize[0]));
 						positionTop = (int) (yAlignFactor * (imageHeight - normalSize[1]));
 					}
@@ -1133,7 +1144,7 @@ public class HtmlExporter extends AbstractHtmlExporter<HtmlReportConfiguration, 
 	protected void setImageHorizontalAlignmentStyle(JRPrintImage image, StringBuilder styleBuffer)
 	{
 		String horizontalAlignment = CSS_TEXT_ALIGN_LEFT;
-		switch (image.getHorizontalAlignmentValue())
+		switch (image.getHorizontalImageAlign())
 		{
 			case RIGHT :
 			{
@@ -1163,7 +1174,7 @@ public class HtmlExporter extends AbstractHtmlExporter<HtmlReportConfiguration, 
 	protected void setImageVerticalAlignmentStyle(JRPrintImage image, StringBuilder styleBuffer)
 	{
 		String verticalAlignment = HTML_VERTICAL_ALIGN_TOP;
-		switch (image.getVerticalAlignmentValue())
+		switch (image.getVerticalImageAlign())
 		{
 			case BOTTOM :
 			{
@@ -2118,7 +2129,11 @@ public class HtmlExporter extends AbstractHtmlExporter<HtmlReportConfiguration, 
 			zoom = zoomRatio.floatValue();
 			if (zoom <= 0)
 			{
-				throw new JRRuntimeException("Invalid zoom ratio : " + zoom);
+				throw 
+					new JRRuntimeException(
+						EXCEPTION_MESSAGE_KEY_INVALID_ZOOM_RATIO,  
+						new Object[]{zoom} 
+						);
 			}
 		}
 
@@ -2584,7 +2599,11 @@ public class HtmlExporter extends AbstractHtmlExporter<HtmlReportConfiguration, 
 		@Override
 		public void visit(JRPrintFrame frame, TableCell cell)
 		{
-			throw new JRRuntimeException("Internal error");
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_INTERNAL_ERROR,  
+					(Object[])null 
+					);
 		}
 
 		@Override

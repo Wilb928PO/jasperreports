@@ -33,10 +33,11 @@ import net.sf.jasperreports.engine.JRRuntimeException;
  * Working clones pooling utility used at fill time.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class JRClonePool
 {
+	public static final String EXCEPTION_MESSAGE_KEY_PARAMETER_NOT_FOUND = "fill.clone.pool.cannot.release.clone";
+	
 	private final JRFillCloneable original;
 	private final LinkedList<JRFillCloneable> availableClones;
 	private final boolean trackLockedClones;
@@ -119,7 +120,10 @@ public class JRClonePool
 		{
 			if (!lockedClones.remove(clone))
 			{
-				throw new JRRuntimeException("Cannot release clone.");
+				throw 
+					new JRRuntimeException(
+						EXCEPTION_MESSAGE_KEY_PARAMETER_NOT_FOUND,
+						(Object[])null);
 			}
 		}
 		

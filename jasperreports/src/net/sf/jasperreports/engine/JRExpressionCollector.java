@@ -100,11 +100,13 @@ import net.sf.jasperreports.engine.part.PartComponentsEnvironment;
  * and used at report fill time to evaluate expressions.
  * 
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class JRExpressionCollector
 {
 
+	public static final String EXCEPTION_MESSAGE_KEY_EXPRESSION_NOT_FOUND = "engine.expression.collector.expression.not.found";
+	public static final String EXCEPTION_MESSAGE_KEY_TWO_GENERATED_IDS = "engine.expression.collector.two.generated.ids";
+	
 	public static JRExpressionCollector collector(JasperReportsContext jasperReportsContext, JRReport report)
 	{
 		JRExpressionCollector collector = new JRExpressionCollector(jasperReportsContext, null, report);
@@ -294,7 +296,10 @@ public class JRExpressionCollector
 		Object existingId = expressionIds.put(expression, id);
 		if (existingId != null && !existingId.equals(id))
 		{
-			throw new JRRuntimeException("Expression \"" + expression.getText() + "\" has two generated IDs");
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_TWO_GENERATED_IDS,
+					new Object[]{expression.getText()});
 		}
 	}
 
@@ -303,7 +308,10 @@ public class JRExpressionCollector
 		Object existingId = expressionIds.put(expression, newId);
 		if (existingId == null || !existingId.equals(currentId))
 		{
-			throw new JRRuntimeException("Expression \"" + expression.getText() + "\" not found with id " + currentId);
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_TWO_GENERATED_IDS,
+					new Object[]{expression.getText(), currentId});
 		}
 	}
 

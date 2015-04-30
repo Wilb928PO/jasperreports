@@ -36,10 +36,11 @@ import net.sf.jasperreports.engine.JasperReportsContext;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public final class SecretsUtil
 {
+	public static final String EXCEPTION_MESSAGE_KEY_SECRET_NOT_FOUND = "util.secret.not.found";
+	
 	private final JasperReportsContext jasperReportsContext;
 	
 	/**
@@ -73,6 +74,9 @@ public final class SecretsUtil
 				return provider.getSecret(key);
 			}
 		}
-		throw new JRRuntimeException("No secret found for '" + key + "' key in '" + category + "' category.");
+		throw 
+			new JRRuntimeException(
+				EXCEPTION_MESSAGE_KEY_SECRET_NOT_FOUND,
+				new Object[]{key, category});
 	}
 }

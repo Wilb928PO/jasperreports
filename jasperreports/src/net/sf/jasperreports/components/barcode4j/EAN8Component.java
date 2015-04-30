@@ -30,9 +30,8 @@ import org.krysalis.barcode4j.ChecksumMode;
 /**
  * 
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
-public class EAN8Component extends BarcodeComponent
+public class EAN8Component extends Barcode4jComponent
 {
 
 	private static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;

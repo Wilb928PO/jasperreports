@@ -38,7 +38,6 @@ import net.sf.jasperreports.engine.util.JRStyleResolver;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public abstract class JRBasePrintGraphicElement extends JRBasePrintElement implements JRPrintGraphicElement
 {
@@ -139,6 +138,7 @@ public abstract class JRBasePrintGraphicElement extends JRBasePrintElement imple
 	 */
 	private Byte fill;
 	
+	@SuppressWarnings("deprecation")
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
 	{
 		in.defaultReadObject();

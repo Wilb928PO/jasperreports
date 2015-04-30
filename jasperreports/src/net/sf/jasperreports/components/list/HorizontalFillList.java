@@ -40,12 +40,12 @@ import org.apache.commons.logging.LogFactory;
  * Horizontal fill list component implementation.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class HorizontalFillList extends BaseFillList
 {
 	
 	private static final Log log = LogFactory.getLog(HorizontalFillList.class);
+	public static final String EXCEPTION_MESSAGE_KEY_ROW_OVERFLOW = "fill.horizontal.list.row.overflow";
 	
 	private final int contentsWidth;
 	private final boolean ignoreWidth;
@@ -222,8 +222,11 @@ public class HorizontalFillList extends BaseFillList
 				}
 				else if (pageCount >= overflowStartPage + 2)
 				{
-					throw new JRRuntimeException("List row overflowed on 3 consecutive pages, "
-							+ "likely infinite loop");
+					throw 
+						new JRRuntimeException(
+							EXCEPTION_MESSAGE_KEY_ROW_OVERFLOW,  
+							(Object[])null 
+							);
 				}
 				
 				// set the filling flag so that we know that we are continuing

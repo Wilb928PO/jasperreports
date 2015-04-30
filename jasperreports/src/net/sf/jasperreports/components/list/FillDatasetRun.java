@@ -51,7 +51,6 @@ import org.apache.commons.logging.LogFactory;
  * Used to iterate on the list subdataset at fill time.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class FillDatasetRun extends JRFillDatasetRun
 {
@@ -93,6 +92,7 @@ public class FillDatasetRun extends JRFillDatasetRun
 		JRDataset reportDataset = JRReportUtils.findSubdataset(datasetRun, jasperReport);
 		JRFillDataset fillDataset = new JRFillDataset(factory.getReportFiller(), reportDataset, factory);
 		fillDataset.createCalculator(jasperReport);
+		fillDataset.inheritFromMain();
 		return fillDataset;
 	}
 	
@@ -180,7 +180,11 @@ public class FillDatasetRun extends JRFillDatasetRun
 		
 		if (dataset.next())
 		{
-			if (!first)
+			if (first)
+			{
+				first = false;
+			}
+			else
 			{
 				group();
 			}

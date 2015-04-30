@@ -44,12 +44,12 @@ import org.mozilla.javascript.EvaluatorException;
  * Base compiler class for reports that use JavaScript as expression language.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public abstract class JavaScriptCompilerBase extends JRAbstractCompiler
 {
 
 	private static final Log log = LogFactory.getLog(JavaScriptCompilerBase.class);
+	public static final String EXCEPTION_MESSAGE_KEY_INVALID_COMPILE_DATA_TYPE = "compilers.invalid.data.type";
 	
 	/**
 	 * Creates a JavaScript compiler.
@@ -104,7 +104,10 @@ public abstract class JavaScriptCompilerBase extends JRAbstractCompiler
 			return new JavaScriptCompiledEvaluator(jasperReportsContext, unitName, jsCompiledData);
 		}
 		
-		throw new JRException("Invalid compile data type " + compileData.getClass().getName());
+		throw 
+			new JRException(
+				EXCEPTION_MESSAGE_KEY_INVALID_COMPILE_DATA_TYPE,
+				new Object[]{compileData.getClass().getName()});
 	}
 
 	protected ScriptExpressionVisitor defaultExpressionCreator()

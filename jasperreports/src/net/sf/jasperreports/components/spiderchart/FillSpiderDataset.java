@@ -44,7 +44,6 @@ import org.jfree.data.category.DefaultCategoryDataset;
 
 /**
  * @author sanda zaharia (shertage@users.sourceforge.net)
- * @version $Id$
  */
 public class FillSpiderDataset extends JRFillElementDataset implements SpiderDataset
 {
@@ -54,6 +53,7 @@ public class FillSpiderDataset extends JRFillElementDataset implements SpiderDat
 	 */
 	private static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
 	
+	public static final String EXCEPTION_MESSAGE_KEY_SERIES_NULL_NAME = "components.spiderchart.category.dataset.series.null.name";
 	/**
 	 *
 	 */
@@ -142,7 +142,11 @@ public class FillSpiderDataset extends JRFillElementDataset implements SpiderDat
 				Comparable<?> seriesName = crtCategorySeries.getSeries();
 				if (seriesName == null)
 				{
-					throw new JRRuntimeException("Category series name is null.");
+					throw 
+						new JRRuntimeException(
+							EXCEPTION_MESSAGE_KEY_SERIES_NULL_NAME,  
+							(Object[])null 
+							);
 				}
 
 				dataset.addValue(

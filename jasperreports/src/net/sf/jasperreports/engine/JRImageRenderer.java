@@ -99,7 +99,6 @@ import org.apache.commons.logging.LogFactory;
  * 
  * @see net.sf.jasperreports.engine.JRAbstractSvgRenderer
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class JRImageRenderer extends JRAbstractRenderer
 {
@@ -558,6 +557,7 @@ public class JRImageRenderer extends JRAbstractRenderer
 	 */
 	private byte imageType;
 	
+	@SuppressWarnings("deprecation")
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
 	{
 		in.defaultReadObject();

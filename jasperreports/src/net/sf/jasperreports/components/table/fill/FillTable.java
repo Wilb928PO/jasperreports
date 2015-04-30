@@ -70,7 +70,6 @@ import org.apache.commons.logging.LogFactory;
  * 
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class FillTable extends BaseFillComponent
 {
@@ -78,6 +77,7 @@ public class FillTable extends BaseFillComponent
 	private static final Log log = LogFactory.getLog(FillTable.class);
 	
 	protected static final String FILL_CACHE_KEY_TABLE_INSTANCE_COUNTER = FillTable.class.getName() + "#instanceCounter";
+	protected static final String EXCEPTION_MESSAGE_KEY_UNSUPPORTED_REPORT_DATA_TYPE = "components.table.unsupported.report.data.type";
 	
 	private final TableComponent table;
 	private final JRFillObjectFactory factory;
@@ -373,8 +373,11 @@ public class FillTable extends BaseFillComponent
 		Serializable reportCompileDataObj = parentReport.getCompileData();
 		if (!(reportCompileDataObj instanceof JRReportCompileData))
 		{
-			throw new JRRuntimeException("Unsupported compiled report data of type " 
-					+ reportCompileDataObj.getClass().getName());
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_UNSUPPORTED_REPORT_DATA_TYPE,  
+					new Object[]{reportCompileDataObj.getClass().getName()} 
+					);
 		}
 		
 		JRReportCompileData reportCompileData = (JRReportCompileData) reportCompileDataObj;

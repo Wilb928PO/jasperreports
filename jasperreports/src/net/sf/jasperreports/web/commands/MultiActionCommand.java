@@ -33,7 +33,6 @@ import net.sf.jasperreports.web.actions.ActionException;
 
 /**
  * @author Narcis Marcu (narcism@users.sourceforge.net)
- * @version $Id$
  */
 public class MultiActionCommand implements Command {
 	
@@ -58,7 +57,7 @@ public class MultiActionCommand implements Command {
 				try {
 					action.run();
 				} catch (ActionException e) {
-					throw new CommandException(e.getMessage());
+					throw new CommandException(e);
 				}
 			}
 		}

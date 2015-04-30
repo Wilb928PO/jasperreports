@@ -28,9 +28,8 @@ import net.sf.jasperreports.engine.JRConstants;
 /**
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
-public class POSTNETComponent extends BarcodeComponent
+public class POSTNETComponent extends Barcode4jComponent
 {
 
 	private static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;

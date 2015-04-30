@@ -38,7 +38,7 @@ import net.sf.jasperreports.engine.JRPrintText;
 import net.sf.jasperreports.engine.JRStyledTextAttributeSelector;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.TabStop;
-import net.sf.jasperreports.engine.type.HorizontalAlignEnum;
+import net.sf.jasperreports.engine.type.HorizontalTextAlignEnum;
 import net.sf.jasperreports.engine.util.JRStringUtil;
 import net.sf.jasperreports.engine.util.JRStyledText;
 import net.sf.jasperreports.engine.util.JRStyledTextUtil;
@@ -47,7 +47,6 @@ import net.sf.jasperreports.engine.util.ParagraphUtil;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public abstract class AbstractTextRenderer
 {
@@ -240,7 +239,7 @@ public abstract class AbstractTextRenderer
 		this.text = text;
 
 		verticalAlignOffset = 0f;
-		switch (text.getVerticalAlignmentValue())
+		switch (text.getVerticalTextAlign())
 		{
 			case TOP :
 			{
@@ -432,7 +431,7 @@ public abstract class AbstractTextRenderer
 					}
 		
 					if (
-						text.getHorizontalAlignmentValue() == HorizontalAlignEnum.JUSTIFIED
+						text.getHorizontalTextAlign() == HorizontalTextAlignEnum.JUSTIFIED
 						&& lineMeasurer.getPosition() < paragraph.getEndIndex()
 						)
 					{
@@ -562,7 +561,7 @@ public abstract class AbstractTextRenderer
 					TabSegment segment = segments.get(segmentIndex);
 					TextLayout layout = segment.layout;
 
-					switch (text.getHorizontalAlignmentValue())
+					switch (text.getHorizontalTextAlign())
 					{
 						case JUSTIFIED :
 						{

@@ -104,6 +104,7 @@ import net.sf.jasperreports.engine.JRWrappingSvgRenderer;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.Renderable;
 import net.sf.jasperreports.engine.RenderableUtil;
+import net.sf.jasperreports.engine.export.JExcelApiExporter.StyleInfo;
 import net.sf.jasperreports.engine.export.data.BooleanTextValue;
 import net.sf.jasperreports.engine.export.data.DateTextValue;
 import net.sf.jasperreports.engine.export.data.NumberTextValue;
@@ -114,14 +115,14 @@ import net.sf.jasperreports.engine.export.type.ImageAnchorTypeEnum;
 import net.sf.jasperreports.engine.fonts.FontFamily;
 import net.sf.jasperreports.engine.fonts.FontInfo;
 import net.sf.jasperreports.engine.fonts.FontUtil;
-import net.sf.jasperreports.engine.type.HorizontalAlignEnum;
+import net.sf.jasperreports.engine.type.HorizontalTextAlignEnum;
 import net.sf.jasperreports.engine.type.ImageTypeEnum;
 import net.sf.jasperreports.engine.type.LineDirectionEnum;
 import net.sf.jasperreports.engine.type.ModeEnum;
 import net.sf.jasperreports.engine.type.OrientationEnum;
 import net.sf.jasperreports.engine.type.RenderableTypeEnum;
 import net.sf.jasperreports.engine.type.RotationEnum;
-import net.sf.jasperreports.engine.type.VerticalAlignEnum;
+import net.sf.jasperreports.engine.type.VerticalTextAlignEnum;
 import net.sf.jasperreports.engine.util.JRClassLoader;
 import net.sf.jasperreports.engine.util.JRDataUtils;
 import net.sf.jasperreports.engine.util.JRImageLoader;
@@ -141,12 +142,13 @@ import org.apache.commons.logging.LogFactory;
 /**
  * @deprecated Replaced by {@link JRXlsMetadataExporter}.
  * @author sanda zaharia (shertage@users.sourceforge.net)
- * @version $Id$
  */
 public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter<JxlMetadataReportConfiguration, JxlMetadataExporterConfiguration, JExcelApiExporterContext>
 {
 
 	private static final Log log = LogFactory.getLog(JExcelApiMetadataExporter.class);
+	public static final String EXCEPTION_MESSAGE_KEY_CURRENT_SHEET_TOO_MANY_ROWS = "export.xls.current.sheet.too.many.rows";
+	public static final String EXCEPTION_MESSAGE_KEY_SHEET_TOO_MANY_ROWS = "export.xls.sheet.too.many.rows";
 
 	/**
 	 * @deprecated Replaced by {@link JxlExporterConfiguration#PROPERTY_USE_TEMP_FILE}.
@@ -160,7 +162,7 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter<Jxl
 
 	/**
 	 * The exporter key, as used in
-	 * {@link GenericElementHandlerEnviroment#getHandler(net.sf.jasperreports.engine.JRGenericElementType, String)}.
+	 * {@link GenericElementHandlerEnviroment#getElementHandler(net.sf.jasperreports.engine.JRGenericElementType, String)}.
 	 */
 	public static final String JXL_EXPORTER_KEY = JRPropertiesUtil.PROPERTY_PREFIX + "jxl";
 	
@@ -247,6 +249,8 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter<Jxl
 		{
 			initCustomPalette();
 		}
+		
+		sheet = null;
 	}
 	
 
@@ -328,7 +332,11 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter<Jxl
 				templateIs = RepositoryUtil.getInstance(jasperReportsContext).getInputStreamFromLocation(lcWorkbookTemplate);
 				if (templateIs == null)
 				{
-					throw new JRRuntimeException("Workbook template not found at : " + lcWorkbookTemplate);
+					throw 
+						new JRRuntimeException(
+							EXCEPTION_MESSAGE_KEY_TEMPLATE_NOT_FOUND,  
+							new Object[]{lcWorkbookTemplate} 
+							);
 				}
 				else
 				{
@@ -353,11 +361,19 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter<Jxl
 		}
 		catch (IOException e)
 		{
-			throw new JRException("Error generating XLS report : " + jasperPrint.getName(), e);
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_REPORT_GENERATION_ERROR,
+					new Object[]{jasperPrint.getName()}, 
+					e);
 		}
 		catch (BiffException e) 
 		{
-			throw new JRException("Error generating XLS report : " + jasperPrint.getName(), e);
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_REPORT_GENERATION_ERROR,
+					new Object[]{jasperPrint.getName()}, 
+					e);
 		}
 		finally
 		{
@@ -380,6 +396,45 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter<Jxl
 		setSheetSettings(sheetInfo, sheet);
 	}
 
+	protected void closeSheet()
+	{
+		if (sheet == null)
+		{
+			return;
+		}
+
+		if (sheetInfo.sheetPageScale != null && sheetInfo.sheetPageScale > 9 && sheetInfo.sheetPageScale < 401)
+		{
+			SheetSettings sheetSettings = sheet.getSettings();
+			sheetSettings.setScaleFactor(sheetInfo.sheetPageScale);
+			
+			/* the scale factor takes precedence over fitWidth and fitHeight properties */			
+			sheetSettings.setFitWidth(0);
+			sheetSettings.setFitHeight(0);
+			sheetSettings.setFitToPages(false);
+		}
+		else
+		{
+			JxlReportConfiguration configuration = getCurrentItemConfiguration();
+
+			Integer fitWidth = configuration.getFitWidth();
+			Integer fitHeight = configuration.getFitHeight();
+			fitHeight = 
+				fitHeight == null
+				? (Boolean.TRUE == configuration.isAutoFitPageHeight() 
+					? (pageIndex - sheetInfo.sheetFirstPageIndex)
+					: null)
+				: fitHeight;
+			if (fitWidth != null || fitWidth != null)
+			{
+				SheetSettings sheetSettings = sheet.getSettings();
+				sheetSettings.setFitWidth(fitWidth == null ? 1 : fitWidth);
+				sheetSettings.setFitHeight(fitHeight == null ? 1 : fitHeight);
+				sheetSettings.setFitToPages(true);
+			}
+		}
+	}
+
 	protected void closeWorkbook(OutputStream os) throws JRException
 	{
 		if (sheet == null)//empty document
@@ -395,11 +450,19 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter<Jxl
 		}
 		catch (IOException e)
 		{
-			throw new JRException("Error generating XLS report : " + jasperPrint.getName(), e);
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_REPORT_GENERATION_ERROR,
+					new Object[]{jasperPrint.getName()}, 
+					e);
 		}
 		catch (WriteException e)
 		{
-			throw new JRException("Error generating XLS report : " + jasperPrint.getName(), e);
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_REPORT_GENERATION_ERROR,
+					new Object[]{jasperPrint.getName()}, 
+					e);
 		}
 	}
 
@@ -448,7 +511,11 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter<Jxl
 			}
 			catch (RowsExceededException e)
 			{
-				throw new JRException("Too many rows in sheet " + sheet.getName() + ": " + rowIndex, e);
+				throw 
+					new JRException(
+						EXCEPTION_MESSAGE_KEY_SHEET_TOO_MANY_ROWS,
+						new Object[]{sheet.getName(), rowIndex},
+						e);
 			}
 		}
 		else
@@ -463,9 +530,18 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter<Jxl
 			}
 			catch (RowsExceededException e)
 			{
-				throw new JRException("Too many rows in sheet " + sheet.getName() + ": " + rowIndex, e);
+				throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_SHEET_TOO_MANY_ROWS,
+					new Object[]{sheet.getName(), rowIndex},
+					e);
 			}
 		}
+	}
+
+	protected void addRowBreak(int rowIndex)
+	{
+		sheet.addRowPageBreak(rowIndex);
 	}
 
 	protected void addBlankCell(WritableCellFormat baseStyleFormat, Map<String, Object> cellValueMap, String currentColumnName) throws JRException
@@ -494,7 +570,11 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter<Jxl
 				}
 				catch (RowsExceededException e)
 				{
-					throw new JRException("There are too many rows in the current sheet", e);
+					throw 
+						new JRException(
+							EXCEPTION_MESSAGE_KEY_CURRENT_SHEET_TOO_MANY_ROWS,
+							null,
+							e);
 				}
 				catch (WriteException e)
 				{
@@ -508,11 +588,11 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter<Jxl
 
 	protected void exportLine(JRPrintLine line) throws JRException
 	{
-		String currentColumnName = line.getPropertiesMap().getProperty(JRXlsAbstractMetadataExporterParameter.PROPERTY_COLUMN_NAME);
+		String currentColumnName = line.getPropertiesMap().getProperty(JRXlsAbstractMetadataExporter.PROPERTY_COLUMN_NAME);
 		
 		if (currentColumnName != null && currentColumnName.length() > 0) 
 		{
-			boolean repeatValue = getPropertiesUtil().getBooleanProperty(line, JRXlsAbstractMetadataExporterParameter.PROPERTY_REPEAT_VALUE, false);
+			boolean repeatValue = getPropertiesUtil().getBooleanProperty(line, JRXlsAbstractMetadataExporter.PROPERTY_REPEAT_VALUE, false);
 			
 			setColumnName(currentColumnName);
 			setColumnWidth(columnNamesMap.get(currentColumnName), line.getWidth());
@@ -564,7 +644,9 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter<Jxl
 					backcolor, 
 					cellFont2, 
 					boxStyle,
-					isCellLocked(line)
+					isWrapText(line),
+					isCellLocked(line),
+					isShrinkToFit(line)
 					);
 			
 			addBlankElement(cellStyle2, repeatValue, currentColumnName);
@@ -573,11 +655,11 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter<Jxl
 
 	protected void exportRectangle(JRPrintGraphicElement element) throws JRException
 	{
-		String currentColumnName = element.getPropertiesMap().getProperty(JRXlsAbstractMetadataExporterParameter.PROPERTY_COLUMN_NAME);
+		String currentColumnName = element.getPropertiesMap().getProperty(JRXlsAbstractMetadataExporter.PROPERTY_COLUMN_NAME);
 		
 		if (currentColumnName != null && currentColumnName.length() > 0) 
 		{
-			boolean repeatValue = getPropertiesUtil().getBooleanProperty(element, JRXlsAbstractMetadataExporterParameter.PROPERTY_REPEAT_VALUE, false);
+			boolean repeatValue = getPropertiesUtil().getBooleanProperty(element, JRXlsAbstractMetadataExporter.PROPERTY_REPEAT_VALUE, false);
 			
 			setColumnName(currentColumnName);
 			setColumnWidth(columnNamesMap.get(currentColumnName), element.getWidth());
@@ -604,7 +686,9 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter<Jxl
 					backcolor, 
 					cellFont2, 
 					boxStyle,
-					isCellLocked(element)
+					isWrapText(element),
+					isCellLocked(element),
+					isShrinkToFit(element)
 					);
 			
 			addBlankElement(cellStyle2, repeatValue, currentColumnName);
@@ -614,12 +698,12 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter<Jxl
 
 	protected void exportText(JRPrintText textElement) throws JRException
 	{
-		String currentColumnName = textElement.getPropertiesMap().getProperty(JRXlsAbstractMetadataExporterParameter.PROPERTY_COLUMN_NAME);
+		String currentColumnName = textElement.getPropertiesMap().getProperty(JRXlsAbstractMetadataExporter.PROPERTY_COLUMN_NAME);
 		if (currentColumnName != null && currentColumnName.length() > 0) 
 		{
-			boolean hasCurrentColumnData = textElement.getPropertiesMap().containsProperty(JRXlsAbstractMetadataExporterParameter.PROPERTY_DATA);
-			String currentColumnData = textElement.getPropertiesMap().getProperty(JRXlsAbstractMetadataExporterParameter.PROPERTY_DATA);
-			boolean repeatValue = getPropertiesUtil().getBooleanProperty(textElement, JRXlsAbstractMetadataExporterParameter.PROPERTY_REPEAT_VALUE, false);
+			boolean hasCurrentColumnData = textElement.getPropertiesMap().containsProperty(JRXlsAbstractMetadataExporter.PROPERTY_DATA);
+			String currentColumnData = textElement.getPropertiesMap().getProperty(JRXlsAbstractMetadataExporter.PROPERTY_DATA);
+			boolean repeatValue = getPropertiesUtil().getBooleanProperty(textElement, JRXlsAbstractMetadataExporter.PROPERTY_REPEAT_VALUE, false);
 			
 			setColumnName(currentColumnName);
 			setColumnWidth(columnNamesMap.get(currentColumnName), textElement.getWidth());
@@ -645,18 +729,31 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter<Jxl
 				backcolor = getWorkbookColour(textElement.getBackcolor(), true);
 			}
 
-			StyleInfo baseStyle =
-				new StyleInfo(
-					mode, 
-					backcolor,
-					horizontalAlignment, 
-					verticalAlignment,
-					rotation, 
-					cellFont,
-					textElement,
-					isWrapText(textElement) || Boolean.TRUE.equals(((JExcelApiExporterNature)nature).getColumnAutoFit(textElement)),
-					isCellLocked(textElement)
-					);
+			StyleInfo baseStyle = isIgnoreTextFormatting(textElement) 
+					? new StyleInfo(
+							mode,
+							WHITE,
+							horizontalAlignment,
+							verticalAlignment,
+							(short)0,
+							null,
+							(BoxStyle)null, 
+							isWrapText(textElement) || Boolean.TRUE.equals(((JRXlsExporterNature)nature).getColumnAutoFit(textElement)),
+							isCellLocked(textElement),
+							isShrinkToFit(textElement)
+							)
+					: new StyleInfo(
+							mode, 
+							backcolor,
+							horizontalAlignment, 
+							verticalAlignment,
+							rotation, 
+							cellFont,
+							textElement,
+							isWrapText(textElement) || Boolean.TRUE.equals(((JExcelApiExporterNature)nature).getColumnAutoFit(textElement)),
+							isCellLocked(textElement),
+							isShrinkToFit(textElement)
+							);
 			
 			String href = null;
 			JRHyperlinkProducer customHandler = getHyperlinkProducer(textElement);
@@ -702,7 +799,11 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter<Jxl
 				}
 				catch (RowsExceededException e)
 				{
-					throw new JRException("There are too many rows in the current sheet", e);
+					throw 
+						new JRException(
+							EXCEPTION_MESSAGE_KEY_CURRENT_SHEET_TOO_MANY_ROWS,
+							null,
+							e);
 				}
 				catch (WriteException e)
 				{
@@ -896,7 +997,11 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter<Jxl
 
 		public void handle(DateTextValue textValue) throws JRException
 		{
-			baseStyle.setDisplayFormat(getDateFormat(getConvertedPattern(textElement, textValue.getPattern())));
+			String convertedPattern = getConvertedPattern(textElement, textValue.getPattern());
+			if (convertedPattern != null)
+			{
+				baseStyle.setDisplayFormat(getDateFormat(convertedPattern));
+			}
 			result = formula();
 		}
 
@@ -973,7 +1078,11 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter<Jxl
 
 		public void handle(DateTextValue textValue) throws JRException
 		{
-			baseStyle.setDisplayFormat(getDateFormat(getConvertedPattern(textElement, textValue.getPattern())));
+			String convertedPattern = getConvertedPattern(textElement, textValue.getPattern());
+			if (convertedPattern != null)
+			{
+				baseStyle.setDisplayFormat(getDateFormat(convertedPattern));
+			}
 			WritableCellFormat cellStyle = getLoadedCellStyle(baseStyle);
 			Date date = textValue.getValue();
 			if (date == null)
@@ -1112,10 +1221,10 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter<Jxl
 	public void exportImage(JRPrintImage element) throws JRException
 	{
 
-		String currentColumnName = element.getPropertiesMap().getProperty(JRXlsAbstractMetadataExporterParameter.PROPERTY_COLUMN_NAME);
+		String currentColumnName = element.getPropertiesMap().getProperty(JRXlsAbstractMetadataExporter.PROPERTY_COLUMN_NAME);
 		if (currentColumnName != null && currentColumnName.length() > 0) 
 		{
-			boolean repeatValue = getPropertiesUtil().getBooleanProperty(element, JRXlsAbstractMetadataExporterParameter.PROPERTY_REPEAT_VALUE, false);
+			boolean repeatValue = getPropertiesUtil().getBooleanProperty(element, JRXlsAbstractMetadataExporter.PROPERTY_REPEAT_VALUE, false);
 			
 			setColumnName(currentColumnName);
 			setColumnWidth(columnNamesMap.get(currentColumnName), element.getWidth());
@@ -1182,7 +1291,7 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter<Jxl
 				}
 	
 				float xalignFactor = 0f;
-				switch (element.getHorizontalAlignmentValue())
+				switch (element.getHorizontalImageAlign())
 				{
 					case RIGHT:
 					{
@@ -1203,7 +1312,7 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter<Jxl
 				}
 	
 				float yalignFactor = 0f;
-				switch (element.getVerticalAlignmentValue())
+				switch (element.getVerticalImageAlign())
 				{
 					case BOTTOM:
 					{
@@ -1322,7 +1431,9 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter<Jxl
 						background, 
 						cellFont2, 
 						new BoxStyle(element),
-						isCellLocked(element)
+						isWrapText(element),
+						isCellLocked(element),
+						isShrinkToFit(element)
 						);
 	
 				addBlankElement(cellStyle2, repeatValue, currentColumnName);
@@ -1347,11 +1458,19 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter<Jxl
 				}
 				catch (Exception ex)
 				{
-					throw new JRException("The cell cannot be added", ex);
+					throw 
+						new JRException(
+							EXCEPTION_MESSAGE_KEY_CANNOT_ADD_CELL, 
+							null,
+							ex);
 				}
 				catch (Error err)
 				{
-					throw new JRException("The cell cannot be added", err);
+					throw 
+						new JRException(
+							EXCEPTION_MESSAGE_KEY_CANNOT_ADD_CELL, 
+							null,
+							err);
 				}
 			}
 		}
@@ -1564,7 +1683,11 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter<Jxl
 		}
 		catch (Exception e)
 		{
-			throw new JRException("Can't get loaded fonts.", e);
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_LOADED_FONTS_ERROR,
+					null,
+					e);
 		}
 
 		return cellFont;
@@ -1593,17 +1716,20 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter<Jxl
 
 		public BoxStyle(JRBoxContainer element)
 		{
-			JRLineBox lineBox = element.getLineBox();
-			
-			if (lineBox != null)
+			if(element != null)
 			{
-				setBox(lineBox);
+				JRLineBox lineBox = element.getLineBox();
+				
+				if (lineBox != null)
+				{
+					setBox(lineBox);
+				}
+				if (element instanceof JRCommonGraphicElement)
+				{
+					setPen(((JRCommonGraphicElement)element).getLinePen());
+				}
+				hash = computeHash();
 			}
-			if (element instanceof JRCommonGraphicElement)
-			{
-				setPen(((JRCommonGraphicElement)element).getLinePen());
-			}
-			hash = computeHash();
 		}
 
 		public void setBox(JRLineBox box)
@@ -1703,6 +1829,7 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter<Jxl
 		protected final BoxStyle box;
 		protected final boolean isWrapText;
 		protected final boolean isCellLocked;
+		protected final boolean isShrinkToFit;
 		private DisplayFormat displayFormat;
 		private int hashCode;
 
@@ -1713,115 +1840,26 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter<Jxl
 				int verticalAlignment, 
 				int rotation, 
 				WritableFont font, 
-				JRBoxContainer element
-				)
-			{
-				this(
-					mode, 
-					backcolor, 
-					horizontalAlignment, 
-					verticalAlignment, 
-					rotation, 
-					font, 
-					new BoxStyle(element),
-					true
-					);
-			}
-			
-		protected StyleInfo(
-				Pattern mode, 
-				Colour backcolor, 
-				int horizontalAlignment, 
-				int verticalAlignment, 
-				int rotation, 
-				WritableFont font, 
-				JRBoxContainer element,
-				boolean wrapText
-				)
-			{
-				this(
-					mode, 
-					backcolor, 
-					horizontalAlignment, 
-					verticalAlignment, 
-					rotation, 
-					font, 
-					new BoxStyle(element),
-					wrapText
-					);
-			}
-			
-		protected StyleInfo(
-				Pattern mode, 
-				Colour backcolor, 
-				int horizontalAlignment, 
-				int verticalAlignment, 
-				int rotation, 
-				WritableFont font, 
 				JRBoxContainer element,
 				boolean wrapText,
-				boolean cellLocked
+				boolean cellLocked,
+				boolean shrinkToFit
 				)
-			{
-				this(
-					mode, 
-					backcolor, 
-					horizontalAlignment, 
-					verticalAlignment, 
-					rotation, 
-					font, 
-					new BoxStyle(element),
-					wrapText,
-					cellLocked
-					);
-			}
-			
-		protected StyleInfo(
-				Pattern mode, 
-				Colour backcolor, 
-				int horizontalAlignment, 
-				int verticalAlignment, 
-				int rotation, 
-				WritableFont font, 
-				BoxStyle box
-				)
-			{
+		{
 			this(
-					mode, 
-					backcolor, 
-					horizontalAlignment, 
-					verticalAlignment, 
-					rotation, 
-					font, 
-					box,
-					true
-					);
-			}
-
-		protected StyleInfo(
-				Pattern mode, 
-				Colour backcolor, 
-				int horizontalAlignment, 
-				int verticalAlignment, 
-				int rotation, 
-				WritableFont font, 
-				BoxStyle box,
-				boolean wrapText
-				)
-			{
-			this(
-					mode, 
-					backcolor, 
-					horizontalAlignment, 
-					verticalAlignment, 
-					rotation, 
-					font, 
-					box,
-					wrapText,
-					true
-					);
-			}
-
+				mode,
+				backcolor,
+				horizontalAlignment,
+				verticalAlignment,
+				rotation,
+				font,
+				element == null ? null : new BoxStyle(element),
+				wrapText,
+				cellLocked,
+				shrinkToFit
+				);
+		}
+		
 		protected StyleInfo(
 				Pattern mode, 
 				Colour backcolor, 
@@ -1831,22 +1869,24 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter<Jxl
 				WritableFont font, 
 				BoxStyle box,
 				boolean wrapText,
-				boolean cellLocked
+				boolean cellLocked,
+				boolean shrinkToFit
 				)
-			{
-				this.mode = mode;
-				this.backcolor = backcolor;
-				this.horizontalAlignment = horizontalAlignment;
-				this.verticalAlignment = verticalAlignment;
-				this.rotation = rotation;
-				this.font = font;
-				
-				this.box = box;
-				this.isWrapText = wrapText;
-				this.isCellLocked = cellLocked;
-				
-				computeHash();
-			}
+		{
+			this.mode = mode;
+			this.backcolor = backcolor;
+			this.horizontalAlignment = horizontalAlignment;
+			this.verticalAlignment = verticalAlignment;
+			this.rotation = rotation;
+			this.font = font;
+			
+			this.box = box;
+			this.isWrapText = shrinkToFit ? false : wrapText;
+			this.isCellLocked = cellLocked;
+			this.isShrinkToFit = shrinkToFit;
+			
+			computeHash();
+		}
 
 		protected void computeHash()
 		{
@@ -1855,11 +1895,12 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter<Jxl
 			hash = 31*hash + this.horizontalAlignment;
 			hash = 31*hash + this.verticalAlignment;
 			hash = 31*hash + this.rotation;
-			hash = 31*hash + this.font.hashCode();
+			hash = 31*hash + (this.font == null ? 0 : this.font.hashCode());
 			hash = 31*hash + (this.box == null ? 0 : this.box.hashCode());
 			hash = 31*hash + (this.displayFormat == null ? 0 : this.displayFormat.hashCode());
 			hash = 31*hash + (this.isWrapText ? 0 : 1);
 			hash = 31*hash + (this.isCellLocked ? 0 : 1);
+			hash = 31*hash + (this.isShrinkToFit ? 0 : 1);
 
 			hashCode = hash;
 		}
@@ -1875,10 +1916,11 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter<Jxl
 
 			return k.mode.equals(mode) && k.backcolor.equals(backcolor) &&
 				k.horizontalAlignment == horizontalAlignment && k.verticalAlignment == verticalAlignment &&
-				k.rotation == rotation && k.font.equals(font) &&
+				k.rotation == rotation && 
+				(k.font == null ? font == null : k.font.equals(font)) &&
 				(k.box == null ? box == null : (box != null && k.box.equals(box))) &&
 				(k.displayFormat == null ? displayFormat == null : (displayFormat!= null && k.displayFormat.equals(displayFormat)) &&
-				k.isWrapText == isWrapText && k.isCellLocked == isCellLocked);
+				k.isWrapText == isWrapText && k.isCellLocked == isCellLocked && k.isShrinkToFit == isShrinkToFit);
 		}
 
 		public DisplayFormat getDisplayFormat()
@@ -1898,7 +1940,7 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter<Jxl
 				mode + "," + backcolor + "," +
 				horizontalAlignment + "," + verticalAlignment + "," +
 				rotation + "," + font + "," +
-				box + "," + displayFormat + "," + isWrapText + "," + isCellLocked + ")";
+				box + "," + displayFormat + "," + isWrapText + "," + isCellLocked + "," + isShrinkToFit + ")";
 		}
 	}
 
@@ -1908,7 +1950,9 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter<Jxl
 				Colour backcolor, 
 				WritableFont font, 
 				BoxStyle box,
-				boolean cellLocked
+				boolean wrapText,
+				boolean cellLocked,
+				boolean shrinkToFit
 				) throws JRException
 			{
 				StyleInfo styleKey = 
@@ -1920,8 +1964,9 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter<Jxl
 						Orientation.HORIZONTAL.getValue(),
 						font, 
 						box,
-						true,
-						cellLocked
+						wrapText,
+						cellLocked,
+						shrinkToFit
 						);
 				return getLoadedCellStyle(styleKey);
 			}
@@ -1934,7 +1979,11 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter<Jxl
 		{
 			try
 			{
-				if (styleKey.getDisplayFormat() == null)
+				if(styleKey.font == null)
+				{
+					cellStyle = new WritableCellFormat();
+				}
+				else if (styleKey.getDisplayFormat() == null)
 				{
 					cellStyle = new WritableCellFormat(styleKey.font);
 				}
@@ -1951,7 +2000,7 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter<Jxl
 				cellStyle.setLocked(styleKey.isCellLocked);
 
 				JxlReportConfiguration configuration = getCurrentItemConfiguration();
-				if (!configuration.isIgnoreCellBorder())
+				if (!configuration.isIgnoreCellBorder() && styleKey.box != null)
 				{
 					BoxStyle box = styleKey.box;
 					cellStyle.setBorder(Border.TOP, box.borderStyle[BoxStyle.TOP], box.borderColour[BoxStyle.TOP]);
@@ -1962,7 +2011,11 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter<Jxl
 			}
 			catch (Exception e)
 			{
-				throw new JRException("Error setting cellFormat-template.", e);
+				throw 
+					new JRException(
+						EXCEPTION_MESSAGE_KEY_CELL_FORMAT_TEMPLATE_ERROR,
+						null,
+						e);
 			}
 
 			loadedCellStyles.put(styleKey, cellStyle);
@@ -2050,41 +2103,14 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter<Jxl
 		
 		JxlReportConfiguration configuration = getCurrentItemConfiguration();
 		
-		boolean isIgnorePageMargins = configuration.isIgnorePageMargins();
-		
-		if (pageFormat.getTopMargin() != null)
-		{
-			sheets.setTopMargin(LengthUtil.inchNoRound(isIgnorePageMargins ? 0 : pageFormat.getTopMargin()));
-		}
-
-		if (pageFormat.getLeftMargin() != null)
-		{
-			sheets.setLeftMargin(LengthUtil.inchNoRound(isIgnorePageMargins ? 0 : pageFormat.getLeftMargin()));
-		}
-		
-		if (pageFormat.getRightMargin() != null)
-		{
-			sheets.setRightMargin(LengthUtil.inchNoRound(isIgnorePageMargins ? 0 : pageFormat.getRightMargin()));
-		}
-
-		if (pageFormat.getBottomMargin() != null)
-		{
-			sheets.setBottomMargin(LengthUtil.inchNoRound(isIgnorePageMargins ? 0 : pageFormat.getBottomMargin()));
-		}
+		sheets.setTopMargin(0.0);
+		sheets.setLeftMargin(0.0);
+		sheets.setRightMargin(0.0);
+		sheets.setBottomMargin(0.0);
 
 		sheets.setHeaderMargin(0.0);
 		sheets.setFooterMargin(0.0);
 
-		Integer fitWidth = configuration.getFitWidth();
-		Integer fitHeight = configuration.getFitHeight();
-		
-		if(fitWidth != null || fitWidth != null)
-		{
-			sheets.setFitWidth(fitWidth == null ? 1 : fitWidth);
-			sheets.setFitHeight(fitHeight == null ? 1 : fitHeight);
-			sheets.setFitToPages(true);
-		}
-		
 		String password = configuration.getPassword();
 		if(password != null)
 		{
@@ -2238,62 +2264,62 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter<Jxl
 
 	public static TextAlignHolder getTextAlignHolder(JRPrintText textElement)
 	{
-		HorizontalAlignEnum horizontalAlignment;
-		VerticalAlignEnum verticalAlignment;
+		HorizontalTextAlignEnum horizontalAlignment;
+		VerticalTextAlignEnum verticalAlignment;
 		RotationEnum rotation = textElement.getRotationValue();
 
 		switch (textElement.getRotationValue())
 		{
 			case LEFT :
 			{
-				switch (textElement.getHorizontalAlignmentValue())
+				switch (textElement.getHorizontalTextAlign())
 				{
 					case LEFT :
 					{
-						verticalAlignment = VerticalAlignEnum.BOTTOM;
+						verticalAlignment = VerticalTextAlignEnum.BOTTOM;
 						break;
 					}
 					case CENTER :
 					{
-						verticalAlignment = VerticalAlignEnum.MIDDLE;
+						verticalAlignment = VerticalTextAlignEnum.MIDDLE;
 						break;
 					}
 					case RIGHT :
 					{
-						verticalAlignment = VerticalAlignEnum.TOP;
+						verticalAlignment = VerticalTextAlignEnum.TOP;
 						break;
 					}
 					case JUSTIFIED :
 					{
-						verticalAlignment = VerticalAlignEnum.JUSTIFIED;
+						verticalAlignment = VerticalTextAlignEnum.JUSTIFIED;
 						break;
 					}
 					default :
 					{
-						verticalAlignment = VerticalAlignEnum.BOTTOM;
+						verticalAlignment = VerticalTextAlignEnum.BOTTOM;
 					}
 				}
 
-				switch (textElement.getVerticalAlignmentValue())
+				switch (textElement.getVerticalTextAlign())
 				{
 					case TOP :
 					{
-						horizontalAlignment = HorizontalAlignEnum.LEFT;
+						horizontalAlignment = HorizontalTextAlignEnum.LEFT;
 						break;
 					}
 					case MIDDLE :
 					{
-						horizontalAlignment = HorizontalAlignEnum.CENTER;
+						horizontalAlignment = HorizontalTextAlignEnum.CENTER;
 						break;
 					}
 					case BOTTOM :
 					{
-						horizontalAlignment = HorizontalAlignEnum.RIGHT;
+						horizontalAlignment = HorizontalTextAlignEnum.RIGHT;
 						break;
 					}
 					default :
 					{
-						horizontalAlignment = HorizontalAlignEnum.LEFT;
+						horizontalAlignment = HorizontalTextAlignEnum.LEFT;
 					}
 				}
 
@@ -2301,54 +2327,54 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter<Jxl
 			}
 			case RIGHT :
 			{
-				switch (textElement.getHorizontalAlignmentValue())
+				switch (textElement.getHorizontalTextAlign())
 				{
 					case LEFT :
 					{
-						verticalAlignment = VerticalAlignEnum.TOP;
+						verticalAlignment = VerticalTextAlignEnum.TOP;
 						break;
 					}
 					case CENTER :
 					{
-						verticalAlignment = VerticalAlignEnum.MIDDLE;
+						verticalAlignment = VerticalTextAlignEnum.MIDDLE;
 						break;
 					}
 					case RIGHT :
 					{
-						verticalAlignment = VerticalAlignEnum.BOTTOM;
+						verticalAlignment = VerticalTextAlignEnum.BOTTOM;
 						break;
 					}
 					case JUSTIFIED :
 					{
-						verticalAlignment = VerticalAlignEnum.JUSTIFIED;
+						verticalAlignment = VerticalTextAlignEnum.JUSTIFIED;
 						break;
 					}
 					default :
 					{
-						verticalAlignment = VerticalAlignEnum.TOP;
+						verticalAlignment = VerticalTextAlignEnum.TOP;
 					}
 				}
 
-				switch (textElement.getVerticalAlignmentValue())
+				switch (textElement.getVerticalTextAlign())
 				{
 					case TOP :
 					{
-						horizontalAlignment = HorizontalAlignEnum.RIGHT;
+						horizontalAlignment = HorizontalTextAlignEnum.RIGHT;
 						break;
 					}
 					case MIDDLE :
 					{
-						horizontalAlignment = HorizontalAlignEnum.CENTER;
+						horizontalAlignment = HorizontalTextAlignEnum.CENTER;
 						break;
 					}
 					case BOTTOM :
 					{
-						horizontalAlignment = HorizontalAlignEnum.LEFT;
+						horizontalAlignment = HorizontalTextAlignEnum.LEFT;
 						break;
 					}
 					default :
 					{
-						horizontalAlignment = HorizontalAlignEnum.RIGHT;
+						horizontalAlignment = HorizontalTextAlignEnum.RIGHT;
 					}
 				}
 
@@ -2358,8 +2384,8 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter<Jxl
 			case NONE :
 			default :
 			{
-				horizontalAlignment = textElement.getHorizontalAlignmentValue();
-				verticalAlignment = textElement.getVerticalAlignmentValue();
+				horizontalAlignment = textElement.getHorizontalTextAlign();
+				verticalAlignment = textElement.getVerticalTextAlign();
 			}
 		}
 
@@ -2405,10 +2431,10 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter<Jxl
 
 	protected void exportGenericElement(JRGenericPrintElement element) throws JRException
 	{
-		String currentColumnName = element.getPropertiesMap().getProperty(JRXlsAbstractMetadataExporterParameter.PROPERTY_COLUMN_NAME);
+		String currentColumnName = element.getPropertiesMap().getProperty(JRXlsAbstractMetadataExporter.PROPERTY_COLUMN_NAME);
 		if(currentColumnName != null && currentColumnName.length() > 0)
 		{
-			boolean repeatValue = getPropertiesUtil().getBooleanProperty(element, JRXlsAbstractMetadataExporterParameter.PROPERTY_REPEAT_VALUE, false);
+			boolean repeatValue = getPropertiesUtil().getBooleanProperty(element, JRXlsAbstractMetadataExporter.PROPERTY_REPEAT_VALUE, false);
 			int colIndex = columnNamesMap.get(currentColumnName);
 			
 			setColumnName(currentColumnName);
@@ -2510,7 +2536,11 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter<Jxl
 		}
 		catch (RowsExceededException e)
 		{
-			throw new JRException("There are too many rows in the current sheet", e);
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_CURRENT_SHEET_TOO_MANY_ROWS,
+					null,
+					e);
 		}
 		catch (WriteException e)
 		{
@@ -2561,20 +2591,6 @@ public class JExcelApiMetadataExporter extends JRXlsAbstractMetadataExporter<Jxl
 		// TODO set row levels
 	}
 	
-	protected void setScale(Integer scale)
-	{
-		if (scale != null && scale > 9 && scale < 401)
-		{
-			SheetSettings sheetSettings = sheet.getSettings();
-			sheetSettings.setScaleFactor(scale);
-			
-			/* the scale factor takes precedence over fitWidth and fitHeight properties */			
-			sheetSettings.setFitWidth(0);
-			sheetSettings.setFitHeight(0);
-			sheetSettings.setFitToPages(false);
-		}
-	}
-
 	protected void setAnchorType(WritableImage image, ImageAnchorTypeEnum anchorType)
 	{
 		switch (anchorType)

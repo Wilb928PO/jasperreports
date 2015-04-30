@@ -36,9 +36,11 @@ import net.sf.jasperreports.engine.design.events.JRPropertyChangeSupport;
  * Default {@link JRTemplate} implementation.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class JRSimpleTemplate implements JRTemplate, Serializable, JRChangeEventsSupport {
+
+	public static final String EXCEPTION_MESSAGE_KEY_DUPLICATE_TEMPLATE_STYLE = "engine.template.duplicate.template.style";
+
 	public static final String PROPERTY_STYLE = "style";
 	public static final String PROPERTY_INCLUDED_TEMPLATES = "incluldedTemplates";
 
@@ -96,7 +98,10 @@ public class JRSimpleTemplate implements JRTemplate, Serializable, JRChangeEvent
 
 	protected void checkExistingName(String name) throws JRException {
 		if (getStyle(name) != null) {
-			throw new JRException("Duplicate declaration of template style : " + name);
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_DUPLICATE_TEMPLATE_STYLE,
+					new Object[]{name});
 		}
 	}
 

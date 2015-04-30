@@ -43,11 +43,11 @@ import net.sf.jasperreports.engine.base.JRBaseExpression;
 import net.sf.jasperreports.engine.design.events.JRChangeEventsSupport;
 import net.sf.jasperreports.engine.design.events.JRPropertyChangeSupport;
 import net.sf.jasperreports.engine.util.JRCloneUtils;
+import net.sf.jasperreports.engine.util.JRExpressionUtil;
 
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class JRDesignExpression extends JRBaseExpression implements JRChangeEventsSupport
 {
@@ -67,7 +67,7 @@ public class JRDesignExpression extends JRBaseExpression implements JRChangeEven
 	}
 	
 	public static final Pattern PLACEHOLDER_PATTERN = 
-			Pattern.compile("\\$([RPFV])\\{(.+?)\\}", Pattern.MULTILINE | Pattern.DOTALL);
+			Pattern.compile("\\$([RPFV])\\{(.*?)\\}", Pattern.MULTILINE | Pattern.DOTALL);
 	
 	protected static final int PLACEHOLDER_TYPE_INDEX = 1;
 	protected static final int PLACEHOLDER_TEXT_INDEX = 2;
@@ -422,7 +422,10 @@ public class JRDesignExpression extends JRBaseExpression implements JRChangeEven
 		}
 		else
 		{
-			throw new JRRuntimeException("Unknown expression chunk type \"" + chunkStringType + "\"");
+			throw 
+				new JRRuntimeException(
+					JRExpressionUtil.EXCEPTION_MESSAGE_KEY_UNKNOWN_EXPRESSION_CHUNK_TYPE,
+					new Object[]{chunkStringType});
 		}
 		return chunkType;
 	}

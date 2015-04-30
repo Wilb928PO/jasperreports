@@ -26,6 +26,7 @@ package net.sf.jasperreports.engine.export.ooxml;
 import java.io.Writer;
 
 import net.sf.jasperreports.engine.JasperReportsContext;
+import net.sf.jasperreports.engine.PrintPageFormat;
 import net.sf.jasperreports.engine.export.CutsInfo;
 import net.sf.jasperreports.engine.export.JRExporterGridCell;
 import net.sf.jasperreports.engine.export.LengthUtil;
@@ -33,7 +34,6 @@ import net.sf.jasperreports.engine.export.LengthUtil;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class DocxTableHelper extends BaseHelper
 {
@@ -43,6 +43,7 @@ public class DocxTableHelper extends BaseHelper
 	private CutsInfo xCuts;
 	private DocxCellHelper cellHelper;
 	private DocxParagraphHelper paragraphHelper;
+	private PrintPageFormat pageFormat;
 
 
 	/**
@@ -52,7 +53,8 @@ public class DocxTableHelper extends BaseHelper
 		JasperReportsContext jasperReportsContext,
 		Writer writer,
 		CutsInfo xCuts,
-		boolean pageBreak
+		boolean pageBreak,
+		PrintPageFormat pageFormat
 		) 
 	{
 		super(jasperReportsContext, writer);
@@ -60,6 +62,7 @@ public class DocxTableHelper extends BaseHelper
 		this.xCuts = xCuts;
 		this.cellHelper = new DocxCellHelper(jasperReportsContext, writer);
 		this.paragraphHelper = new DocxParagraphHelper(jasperReportsContext, writer, pageBreak);
+		this.pageFormat = pageFormat;
 	}
 
 
@@ -91,10 +94,20 @@ public class DocxTableHelper extends BaseHelper
 		write("    <w:tblLayout w:type=\"fixed\"/>\n");
 		write("   </w:tblPr>\n");
 		write("   <w:tblGrid>\n");
-		for(int col = 1; col < xCuts.size(); col++)
+
+		int leftColumnWidth = xCuts.getCutOffset(1) - xCuts.getCutOffset(0);
+		leftColumnWidth -= Math.min(leftColumnWidth, pageFormat.getLeftMargin());
+		write("    <w:gridCol w:w=\"" + (leftColumnWidth == 0 ? 1 : LengthUtil.twip(leftColumnWidth)) + "\"/>\n");
+		
+		for(int col = 2; col < xCuts.size() - 1; col++)
 		{
 			write("    <w:gridCol w:w=\"" + LengthUtil.twip(xCuts.getCutOffset(col) - xCuts.getCutOffset(col - 1)) + "\"/>\n");
 		}
+		
+		int rightColumnWidth = xCuts.getCutOffset(xCuts.size() - 1) - xCuts.getCutOffset(xCuts.size() - 2);
+		rightColumnWidth -= Math.min(rightColumnWidth, pageFormat.getRightMargin());
+		write("    <w:gridCol w:w=\"" + (rightColumnWidth == 0 ? 1 : LengthUtil.twip(rightColumnWidth)) + "\"/>\n");
+		
 		write("   </w:tblGrid>\n");
 	}
 	

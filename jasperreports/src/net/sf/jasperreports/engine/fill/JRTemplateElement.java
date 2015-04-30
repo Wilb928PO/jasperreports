@@ -48,7 +48,6 @@ import net.sf.jasperreports.engine.util.ObjectUtils;
  * print elements.
  * 
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public abstract class JRTemplateElement implements JRCommonElement, Serializable, JRPropertiesHolder, Deduplicable
 {
@@ -323,6 +322,7 @@ public abstract class JRTemplateElement implements JRCommonElement, Serializable
 	 */
 	private Byte mode;
 	
+	@SuppressWarnings("deprecation")
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
 	{
 		in.defaultReadObject();

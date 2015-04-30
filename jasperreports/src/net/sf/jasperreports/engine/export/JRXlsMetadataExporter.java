@@ -90,7 +90,7 @@ import net.sf.jasperreports.engine.export.type.ImageAnchorTypeEnum;
 import net.sf.jasperreports.engine.fonts.FontFamily;
 import net.sf.jasperreports.engine.fonts.FontInfo;
 import net.sf.jasperreports.engine.fonts.FontUtil;
-import net.sf.jasperreports.engine.type.HorizontalAlignEnum;
+import net.sf.jasperreports.engine.type.HorizontalTextAlignEnum;
 import net.sf.jasperreports.engine.type.ImageTypeEnum;
 import net.sf.jasperreports.engine.type.LineDirectionEnum;
 import net.sf.jasperreports.engine.type.ModeEnum;
@@ -98,7 +98,7 @@ import net.sf.jasperreports.engine.type.OrientationEnum;
 import net.sf.jasperreports.engine.type.RenderableTypeEnum;
 import net.sf.jasperreports.engine.type.RotationEnum;
 import net.sf.jasperreports.engine.type.RunDirectionEnum;
-import net.sf.jasperreports.engine.type.VerticalAlignEnum;
+import net.sf.jasperreports.engine.type.VerticalTextAlignEnum;
 import net.sf.jasperreports.engine.util.JRDataUtils;
 import net.sf.jasperreports.engine.util.JRImageLoader;
 import net.sf.jasperreports.engine.util.JRStringUtil;
@@ -131,12 +131,12 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Hyperlink;
 import org.apache.poi.ss.usermodel.RichTextString;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellReference;
 
 
 /**
  * @author sanda zaharia (shertage@users.sourceforge.net)
- * @version $Id$
  */
 public class JRXlsMetadataExporter extends JRXlsAbstractMetadataExporter<XlsMetadataReportConfiguration, XlsMetadataExporterConfiguration, JRXlsExporterContext> 
 {
@@ -231,6 +231,8 @@ public class JRXlsMetadataExporter extends JRXlsAbstractMetadataExporter<XlsMeta
 	protected void initExport() 
 	{
 		super.initExport();
+		
+		sheet = null;
 	}
 	
 
@@ -265,7 +267,11 @@ public class JRXlsMetadataExporter extends JRXlsAbstractMetadataExporter<XlsMeta
 			try {
 				templateIs = RepositoryUtil.getInstance(jasperReportsContext).getInputStreamFromLocation(lcWorkbookTemplate);
 				if (templateIs == null)	{
-					throw new JRRuntimeException("Workbook template not found at : " + lcWorkbookTemplate);
+					throw 
+						new JRRuntimeException(
+							EXCEPTION_MESSAGE_KEY_TEMPLATE_NOT_FOUND,  
+							new Object[]{lcWorkbookTemplate} 
+							);
 				} else {
 					workbook = new HSSFWorkbook(new POIFSFileSystem(templateIs));
 					boolean keepSheets = keepTemplateSheets == null ? configuration.isKeepWorkbookTemplateSheets() : keepTemplateSheets;
@@ -319,36 +325,11 @@ public class JRXlsMetadataExporter extends JRXlsAbstractMetadataExporter<XlsMeta
 			sheet.protectSheet(password);
 		}
 		
-		boolean isIgnorePageMargins = configuration.isIgnorePageMargins();
-		
-		if (pageFormat.getLeftMargin() != null) {
-			sheet.setMargin((short)0, LengthUtil.inchNoRound(isIgnorePageMargins ? 0 : pageFormat.getLeftMargin()));
-		}
-		
-		if (pageFormat.getRightMargin() != null) {
-			sheet.setMargin((short)1, LengthUtil.inchNoRound(isIgnorePageMargins ? 0 : pageFormat.getRightMargin()));
-		}
-		
-		if (pageFormat.getTopMargin() != null)	{
-			sheet.setMargin((short)2, LengthUtil.inchNoRound(isIgnorePageMargins ? 0 : pageFormat.getTopMargin()));
-		}
-		
-		if (pageFormat.getBottomMargin() != null) {
-			sheet.setMargin((short)3, LengthUtil.inchNoRound(isIgnorePageMargins ? 0 : pageFormat.getBottomMargin()));
-		}
+		sheet.setMargin(Sheet.LeftMargin, 0.0);
+		sheet.setMargin(Sheet.RightMargin, 0.0);
+		sheet.setMargin(Sheet.TopMargin, 0.0);
+		sheet.setMargin(Sheet.BottomMargin, 0.0);
 
-		Integer fitWidth = configuration.getFitWidth();
-		if(!isValidScale(sheetInfo.sheetPageScale) && fitWidth != null) {
-			printSetup.setFitWidth(fitWidth.shortValue());
-			sheet.setAutobreaks(true);
-		}
-		
-		Integer fitHeight = configuration.getFitHeight();
-		if(!isValidScale(sheetInfo.sheetPageScale) && fitHeight != null) {
-			printSetup.setFitHeight(fitHeight.shortValue());
-			sheet.setAutobreaks(true);
-		}
-		
 		String sheetHeaderLeft = configuration.getSheetHeaderLeft();
 		if(sheetHeaderLeft != null)	{
 			sheet.getHeader().setLeft(sheetHeaderLeft);
@@ -427,6 +408,45 @@ public class JRXlsMetadataExporter extends JRXlsAbstractMetadataExporter<XlsMeta
 		sheetsBeforeCurrentReportMap.put(sheetIndex, sheetsBeforeCurrentReport);
 	}
 
+	protected void closeSheet()	
+	{
+		if (sheet == null)
+		{
+			return;
+		}
+		
+		HSSFPrintSetup printSetup = sheet.getPrintSetup();
+		
+		if (isValidScale(sheetInfo.sheetPageScale))
+		{
+			printSetup.setScale((short)sheetInfo.sheetPageScale.intValue());
+		}
+		else
+		{
+			XlsReportConfiguration configuration = getCurrentItemConfiguration();
+
+			Integer fitWidth = configuration.getFitWidth();
+			if (fitWidth != null) 
+			{
+				printSetup.setFitWidth(fitWidth.shortValue());
+				sheet.setAutobreaks(true);
+			}
+
+			Integer fitHeight = configuration.getFitHeight();
+			fitHeight = 
+				fitHeight == null
+				? (Boolean.TRUE == configuration.isAutoFitPageHeight() 
+					? (pageIndex - sheetInfo.sheetFirstPageIndex)
+					: null)
+				: fitHeight;
+			if (fitHeight != null)
+			{
+				printSetup.setFitHeight(fitHeight.shortValue());
+				sheet.setAutobreaks(true);
+			}
+		}
+	}
+
 	protected void closeWorkbook(OutputStream os) throws JRException {
 		try	{
 			for (Object anchorName : anchorNames.keySet()) {
@@ -470,7 +490,11 @@ public class JRXlsMetadataExporter extends JRXlsAbstractMetadataExporter<XlsMeta
 			}
 			workbook.write(os);
 		} catch (IOException e) {
-			throw new JRException("Error generating XLS metadata report : " + jasperPrint.getName(), e);
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_REPORT_GENERATION_ERROR,
+					new Object[]{jasperPrint.getName()}, 
+					e);
 		}
 	}
 
@@ -550,9 +574,17 @@ public class JRXlsMetadataExporter extends JRXlsAbstractMetadataExporter<XlsMeta
 							anchor.setAnchorType(imageSettings.getAnchorType());
 							patriarch.createPicture(anchor, imageSettings.getIndex());
 						} catch (Exception ex) {
-							throw new JRException("The cell cannot be added", ex);
+							throw 
+								new JRException(
+									EXCEPTION_MESSAGE_KEY_CANNOT_ADD_CELL, 
+									null,
+									ex);
 						} catch (Error err) {
-							throw new JRException("The cell cannot be added", err);
+							throw 
+								new JRException(
+									EXCEPTION_MESSAGE_KEY_CANNOT_ADD_CELL, 
+									null,
+									err);
 						}
 					}
 				}
@@ -618,7 +650,8 @@ public class JRXlsMetadataExporter extends JRXlsAbstractMetadataExporter<XlsMeta
 					getLoadedFont(getDefaultFont(), forecolor, null, getLocale()),
 					boxStyle,
 					isCellLocked(line),
-					isCellHidden(line)
+					isCellHidden(line),
+					isShrinkToFit(line)
 					);
 			addBlankElement(cellStyle, repeatValue, currentColumnName);
 		}
@@ -653,7 +686,8 @@ public class JRXlsMetadataExporter extends JRXlsAbstractMetadataExporter<XlsMeta
 					getLoadedFont(getDefaultFont(), forecolor, null, getLocale()),
 					new BoxStyle(element),
 					isCellLocked(element),
-					isCellHidden(element)
+					isCellHidden(element),
+					isShrinkToFit(element)
 					);
 			addBlankElement(cellStyle, repeatValue, currentColumnName);
 		}
@@ -669,7 +703,7 @@ public class JRXlsMetadataExporter extends JRXlsAbstractMetadataExporter<XlsMeta
 			
 			setColumnName(currentColumnName);
 			adjustColumnWidth(currentColumnName, textElement.getWidth(), ((JRXlsExporterNature)nature).getColumnAutoFit(textElement));
-			adjustRowHeight(textElement.getHeight(), isWrapText(textElement) || ((JRXlsExporterNature)nature).getRowAutoFit(textElement));
+			adjustRowHeight(textElement.getHeight(), isWrapText(textElement) || Boolean.TRUE.equals(((JRXlsExporterNature)nature).getRowAutoFit(textElement)));
 			
 			final short forecolor = getWorkbookColor(textElement.getForecolor()).getIndex();
 
@@ -687,19 +721,33 @@ public class JRXlsMetadataExporter extends JRXlsAbstractMetadataExporter<XlsMeta
 				backcolor = getWorkbookColor(textElement.getBackcolor()).getIndex();
 			}
 
-			final StyleInfo baseStyle =
-				new StyleInfo(
-					mode,
-					backcolor,
-					horizontalAlignment,
-					verticalAlignment,
-					rotation,
-					getLoadedFont(textElement, forecolor, null, getTextLocale(textElement)),
-					new BoxStyle(textElement), 
-					isWrapText(textElement) || ((JRXlsExporterNature)nature).getColumnAutoFit(textElement),
-					isCellLocked(textElement),
-					isCellHidden(textElement)
-					);
+			final StyleInfo baseStyle = isIgnoreTextFormatting(textElement) 
+					? new StyleInfo(
+							mode,
+							whiteIndex,
+							horizontalAlignment,
+							verticalAlignment,
+							(short)0,
+							null,
+							(BoxStyle)null, 
+							isWrapText(textElement) || Boolean.TRUE.equals(((JRXlsExporterNature)nature).getColumnAutoFit(textElement)),
+							isCellLocked(textElement),
+							isCellHidden(textElement),
+							isShrinkToFit(textElement)
+							)
+					: new StyleInfo(
+							mode,
+							backcolor,
+							horizontalAlignment,
+							verticalAlignment,
+							rotation,
+							getLoadedFont(textElement, forecolor, null, getTextLocale(textElement)),
+							new BoxStyle(textElement), 
+							isWrapText(textElement) || Boolean.TRUE.equals(((JRXlsExporterNature)nature).getColumnAutoFit(textElement)),
+							isCellLocked(textElement),
+							isCellHidden(textElement),
+							isShrinkToFit(textElement)
+							);
 			
 			final JRStyledText styledText;
 			final String textStr;
@@ -1061,7 +1109,7 @@ public class JRXlsMetadataExporter extends JRXlsAbstractMetadataExporter<XlsMeta
 				}
 
 				float xalignFactor = 0f;
-				switch (element.getHorizontalAlignmentValue()) {
+				switch (element.getHorizontalImageAlign()) {
 					case RIGHT: {
 						xalignFactor = 1f;
 						break;
@@ -1078,7 +1126,7 @@ public class JRXlsMetadataExporter extends JRXlsAbstractMetadataExporter<XlsMeta
 				}
 
 				float yalignFactor = 0f;
-				switch (element.getVerticalAlignmentValue()) {
+				switch (element.getVerticalImageAlign()) {
 					case BOTTOM: {
 						yalignFactor = 1f;
 						break;
@@ -1202,7 +1250,8 @@ public class JRXlsMetadataExporter extends JRXlsAbstractMetadataExporter<XlsMeta
 						getLoadedFont(getDefaultFont(), forecolor, null, getLocale()),
 						new BoxStyle(element),
 						isCellLocked(element),
-						isCellHidden(element)
+						isCellHidden(element),
+						isShrinkToFit(element)
 						);
 
 				addBlankElement(cellStyle, false, currentColumnName);
@@ -1249,9 +1298,17 @@ public class JRXlsMetadataExporter extends JRXlsAbstractMetadataExporter<XlsMeta
 					
 //					setHyperlinkCell(element);
 				} catch (Exception ex) {
-					throw new JRException("The cell cannot be added", ex);
+					throw 
+						new JRException(
+							EXCEPTION_MESSAGE_KEY_CANNOT_ADD_CELL, 
+							null,
+							ex);
 				} catch (Error err) {
-					throw new JRException("The cell cannot be added", err);
+					throw 
+						new JRException(
+							EXCEPTION_MESSAGE_KEY_CANNOT_ADD_CELL, 
+							null,
+							err);
 				}
 			}
 		}
@@ -1268,16 +1325,20 @@ public class JRXlsMetadataExporter extends JRXlsAbstractMetadataExporter<XlsMeta
 			cellStyle.setAlignment(style.horizontalAlignment);
 			cellStyle.setVerticalAlignment(style.verticalAlignment);
 			cellStyle.setRotation(style.rotation);
-			cellStyle.setFont(style.font);
+			if(style.font != null)
+			{
+				cellStyle.setFont(style.font);
+			}
 			cellStyle.setWrapText(style.lcWrapText);
 			cellStyle.setLocked(style.lcCellLocked);
 			cellStyle.setHidden(style.lcCellHidden);
+			cellStyle.setShrinkToFit(style.lcShrinkToFit);
 
 			if (style.hasDataFormat()) {
 				cellStyle.setDataFormat(style.getDataFormat());
 			}
 
-			if (!getCurrentItemConfiguration().isIgnoreCellBorder()) {
+			if (!getCurrentItemConfiguration().isIgnoreCellBorder() && style.box != null) {
 				BoxStyle box = style.box;
 				cellStyle.setBorderTop(box.borderStyle[BoxStyle.TOP]);
 				cellStyle.setTopBorderColor(box.borderColour[BoxStyle.TOP]);
@@ -1300,24 +1361,13 @@ public class JRXlsMetadataExporter extends JRXlsAbstractMetadataExporter<XlsMeta
 			short verticalAlignment,
 			short rotation,
 			HSSFFont font,
-			BoxStyle box
-			) {
-			return getLoadedCellStyle(mode, backcolor, horizontalAlignment, verticalAlignment, rotation, font, box, true, false);
-		}
-
-	protected HSSFCellStyle getLoadedCellStyle(
-			short mode,
-			short backcolor,
-			short horizontalAlignment,
-			short verticalAlignment,
-			short rotation,
-			HSSFFont font,
 			BoxStyle box,
 			boolean isCellLocked,
-			boolean isCellHidden
+			boolean isCellHidden,
+			boolean isShrinkToFit
 			) {
-			StyleInfo style = new StyleInfo(mode, backcolor, horizontalAlignment, verticalAlignment, rotation, font, box, isCellLocked, isCellHidden);
-			return getLoadedCellStyle(style);
+		
+			return getLoadedCellStyle(new StyleInfo(mode, backcolor, horizontalAlignment, verticalAlignment, rotation, font, box, true, isCellLocked, isCellHidden, isShrinkToFit));
 		}
 
 	/**
@@ -1359,91 +1409,91 @@ public class JRXlsMetadataExporter extends JRXlsAbstractMetadataExporter<XlsMeta
 
 	
 	public static TextAlignHolder getTextAlignHolder(JRPrintText textElement) {
-		HorizontalAlignEnum horizontalAlignment;
-		VerticalAlignEnum verticalAlignment;
+		HorizontalTextAlignEnum horizontalAlignment;
+		VerticalTextAlignEnum verticalAlignment;
 		RotationEnum rotation = textElement.getRotationValue();
 
 		switch (textElement.getRotationValue()) {
 			case LEFT : {
-				switch (textElement.getHorizontalAlignmentValue()) {
+				switch (textElement.getHorizontalTextAlign()) {
 					case LEFT : {
-						verticalAlignment = VerticalAlignEnum.BOTTOM;
+						verticalAlignment = VerticalTextAlignEnum.BOTTOM;
 						break;
 					}
 					case CENTER : {
-						verticalAlignment = VerticalAlignEnum.MIDDLE;
+						verticalAlignment = VerticalTextAlignEnum.MIDDLE;
 						break;
 					}
 					case RIGHT : {
-						verticalAlignment = VerticalAlignEnum.TOP;
+						verticalAlignment = VerticalTextAlignEnum.TOP;
 						break;
 					}
 					case JUSTIFIED : {
-						verticalAlignment = VerticalAlignEnum.JUSTIFIED;
+						verticalAlignment = VerticalTextAlignEnum.JUSTIFIED;
 						break;
 					}
 					default : {
-						verticalAlignment = VerticalAlignEnum.BOTTOM;
+						verticalAlignment = VerticalTextAlignEnum.BOTTOM;
 					}
 				}
 
-				switch (textElement.getVerticalAlignmentValue()) {
+				switch (textElement.getVerticalTextAlign()) {
 					case TOP : {
-						horizontalAlignment = HorizontalAlignEnum.LEFT;
+						horizontalAlignment = HorizontalTextAlignEnum.LEFT;
 						break;
 					}
 					case MIDDLE : {
-						horizontalAlignment = HorizontalAlignEnum.CENTER;
+						horizontalAlignment = HorizontalTextAlignEnum.CENTER;
 						break;
 					}
 					case BOTTOM : {
-						horizontalAlignment = HorizontalAlignEnum.RIGHT;
+						horizontalAlignment = HorizontalTextAlignEnum.RIGHT;
 						break;
 					}
 					default : {
-						horizontalAlignment = HorizontalAlignEnum.LEFT;
+						horizontalAlignment = HorizontalTextAlignEnum.LEFT;
 					}
 				}
 				break;
 			}
 			case RIGHT : {
-				switch (textElement.getHorizontalAlignmentValue()) {
+				switch (textElement.getHorizontalTextAlign()) {
 					case LEFT : {
-						verticalAlignment = VerticalAlignEnum.TOP;
+						verticalAlignment = VerticalTextAlignEnum.TOP;
 						break;
 					}
 					case CENTER : {
-						verticalAlignment = VerticalAlignEnum.MIDDLE;
+						verticalAlignment = VerticalTextAlignEnum.MIDDLE;
 						break;
 					}
 					case RIGHT : {
-						verticalAlignment = VerticalAlignEnum.BOTTOM;
+						verticalAlignment = VerticalTextAlignEnum.BOTTOM;
 						break;
 					}
 					case JUSTIFIED : {
-						verticalAlignment = VerticalAlignEnum.JUSTIFIED;
+						verticalAlignment = VerticalTextAlignEnum.JUSTIFIED;
 						break;
 					}
 					default : {
-						verticalAlignment = VerticalAlignEnum.TOP;
+						verticalAlignment = VerticalTextAlignEnum.TOP;
 					}
 				}
 
-				switch (textElement.getVerticalAlignmentValue()) {
+				switch (textElement.getVerticalTextAlign()) {
 					case TOP : {
-						horizontalAlignment = HorizontalAlignEnum.RIGHT;
+						horizontalAlignment = HorizontalTextAlignEnum.RIGHT;
 						break;
 					}
 					case MIDDLE : {
-						horizontalAlignment = HorizontalAlignEnum.CENTER;
+						horizontalAlignment = HorizontalTextAlignEnum.CENTER;
 						break;
 					}
 					case BOTTOM : {
-						horizontalAlignment = HorizontalAlignEnum.LEFT;
+						horizontalAlignment = HorizontalTextAlignEnum.LEFT;
 						break;
 					}
 					default : {
-						horizontalAlignment = HorizontalAlignEnum.RIGHT;
+						horizontalAlignment = HorizontalTextAlignEnum.RIGHT;
 					}
 				}
 				break;
@@ -1451,8 +1501,8 @@ public class JRXlsMetadataExporter extends JRXlsAbstractMetadataExporter<XlsMeta
 			case UPSIDE_DOWN:
 			case NONE :
 			default : {
-				horizontalAlignment = textElement.getHorizontalAlignmentValue();
-				verticalAlignment = textElement.getVerticalAlignmentValue();
+				horizontalAlignment = textElement.getHorizontalTextAlign();
+				verticalAlignment = textElement.getVerticalTextAlign();
 			}
 		}
 		return new TextAlignHolder(horizontalAlignment, verticalAlignment, rotation);
@@ -1594,7 +1644,7 @@ public class JRXlsMetadataExporter extends JRXlsAbstractMetadataExporter<XlsMeta
 //				for(String l : levelMap.keySet()) {
 //					if (level == null || l.compareTo(level) >= 0) {
 //						Integer startIndex = levelMap.get(l);
-//						if(levelInfo.getEndIndex() > startIndex) {
+//						if(levelInfo.getEndIndex() >= startIndex) {
 //							sheet.groupRow(startIndex, levelInfo.getEndIndex());
 //						}
 //					}
@@ -1602,13 +1652,6 @@ public class JRXlsMetadataExporter extends JRXlsAbstractMetadataExporter<XlsMeta
 //				sheet.setRowSumsBelow(false);
 //			}
 //		}
-	}
-	
-	protected void setScale(Integer scale) {
-		if (isValidScale(scale)) {
-			HSSFPrintSetup printSetup = sheet.getPrintSetup();
-			printSetup.setScale((short)scale.intValue());
-		}
 	}
 
 
@@ -1869,6 +1912,12 @@ public class JRXlsMetadataExporter extends JRXlsAbstractMetadataExporter<XlsMeta
 	}
 
 	@Override
+	protected void addRowBreak(int rowIndex)
+	{
+		sheet.setRowBreak(rowIndex);
+	}
+
+	@Override
 	protected void setColumnWidth(int col, int width, boolean autoFit) {
 	}
 	
@@ -1892,11 +1941,14 @@ public class JRXlsMetadataExporter extends JRXlsAbstractMetadataExporter<XlsMeta
 		}
 
 		public BoxStyle(JRPrintElement element) {
-			if (element instanceof JRBoxContainer) {
-				setBox(((JRBoxContainer)element).getLineBox());
-			}
-			if (element instanceof JRCommonGraphicElement) {
-				setPen(((JRCommonGraphicElement)element).getLinePen());
+			if(element != null)
+			{
+				if (element instanceof JRBoxContainer) {
+					setBox(((JRBoxContainer)element).getLineBox());
+				}
+				if (element instanceof JRCommonGraphicElement) {
+					setPen(((JRCommonGraphicElement)element).getLinePen());
+				}
 			}
 		}
 
@@ -1994,81 +2046,9 @@ public class JRXlsMetadataExporter extends JRXlsAbstractMetadataExporter<XlsMeta
 		protected final boolean lcWrapText;
 		protected final boolean lcCellLocked;
 		protected final boolean lcCellHidden;
+		protected final boolean lcShrinkToFit;
 		private short lcDataFormat = -1;
 		private int hashCode;
-	
-		public StyleInfo(
-			short mode,
-			short backcolor,
-			short horizontalAlignment,
-			short verticalAlignment,
-			short rotation,
-			HSSFFont font,
-			BoxStyle box
-			) {
-		this(
-				mode,
-				backcolor,
-				horizontalAlignment,
-				verticalAlignment,
-				rotation,
-				font,
-				box,
-				true,
-				true,
-				false
-				);
-		}
-	
-		public StyleInfo(
-			short mode,
-			short backcolor,
-			short horizontalAlignment,
-			short verticalAlignment,
-			short rotation,
-			HSSFFont font,
-			BoxStyle box,
-			boolean wrapText
-			) {
-			this(
-				mode,
-				backcolor,
-				horizontalAlignment,
-				verticalAlignment,
-				rotation,
-				font,
-				box,
-				wrapText,
-				true,
-				false
-				);
-		}
-	
-	
-		public StyleInfo(
-			short mode,
-			short backcolor,
-			short horizontalAlignment,
-			short verticalAlignment,
-			short rotation,
-			HSSFFont font,
-			BoxStyle box,
-			boolean cellLocked,
-			boolean cellHidden
-			) {
-			this(
-				mode,
-				backcolor,
-				horizontalAlignment,
-				verticalAlignment,
-				rotation,
-				font,
-				box,
-				true,
-				cellLocked,
-				cellHidden
-				);
-		}
 	
 		public StyleInfo(
 			short mode,
@@ -2080,7 +2060,8 @@ public class JRXlsMetadataExporter extends JRXlsAbstractMetadataExporter<XlsMeta
 			BoxStyle box,
 			boolean wrapText,
 			boolean cellLocked,
-			boolean cellHidden
+			boolean cellHidden,
+			boolean shrinkToFit
 			) {
 			this.mode = mode;
 			this.backcolor = backcolor;
@@ -2090,10 +2071,10 @@ public class JRXlsMetadataExporter extends JRXlsAbstractMetadataExporter<XlsMeta
 			this.font = font;
 	
 			this.box = box;
-			this.lcWrapText = wrapText;
+			this.lcWrapText = shrinkToFit ? false : wrapText;
 			this.lcCellLocked = cellLocked;
 			this.lcCellHidden = cellHidden;
-	
+			this.lcShrinkToFit = shrinkToFit;
 			hashCode = computeHash();
 		}
 	
@@ -2109,6 +2090,7 @@ public class JRXlsMetadataExporter extends JRXlsAbstractMetadataExporter<XlsMeta
 			hash = 31*hash + (lcWrapText ? 0 : 1);
 			hash = 31*hash + (lcCellLocked ? 0 : 1);
 			hash = 31*hash + (lcCellHidden ? 0 : 1);
+			hash = 31*hash + (lcShrinkToFit ? 0 : 1);
 			return hash;
 		}
 	
@@ -2140,7 +2122,8 @@ public class JRXlsMetadataExporter extends JRXlsAbstractMetadataExporter<XlsMeta
 					&& (s.font == null ? font == null : (font != null && s.font.getIndex() == font.getIndex()))
 					&& (s.box == null ? box == null : (box != null && s.box.equals(box)))
 					&& s.rotation == rotation && s.lcWrapText == lcWrapText 
-					&& s.lcCellLocked == lcCellLocked && s.lcCellHidden == lcCellHidden;//FIXME should dataformat be part of equals? it is part of toString()...
+					&& s.lcCellLocked == lcCellLocked && s.lcCellHidden == lcCellHidden
+					&& s.lcShrinkToFit == lcShrinkToFit;	//FIXME should dataformat be part of equals? it is part of toString()...
 		}
 	
 		public String toString() {
@@ -2148,7 +2131,7 @@ public class JRXlsMetadataExporter extends JRXlsAbstractMetadataExporter<XlsMeta
 				mode + "," + backcolor + "," +
 				horizontalAlignment + "," + verticalAlignment + "," +
 				rotation + "," + font + "," +
-				box + "," + lcDataFormat + "," + lcWrapText + "," + lcCellLocked + "," + lcCellHidden + ")";
+				box + "," + lcDataFormat + "," + lcWrapText + "," + lcCellLocked + "," + lcCellHidden + "," + lcShrinkToFit + ")";
 		}
 	}
 	

@@ -48,7 +48,6 @@ import net.sf.jasperreports.engine.type.RenderableTypeEnum;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class ImageDrawer extends ElementDrawer<JRPrintImage>
 {
@@ -135,7 +134,7 @@ public class ImageDrawer extends ElementDrawer<JRPrintImage>
 			}
 	
 			float xalignFactor = 0f;
-			switch (printImage.getHorizontalAlignmentValue())
+			switch (printImage.getHorizontalImageAlign())
 			{
 				case RIGHT :
 				{
@@ -156,7 +155,7 @@ public class ImageDrawer extends ElementDrawer<JRPrintImage>
 			}
 
 			float yalignFactor = 0f;
-			switch (printImage.getVerticalAlignmentValue())
+			switch (printImage.getVerticalImageAlign())
 			{
 				case BOTTOM :
 				{

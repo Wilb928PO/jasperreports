@@ -99,6 +99,7 @@ import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JRVisitor;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.Renderable;
+import net.sf.jasperreports.engine.base.JRBaseChart;
 import net.sf.jasperreports.engine.type.EvaluationTimeEnum;
 import net.sf.jasperreports.engine.type.HyperlinkTypeEnum;
 import net.sf.jasperreports.engine.type.ModeEnum;
@@ -121,11 +122,12 @@ import org.jfree.data.general.Dataset;
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
  * @author Some enhancements by Barry Klawans (bklawans@users.sourceforge.net)
- * @version $Id$
  */
 public class JRFillChart extends JRFillElement implements JRChart
 {
-
+	public static final String EXCEPTION_MESSAGE_KEY_CUSTOMIZER_INSTANCE_ERROR = "charts.customizer.instance.error";
+	public static final String EXCEPTION_MESSAGE_KEY_MULTIAXIS_PLOT_TYPES_MIX_NOT_ALLOWED = "charts.multiaxis.plot.types.mix.not.allowed";
+	public static final String EXCEPTION_MESSAGE_KEY_MULTIAXIS_PLOT_NOT_SUPPORTED = "charts.multiaxis.plot.not.supported";
 
 	/**
 	 *
@@ -279,7 +281,11 @@ public class JRFillChart extends JRFillElement implements JRChart
 				plot = factory.getBarPlot((JRBarPlot) chart.getPlot());
 				break;
 			default:
-				throw new JRRuntimeException("Chart type not supported.");
+				throw 
+					new JRRuntimeException(
+						JRBaseChart.EXCEPTION_MESSAGE_KEY_CHART_TYPE_NOT_SUPPORTED,  
+						new Object[]{getChartType()} 
+						);
 		}
 
 		titleFont = factory.getFont(chart, chart.getTitleFont());
@@ -297,7 +303,11 @@ public class JRFillChart extends JRFillElement implements JRChart
 				Class<?> myClass = JRClassLoader.loadClassForName(customizerClass);
 				chartCustomizer = (JRChartCustomizer) myClass.newInstance();
 			} catch (Exception e) {
-				throw new JRRuntimeException("Could not create chart customizer instance.", e);
+				throw 
+					new JRRuntimeException(
+						EXCEPTION_MESSAGE_KEY_CUSTOMIZER_INSTANCE_ERROR,
+						(Object[])null,
+						e);
 			}
 
 			if (chartCustomizer instanceof JRAbstractChartCustomizer)
@@ -1098,7 +1108,11 @@ public class JRFillChart extends JRFillElement implements JRChart
 				//no item hyperlinks
 				break;
 			default:
-				throw new JRRuntimeException("Chart type " + getChartType() + " not supported.");
+				throw 
+					new JRRuntimeException(
+						JRBaseChart.EXCEPTION_MESSAGE_KEY_CHART_TYPE_NOT_SUPPORTED,  
+						new Object[]{getChartType()} 
+						);
 		}
 
 		return chartHyperlinkProvider;
@@ -1205,7 +1219,11 @@ public class JRFillChart extends JRFillElement implements JRChart
 				CategoryPlot mainCatPlot = (CategoryPlot)mainPlot;
 				if (!(axisChart.getPlot() instanceof CategoryPlot))
 				{
-					throw new JRException("You can not mix plot types in a MultiAxisChart");
+					throw 
+						new JRException(
+							EXCEPTION_MESSAGE_KEY_MULTIAXIS_PLOT_TYPES_MIX_NOT_ALLOWED,  
+							(Object[])null 
+							);
 				}
 
 				// Get the axis and add it to the multi axis chart plot
@@ -1234,7 +1252,11 @@ public class JRFillChart extends JRFillElement implements JRChart
 				XYPlot mainXyPlot = (XYPlot)mainPlot;
 				if (!(axisChart.getPlot() instanceof XYPlot))
 				{
-					throw new JRException("You can not mix plot types in a MultiAxisChart");
+					throw 
+						new JRException(
+							EXCEPTION_MESSAGE_KEY_MULTIAXIS_PLOT_TYPES_MIX_NOT_ALLOWED,  
+							(Object[])null 
+							);
 				}
 
 				// Get the axis and add it to the multi axis chart plot
@@ -1260,7 +1282,11 @@ public class JRFillChart extends JRFillElement implements JRChart
 			}
 			else
 			{
-				throw new JRException("MultiAxis charts only support Category and XY plots.");
+				throw 
+					new JRException(
+						EXCEPTION_MESSAGE_KEY_MULTIAXIS_PLOT_NOT_SUPPORTED,  
+						(Object[])null 
+						);
 			}
 		}
 
@@ -1480,10 +1506,6 @@ public class JRFillChart extends JRFillElement implements JRChart
 
 		public TimeZone getTimeZone() {
 			return JRFillChart.this.getTimeZone();
-		}
-		public byte getEvaluation() 
-		{
-			return JRFillChart.this.getEvaluationTimeValue().getValue();
 		}
 	}
 }

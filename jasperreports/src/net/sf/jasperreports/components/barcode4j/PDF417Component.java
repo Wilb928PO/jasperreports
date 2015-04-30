@@ -28,9 +28,8 @@ import net.sf.jasperreports.engine.JRConstants;
 /**
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
-public class PDF417Component extends BarcodeComponent
+public class PDF417Component extends Barcode4jComponent
 {
 	
 	private static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;

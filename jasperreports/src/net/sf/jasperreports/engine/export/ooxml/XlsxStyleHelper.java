@@ -38,7 +38,6 @@ import net.sf.jasperreports.export.XlsReportConfiguration;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class XlsxStyleHelper extends BaseHelper
 {
@@ -96,7 +95,9 @@ public class XlsxStyleHelper extends BaseHelper
 		Locale locale,
 		boolean isWrapText, 
 		boolean isHidden, 
-		boolean isLocked 
+		boolean isLocked,
+		boolean  isShrinkToFit,
+		boolean isIgnoreTextFormatting
 		)
 	{
 		XlsxStyleInfo styleInfo = 
@@ -107,7 +108,9 @@ public class XlsxStyleHelper extends BaseHelper
 				gridCell,
 				isWrapText,
 				isHidden,
-				isLocked
+				isLocked,
+				isShrinkToFit,
+				isIgnoreTextFormatting
 				);
 		Integer styleIndex = styleCache.get(styleInfo.getId());
 		if (styleIndex == null)
@@ -149,10 +152,10 @@ public class XlsxStyleHelper extends BaseHelper
 				+ "\" borderId=\"" + styleInfo.borderIndex
 				+ "\" xfId=\"" + styleIndex + "\""
 				+ " applyAlignment=\"1\" applyProtection=\"1\" applyNumberFormat=\"1\" applyFont=\"1\" applyFill=\"1\" applyBorder=\"1\">"
-				+ "<alignment wrapText=\"" + styleInfo.isWrapText + "\""
+				+ "<alignment wrapText=\"" + (styleInfo.isWrapText && !styleInfo.isShrinkToFit) + "\""
 				+ (styleInfo.horizontalAlign == null ? "" : " horizontal=\"" + styleInfo.horizontalAlign + "\"")
 				+ (styleInfo.verticalAlign == null ? "" : " vertical=\"" + styleInfo.verticalAlign + "\"")
-//				+ (" shrinkToFit=\"" + styleInfo.isFontSizeFixEnabled + "\"")
+				+ (styleInfo.isShrinkToFit ? " shrinkToFit=\"" + styleInfo.isShrinkToFit + "\"" : "")
 				+ "/>"
 				);
 			cellXfsWriter.write("<protection hidden=\"" + styleInfo.isHidden + "\" locked=\"" + styleInfo.isLocked + "\"/>");

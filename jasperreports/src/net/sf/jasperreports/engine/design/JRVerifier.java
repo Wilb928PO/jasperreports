@@ -145,7 +145,6 @@ import org.apache.commons.logging.LogFactory;
  * report compilation.  
  * 
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class JRVerifier
 {
@@ -1423,7 +1422,7 @@ public class JRVerifier
 			{
 				if (sectionType == SectionTypeEnum.BAND)
 				{
-					addBrokenRule("Band reports cannot contain bands", section);
+					addBrokenRule("Band reports cannot contain parts", section);
 				}
 				else
 				{

@@ -53,7 +53,6 @@ import org.jfree.chart.JFreeChart;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public final class ChartConverter extends ElementConverter
 {
@@ -119,7 +118,7 @@ public final class ChartConverter extends ElementConverter
 		
 		ChartTheme theme = ChartUtil.getInstance(reportConverter.getJasperReportsContext()).getTheme(themeName);
 		
-		ChartContext chartContext = new ConvertChartContext(chart);
+		ChartContext chartContext = new ConvertChartContext(reportConverter, chart);
 		
 		JFreeChart jfreeChart = null;
 		try

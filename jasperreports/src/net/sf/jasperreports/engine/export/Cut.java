@@ -37,7 +37,6 @@ import java.util.Map;
  * Utility class used by grid exporters to create a grid for page layout.
  * 
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class Cut
 {
@@ -84,6 +83,14 @@ public class Cut
 		return ((getUsage() & Cut.USAGE_SPANNED) > 0);
 	}
 
+	/**
+	 * 
+	 */
+	public boolean isBreak()
+	{
+		return ((getUsage() & Cut.USAGE_BREAK) > 0);
+	}
+	
 	public boolean hasProperty(String name) 
 	{
 		return propertiesMap == null ? false : propertiesMap.containsKey(name);

@@ -89,6 +89,7 @@ import net.sf.jasperreports.engine.util.JRStyledText;
 import net.sf.jasperreports.engine.util.JRTextAttribute;
 import net.sf.jasperreports.export.DocxExporterConfiguration;
 import net.sf.jasperreports.export.DocxReportConfiguration;
+import net.sf.jasperreports.export.ExportInterruptedException;
 import net.sf.jasperreports.export.ExporterInputItem;
 import net.sf.jasperreports.export.OutputStreamExporterOutput;
 import net.sf.jasperreports.export.ReportExportConfiguration;
@@ -125,7 +126,6 @@ import org.apache.commons.logging.LogFactory;
  * 
  * @see net.sf.jasperreports.export.DocxReportConfiguration
  * @author sanda zaharia (shertage@users.sourceforge.net)
- * @version $Id$
  */
 public class JRDocxExporter extends JRAbstractExporter<DocxReportConfiguration, DocxExporterConfiguration, OutputStreamExporterOutput, JRDocxExporterContext>
 {
@@ -136,6 +136,8 @@ public class JRDocxExporter extends JRAbstractExporter<DocxReportConfiguration, 
 	 * {@link GenericElementHandlerEnviroment#getElementHandler(JRGenericElementType, String)}.
 	 */
 	public static final String DOCX_EXPORTER_KEY = JRPropertiesUtil.PROPERTY_PREFIX + "docx";
+	
+	public static final String EXCEPTION_MESSAGE_KEY_COLUMN_COUNT_OUT_OF_RANGE = "export.docx.column.count.out.of.range";
 	
 	protected static final String DOCX_EXPORTER_PROPERTIES_PREFIX = JRPropertiesUtil.PROPERTY_PREFIX + "export.docx.";
 
@@ -180,6 +182,7 @@ public class JRDocxExporter extends JRAbstractExporter<DocxReportConfiguration, 
 	protected boolean startPage;
 	protected String invalidCharReplacement;
 	protected PrintPageFormat pageFormat;
+	protected JRGridLayout pageGridLayout;
 
 	protected LinkedList<Color> backcolorStack = new LinkedList<Color>();
 	protected Color backcolor;
@@ -397,7 +400,7 @@ public class JRDocxExporter extends JRAbstractExporter<DocxReportConfiguration, 
 				{
 					if (Thread.interrupted())
 					{
-						throw new JRException("Current thread interrupted.");
+						throw new ExportInterruptedException();
 					}
 
 					page = pages.get(pageIndex);
@@ -406,7 +409,7 @@ public class JRDocxExporter extends JRAbstractExporter<DocxReportConfiguration, 
 					
 					if (oldPageFormat != null && oldPageFormat != pageFormat)
 					{
-						docHelper.exportSection(oldPageFormat, false);
+						docHelper.exportSection(oldPageFormat, pageGridLayout, false);
 					}
 					
 					exportPage(page);
@@ -416,7 +419,10 @@ public class JRDocxExporter extends JRAbstractExporter<DocxReportConfiguration, 
 			}
 		}
 		
-		docHelper.exportSection(oldPageFormat, true);
+		if (oldPageFormat != null)
+		{
+			docHelper.exportSection(oldPageFormat, pageGridLayout, true);
+		}
 
 		docHelper.exportFooter();
 		docHelper.close();
@@ -451,8 +457,8 @@ public class JRDocxExporter extends JRAbstractExporter<DocxReportConfiguration, 
 		pageAnchor = JR_PAGE_ANCHOR_PREFIX + reportIndex + "_" + (pageIndex + 1);
 		
 		ReportExportConfiguration configuration = getCurrentItemConfiguration();
-		
-		JRGridLayout layout =
+
+		pageGridLayout =
 			new JRGridLayout(
 				nature,
 				page.getElements(),
@@ -463,7 +469,7 @@ public class JRDocxExporter extends JRAbstractExporter<DocxReportConfiguration, 
 				null //address
 				);
 
-		exportGrid(layout, null);
+		exportGrid(pageGridLayout, null);
 		
 		JRExportProgressMonitor progressMonitor = configuration.getProgressMonitor();
 		if (progressMonitor != null)
@@ -486,7 +492,11 @@ public class JRDocxExporter extends JRAbstractExporter<DocxReportConfiguration, 
 		int rowCount = grid.getRowCount();
 		if (rowCount > 0 && grid.getColumnCount() > 63)
 		{
-			throw new JRException("The DOCX format does not support more than 63 columns in a table.");
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_COLUMN_COUNT_OUT_OF_RANGE,  
+					new Object[]{grid.getColumnCount()} 
+					);
 		}
 		
 		// an empty page is encountered; 
@@ -498,7 +508,8 @@ public class JRDocxExporter extends JRAbstractExporter<DocxReportConfiguration, 
 						jasperReportsContext,
 						docWriter, 
 						xCuts,
-						false
+						false,
+						pageFormat
 						);
 			int maxReportIndex = exporterInput.getItems().size() - 1;
 			
@@ -517,7 +528,8 @@ public class JRDocxExporter extends JRAbstractExporter<DocxReportConfiguration, 
 					jasperReportsContext,
 					docWriter, 
 					xCuts,
-					frameIndex == null && (reportIndex != 0 || pageIndex != startPageIndex)
+					frameIndex == null && (reportIndex != 0 || pageIndex != startPageIndex),
+					pageFormat
 					);
 
 		tableHelper.exportHeader();
@@ -555,8 +567,13 @@ public class JRDocxExporter extends JRAbstractExporter<DocxReportConfiguration, 
 							)
 						);
 			}
+
 			int rowHeight = gridLayout.getRowHeight(row) - maxBottomPadding;
-			
+			if (row == 0 && frameIndex == null)
+			{
+				rowHeight -= Math.min(rowHeight, pageFormat.getTopMargin());
+			}
+
 			tableHelper.exportRowHeader(
 				rowHeight,
 				allowRowResize
@@ -938,7 +955,7 @@ public class JRDocxExporter extends JRAbstractExporter<DocxReportConfiguration, 
 				{
 					if (normalWidth > availableImageWidth)
 					{
-						switch (image.getHorizontalAlignmentValue())
+						switch (image.getHorizontalImageAlign())
 						{
 							case RIGHT :
 							{
@@ -971,7 +988,7 @@ public class JRDocxExporter extends JRAbstractExporter<DocxReportConfiguration, 
 
 					if (normalHeight > availableImageHeight)
 					{
-						switch (image.getVerticalAlignmentValue())
+						switch (image.getVerticalImageAlign())
 						{
 							case TOP :
 							{
@@ -1042,7 +1059,7 @@ public class JRDocxExporter extends JRAbstractExporter<DocxReportConfiguration, 
 			docHelper.write("<w:drawing>\n");
 			docHelper.write("<wp:anchor distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\" simplePos=\"0\" relativeHeight=\"0\" behindDoc=\"0\" locked=\"1\" layoutInCell=\"1\" allowOverlap=\"1\">");
 			docHelper.write("<wp:simplePos x=\"0\" y=\"0\"/>");
-			docHelper.write("<wp:positionH relativeFrom=\"column\"><wp:align>" + DocxParagraphHelper.getHorizontalAlignment(image.getHorizontalAlignmentValue()) + "</wp:align></wp:positionH>");
+			docHelper.write("<wp:positionH relativeFrom=\"column\"><wp:align>" + DocxParagraphHelper.getHorizontalImageAlign(image.getHorizontalImageAlign()) + "</wp:align></wp:positionH>");
 			docHelper.write("<wp:positionV relativeFrom=\"line\"><wp:posOffset>0</wp:posOffset></wp:positionV>");
 //			docHelper.write("<wp:positionV relativeFrom=\"line\"><wp:align>" + CellHelper.getVerticalAlignment(new Byte(image.getVerticalAlignment())) + "</wp:align></wp:positionV>");
 			docHelper.write("<wp:extent cx=\"" + LengthUtil.emu(width) + "\" cy=\"" + LengthUtil.emu(height) + "\"/>\n");
@@ -1277,7 +1294,10 @@ public class JRDocxExporter extends JRAbstractExporter<DocxReportConfiguration, 
 	{
 		if (!imageName.startsWith(IMAGE_NAME_PREFIX))
 		{
-			throw new JRRuntimeException("Invalid image name: " + imageName);
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_INVALID_IMAGE_NAME,
+					new Object[]{imageName});
 		}
 
 		return JRPrintElementIndex.parsePrintElementIndex(imageName.substring(IMAGE_NAME_PREFIX_LEGTH));

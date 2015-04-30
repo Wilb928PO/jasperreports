@@ -96,6 +96,7 @@ import net.sf.jasperreports.engine.util.XmlNamespace;
 import net.sf.jasperreports.engine.xml.JRXmlBaseWriter;
 import net.sf.jasperreports.engine.xml.JRXmlConstants;
 import net.sf.jasperreports.engine.xml.XmlValueHandlerUtils;
+import net.sf.jasperreports.export.ExportInterruptedException;
 import net.sf.jasperreports.export.ExporterConfiguration;
 import net.sf.jasperreports.export.ReportExportConfiguration;
 import net.sf.jasperreports.export.WriterExporterOutput;
@@ -163,7 +164,6 @@ import org.w3c.tools.codec.Base64Encoder;
  * @see net.sf.jasperreports.engine.JasperPrint
  * @see net.sf.jasperreports.engine.xml.JRPrintXmlLoader
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class JRXmlExporter extends JRAbstractExporter<ReportExportConfiguration, ExporterConfiguration, WriterExporterOutput, JRXmlExporterContext>
 {
@@ -171,6 +171,10 @@ public class JRXmlExporter extends JRAbstractExporter<ReportExportConfiguration,
 	 *
 	 */
 	private static final String XML_EXPORTER_PROPERTIES_PREFIX = JRPropertiesUtil.PROPERTY_PREFIX + "export.xml.";
+	
+	public static final String EXCEPTION_MESSAGE_KEY_EMBEDDING_IMAGE_ERROR = "export.xml.embedding.image.error";
+	public static final String EXCEPTION_MESSAGE_KEY_IMAGE_WRITE_ERROR = "export.xml.image.write.error";
+	public static final String EXCEPTION_MESSAGE_KEY_REPORT_STYLE_NOT_FOUND = "export.xml.report.style.not.found";
 
 	/**
 	 * The exporter key, as used in
@@ -422,7 +426,7 @@ public class JRXmlExporter extends JRAbstractExporter<ReportExportConfiguration,
 			{
 				if (Thread.interrupted())
 				{
-					throw new JRException("Current thread interrupted.");
+					throw new ExportInterruptedException();
 				}
 				
 				page = pages.get(i);
@@ -482,8 +486,8 @@ public class JRXmlExporter extends JRAbstractExporter<ReportExportConfiguration,
 			{
 				throw 
 					new JRRuntimeException(
-						"Referenced report style not found : " 
-						+ style.getStyle().getName()
+						EXCEPTION_MESSAGE_KEY_REPORT_STYLE_NOT_FOUND,  
+						new Object[]{style.getStyle().getName()} 
 						);
 			}
 		}
@@ -494,8 +498,10 @@ public class JRXmlExporter extends JRAbstractExporter<ReportExportConfiguration,
 		xmlWriter.addAttribute(JRXmlConstants.ATTRIBUTE_fill, style.getOwnFillValue());
 		xmlWriter.addAttribute(JRXmlConstants.ATTRIBUTE_radius, style.getOwnRadius());
 		xmlWriter.addAttribute(JRXmlConstants.ATTRIBUTE_scaleImage, style.getOwnScaleImageValue());
-		xmlWriter.addAttribute(JRXmlConstants.ATTRIBUTE_hAlign, style.getOwnHorizontalAlignmentValue());
-		xmlWriter.addAttribute(JRXmlConstants.ATTRIBUTE_vAlign, style.getOwnVerticalAlignmentValue());
+		xmlWriter.addAttribute(JRXmlConstants.ATTRIBUTE_hTextAlign, style.getOwnHorizontalTextAlign());
+		xmlWriter.addAttribute(JRXmlConstants.ATTRIBUTE_hImageAlign, style.getOwnHorizontalImageAlign());
+		xmlWriter.addAttribute(JRXmlConstants.ATTRIBUTE_vTextAlign, style.getOwnVerticalTextAlign());
+		xmlWriter.addAttribute(JRXmlConstants.ATTRIBUTE_vImageAlign, style.getOwnVerticalImageAlign());
 		xmlWriter.addAttribute(JRXmlConstants.ATTRIBUTE_rotation, style.getOwnRotationValue());
 		xmlWriter.addAttribute(JRXmlConstants.ATTRIBUTE_markup, style.getOwnMarkup());
 		//xmlWriter.addEncodedAttribute(JRXmlConstants.ATTRIBUTE_pattern, style.getOwnPattern());//FIXME if pattern in text field is equal to this, then it should be removed there (inheritance)
@@ -791,8 +797,8 @@ public class JRXmlExporter extends JRAbstractExporter<ReportExportConfiguration,
 	{
 		xmlWriter.startElement(JRXmlConstants.ELEMENT_image);
 		xmlWriter.addAttribute(JRXmlConstants.ATTRIBUTE_scaleImage, image.getOwnScaleImageValue());
-		xmlWriter.addAttribute(JRXmlConstants.ATTRIBUTE_hAlign, image.getOwnHorizontalAlignmentValue());
-		xmlWriter.addAttribute(JRXmlConstants.ATTRIBUTE_vAlign, image.getOwnVerticalAlignmentValue());
+		xmlWriter.addAttribute(JRXmlConstants.ATTRIBUTE_hAlign, image.getOwnHorizontalImageAlign());
+		xmlWriter.addAttribute(JRXmlConstants.ATTRIBUTE_vAlign, image.getOwnVerticalImageAlign());
 		xmlWriter.addAttribute(JRXmlConstants.ATTRIBUTE_isLazy, image.isLazy(), false);
 		xmlWriter.addAttribute(JRXmlConstants.ATTRIBUTE_onErrorType, image.getOnErrorTypeValue(), OnErrorTypeEnum.ERROR);
 		
@@ -861,7 +867,11 @@ public class JRXmlExporter extends JRAbstractExporter<ReportExportConfiguration,
 				}
 				catch (IOException e)
 				{
-					throw new JRException("Error embedding image into XML.", e);
+					throw 
+						new JRException(
+							EXCEPTION_MESSAGE_KEY_EMBEDDING_IMAGE_ERROR,
+							null, 
+							e);
 				}
 			}
 			else
@@ -891,7 +901,11 @@ public class JRXmlExporter extends JRAbstractExporter<ReportExportConfiguration,
 					}
 					catch (IOException e)
 					{
-						throw new JRException("Error writing to image file : " + imageFile, e);
+						throw 
+							new JRException(
+								EXCEPTION_MESSAGE_KEY_IMAGE_WRITE_ERROR,
+								new Object[]{imageFile}, 
+								e);
 					}
 					finally
 					{
@@ -932,8 +946,8 @@ public class JRXmlExporter extends JRAbstractExporter<ReportExportConfiguration,
 	public void exportText(JRPrintText text) throws IOException
 	{
 		xmlWriter.startElement(JRXmlConstants.ELEMENT_text);
-		xmlWriter.addAttribute(JRXmlConstants.ATTRIBUTE_textAlignment, text.getOwnHorizontalAlignmentValue());
-		xmlWriter.addAttribute(JRXmlConstants.ATTRIBUTE_verticalAlignment, text.getOwnVerticalAlignmentValue());
+		xmlWriter.addAttribute(JRXmlConstants.ATTRIBUTE_textAlignment, text.getOwnHorizontalTextAlign());
+		xmlWriter.addAttribute(JRXmlConstants.ATTRIBUTE_verticalAlignment, text.getOwnVerticalTextAlign());
 		xmlWriter.addAttribute(JRXmlConstants.ATTRIBUTE_textHeight, text.getTextHeight());
 		xmlWriter.addAttribute(JRXmlConstants.ATTRIBUTE_rotation, text.getOwnRotationValue());
 		xmlWriter.addAttribute(JRXmlConstants.ATTRIBUTE_runDirection, text.getRunDirectionValue(), RunDirectionEnum.LTR);

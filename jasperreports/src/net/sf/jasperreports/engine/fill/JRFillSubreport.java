@@ -75,12 +75,21 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class JRFillSubreport extends JRFillElement implements JRSubreport
 {
 
 	private static final Log log = LogFactory.getLog(JRFillSubreport.class);
+	
+	public static final String EXCEPTION_MESSAGE_KEY_PROPERTY_NOT_SET = "fill.subreport.property.not.set";
+	public static final String EXCEPTION_MESSAGE_KEY_NO_REWINDABLE_DATA_SOURCE = "fill.subreport.no.rewindable.data.source";
+	public static final String EXCEPTION_MESSAGE_KEY_UNSUPPORTED_SECTION_TYPE = "fill.subreport.unsupported.section.type";
+	public static final String EXCEPTION_MESSAGE_KEY_UNKNOWN_SOURCE_CLASS = "fill.subreport.unknown.source.class";
+			
+	public static final String PROPERTY_SUBREPORT_GENERATE_RECTANGLE = 
+			JRPropertiesUtil.PROPERTY_PREFIX + "subreport.generate.rectangle";
+	
+	public static final String SUBREPORT_GENERATE_RECTANGLE_ALWAYS = "always";
 	
 	private static final JRSingletonCache<JRSubreportRunnerFactory> runnerFactoryCache = 
 			new JRSingletonCache<JRSubreportRunnerFactory>(JRSubreportRunnerFactory.class);
@@ -133,6 +142,9 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 	 */
 	private Set<JasperReport> checkedReports;
 
+	private final String defaultGenerateRectangle;
+	private final boolean dynamicGenerateRectangle;
+
 
 	/**
 	 *
@@ -150,6 +162,10 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 		
 		loadedEvaluators = new HashMap<JasperReport,JREvaluator>();
 		checkedReports = new HashSet<JasperReport>();
+		
+		this.defaultGenerateRectangle = filler.getPropertiesUtil().getProperty( 
+				PROPERTY_SUBREPORT_GENERATE_RECTANGLE, subreport, filler.getJasperReport());
+		this.dynamicGenerateRectangle = hasDynamicProperty(PROPERTY_SUBREPORT_GENERATE_RECTANGLE);
 	}
 
 	protected JRFillSubreport(JRFillSubreport subreport, JRFillCloneFactory factory)
@@ -161,6 +177,9 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 		
 		loadedEvaluators = new HashMap<JasperReport,JREvaluator>();// not sharing evaluators between clones
 		checkedReports = subreport.checkedReports;
+		
+		defaultGenerateRectangle = subreport.defaultGenerateRectangle;
+		dynamicGenerateRectangle = subreport.dynamicGenerateRectangle;
 	}
 
 	@Override
@@ -390,7 +409,11 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 		}
 		else
 		{
-			throw new JRRuntimeException("Unknown subreport source class " + source.getClass().getName());
+			throw 
+			new JRRuntimeException(
+				EXCEPTION_MESSAGE_KEY_UNSUPPORTED_SECTION_TYPE,  
+				new Object[]{source.getClass().getName()} 
+				);
 		}
 		return report;
 	}
@@ -499,13 +522,17 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 	{
 		if (log.isDebugEnabled())
 		{
-			log.debug("Fill " + filler.fillerId + ": creating subreport filler");
+			log.debug("Fill " + filler.fillerId + ": creating subreport filler for " + jasperReport.getName());
 		}
 		
 		SectionTypeEnum subreportSectionType = jasperReport.getSectionType();
 		if (subreportSectionType != null && subreportSectionType != SectionTypeEnum.BAND)
 		{
-			throw new JRRuntimeException("Unsupported subreport section type " + subreportSectionType);
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_UNSUPPORTED_SECTION_TYPE,  
+					new Object[]{subreportSectionType} 
+					);
 		}
 		
 		subFillerParent = new FillerSubreportParent(this, evaluator);
@@ -518,13 +545,10 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 				break;
 			}
 			case VERTICAL :
+			default :
 			{
 				subreportFiller = new JRVerticalFiller(filler.getJasperReportsContext(), jasperReport, subFillerParent);
 				break;
-			}
-			default :
-			{
-				throw new JRRuntimeException("Unkown print order " + jasperReport.getPrintOrderValue().getValue() + ".");
 			}
 		}
 		
@@ -916,7 +940,11 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 			{
 //				if (log.isWarnEnabled())
 //					log.warn("The subreport is placed on a non-splitting band, but it does not have a rewindable data source.");
-				throw new JRException("The subreport is placed on a non-splitting band, but it does not have a rewindable data source.");
+				throw 
+					new JRException(
+						EXCEPTION_MESSAGE_KEY_NO_REWINDABLE_DATA_SOURCE,  
+						(Object[])null 
+						);
 			}
 		}
 	}
@@ -951,6 +979,21 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 		//FIXME lucianc create a frame instead to avoid HTML layers
 		JRPrintRectangle printRectangle = new JRTemplatePrintRectangle(getJRTemplateRectangle(), printElementOriginator);
 
+		if (printRectangle.getModeValue() == ModeEnum.TRANSPARENT && !printRectangle.hasProperties())
+		{
+			String generateRectangle = generateRectangleOption();
+			if (log.isDebugEnabled())
+			{
+				log.debug("empty rectangle, generate option: " + generateRectangle);
+			}
+			
+			if (generateRectangle == null || !generateRectangle.equals(SUBREPORT_GENERATE_RECTANGLE_ALWAYS))
+			{
+				// skipping empty rectangle
+				return null;
+			}
+		}
+		
 		printRectangle.setUUID(getUUID());
 		printRectangle.setX(getX());
 		printRectangle.setY(getRelativeY());
@@ -958,6 +1001,20 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 		printRectangle.setHeight(getStretchHeight());
 		
 		return printRectangle;
+	}
+	
+	protected String generateRectangleOption()
+	{
+		String generateRectangle = defaultGenerateRectangle;
+		if (dynamicGenerateRectangle)
+		{
+			String generateRectangleProp = getDynamicProperties().getProperty(PROPERTY_SUBREPORT_GENERATE_RECTANGLE);
+			if (generateRectangleProp != null)
+			{
+				generateRectangle = generateRectangleProp;
+			}
+		}
+		return generateRectangle;
 	}
 
 
@@ -1015,7 +1072,10 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 				topMargin += parentFiller.jasperReport.getTopMargin();
 				bottomMargin += parentFiller.jasperReport.getBottomMargin();
 				
-				parentFiller = parentFiller.parent instanceof JRBaseFiller ? (JRBaseFiller) parentFiller.parent.getFiller() : null;//FIXMEBOOK
+				parentFiller = 
+					parentFiller.parent != null && parentFiller.parent.getFiller() instanceof JRBaseFiller 
+						? (JRBaseFiller) parentFiller.parent.getFiller() 
+						: null;//FIXMEBOOK
 			}
 			while (parentFiller != null);
 			
@@ -1078,7 +1138,11 @@ public class JRFillSubreport extends JRFillElement implements JRSubreport
 		String factoryClassName = filler.getPropertiesUtil().getProperty(JRSubreportRunnerFactory.SUBREPORT_RUNNER_FACTORY);
 		if (factoryClassName == null)
 		{
-			throw new JRException("Property \"" + JRSubreportRunnerFactory.SUBREPORT_RUNNER_FACTORY + "\" must be set");
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_PROPERTY_NOT_SET,  
+					new Object[]{JRSubreportRunnerFactory.SUBREPORT_RUNNER_FACTORY} 
+					);
 		}
 		return runnerFactoryCache.getCachedInstance(factoryClassName);
 	}

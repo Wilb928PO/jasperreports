@@ -83,12 +83,19 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public abstract class JRBaseFiller extends BaseReportFiller implements JRDefaultStyleProvider
 {
 
 	private static final Log log = LogFactory.getLog(JRBaseFiller.class);
+	
+	public static final String EXCEPTION_MESSAGE_KEY_INFINITE_LOOP_CREATING_NEW_PAGE = "fill.common.filler.infinite.loop.creating.new.page";
+	public static final String EXCEPTION_MESSAGE_KEY_COLUMN_HEADER_OVERFLOW_INFINITE_LOOP = "fill.common.filler.column.header.overflow.infinite.loop";
+	public static final String EXCEPTION_MESSAGE_KEY_CIRCULAR_DEPENDENCY_FOUND = "fill.base.filler.circular.dependency.found";
+	public static final String EXCEPTION_MESSAGE_KEY_EXTERNAL_STYLE_NAME_NOT_SET = "fill.base.filler.external.style.name.not.set";
+	public static final String EXCEPTION_MESSAGE_KEY_NO_SUCH_GROUP = "fill.base.filler.no.such.group";
+	public static final String EXCEPTION_MESSAGE_KEY_PAGE_HEADER_OVERFLOW_INFINITE_LOOP = "fill.common.filler.page.header.overflow.infinite.loop";
+	public static final String EXCEPTION_MESSAGE_KEY_UNSUPPORTED_REPORT_SECTION_TYPE = "fill.base.filler.unsupported.report.section.type";
 	
 	private static final int PAGE_HEIGHT_PAGINATION_IGNORED = 0x7d000000;//less than Integer.MAX_VALUE to avoid 
 
@@ -231,7 +238,11 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 		SectionTypeEnum sectionType = jasperReport.getSectionType();
 		if (sectionType != null && sectionType != SectionTypeEnum.BAND)
 		{
-			throw new JRRuntimeException("Unsupported report section type " + jasperReport.getSectionType());
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_UNSUPPORTED_REPORT_SECTION_TYPE,  
+					new Object[]{jasperReport.getSectionType()} 
+					);
 		}
 		
 		this.bandReportParent = parent;
@@ -730,7 +741,11 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 				String styleName = style.getName();
 				if (styleName == null)
 				{
-					throw new JRRuntimeException("External style name not set.");
+					throw 
+						new JRRuntimeException(
+							EXCEPTION_MESSAGE_KEY_EXTERNAL_STYLE_NAME_NOT_SET,  
+							(Object[])null 
+							);
 				}
 
 				externalStyles.add(style);
@@ -751,8 +766,11 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 
 				if (!templateParentLocations.add(location))
 				{
-					throw new JRRuntimeException("Circular dependency found for template at location " 
-							+ location);
+					throw 
+						new JRRuntimeException(
+							EXCEPTION_MESSAGE_KEY_CIRCULAR_DEPENDENCY_FOUND,  
+							new Object[]{location} 
+							);
 				}
 				
 				if (loadedLocations.add(location))
@@ -1382,7 +1400,11 @@ public abstract class JRBaseFiller extends BaseReportFiller implements JRDefault
 		
 		if (group == null)
 		{
-			throw new JRRuntimeException("No such group " + groupName);
+			throw 
+			new JRRuntimeException(
+				EXCEPTION_MESSAGE_KEY_NO_SUCH_GROUP,  
+				new Object[]{groupName} 
+				);
 		}
 		return group;
 	}

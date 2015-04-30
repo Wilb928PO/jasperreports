@@ -29,22 +29,25 @@ import java.io.InputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
+import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.util.EntityUtils;
 
 import net.sf.jasperreports.data.DataFileConnection;
 import net.sf.jasperreports.engine.JRRuntimeException;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class HttpDataConnection implements DataFileConnection
 {
 	
 	private static final Log log = LogFactory.getLog(HttpDataConnection.class);
+	public static final String EXCEPTION_MESSAGE_KEY_NO_RESPONSE = "data.http.no.response";
+	public static final String EXCEPTION_MESSAGE_KEY_STATUS_CODE_ERROR = "data.http.status.code.error";
 
 	private final CloseableHttpClient httpClient;
 	private final HttpRequestBase request;
@@ -62,15 +65,29 @@ public class HttpDataConnection implements DataFileConnection
 		try
 		{
 			response = httpClient.execute(request);
+			StatusLine status = response.getStatusLine();
 			if (log.isDebugEnabled())
 			{
-				log.debug("HTTP response status " + response.getStatusLine());
+				log.debug("HTTP response status " + status);
 			}
 			
 			HttpEntity entity = response.getEntity();
 			if (entity == null)
 			{
-				throw new JRRuntimeException("No response entity");
+				throw 
+					new JRRuntimeException(
+						EXCEPTION_MESSAGE_KEY_NO_RESPONSE,
+						(Object[])null);
+			}
+			
+			if (status.getStatusCode() >= 300)
+			{
+				EntityUtils.consumeQuietly(entity);
+				//FIXME include request URI in the exception?  that might be a security issue
+				throw 
+					new JRRuntimeException(
+						EXCEPTION_MESSAGE_KEY_STATUS_CODE_ERROR,
+						new Object[]{status});
 			}
 			
 			return entity.getContent();

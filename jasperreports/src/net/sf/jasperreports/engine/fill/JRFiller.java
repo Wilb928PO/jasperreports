@@ -40,11 +40,13 @@ import net.sf.jasperreports.engine.type.SectionTypeEnum;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public final class JRFiller
 {
 
+	public static final String EXCEPTION_MESSAGE_KEY_THREAD_INTERRUPTED = "fill.common.filler.thread.interrupted";
+	public static final String EXCEPTION_MESSAGE_KEY_UNKNOWN_REPORT_SECTION_TYPE = "fill.common.filler.unknown.report.section.type";
+	
 	/**
 	 * The default locale used to fill reports.
 	 * 
@@ -90,7 +92,11 @@ public final class JRFiller
 		}
 		catch(JRFillInterruptedException e)
 		{
-			throw new JRException("The report filling thread was interrupted.", e);
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_THREAD_INTERRUPTED,
+					null,
+					e);
 		}
 		
 		return jasperPrint;
@@ -117,7 +123,11 @@ public final class JRFiller
 		}
 		catch(JRFillInterruptedException e)
 		{
-			throw new JRException("The report filling thread was interrupted.", e);
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_THREAD_INTERRUPTED,
+					null,
+					e);
 		}
 		
 		return jasperPrint;
@@ -157,7 +167,11 @@ public final class JRFiller
 		}
 		catch (JRFillInterruptedException e)
 		{
-			throw new JRException("The report filling thread was interrupted.", e);
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_THREAD_INTERRUPTED,
+					null,
+					e);
 		}
 	}
 
@@ -207,7 +221,11 @@ public final class JRFiller
 			break;
 		}
 		default:
-			throw new JRRuntimeException("Unknown report section type " + jasperReport.getSectionType());
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_UNKNOWN_REPORT_SECTION_TYPE,  
+					new Object[]{jasperReport.getSectionType()} 
+					);
 		}
 		return filler;
 	}

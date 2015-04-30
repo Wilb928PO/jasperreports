@@ -53,11 +53,11 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class Tabulator
 {
 	private static final Log log = LogFactory.getLog(Tabulator.class);
+	public static final String EXCEPTION_MESSAGE_KEY_DROPPING_PARENT_ERROR = "export.tabulator.dropping.parent.error";
 	
 	private final ExporterFilter filter;
 	private final List<? extends JRPrintElement> elements;
@@ -757,7 +757,10 @@ public class Tabulator
 		if (existingParent == null)
 		{
 			// should not happen
-			throw new JRRuntimeException("Internal error while dropping parent");
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_DROPPING_PARENT_ERROR,
+					(Object[])null);
 		}
 		
 		if (existingParent.equals(parent))

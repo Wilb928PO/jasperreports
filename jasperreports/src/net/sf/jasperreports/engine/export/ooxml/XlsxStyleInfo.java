@@ -23,8 +23,8 @@
  */
 package net.sf.jasperreports.engine.export.ooxml;
 
-import net.sf.jasperreports.engine.JRAlignment;
 import net.sf.jasperreports.engine.JRPrintElement;
+import net.sf.jasperreports.engine.JRTextAlignment;
 import net.sf.jasperreports.engine.export.JRExporterGridCell;
 import net.sf.jasperreports.engine.type.ModeEnum;
 import net.sf.jasperreports.engine.util.JRColorUtil;
@@ -32,7 +32,6 @@ import net.sf.jasperreports.engine.util.JRColorUtil;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class XlsxStyleInfo
 {
@@ -48,6 +47,8 @@ public class XlsxStyleInfo
 	protected boolean isWrapText = true;
 	protected boolean isHidden;
 	protected boolean isLocked;
+	protected boolean isShrinkToFit;
+	protected boolean isIgnoreTextFormatting;
 
 	/**
 	 *
@@ -59,40 +60,46 @@ public class XlsxStyleInfo
 		JRExporterGridCell gridCell, 
 		boolean isWrapText,
 		boolean isHidden,
-		boolean isLocked
+		boolean isLocked,
+		boolean isShrinkToFit,
+		boolean isIgnoreTextFormatting
 		)
 	{
 		this.formatIndex = formatIndex;
-		this.fontIndex = fontIndex;
-		this.borderIndex = borderIndex;
+		this.fontIndex = isIgnoreTextFormatting ? -1 : fontIndex;
+		this.borderIndex = isIgnoreTextFormatting ? -1 : borderIndex;
 		
 		JRPrintElement element = gridCell.getElement();
 		
-		if (element != null && element.getModeValue() == ModeEnum.OPAQUE)
+		if (!isIgnoreTextFormatting)
 		{
-			this.backcolor = JRColorUtil.getColorHexa(element.getBackcolor());
-		}
-		else if (gridCell.getBackcolor() != null)
-		{
-			this.backcolor = JRColorUtil.getColorHexa(gridCell.getBackcolor());
-		}
-
-		JRAlignment align = element instanceof JRAlignment ? (JRAlignment)element : null;
-		if (align != null)
-		{
-			this.horizontalAlign = XlsxParagraphHelper.getHorizontalAlignment(align.getHorizontalAlignmentValue());//FIXMEXLSX use common util
-			this.verticalAlign = DocxCellHelper.getVerticalAlignment(align.getVerticalAlignmentValue());//FIXMEXLSX use common util
+			if (element != null && element.getModeValue() == ModeEnum.OPAQUE)
+			{
+				this.backcolor = JRColorUtil.getColorHexa(element.getBackcolor());
+			}
+			else if (gridCell.getBackcolor() != null)
+			{
+				this.backcolor = JRColorUtil.getColorHexa(gridCell.getBackcolor());
+			}
 		}
 		
-		this.isWrapText = isWrapText;
+		JRTextAlignment align = element instanceof JRTextAlignment ? (JRTextAlignment)element : null;
+		if (align != null)
+		{
+			this.horizontalAlign = XlsxParagraphHelper.getHorizontalAlignment(align.getHorizontalTextAlign());//FIXMEXLSX use common util
+			this.verticalAlign = DocxCellHelper.getVerticalAlignment(align.getVerticalTextAlign());//FIXMEXLSX use common util
+		}
+		
+		this.isWrapText = isShrinkToFit ? false : isWrapText;
 		this.isHidden = isHidden;
 		this.isLocked = isLocked;
+		this.isShrinkToFit = isShrinkToFit;
 	}
 	
 	public String getId()
 	{
 		return 
 		formatIndex + "|" + fontIndex + "|" + borderIndex + "|" + backcolor + "|" + horizontalAlign + "|" + verticalAlign 
-		+ "|" + isWrapText + "|" + isHidden + "|" + isLocked;
+		+ "|" + isWrapText + "|" + isHidden + "|" + isLocked + "|" + isShrinkToFit;
 	}
 }

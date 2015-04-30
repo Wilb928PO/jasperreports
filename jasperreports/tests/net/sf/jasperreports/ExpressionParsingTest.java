@@ -33,7 +33,6 @@ import org.testng.annotations.Test;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class ExpressionParsingTest
 {
@@ -46,6 +45,9 @@ public class ExpressionParsingTest
 		assert expectedChunks.length % 2 == 0;
 		
 		JRDesignExpression expression = new JRDesignExpression(expressionText);
+		
+		assert expressionText.equals(expression.getText());
+		
 		JRExpressionChunk[] chunks = expression.getChunks();
 		if (log.isDebugEnabled())
 		{
@@ -89,6 +91,7 @@ public class ExpressionParsingTest
 				{"$$P{foo}", new Object[]{JRExpressionChunk.TYPE_TEXT, "$P{foo}"}},
 				{"$P{foo} + \"$$P{bar}\"", new Object[]{JRExpressionChunk.TYPE_PARAMETER, "foo", JRExpressionChunk.TYPE_TEXT, " + \"$P{bar}\""}},
 				{"$P{foo} + \"$$P{bar}\" + $V{var}", new Object[]{JRExpressionChunk.TYPE_PARAMETER, "foo", JRExpressionChunk.TYPE_TEXT, " + \"$P{bar}\" + ", JRExpressionChunk.TYPE_VARIABLE, "var"}},
+				{"$R{}", new Object[]{JRExpressionChunk.TYPE_RESOURCE, ""}},
 		};
 	}
 

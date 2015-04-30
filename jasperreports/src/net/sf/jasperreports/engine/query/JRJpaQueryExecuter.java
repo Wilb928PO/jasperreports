@@ -103,7 +103,6 @@ import org.apache.commons.logging.LogFactory;
  * When using a query hints map, any <code>Object</code> can be set as value.
  * 
  * @author Marcel Overdijk (marceloverdijk@hotmail.com)
- * @version $Id$
  * @see net.sf.jasperreports.engine.query.JRJpaQueryExecuterFactory
  */
 public class JRJpaQueryExecuter extends JRAbstractQueryExecuter 
@@ -248,8 +247,11 @@ public class JRJpaQueryExecuter extends JRAbstractQueryExecuter
 			resDatasource = new JRJpaDataSource(this, pageSize);
 		}
 		catch (NumberFormatException e) {
-			throw new JRRuntimeException("The " + JRJpaQueryExecuterFactory.PROPERTY_JPA_QUERY_PAGE_SIZE +
-					" property must be numerical.",e);
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_NUMERIC_TYPE_REQUIRED,
+					new Object[]{JRJpaQueryExecuterFactory.PROPERTY_JPA_QUERY_PAGE_SIZE},
+					e);
 		}
 		
 		return resDatasource;

@@ -50,7 +50,6 @@ import net.sf.jasperreports.engine.util.JRCloneUtils;
  * The base implementation of {@link net.sf.jasperreports.engine.JRDataset JRDataset}.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class JRBaseDataset implements JRDataset, Serializable, JRChangeEventsSupport
 {
@@ -351,6 +350,7 @@ public class JRBaseDataset implements JRDataset, Serializable, JRChangeEventsSup
 	 */
 	private byte whenResourceMissingType;
 	
+	@SuppressWarnings("deprecation")
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
 	{
 		in.defaultReadObject();

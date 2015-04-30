@@ -32,10 +32,11 @@ import net.sf.jasperreports.functions.FunctionContext;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class FillFunctionContext implements FunctionContext
 {
+	public static final String EXCEPTION_MESSAGE_KEY_PARAMETER_NOT_FOUND = "fill.function.context.parameter.not.found";
+	
 	private final Map<String, JRFillParameter> parametersMap; 
 	
 	public FillFunctionContext(
@@ -71,7 +72,10 @@ public class FillFunctionContext implements FunctionContext
 		{
 			if (!ignoreMissing)
 			{
-				throw new JRRuntimeException("No such parameter " + parameterName);
+				throw 
+					new JRRuntimeException(
+						EXCEPTION_MESSAGE_KEY_PARAMETER_NOT_FOUND,
+						new Object[]{parameterName});
 			}
 			
 			// look into REPORT_PARAMETERS_MAP

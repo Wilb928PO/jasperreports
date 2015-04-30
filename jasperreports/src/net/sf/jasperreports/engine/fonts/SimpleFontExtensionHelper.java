@@ -30,7 +30,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -62,11 +61,12 @@ import org.xml.sax.SAXParseException;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public final class SimpleFontExtensionHelper implements ErrorHandler
 {
 	private static final Log log = LogFactory.getLog(SimpleFontExtensionHelper.class);
+	public static final String EXCEPTION_MESSAGE_KEY_FILE_WRITER_ERROR = "fonts.file.writer.error";
+	public static final String EXCEPTION_MESSAGE_KEY_OUTPUT_STREAM_WRITER_ERROR = "fonts.output.stream.writer.error";
 	
 	/**
 	 * Default XML output encoding.
@@ -112,30 +112,15 @@ public final class SimpleFontExtensionHelper implements ErrorHandler
 	private static final String ATTRIBUTE_name = "name";
 	private static final String ATTRIBUTE_visible = "visible";
 	private static final String ATTRIBUTE_key = "key";
-
-	/**
-	 * Thread local soft cache of instances.
-	 */
-	private static final ThreadLocal<SoftReference<SimpleFontExtensionHelper>> threadInstances = new ThreadLocal<SoftReference<SimpleFontExtensionHelper>>();
 	
 	/**
-	 * Return a cached instance.
+	 * Return a new instance.
 	 * 
-	 * @return a cached instance
+	 * @return a new instance
 	 */
 	public static SimpleFontExtensionHelper getInstance()
 	{
-		SimpleFontExtensionHelper instance = null;
-		SoftReference<SimpleFontExtensionHelper> instanceRef = threadInstances.get();
-		if (instanceRef != null)
-		{
-			instance = instanceRef.get();
-		}
-		if (instance == null)
-		{
-			instance = new SimpleFontExtensionHelper();
-			threadInstances.set(new SoftReference<SimpleFontExtensionHelper>(instance));
-		}
+		SimpleFontExtensionHelper instance = new SimpleFontExtensionHelper();
 		return instance;
 	}
 	
@@ -591,7 +576,11 @@ public final class SimpleFontExtensionHelper implements ErrorHandler
 		}
 		catch (IOException e)
 		{
-			throw new JRException("Error writing to file : " + destFileName, e);
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_FILE_WRITER_ERROR,
+					new Object[]{destFileName},
+					e);
 		}
 		finally
 		{
@@ -626,7 +615,11 @@ public final class SimpleFontExtensionHelper implements ErrorHandler
 		}
 		catch (Exception e)
 		{
-			throw new JRException("Error writing to OutputStream : ", e);
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_OUTPUT_STREAM_WRITER_ERROR, 
+					null, 
+					e);
 		}
 	}
 
@@ -645,7 +638,11 @@ public final class SimpleFontExtensionHelper implements ErrorHandler
 		}
 		catch (IOException e)
 		{
-			throw new JRException("Error writing to file : " + destFileName, e);
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_FILE_WRITER_ERROR,
+					new Object[]{destFileName},
+					e);
 		}
 		finally
 		{
@@ -708,7 +705,11 @@ public final class SimpleFontExtensionHelper implements ErrorHandler
 		}
 		catch (Exception e)
 		{
-			throw new JRException("Error writing to OutputStream : ", e);
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_OUTPUT_STREAM_WRITER_ERROR, 
+					null, 
+					e);
 		}
 		finally
 		{

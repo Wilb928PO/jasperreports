@@ -30,28 +30,21 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.export.JRExporterGridCell;
+import net.sf.jasperreports.engine.export.JRXlsAbstractExporter;
 import net.sf.jasperreports.engine.export.data.BooleanTextValue;
 import net.sf.jasperreports.engine.export.data.DateTextValue;
 import net.sf.jasperreports.engine.export.data.NumberTextValue;
 import net.sf.jasperreports.engine.export.data.StringTextValue;
 import net.sf.jasperreports.engine.export.data.TextValue;
 import net.sf.jasperreports.engine.export.data.TextValueHandler;
-import net.sf.jasperreports.engine.type.VerticalAlignEnum;
 
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class XlsxCellHelper extends BaseHelper
 {
-	/**
-	 *
-	 */
-	private static final String VERTICAL_ALIGN_TOP = "top";
-	private static final String VERTICAL_ALIGN_MIDDLE = "center";
-	private static final String VERTICAL_ALIGN_BOTTOM = "bottom";
-	
+
 	/**
 	 *
 	 */
@@ -89,10 +82,11 @@ public class XlsxCellHelper extends BaseHelper
 	public void exportHeader(
 		JRExporterGridCell gridCell,
 		int rowIndex,
-		int colIndex 
+		int colIndex, 
+		int maxColIndex 
 		) 
 	{
-		exportHeader(gridCell, rowIndex, colIndex, null, null, null, true, false, false);
+		exportHeader(gridCell, rowIndex, colIndex, maxColIndex, null, null, null, true, false, false, false, false);
 	}
 
 	/**
@@ -102,12 +96,15 @@ public class XlsxCellHelper extends BaseHelper
 		JRExporterGridCell gridCell,
 		int rowIndex,
 		int colIndex, 
+		int maxColIndex, 
 		TextValue textValue,
 		String pattern,
 		Locale locale,
 		boolean isWrapText,
 		boolean isHidden,
-		boolean isLocked
+		boolean isLocked,
+		boolean isShrinkToFit,
+		boolean isIgnoreTextFormatting
 		) 
 	{
 		try
@@ -126,7 +123,20 @@ public class XlsxCellHelper extends BaseHelper
 			throw new JRRuntimeException(e);
 		}
 
-		write("  <c r=\"" + getColumIndexLetter(colIndex) + (rowIndex + 1) + "\" s=\"" + styleHelper.getCellStyle(gridCell, pattern, locale, isWrapText, isHidden, isLocked) + "\"");
+		write("  <c r=\"" 
+				+ JRXlsAbstractExporter.getColumIndexName(colIndex, maxColIndex) 
+				+ (rowIndex + 1) 
+				+ "\" s=\"" 
+				+ styleHelper.getCellStyle(
+						gridCell, 
+						pattern, 
+						locale, 
+						isWrapText, 
+						isHidden, 
+						isLocked, 
+						isShrinkToFit, 
+						isIgnoreTextFormatting) 
+				+ "\"");
 		String type = textValueHandler.getType();
 		if (type != null)
 		{
@@ -142,46 +152,6 @@ public class XlsxCellHelper extends BaseHelper
 	{
 		write("</c>");
 	}
-
-	
-	/**
-	 *
-	 */
-	public static String getVerticalAlignment(VerticalAlignEnum verticalAlignment)
-	{
-		if (verticalAlignment != null)
-		{
-			switch (verticalAlignment)
-			{
-				case BOTTOM :
-					return VERTICAL_ALIGN_BOTTOM;
-				case MIDDLE :
-					return VERTICAL_ALIGN_MIDDLE;
-				case TOP :
-				default :
-					return VERTICAL_ALIGN_TOP;
-			}
-		}
-		return null;
-	}
-	
-	
-	/**
-	 *
-	 */
-	public static String getColumIndexLetter(int colIndex)
-	{
-		int intFirstLetter = ((colIndex) / 676) + 64;
-		int intSecondLetter = ((colIndex % 676) / 26) + 64;
-		int intThirdLetter = (colIndex % 26) + 65;
-		
-		char firstLetter = (intFirstLetter > 64) ? (char)intFirstLetter : ' ';
-		char secondLetter = (intSecondLetter > 64) ? (char)intSecondLetter : ' ';
-		char thirdLetter = (char)intThirdLetter;
-		
-		return ("" + firstLetter + secondLetter + thirdLetter).trim();
-	}
-
 
 }
 

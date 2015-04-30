@@ -32,13 +32,14 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public abstract class AbstractThreadSubreportRunner extends JRSubreportRunnable implements JRSubreportRunner
 {
 	
 	private static final Log log = LogFactory.getLog(AbstractThreadSubreportRunner.class);
-	
+	public static final String EXCEPTION_MESSAGE_KEY_THREAD_REPORT_RUNNER_WAIT_ERROR = "fill.thread.report.runner.wait.error";
+	public static final String EXCEPTION_MESSAGE_KEY_THREAD_SUBREPORT_RUNNER_WAIT_ERROR = "fill.thread.subreport.runner.wait.error";
+
 	protected final JRBaseFiller subreportFiller;
 	
 	public AbstractThreadSubreportRunner(JRFillSubreport fillSubreport, JRBaseFiller subreportFiller)
@@ -100,7 +101,11 @@ public abstract class AbstractThreadSubreportRunner extends JRSubreportRunnable 
 				}
 			}
 			
-			throw new JRRuntimeException("Error encountered while waiting on the report filling thread.", e);
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_THREAD_REPORT_RUNNER_WAIT_ERROR,
+					(Object[])null,
+					e);
 		}
 		
 		if (log.isDebugEnabled())
@@ -141,7 +146,11 @@ public abstract class AbstractThreadSubreportRunner extends JRSubreportRunnable 
 					log.error("Fill " + subreportFiller.fillerId + ": exception", e);
 				}
 				
-				throw new JRException("Error encountered while waiting on the subreport filling thread.", e);
+				throw 
+					new JRException(
+						EXCEPTION_MESSAGE_KEY_THREAD_SUBREPORT_RUNNER_WAIT_ERROR,
+						null,
+						e);
 			}
 			
 			if (log.isDebugEnabled())
@@ -173,7 +182,7 @@ public abstract class AbstractThreadSubreportRunner extends JRSubreportRunnable 
 		}
 		catch(InterruptedException e)
 		{
-			if (subreportFiller.fillContext.isCanceled())
+			if (subreportFiller.fillContext.isCanceled() || subreportFiller.isDeliberatelyInterrupted())
 			{
 				// only log a debug message if cancel was requested
 				if (log.isDebugEnabled())
@@ -189,7 +198,11 @@ public abstract class AbstractThreadSubreportRunner extends JRSubreportRunnable 
 				}
 			}
 			
-			throw new JRException("Error encountered while waiting on the subreport filling thread.", e);
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_THREAD_SUBREPORT_RUNNER_WAIT_ERROR,
+					null,
+					e);
 		}
 		
 		if (log.isDebugEnabled())

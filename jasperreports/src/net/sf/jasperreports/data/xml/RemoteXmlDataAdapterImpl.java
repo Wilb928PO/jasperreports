@@ -25,8 +25,8 @@ package net.sf.jasperreports.data.xml;
 
 
 /**
+ * @deprecated Replaced by {@link XmlDataAdapterImpl}.
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class RemoteXmlDataAdapterImpl extends XmlDataAdapterImpl implements RemoteXmlDataAdapter
 {

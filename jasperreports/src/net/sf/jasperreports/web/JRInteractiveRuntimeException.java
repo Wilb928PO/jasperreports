@@ -29,7 +29,6 @@ import net.sf.jasperreports.engine.JRRuntimeException;
 
 /**
  * @author Narcis Marcu (narcism@users.sourceforge.net)
- * @version $Id$
  */
 public class JRInteractiveRuntimeException extends JRRuntimeException
 {
@@ -45,5 +44,13 @@ public class JRInteractiveRuntimeException extends JRRuntimeException
 
 	public JRInteractiveRuntimeException(Throwable cause) {
 		super(cause);
+	}
+	
+	public JRInteractiveRuntimeException(String messageKey, Object[] args, Throwable t) {
+		super(messageKey, args, t);
+	}
+
+	public JRInteractiveRuntimeException(String messageKey, Object[] args) {
+		super(messageKey, args);
 	}
 }

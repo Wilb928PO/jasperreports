@@ -65,6 +65,7 @@
     <name>Report Filling</name>
     <content>
       <property ref="net.sf.jasperreports.band.split.type"/>
+      <property ref="net.sf.jasperreports.chart.pie.ignore.duplicated.key"/>
       <property ref="net.sf.jasperreports.chart.render.type"/>
       <property ref="net.sf.jasperreports.chart.renderer.factory.{render_type}"/>
       <property ref="net.sf.jasperreports.chart.theme"/>
@@ -275,6 +276,7 @@
       
       <property ref="net.sf.jasperreports.export.xls.auto.filter"/>
       <property ref="net.sf.jasperreports.export.xls.auto.fit.column"/>
+      <property ref="net.sf.jasperreports.export.xls.auto.fit.page.height"/>
       <property ref="net.sf.jasperreports.export.xls.auto.fit.row"/>
       
       <property ref="net.sf.jasperreports.export.xls.break.after.row"/>
@@ -296,6 +298,7 @@
       <property ref="net.sf.jasperreports.export.xls.fit.width"/>
       <property ref="net.sf.jasperreports.export.xls.first.page.number"/>
       <property ref="net.sf.jasperreports.export.xls.font.size.fix.enabled"/>
+      <property ref="net.sf.jasperreports.export.xls.force.page.breaks"/>
       <property ref="net.sf.jasperreports.export.xls.formula"/>
       <property ref="net.sf.jasperreports.export.xls.freeze.column"/>
       <property ref="net.sf.jasperreports.export.xls.freeze.column.edge"/>
@@ -306,6 +309,7 @@
       <property ref="net.sf.jasperreports.export.xls.ignore.cell.background"/>
       <property ref="net.sf.jasperreports.export.xls.ignore.cell.border"/>
       <property ref="net.sf.jasperreports.export.xls.ignore.graphics"/>
+      <property ref="net.sf.jasperreports.export.xls.ignore.text.formatting"/>
       <property ref="net.sf.jasperreports.export.xls.image.anchor.type"/>
       <property ref="net.sf.jasperreports.export.xls.image.border.fix.enabled"/>
       
@@ -333,6 +337,7 @@
       <property ref="net.sf.jasperreports.export.xls.sheet.names.{arbitrary_name}"/>
       
       <property ref="net.sf.jasperreports.export.xls.show.gridlines"/>
+      <property ref="net.sf.jasperreports.export.xls.shrink.to.fit"/>
       
       <property ref="net.sf.jasperreports.export.xls.use.timezone"/>
       
@@ -1091,6 +1096,19 @@ Specifies the default split type for bands. See the splitType attribute of the r
     <default>Stretch</default>
     <scope>Global | Report</scope>
     <since>3.5.2</since>
+  </configProperty>
+  
+  
+  <!-- net.sf.jasperreports.chart.pie.ignore.duplicated.key -->
+  
+  <configProperty name="net.sf.jasperreports.chart.pie.ignore.duplicated.key">
+    <description>
+Specifies whether duplicated key entries in pie dataset should be ignored and only the last value be considered, or whether an exception should be raised instead.
+    </description>
+    <api>net/sf/jasperreports/charts/JRPieDataset.html#PROPERTY_IGNORE_DUPLICATED_KEY</api>
+    <default>false</default>
+    <scope>Global | Report | Dataset</scope>
+    <since>6.0.2</since>
   </configProperty>
   
   
@@ -1890,7 +1908,7 @@ Property that specifies whether additional sort fields should be created automat
 the integrity of dataset groups, when interactive sorting is performed. The groups need to have simple 
 expressions using single field or single variable reference, for this feature to work properly.
     </description>
-    <api>net/sf/jasperreports/components/table/TableComponent.html#PROPERTY_WHEN_NO_DATA_TYPE</api>
+    <api>net/sf/jasperreports/components/sort/actions/SortCommand.html#PROPERTY_CREATE_SORT_FIELDS_FOR_GROUPS</api>
     <default>false</default>
     <scope>Global | Dataset</scope>
     <since>4.6.0</since>
@@ -3574,6 +3592,26 @@ Allowed values are:
   </configProperty>
   
   
+  <!-- net.sf.jasperreports.export.xls.auto.fit.page.height -->
+  
+  <configProperty name="net.sf.jasperreports.export.xls.auto.fit.page.height">
+    <description>
+Flag property that provides a default value for the <api href="net/sf/jasperreports/export/XlsReportConfiguration.html#isAutoFitPageHeight()">isAutoFitPageHeight()</api>api> export setting.
+If set to true, the exporter will automatically fit the print height of a sheet to the number of JasperPrint pages exported in that sheet
+<br/>
+Allowed values are:
+<ul>
+<li><code>true</code></li>
+<li><code>false</code></li>
+</ul>
+    </description>
+    <api>net/sf/jasperreports/export/XlsReportConfiguration.html#PROPERTY_AUTO_FIT_PAGE_HEIGHT</api>
+    <default>false</default>
+    <scope>Global | Report</scope>
+    <since>6.0.2</since>
+  </configProperty>
+  
+  
   <!-- net.sf.jasperreports.export.xls.auto.fit.row -->
   
   <configProperty name="net.sf.jasperreports.export.xls.auto.fit.row">
@@ -3878,6 +3916,26 @@ Its value is used as default for the
   </configProperty>
   
   
+  <!-- net.sf.jasperreports.export.xls.force.page.breaks -->
+  
+  <configProperty name="net.sf.jasperreports.export.xls.force.page.breaks">
+    <description>
+Flag property that provides a default value for the <api href="net/sf/jasperreports/export/XlsReportConfiguration.html#isForcePageBreaks()">isForcePageBreaks()</api>api> export setting.
+If set to true, the exporter will automatically add a page break at the end of each page exported on the current sheet.
+<br/>
+Allowed values are:
+<ul>
+<li><code>true</code></li>
+<li><code>false</code></li>
+</ul>
+    </description>
+    <api>net/sf/jasperreports/export/XlsReportConfiguration.html#PROPERTY_FORCE_PAGE_BREAKS</api>
+    <default>false</default>
+    <scope>Global | Report</scope>
+    <since>6.0.2</since>
+  </configProperty>
+  
+  
   <!-- net.sf.jasperreports.export.xls.ignore.anchors -->
   
   <configProperty name="net.sf.jasperreports.export.xls.ignore.anchors">
@@ -4044,6 +4102,23 @@ Its value is used as default for the
     <default>false</default>
     <scope>Global | Report</scope>
     <since>2.0.1</since>
+  </configProperty>
+  
+  
+  <!-- net.sf.jasperreports.export.xls.ignore.text.formatting -->
+  
+  <configProperty name="net.sf.jasperreports.export.xls.ignore.text.formatting">
+    <description>
+Property that specifies whether the text formatting (such as text color, background color, bold style, italic, underline, etc) 
+should be ignored in the resulting Excel document at export time or not. 
+<br/>
+Its value is used as default for the 
+<api href="net/sf/jasperreports/export/XlsReportConfiguration.html#isIgnoreTextFormatting()">isIgnoreTextFormatting()</api> Excel export configuration setting.
+    </description>
+    <api>net/sf/jasperreports/export/XlsReportConfiguration.html#PROPERTY_IGNORE_TEXT_FORMATTING</api>
+    <default>false</default>
+    <scope>Global | Report | Text Element</scope>
+    <since>6.0.4</since>
   </configProperty>
   
   
@@ -4638,6 +4713,29 @@ Global settings are overriden by report level settings; report level settings ar
     <default>true</default>
     <scope>Global | Report | Element</scope>
     <since>4.8.0</since>
+  </configProperty>
+  
+  
+  <!-- net.sf.jasperreports.export.xls.shrink.to.fit -->
+  
+  <configProperty name="net.sf.jasperreports.export.xls.shrink.to.fit">
+    <description>
+Flag property that indicates whether the text font size should be decreased in order to 
+keep the entire text visible in the cell. If set to true, this will automatically disable the 
+wrap text setting for the cell (see <a href="#net.sf.jasperreports.export.xls.wrap.text">net.sf.jasperreports.export.xls.wrap.text</a>). 
+<br/>
+Usually this property works in conjunction with <a href="#net.sf.jasperreports.print.keep.full.text">net.sf.jasperreports.print.keep.full.text</a>, 
+in order to preserve the entire text content at export time.
+<br/>
+The value of this property is used as default for the 
+<api href="net/sf/jasperreports/export/XlsReportConfiguration.html#isShrinkToFit()">isShrinkToFit()</api> Excel export configuration setting.
+<br/>
+Settings at global level are overriden by report level settings; report level settings are overriden by element level settings.    
+	</description>
+    <api>net/sf/jasperreports/export/XlsReportConfiguration.html#PROPERTY_SHRINK_TO_FIT</api>
+    <default>false</default>
+    <scope>Global | Report | Element</scope>
+    <since>6.0.2</since>
   </configProperty>
   
   

@@ -34,7 +34,6 @@ import net.sf.jasperreports.engine.type.EvaluationTimeEnum;
  * An evaluation time during the report fill process.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public final class JREvaluationTime implements Serializable
 {
@@ -162,7 +161,7 @@ public final class JREvaluationTime implements Serializable
 
 	private int computeHash()
 	{
-		int hashCode = type.getValue();
+		int hashCode = type.ordinal();
 		hashCode = 31*hashCode + (groupName == null ? 0 : groupName.hashCode());
 		hashCode = 31*hashCode + bandId;
 		return hashCode;

@@ -25,19 +25,21 @@ package net.sf.jasperreports.engine.fill;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.JRRewindableDataSource;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.data.IndexedDataSource;
+import net.sf.jasperreports.engine.fill.DatasetSortInfo.RecordField;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class SortedDataSource implements JRRewindableDataSource, IndexedDataSource
 {
+	public static final String EXCEPTION_MESSAGE_KEY_FIELD_NOT_FOUND = "data.sorted.field.not.found";
 	
 	public static class SortRecord
 	{
@@ -90,7 +92,8 @@ public class SortedDataSource implements JRRewindableDataSource, IndexedDataSour
 	private int currentIndex;
 	private SortRecord currentRecord;
 	
-	public SortedDataSource(List<SortRecord> records, Integer[] recordIndexes, String[] columnNames)
+	public SortedDataSource(DatasetSortInfo sortInfo, 
+			List<SortRecord> records, Integer[] recordIndexes)
 	{
 		if (records.size() != recordIndexes.length)
 		{
@@ -101,11 +104,12 @@ public class SortedDataSource implements JRRewindableDataSource, IndexedDataSour
 		this.records = records;
 		this.recordIndexes = recordIndexes;
 		
-		if (columnNames != null)
+		for (ListIterator<RecordField> it = sortInfo.getRecordFields().listIterator(); it.hasNext();)
 		{
-			for(int i = 0; i < columnNames.length; i++)
+			RecordField recordField = it.next();
+			if (!recordField.isVariable())
 			{
-				columnNamesMap.put(columnNames[i], Integer.valueOf(i));
+				columnNamesMap.put(recordField.getName(), it.previousIndex());
 			}
 		}
 
@@ -137,7 +141,10 @@ public class SortedDataSource implements JRRewindableDataSource, IndexedDataSour
 		Integer fieldIndex = columnNamesMap.get(jrField.getName());
 		if (fieldIndex == null)
 		{
-			throw new JRRuntimeException("Field \"" + jrField.getName() + "\" not found in data source.");
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_FIELD_NOT_FOUND,
+					new Object[]{jrField.getName()});
 		}
 		return currentRecord.fieldValue(fieldIndex);
 	}

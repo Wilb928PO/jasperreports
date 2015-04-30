@@ -43,10 +43,11 @@ import net.sf.jasperreports.engine.xml.JRXmlWriter;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class JasperDesignCache
 {
+	public static final String EXCEPTION_MESSAGE_KEY_INVALID_ENTRY = "repo.invalid.entry";
+	
 	/**
 	 * 
 	 */
@@ -188,7 +189,10 @@ public class JasperDesignCache
 			{
 				if (jasperReport == null)
 				{
-					throw new JRRuntimeException("Invalid JasperDesignCache entry.");
+					throw 
+						new JRRuntimeException(
+							EXCEPTION_MESSAGE_KEY_INVALID_ENTRY,
+							new Object[]{"JasperDesignCache"});
 				}
 				else
 				{

@@ -41,7 +41,6 @@ import net.sf.jasperreports.engine.xml.JRXmlWriter;
 
 /**
  * @author Narcis Marcu (narcism@users.sourceforge.net)
- * @version $Id$
  */
 public class SortComponentXmlWriter extends AbstractComponentXmlWriter 
 {
@@ -113,8 +112,8 @@ public class SortComponentXmlWriter extends AbstractComponentXmlWriter
 			writer.addAttribute(SortComponent.PROPERTY_COLUMN_TYPE, sortComponent.getSortFieldType());
 			writer.addAttribute(SortComponent.PROPERTY_HANDLER_COLOR, sortComponent.getHandlerColor());
 			writer.addAttribute(PROPERTY_HANDLER_FONT_SIZE, sortComponent.getSymbolFont().getFontsize());
-			writer.addAttribute(SortComponent.PROPERTY_HANDLER_HORIZONTAL_ALIGN, sortComponent.getHandlerHorizontalAlign());
-			writer.addAttribute(SortComponent.PROPERTY_HANDLER_VERTICAL_ALIGN, sortComponent.getHandlerVerticalAlign());
+			writer.addAttribute(SortComponent.PROPERTY_HANDLER_HORIZONTAL_ALIGN, sortComponent.getHandlerHorizontalImageAlign());
+			writer.addAttribute(SortComponent.PROPERTY_HANDLER_VERTICAL_ALIGN, sortComponent.getHandlerVerticalImageAlign());
 		}
 		if (sortComponent.getEvaluationTime() != EvaluationTimeEnum.NOW) {
 			writer.addAttribute(SortComponent.PROPERTY_EVALUATION_TIME, sortComponent.getEvaluationTime());
@@ -131,8 +130,8 @@ public class SortComponentXmlWriter extends AbstractComponentXmlWriter
 			}
 			writer.addAttribute(SortComponent.PROPERTY_COLUMN_TYPE, sortComponent.getSortFieldType());
 			writer.addAttribute(SortComponent.PROPERTY_COLUMN_NAME, sortComponent.getSortFieldName());
-			writer.addAttribute(SortComponent.PROPERTY_HANDLER_HORIZONTAL_ALIGN, sortComponent.getHandlerHorizontalAlign());
-			writer.addAttribute(SortComponent.PROPERTY_HANDLER_VERTICAL_ALIGN, sortComponent.getHandlerVerticalAlign());
+			writer.addAttribute(SortComponent.PROPERTY_HANDLER_HORIZONTAL_ALIGN, sortComponent.getHandlerHorizontalImageAlign());
+			writer.addAttribute(SortComponent.PROPERTY_HANDLER_VERTICAL_ALIGN, sortComponent.getHandlerVerticalImageAlign());
 			reportWriter.writeFont(sortComponent.getSymbolFont());
 			writer.closeElement();
 		}

@@ -39,7 +39,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * @author Narcis Marcu (narcism@users.sourceforge.net)
- * @version $Id$
  */
 public class SearchAction extends AbstractAction {
 
@@ -89,7 +88,7 @@ public class SearchAction extends AbstractAction {
 				reportContext.setParameterValue("net.sf.jasperreports.web.actions.result.json", result);
 
 			} catch (Exception e) {
-				throw new ActionException(e.getMessage());
+				throw new ActionException(e);
 			}
 		}
 	}

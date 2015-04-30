@@ -33,11 +33,10 @@ import net.sf.jasperreports.engine.util.BigDecimalUtils;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public final class JRBigDecimalIncrementerFactory extends JRAbstractExtendedIncrementerFactory
 {
-
+	public static final String EXCEPTION_MESSAGE_KEY_VALUE_NOT_SUPPORTED = "fill.big.decimal.value.not.supported";
 
 	/**
 	 *
@@ -154,8 +153,10 @@ public final class JRBigDecimalIncrementerFactory extends JRAbstractExtendedIncr
 		else
 		{
 			// assuming a number for now, not converting strings
-			throw new JRRuntimeException("Value " + value + " of type " + value.getClass().getName() 
-					+ " unsupported for BigDecimal conversion");
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_VALUE_NOT_SUPPORTED,
+					new Object[]{value, value.getClass().getName()});
 		}
 		return bigDecimal;
 	}

@@ -23,39 +23,28 @@
  */
 package net.sf.jasperreports.data.xml;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
 import net.sf.jasperreports.data.AbstractDataAdapterService;
-import net.sf.jasperreports.data.DataFile;
-import net.sf.jasperreports.data.DataFileConnection;
-import net.sf.jasperreports.data.DataFileResolver;
-import net.sf.jasperreports.data.DataFileService;
-import net.sf.jasperreports.data.StandardRepositoryDataLocation;
+import net.sf.jasperreports.data.DataFileStream;
+import net.sf.jasperreports.data.DataFileUtils;
 import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRParameter;
-import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.data.JRXmlDataSource;
 import net.sf.jasperreports.engine.query.JRXPathQueryExecuterFactory;
 import net.sf.jasperreports.engine.util.JRXmlUtils;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class XmlDataAdapterService extends AbstractDataAdapterService
 {
-
-	private static final Log log = LogFactory.getLog(XmlDataAdapterService.class);
 
 	/**
 	 * 
@@ -156,56 +145,18 @@ public class XmlDataAdapterService extends AbstractDataAdapterService
 
 	protected Document loadDataDocument(XmlDataAdapter xmlDataAdapter, Map<String, Object> parameters) throws JRException
 	{
-		DataFile dataFile = xmlDataAdapter.getDataFile();
-		if (dataFile == null)
-		{
-			String fileName = xmlDataAdapter.getFileName();
-			dataFile = new StandardRepositoryDataLocation(fileName);
-		}
-		
-		DataFileResolver dataFileResolver = DataFileResolver.instance(getJasperReportsContext());
-		DataFileService dataFileService = dataFileResolver.getService(dataFile);
-		
-		DataFileConnection dataConnection = dataFileService.getDataFileConnection(parameters);
-		Document dataDocument;
+		DataFileUtils dataFileUtils = DataFileUtils.instance(getJasperReportsContext());
+		DataFileStream dataStream = dataFileUtils.getDataStream(
+				xmlDataAdapter.getDataFile(), parameters);
 		try
 		{
-			dataDocument = parseDocument(dataConnection, xmlDataAdapter.isNamespaceAware());
+			Document dataDocument = JRXmlUtils.parse(dataStream, xmlDataAdapter.isNamespaceAware());
+			return dataDocument;
 		}
 		finally
 		{
-			try
-			{
-				dataConnection.dispose();
-			}
-			catch (JRRuntimeException e)//catch RuntimeException?
-			{
-				log.warn("Failed to dispose connection for " + dataConnection);
-			}
+			dataStream.dispose();
 		}
-		return dataDocument;
-	}
-
-	protected Document parseDocument(DataFileConnection dataConnection, boolean namespaceAware) throws JRException
-	{
-		InputStream dataStream = dataConnection.getInputStream();
-		Document dataDocument;
-		try
-		{
-			dataDocument = JRXmlUtils.parse(dataStream, namespaceAware);
-		}
-		finally
-		{
-			try
-			{
-				dataStream.close();
-			}
-			catch (IOException e)
-			{
-				log.warn("Failed to close input stream for " + dataConnection);
-			}
-		}
-		return dataDocument;
 	}
 	
 }

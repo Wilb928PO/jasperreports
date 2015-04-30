@@ -47,7 +47,6 @@ import net.sf.jasperreports.export.annotations.ExporterProperty;
  * @see JRXlsMetadataExporter
  * 
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public interface XlsReportConfiguration extends ReportExportConfiguration
 {
@@ -388,6 +387,70 @@ public interface XlsReportConfiguration extends ReportExportConfiguration
 	 * @see JRPropertiesUtil
 	 */
 	public static final String PROPERTY_IMAGE_ANCHOR_TYPE = JRXlsAbstractExporter.XLS_EXPORTER_PROPERTIES_PREFIX + "image.anchor.type";
+	
+	/**
+	 * Flag property that provides a default value for the {@link #isAutoFitPageHeight()} export setting.
+	 * If set to true, the exporter will automatically fit the print height of a sheet to the number of JasperPrint pages exported in that sheet
+	 * <br/>
+	 * Property scope:
+	 * <ul>
+	 * <li><code>Global</code></li>
+	 * <li><code>Report</code></li>
+	 * </ul>
+	 * 
+	 * @see JRPropertiesUtil
+	 */
+	public static final String PROPERTY_AUTO_FIT_PAGE_HEIGHT = JRXlsAbstractExporter.XLS_EXPORTER_PROPERTIES_PREFIX + "auto.fit.page.height";
+	
+	/**
+	 * Flag property that provides a default value for the {@link #isForcePageBreaks()} export setting.
+	 * If set to true, the exporter will automatically add a page break at the end of each page exported on the current sheet.
+	 * <br/>
+	 * Property scope:
+	 * <ul>
+	 * <li><code>Global</code></li>
+	 * <li><code>Report</code></li>
+	 * </ul>
+	 * 
+	 * @see JRPropertiesUtil
+	 */
+	public static final String PROPERTY_FORCE_PAGE_BREAKS = JRXlsAbstractExporter.XLS_EXPORTER_PROPERTIES_PREFIX + "force.page.breaks";
+
+	/**
+	 * This flag property serves as default for the {@link #isShrinkToFit()} export configuration flag. 
+	 * <p/> 
+	 * If set to true, this will automatically disable the wrap text setting for the cell (see {@link #isWrapText()}).
+	 * <p/>
+	 * Usually this property works in conjunction with {@link net.sf.jasperreports.engine.JRTextElement#PROPERTY_PRINT_KEEP_FULL_TEXT net.sf.jasperreports.print.keep.full.text}, 
+	 * in order to preserve the entire text content at export time.
+	 * <p/>
+	 * The property itself defaults to <code>false</code>.
+	 * <p/>
+	 * Property scope:
+	 * <ul>
+	 * <li><code>Global</code></li>
+	 * <li><code>Report</code></li>
+	 * <li><code>Element</code></li>
+	 * </ul>
+	 * @see JRPropertiesUtil
+	 */
+	public static final String PROPERTY_SHRINK_TO_FIT = JRXlsAbstractExporter.XLS_EXPORTER_PROPERTIES_PREFIX + "shrink.to.fit";
+
+	/**
+	 * Property whose value is used as default state of the {@link #isIgnoreTextFormatting()} export configuration flag. 
+	 * If true, text elements will be exported without formatting features such as bold, underline, backcolor, text color, etc. 
+	 * <p/>
+	 * Property scope:
+	 * <ul>
+	 * <li><code>Global</code></li>
+	 * <li><code>Report</code></li>
+	 * <li><code>Element</code></li>
+	 * </ul>
+	 * This property is by default not set (<code>false</code>).
+	 * 
+	 * @see JRPropertiesUtil
+	 */
+	public static final String PROPERTY_IGNORE_TEXT_FORMATTING = JRPropertiesUtil.PROPERTY_PREFIX + "export.xls.ignore.text.formatting";
 
 	/**
 	 * Returns a boolean value specifying whether each report page should be written in a different XLS sheet.
@@ -844,4 +907,52 @@ public interface XlsReportConfiguration extends ReportExportConfiguration
 	 */
 	@ExporterProperty(PROPERTY_IMAGE_ANCHOR_TYPE)
 	public ImageAnchorTypeEnum getImageAnchorType();
+	
+	/**
+	 * Flag that specifies whether the fit height should be estimated automatically.
+	 * @see #PROPERTY_AUTO_FIT_PAGE_HEIGHT
+	 */
+	@ExporterProperty(
+			value=PROPERTY_AUTO_FIT_PAGE_HEIGHT,
+			booleanDefault=false
+			)
+	public Boolean isAutoFitPageHeight();
+	
+	/**
+	 * Flag that specifies whether the page breaks to be marked automatically on each sheet.
+	 * @see #PROPERTY_FORCE_PAGE_BREAKS
+	 */
+	@ExporterProperty(
+			value=PROPERTY_FORCE_PAGE_BREAKS,
+			booleanDefault=false
+			)
+	public Boolean isForcePageBreaks();
+	
+	/**
+	 * Flag that indicates whether the text font size should be decreased in order to 
+	 * keep the entire text visible in the cell. If set to true, this will automatically disable the 
+	 * wrap text property (see {@link #isWrapText()}).
+	 * <p/>
+	 * Usually this setting works in conjunction with {@link net.sf.jasperreports.engine.JRTextElement#PROPERTY_PRINT_KEEP_FULL_TEXT net.sf.jasperreports.print.keep.full.text}, 
+	 * in order to preserve the entire text content at export time.
+	 * @see #PROPERTY_SHRINK_TO_FIT
+	 */
+	@ExporterProperty(
+			value=PROPERTY_SHRINK_TO_FIT,
+			booleanDefault=false
+			)
+	public Boolean isShrinkToFit();
+	
+	/**
+	 * Flag that indicates whether the text elements should be exported without text formatting features, 
+	 * such as bold, italic, underline, text color, backcolor, etc. 
+	 * <p/>
+	 * @see #PROPERTY_IGNORE_TEXT_FORMATTING
+	 */
+	@ExporterProperty(
+		value=PROPERTY_IGNORE_TEXT_FORMATTING,
+		booleanDefault=false
+		)
+	public Boolean isIgnoreTextFormatting();
+	
 }

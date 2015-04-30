@@ -23,18 +23,14 @@
  */
 package net.sf.jasperreports.engine.type;
 
-import net.sf.jasperreports.engine.JRConstants;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public enum OverflowType implements NamedEnum
 {
 	STRETCH("Stretch"),
 	NO_STRETCH("NoStretch");
-	
-	private static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
 	
 	private final String name;
 	

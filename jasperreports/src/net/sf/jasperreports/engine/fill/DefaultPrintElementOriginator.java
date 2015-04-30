@@ -32,10 +32,10 @@ import net.sf.jasperreports.engine.JRRuntimeException;
  * Default {@link PrintElementOriginator} implementation.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class DefaultPrintElementOriginator implements PrintElementOriginator
 {
+	public static final String EXCEPTION_MESSAGE_KEY_MAXIMUM_ELEMENTS_NUMBER_REACHED = "fill.print.element.maximum.elements.number.reached";
 
 	private final int sourceElementId;
 	private final AtomicInteger printIdCounter;
@@ -59,7 +59,10 @@ public class DefaultPrintElementOriginator implements PrintElementOriginator
 		// testing for overflow; this limits the number of elements to 2^32 - 1
 		if (id == JRPrintElement.UNSET_PRINT_ELEMENT_ID)
 		{
-			throw new JRRuntimeException("Maximum number of elements for " + sourceElementId + " reached");
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_MAXIMUM_ELEMENTS_NUMBER_REACHED,
+					new Object[]{sourceElementId});
 		}
 		return id;
 	}

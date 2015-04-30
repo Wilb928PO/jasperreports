@@ -45,7 +45,6 @@ import net.sf.jasperreports.engine.util.JRBoxUtil;
  * report design.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class JRDesignCellContents extends JRDesignElementGroup implements JRCellContents
 {
@@ -254,6 +253,7 @@ public class JRDesignCellContents extends JRDesignElementGroup implements JRCell
 	 */
 	private net.sf.jasperreports.engine.JRBox box;
 	
+	@SuppressWarnings("deprecation")
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
 	{
 		in.defaultReadObject();

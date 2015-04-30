@@ -34,12 +34,12 @@ import net.sf.jasperreports.engine.query.SQLBetweenBaseClause;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class DateRangeSQLBetweenClause extends SQLBetweenBaseClause
 {
 
 	protected static final DateRangeSQLBetweenClause INSTANCE = new DateRangeSQLBetweenClause();
+	public static final String EXCEPTION_MESSAGE_KEY_UNSUPPORTED_PARAMETER_TYPE = "date.range.unsupported.parameter.type";
 	
 	/**
 	 * Returns the singleton function instance.
@@ -69,8 +69,10 @@ public class DateRangeSQLBetweenClause extends SQLBetweenBaseClause
 
 		if (value != null && !(value instanceof DateRange))
 		{
-			throw new JRRuntimeException("Parameter " + parameterName + " in clause " + clauseId
-					+ " has unsupported type " + value.getClass().getName());
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_UNSUPPORTED_PARAMETER_TYPE,
+					new Object[]{parameterName, clauseId, value.getClass().getName()});
 		}
 		
 		boolean useRangeStart = left ? isLeftClosed(clauseId) : !isRightClosed(clauseId);

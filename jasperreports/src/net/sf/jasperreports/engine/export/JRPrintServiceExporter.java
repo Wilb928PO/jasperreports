@@ -41,7 +41,6 @@ import javax.print.attribute.HashPrintServiceAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
 import javax.print.attribute.PrintServiceAttributeSet;
 import javax.print.attribute.standard.MediaPrintableArea;
-import javax.print.attribute.standard.MediaSizeName;
 import javax.print.attribute.standard.OrientationRequested;
 import javax.print.attribute.standard.PageRanges;
 import javax.print.attribute.standard.PrinterIsAcceptingJobs;
@@ -60,7 +59,6 @@ import net.sf.jasperreports.export.PrintServiceReportConfiguration;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleGraphics2DExporterOutput;
 import net.sf.jasperreports.export.SimpleGraphics2DReportConfiguration;
-import net.sf.jasperreports.export.SimplePrintServiceExporterConfiguration;
 
 
 /**
@@ -179,11 +177,11 @@ import net.sf.jasperreports.export.SimplePrintServiceExporterConfiguration;
  * 
  * @see net.sf.jasperreports.export.PrintServiceExporterConfiguration
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class JRPrintServiceExporter extends JRAbstractExporter<PrintServiceReportConfiguration, PrintServiceExporterConfiguration, ExporterOutput, JRExporterContext> implements Printable
 {
 	protected static final String PRINT_SERVICE_EXPORTER_PROPERTIES_PREFIX = JRPropertiesUtil.PROPERTY_PREFIX + "export.print.service.";
+	public static final String EXCEPTION_MESSAGE_KEY_PRINT_SERVICE_NOT_FOUND = "export.print.service.not.found";
 
 	/**
 	 *
@@ -320,7 +318,11 @@ public class JRPrintServiceExporter extends JRAbstractExporter<PrintServiceRepor
 			
 			if (printService == null)
 			{
-				throw new JRException("No suitable print service found.");
+				throw 
+					new JRException(
+						EXCEPTION_MESSAGE_KEY_PRINT_SERVICE_NOT_FOUND,  
+						(Object[])null 
+						);
 			}
 
 			try 

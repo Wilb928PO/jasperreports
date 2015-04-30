@@ -44,10 +44,11 @@ import net.sf.jasperreports.engine.util.JRLoader;
  * manager class.
  * 
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public final class JasperPrintManager
 {
+	public static final String EXCEPTION_MESSAGE_KEY_NO_AVAILABLE_PRINTER = "print.no.available.printer";
+	
 	private JasperReportsContext jasperReportsContext;
 
 
@@ -118,7 +119,10 @@ public final class JasperPrintManager
 		boolean checkAvailablePrinters = JRPropertiesUtil.getInstance(jasperReportsContext).getBooleanProperty(jasperPrint, PROPERTY_CHECK_AVAILABLE_PRINTERS, true);
 		if (checkAvailablePrinters && !(unixSunJDK || JRPrintServiceExporter.checkAvailablePrinters())) 
 		{
-			throw new JRException("No printer available.");
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_NO_AVAILABLE_PRINTER,
+					(Object[])null);
 		}
 		//END - artf1936
 		

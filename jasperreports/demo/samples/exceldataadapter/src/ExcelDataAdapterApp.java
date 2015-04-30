@@ -39,7 +39,6 @@ import net.sf.jasperreports.engine.util.JRLoader;
 
 /**
  * @author sanda zaharia (shertage@users.sourceforge.net)
- * @version $Id$
  */
 public class ExcelDataAdapterApp extends AbstractSampleApp
 {
@@ -172,7 +171,7 @@ public class ExcelDataAdapterApp extends AbstractSampleApp
 					fileName, 
 					fileName.substring(0, fileName.indexOf(".jrprint")) + ".html"
 				);
-			System.err.println("XML creation time : " + (System.currentTimeMillis() - start));
+			System.err.println("HTML creation time : " + (System.currentTimeMillis() - start));
 		}
 		
 	}

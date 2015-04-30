@@ -36,10 +36,11 @@ import net.sf.jasperreports.engine.util.JRClassLoader;
  * used by the filler.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class JRFillSubreportReturnValue implements JRSubreportReturnValue
 {
+	public static final String EXCEPTION_MESSAGE_KEY_INCREMENTER_CLASS_NOT_FOUND = "fill.subreport.return.value.incrementer.class.not.found";
+
 	protected final String fromVariable;
 	protected final String toVariable;
 	protected final String incrementerFactoryClassName;
@@ -141,7 +142,11 @@ public class JRFillSubreportReturnValue implements JRSubreportReturnValue
 				}
 				catch (ClassNotFoundException e)
 				{
-					throw new JRRuntimeException("Increment class " + incrementerFactoryClassName + " not found.", e);
+					throw 
+						new JRRuntimeException(
+							EXCEPTION_MESSAGE_KEY_INCREMENTER_CLASS_NOT_FOUND,
+							new Object[]{incrementerFactoryClassName},
+							e);
 				}
 			}
 			

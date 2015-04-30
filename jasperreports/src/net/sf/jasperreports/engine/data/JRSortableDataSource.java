@@ -50,11 +50,10 @@ import net.sf.jasperreports.engine.type.SortOrderEnum;
  * It will be removed from the library in future versions.
  * @deprecated Replaced by {@link ListOfArrayDataSource} and {@link DatasetSortUtil}.
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class JRSortableDataSource implements JRRewindableDataSource
 {
-
+	public static final String EXCEPTION_MESSAGE_KEY_SORT_FIELD_NOT_FOUND = "data.sortable.sort.field.not.found";
 
 	/**
 	 *
@@ -172,7 +171,10 @@ public class JRSortableDataSource implements JRRewindableDataSource
 
 		if (fieldIndex == null)
 		{
-			throw new JRRuntimeException("Field \"" + jrField.getName() + "\" not found in sortable data source.");
+			throw 
+				new JRRuntimeException(
+					ListOfArrayDataSource.EXCEPTION_MESSAGE_KEY_FIELD_NOT_FOUND,
+					new Object[]{jrField.getName()});
 		}
 
 		return currentRecord[fieldIndex.intValue()];
@@ -210,7 +212,10 @@ public class JRSortableDataSource implements JRRewindableDataSource
 
 				if (!isFound)
 				{
-					throw new JRRuntimeException("Sort field \"" + sortFieldName + "\" not found in the list of data source fields.");
+					throw 
+					new JRRuntimeException(
+						EXCEPTION_MESSAGE_KEY_SORT_FIELD_NOT_FOUND,
+						new Object[]{sortFieldName});
 				}
 			}
 		}

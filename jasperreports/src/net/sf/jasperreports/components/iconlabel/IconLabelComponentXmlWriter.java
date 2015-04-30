@@ -40,7 +40,6 @@ import net.sf.jasperreports.engine.xml.JRXmlWriter;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class IconLabelComponentXmlWriter implements ComponentXmlWriter 
 {
@@ -89,8 +88,8 @@ public class IconLabelComponentXmlWriter implements ComponentXmlWriter
 		
 		writer.addAttribute(IconLabelComponent.PROPERTY_ICON_POSITION, iconLabelComponent.getIconPosition());
 		writer.addAttribute(IconLabelComponent.PROPERTY_LABEL_FILL, iconLabelComponent.getLabelFill());
-		writer.addAttribute(IconLabelComponent.PROPERTY_HORIZONTAL_ALIGNMENT, iconLabelComponent.getOwnHorizontalAlignmentValue());
-		writer.addAttribute(IconLabelComponent.PROPERTY_VERTICAL_ALIGNMENT, iconLabelComponent.getOwnVerticalAlignmentValue());
+		writer.addAttribute(IconLabelComponent.PROPERTY_HORIZONTAL_ALIGNMENT, iconLabelComponent.getOwnHorizontalImageAlign());
+		writer.addAttribute(IconLabelComponent.PROPERTY_VERTICAL_ALIGNMENT, iconLabelComponent.getOwnVerticalImageAlign());
 
 		reportWriter.writeBox(iconLabelComponent.getLineBox(), JRXmlWriter.JASPERREPORTS_NAMESPACE);
 		writer.startElement("label", componentNamespace);

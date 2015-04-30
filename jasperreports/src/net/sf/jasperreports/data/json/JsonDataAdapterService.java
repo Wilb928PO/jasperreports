@@ -28,6 +28,8 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import net.sf.jasperreports.data.AbstractDataAdapterService;
+import net.sf.jasperreports.data.DataFileStream;
+import net.sf.jasperreports.data.DataFileUtils;
 import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRParameter;
@@ -37,10 +39,12 @@ import net.sf.jasperreports.engine.query.JsonQueryExecuterFactory;
 
 /**
  * @author Veaceslov Chicu (schicu@users.sourceforge.net)
- * @version $Id$
  */
 public class JsonDataAdapterService extends AbstractDataAdapterService 
 {
+	
+	private DataFileStream dataStream;
+	
 	/**
 	 * 
 	 */
@@ -54,7 +58,7 @@ public class JsonDataAdapterService extends AbstractDataAdapterService
 	 */
 	public JsonDataAdapterService(JsonDataAdapter jsonDataAdapter) 
 	{
-		super(DefaultJasperReportsContext.getInstance(), jsonDataAdapter);
+		this(DefaultJasperReportsContext.getInstance(), jsonDataAdapter);
 	}
 
 	public JsonDataAdapter getJsonDataAdapter() {
@@ -66,8 +70,11 @@ public class JsonDataAdapterService extends AbstractDataAdapterService
 			throws JRException {
 		JsonDataAdapter jsonDataAdapter = getJsonDataAdapter();
 		if (jsonDataAdapter != null) {
+			dataStream = DataFileUtils.instance(getJasperReportsContext()).getDataStream(
+					jsonDataAdapter.getDataFile(), parameters);
+			
 			if (jsonDataAdapter.isUseConnection()) {
-				parameters.put(JsonQueryExecuterFactory.JSON_SOURCE, jsonDataAdapter.getFileName());
+				parameters.put(JsonQueryExecuterFactory.JSON_INPUT_STREAM, dataStream);
 
 				Locale locale = jsonDataAdapter.getLocale();
 				if (locale != null) {
@@ -99,8 +106,7 @@ public class JsonDataAdapterService extends AbstractDataAdapterService
 			} else {
 				JsonDataSource ds = 
 					new JsonDataSource(
-						getJasperReportsContext(),
-						jsonDataAdapter.getFileName(),
+						dataStream,
 						jsonDataAdapter.getSelectExpression()
 						);
 
@@ -127,5 +133,16 @@ public class JsonDataAdapterService extends AbstractDataAdapterService
 				parameters.put(JRParameter.REPORT_DATA_SOURCE, ds);
 			}
 		}
+	}
+
+	@Override
+	public void dispose()
+	{
+		if (dataStream != null)
+		{
+			dataStream.dispose();
+		}
+		
+		super.dispose();
 	}
 }

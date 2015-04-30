@@ -40,7 +40,6 @@ import net.sf.jasperreports.engine.JRPropertiesUtil.PropertySuffix;
  * be filtered on export.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class ElementKeyExporterFilterFactory implements ExporterFilterFactory
 {
@@ -80,7 +79,9 @@ public class ElementKeyExporterFilterFactory implements ExporterFilterFactory
 		{
 			String excludeKeyPrefix = 
 				exporter.getExporterPropertiesPrefix() + PROPERTY_EXCLUDED_KEY_PREFIX;
-			List<PropertySuffix> props = JRPropertiesUtil.getProperties(
+			JRPropertiesUtil propsUtil = JRPropertiesUtil.getInstance(
+					exporterContext.getJasperReportsContext());
+			List<PropertySuffix> props = propsUtil.getAllProperties(
 					exporterContext.getExportedReport(), excludeKeyPrefix);
 			if (!props.isEmpty())
 			{

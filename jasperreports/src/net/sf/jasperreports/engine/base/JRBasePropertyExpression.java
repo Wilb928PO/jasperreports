@@ -25,7 +25,6 @@ package net.sf.jasperreports.engine.base;
 
 import java.io.Serializable;
 
-import net.sf.jasperreports.engine.JRCloneable;
 import net.sf.jasperreports.engine.JRConstants;
 import net.sf.jasperreports.engine.JRExpression;
 import net.sf.jasperreports.engine.JRPropertyExpression;
@@ -38,9 +37,8 @@ import net.sf.jasperreports.engine.util.JRCloneUtils;
  * Base implementation of {@link JRPropertyExpression}.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
-public class JRBasePropertyExpression implements JRPropertyExpression, Serializable, JRChangeEventsSupport, JRCloneable
+public class JRBasePropertyExpression implements JRPropertyExpression, Serializable, JRChangeEventsSupport
 {
 	
 	private static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;

@@ -36,9 +36,8 @@ import net.sf.jasperreports.engine.type.ScaleImageEnum;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
-public interface JRPrintImage extends JRPrintGraphicElement, JRPrintAnchor, JRPrintHyperlink, JRAlignment, JRCommonImage
+public interface JRPrintImage extends JRPrintGraphicElement, JRPrintAnchor, JRPrintHyperlink, JRAlignment, JRImageAlignment, JRCommonImage
 {
 
 

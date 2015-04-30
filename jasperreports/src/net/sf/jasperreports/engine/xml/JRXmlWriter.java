@@ -208,13 +208,16 @@ import net.sf.jasperreports.engine.util.XmlNamespace;
  * </p>
  * @author Teodor Danciu (teodord@users.sourceforge.net)
  * @author Minor enhancements by Barry Klawans (bklawans@users.sourceforge.net)
- * @version $Id$
  */
 public class JRXmlWriter extends JRXmlBaseWriter
 {
 
 	public static final XmlNamespace JASPERREPORTS_NAMESPACE = 
 		new XmlNamespace(JRXmlConstants.JASPERREPORTS_NAMESPACE, null, JRXmlConstants.JASPERREPORT_XSD_SYSTEM_ID);
+	public static final String EXCEPTION_MESSAGE_KEY_FILE_WRITE_ERROR = "xml.writer.file.write.error";
+	public static final String EXCEPTION_MESSAGE_KEY_OUTPUT_STREAM_WRITE_ERROR = "xml.writer.output.stream.write.error";
+	public static final String EXCEPTION_MESSAGE_KEY_REPORT_DESIGN_WRITE_ERROR = "xml.writer.report.design.write.error";
+	public static final String EXCEPTION_MESSAGE_KEY_UNSUPPORTED_CHART_TYPE = "xml.writer.unsupported.chart.type";
 
 	/**
 	 *
@@ -274,7 +277,11 @@ public class JRXmlWriter extends JRXmlBaseWriter
 		catch (IOException e)
 		{
 			// doesn't actually happen
-			throw new JRRuntimeException("Error writing report design.", e);
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_REPORT_DESIGN_WRITE_ERROR,
+					(Object[])null,
+					e);
 		}
 		return buffer.toString();
 	}
@@ -299,7 +306,11 @@ public class JRXmlWriter extends JRXmlBaseWriter
 		}
 		catch (IOException e)
 		{
-			throw new JRException("Error writing to file : " + destFileName, e);
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_FILE_WRITE_ERROR,
+					new Object[]{destFileName},
+					e);
 		}
 		finally
 		{
@@ -333,7 +344,11 @@ public class JRXmlWriter extends JRXmlBaseWriter
 		}
 		catch (Exception e)
 		{
-			throw new JRException("Error writing to OutputStream : " + report.getName(), e);
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_OUTPUT_STREAM_WRITE_ERROR,
+					new Object[]{report.getName()},
+					e);
 		}
 	}
 
@@ -1035,8 +1050,8 @@ public class JRXmlWriter extends JRXmlBaseWriter
 	{
 		writer.startElement(JRXmlConstants.ELEMENT_image, getNamespace());
 		writer.addAttribute(JRXmlConstants.ATTRIBUTE_scaleImage, image.getOwnScaleImageValue());
-		writer.addAttribute(JRXmlConstants.ATTRIBUTE_hAlign, image.getOwnHorizontalAlignmentValue());
-		writer.addAttribute(JRXmlConstants.ATTRIBUTE_vAlign, image.getOwnVerticalAlignmentValue());
+		writer.addAttribute(JRXmlConstants.ATTRIBUTE_hAlign, image.getOwnHorizontalImageAlign());
+		writer.addAttribute(JRXmlConstants.ATTRIBUTE_vAlign, image.getOwnVerticalImageAlign());
 		writer.addAttribute(JRXmlConstants.ATTRIBUTE_isUsingCache, image.getUsingCache());
 		writer.addAttribute(JRXmlConstants.ATTRIBUTE_isLazy, image.isLazy(), false);
 		writer.addAttribute(JRXmlConstants.ATTRIBUTE_onErrorType, image.getOnErrorTypeValue(), OnErrorTypeEnum.ERROR);
@@ -1093,8 +1108,8 @@ public class JRXmlWriter extends JRXmlBaseWriter
 	private void writeTextElement(JRTextElement textElement) throws IOException
 	{
 		writer.startElement(JRXmlConstants.ELEMENT_textElement);
-		writer.addAttribute(JRXmlConstants.ATTRIBUTE_textAlignment, textElement.getOwnHorizontalAlignmentValue());
-		writer.addAttribute(JRXmlConstants.ATTRIBUTE_verticalAlignment, textElement.getOwnVerticalAlignmentValue());
+		writer.addAttribute(JRXmlConstants.ATTRIBUTE_textAlignment, textElement.getOwnHorizontalTextAlign());
+		writer.addAttribute(JRXmlConstants.ATTRIBUTE_verticalAlignment, textElement.getOwnVerticalTextAlign());
 		writer.addAttribute(JRXmlConstants.ATTRIBUTE_rotation, textElement.getOwnRotationValue());
 		if (isOlderVersionThan(JRConstants.VERSION_4_0_2))
 		{
@@ -2766,7 +2781,10 @@ public class JRXmlWriter extends JRXmlBaseWriter
 				writeGanttChart(chart);
 				break;
 			default:
-				throw new JRRuntimeException("Chart type not supported.");
+				throw 
+				new JRRuntimeException(
+						EXCEPTION_MESSAGE_KEY_UNSUPPORTED_CHART_TYPE,
+						(Object[])null);
 		}
 	}
 

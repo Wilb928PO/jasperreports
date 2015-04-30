@@ -37,7 +37,6 @@ import net.sf.jasperreports.components.map.Item;
 import net.sf.jasperreports.components.map.ItemProperty;
 import net.sf.jasperreports.components.map.MapComponent;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.fill.JRFillExpressionEvaluator;
 import net.sf.jasperreports.engine.fill.JRFillObjectFactory;
 import net.sf.jasperreports.engine.type.ColorEnum;
@@ -50,11 +49,12 @@ import org.w3c.dom.Node;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class FillPlaceItem extends FillItem
 {
 	public static final String PROPERTY_COLOR = "color";
+	public static final String EXCEPTION_MESSAGE_KEY_MISSING_COORDINATES = "components.map.missing.coordinates";
+
 	/**
 	 *
 	 */
@@ -124,15 +124,19 @@ public class FillPlaceItem extends FillItem
 					result.put(MapComponent.PROPERTY_longitude, coords[1]);
 					result.remove(MapComponent.PROPERTY_address);
 				} else {
-					throw new JRException("Invalid coordinates geocoded from address: (" + coords[0] +", "+coords[1]+").");
+					throw 
+						new JRException(
+							MapFillComponent.EXCEPTION_MESSAGE_KEY_INVALID_ADDRESS_COORDINATES,  
+							new Object[]{coords[0], coords[1]} 
+							);
 				}
 			}
 			else 
 			{
 				throw 
 					new JRException(
-						"The value for " + (fLatitude == null ? MapComponent.PROPERTY_latitude : MapComponent.PROPERTY_longitude) 
-						+ " property is missing and no address was provided either."
+						EXCEPTION_MESSAGE_KEY_MISSING_COORDINATES,  
+						new Object[]{fLatitude == null ? MapComponent.PROPERTY_latitude : MapComponent.PROPERTY_longitude}
 						);
 			}
 		}
@@ -154,7 +158,11 @@ public class FillPlaceItem extends FillItem
 					Node lngNode = (Node) new DOMXPath(MapFillComponent.LONGITUDE_NODE).selectSingleNode(document);
 					coords[1] = Float.valueOf(lngNode.getTextContent());
 				} else {
-					throw new JRRuntimeException("Address request failed (see status: " + status + ")");
+					throw 
+						new JRException(
+							MapFillComponent.EXCEPTION_MESSAGE_KEY_ADDRESS_REQUEST_FAILED,  
+							new Object[]{status}
+							);
 				}
 			} catch (Exception e) {
 				throw new JRException(e);

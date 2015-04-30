@@ -40,13 +40,15 @@ import net.sf.jasperreports.engine.JasperReport;
  * and for sub datasets.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  * 
  * @see net.sf.jasperreports.engine.JasperReport#getCompileData()
  */
 public class JRReportCompileData implements Serializable
 {
 	private static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
+	
+	public static final String EXCEPTION_MESSAGE_KEY_COMPILE_DATA_FOR_CROSSTAB_NOT_FOUND = "design.compile.data.for.crosstab.not.found";
+	public static final String EXCEPTION_MESSAGE_KEY_COMPILE_DATA_FOR_DATASET_NOT_FOUND = "design.compile.data.for.dataset.not.found";
 
 	/**
 	 * Main report dataset compile data.
@@ -146,7 +148,10 @@ public class JRReportCompileData implements Serializable
 			compileData = datasetCompileData.get(dataset.getName());
 			if (compileData == null)
 			{
-				throw new JRException("Compile data for dataset " + dataset.getName() + " not found in the report.");
+				throw 
+					new JRException(
+						EXCEPTION_MESSAGE_KEY_COMPILE_DATA_FOR_DATASET_NOT_FOUND,
+						new Object[]{dataset.getName()});
 			}
 		}
 		
@@ -166,7 +171,10 @@ public class JRReportCompileData implements Serializable
 		Serializable compileData = crosstabCompileData.get(Integer.valueOf(crosstab.getId()));
 		if (compileData == null)
 		{
-			throw new JRException("Compile data for crosstab not found in the report.");
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_COMPILE_DATA_FOR_CROSSTAB_NOT_FOUND,
+					(Object[])null);
 		}
 		
 		return compileData;

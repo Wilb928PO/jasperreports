@@ -41,7 +41,6 @@ import net.sf.jasperreports.engine.type.EvaluationTimeEnum;
  * that is included in compiled reports.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class JRBaseGenericElement extends JRBaseElement implements
 		JRGenericElement
@@ -120,6 +119,7 @@ public class JRBaseGenericElement extends JRBaseElement implements
 	 */
 	private byte evaluationTime;
 	
+	@SuppressWarnings("deprecation")
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
 	{
 		in.defaultReadObject();

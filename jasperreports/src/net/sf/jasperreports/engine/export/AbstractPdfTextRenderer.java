@@ -28,13 +28,12 @@ import net.sf.jasperreports.engine.JRPrintText;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.type.RunDirectionEnum;
 
-import com.itextpdf.text.Element;
-import com.itextpdf.text.pdf.PdfContentByte;
+import com.lowagie.text.Element;
+import com.lowagie.text.pdf.PdfContentByte;
 
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public abstract class AbstractPdfTextRenderer extends AbstractTextRenderer
 {
@@ -85,7 +84,7 @@ public abstract class AbstractPdfTextRenderer extends AbstractTextRenderer
 		rightOffsetFactor = 0f;
 		
 		//FIXMETAB 0.2f was a fair approximation
-		switch (text.getHorizontalAlignmentValue())
+		switch (text.getHorizontalTextAlign())
 		{
 			case JUSTIFIED :
 			{

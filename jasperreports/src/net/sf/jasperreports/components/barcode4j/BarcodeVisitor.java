@@ -23,10 +23,10 @@
  */
 package net.sf.jasperreports.components.barcode4j;
 
+
 /**
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public interface BarcodeVisitor
 {
@@ -58,5 +58,7 @@ public interface BarcodeVisitor
 	void visitPostnet(POSTNETComponent postnet);
 
 	void visitPDF417(PDF417Component pdf417);
+	
+	void visitQRCode(QRCodeComponent qrCode);
 
 }

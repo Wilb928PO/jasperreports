@@ -44,10 +44,11 @@ import org.jfree.data.general.Dataset;
 
 /**
  * @author Flavius Sana (flavius_sana@users.sourceforge.net)
- * @version $Id$
  */
 public class JRFillXyzDataset extends JRFillChartDataset implements JRXyzDataset {
 
+	public static final String EXCEPTION_MESSAGE_KEY_SERIES_NULL_NAME = "charts.xyz.dataset.series.null.name";
+	
 	protected JRFillXyzSeries[] xyzSeries;
 
 	private DefaultXYZDataset dataset;
@@ -102,7 +103,11 @@ public class JRFillXyzDataset extends JRFillChartDataset implements JRXyzDataset
 				Comparable<?> seriesName = crtXyzSeries.getSeries();
 				if (seriesName == null)
 				{
-					throw new JRRuntimeException("XYZ series name is null.");
+					throw 
+						new JRRuntimeException(
+							EXCEPTION_MESSAGE_KEY_SERIES_NULL_NAME,  
+							(Object[])null 
+							);
 				}
 
 				dataset.addValue(

@@ -38,9 +38,9 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRGenericPrintElement;
 import net.sf.jasperreports.engine.JRPrintImage;
 import net.sf.jasperreports.engine.base.JRBasePrintImage;
-import net.sf.jasperreports.engine.type.HorizontalAlignEnum;
+import net.sf.jasperreports.engine.type.HorizontalImageAlignEnum;
 import net.sf.jasperreports.engine.type.ScaleImageEnum;
-import net.sf.jasperreports.engine.type.VerticalAlignEnum;
+import net.sf.jasperreports.engine.type.VerticalImageAlignEnum;
 import net.sf.jasperreports.engine.util.HtmlPrintElement;
 import net.sf.jasperreports.engine.util.JRExpressionUtil;
 import net.sf.jasperreports.renderers.AwtComponentRenderer;
@@ -48,7 +48,6 @@ import net.sf.jasperreports.renderers.AwtComponentRenderer;
 
 /**
  * @author Narcis Marcu (narcism@users.sourceforge.net)
- * @version $Id$
  */
 public class DefaultHtmlPrintElement implements HtmlPrintElement {
 	
@@ -75,8 +74,8 @@ public class DefaultHtmlPrintElement implements HtmlPrintElement {
 		printImage.setWidth(element.getWidth());
 		printImage.setHeight(element.getHeight());
 		printImage.setScaleImage(ScaleImageEnum.getByName(scaleType));
-		printImage.setHorizontalAlignment(HorizontalAlignEnum.getByName(horizontalAlignment));
-		printImage.setVerticalAlignment(VerticalAlignEnum.getByName(verticalAlignment));
+		printImage.setHorizontalImageAlign(HorizontalImageAlignEnum.getByName(horizontalAlignment));
+		printImage.setVerticalImageAlign(VerticalImageAlignEnum.getByName(verticalAlignment));
 		printImage.setStyle(element.getStyle());
 		printImage.setMode(element.getModeValue());
 		printImage.setBackcolor(element.getBackcolor());
@@ -109,8 +108,8 @@ public class DefaultHtmlPrintElement implements HtmlPrintElement {
 		printImage.setWidth(componentElement.getWidth());
 		printImage.setHeight(componentElement.getHeight());
 		printImage.setScaleImage(html.getScaleType());
-		printImage.setHorizontalAlignment(html.getHorizontalAlign());
-		printImage.setVerticalAlignment(html.getVerticalAlign());
+		printImage.setHorizontalImageAlign(html.getHorizontalImageAlign());
+		printImage.setVerticalImageAlign(html.getVerticalImageAlign());
 		printImage.setStyle(componentElement.getStyle());
 		printImage.setMode(componentElement.getModeValue());
 		printImage.setBackcolor(componentElement.getBackcolor());

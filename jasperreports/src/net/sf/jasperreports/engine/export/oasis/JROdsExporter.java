@@ -53,6 +53,7 @@ import net.sf.jasperreports.engine.JRPrintLine;
 import net.sf.jasperreports.engine.JRPrintPage;
 import net.sf.jasperreports.engine.JRPrintText;
 import net.sf.jasperreports.engine.JRPropertiesUtil;
+import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.PrintPageFormat;
@@ -105,7 +106,6 @@ import org.apache.commons.logging.LogFactory;
  * @see net.sf.jasperreports.export.OdsReportConfiguration
  * @see net.sf.jasperreports.export.XlsReportConfiguration
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class JROdsExporter extends JRXlsAbstractExporter<OdsReportConfiguration, OdsExporterConfiguration, JROdsExporterContext>
 {
@@ -166,6 +166,8 @@ public class JROdsExporter extends JRXlsAbstractExporter<OdsReportConfiguration,
 		namedExpressions = new StringBuffer("<table:named-expressions>\n");
 		
 		pageFormatIndex = -1;
+		
+		maxColumnIndex = 1023;
 	}
 
 	@Override
@@ -183,8 +185,6 @@ public class JROdsExporter extends JRXlsAbstractExporter<OdsReportConfiguration,
 	@Override
 	protected void createSheet(CutsInfo xCuts, SheetInfo sheetInfo)
 	{
-		closeSheet();
-		
 		startPage = true;
 		
 //		CutsInfo xCuts = gridLayout.getXCuts();
@@ -211,6 +211,7 @@ public class JROdsExporter extends JRXlsAbstractExporter<OdsReportConfiguration,
 	}
 
 
+	@Override
 	protected void closeSheet()
 	{
 		if (tableBuilder != null)
@@ -223,8 +224,6 @@ public class JROdsExporter extends JRXlsAbstractExporter<OdsReportConfiguration,
 	@Override
 	protected void closeWorkbook(OutputStream os) throws JRException, IOException
 	{
-		closeSheet();
-
 		styleBuilder.buildMasterPages(pageFormatIndex);
 		
 		stylesWriter.flush();
@@ -276,6 +275,11 @@ public class JROdsExporter extends JRXlsAbstractExporter<OdsReportConfiguration,
 		boolean isFlexibleRowHeight = getCurrentItemConfiguration().isFlexibleRowHeight();
 		tableBuilder.buildRowStyle(rowIndex, isFlexibleRowHeight ? -1 : lastRowHeight);
 		tableBuilder.buildRow(rowIndex, isFlexibleRowHeight ? -1 : lastRowHeight);
+	}
+
+	protected void addRowBreak(int rowIndex)
+	{
+		//FIXMEODS sheet.setRowBreak(rowIndex);
 	}
 
 //	@Override
@@ -332,7 +336,7 @@ public class JROdsExporter extends JRXlsAbstractExporter<OdsReportConfiguration,
 		int rowIndex
 		) throws JRException
 	{
-		tableBuilder.exportText(text, gridCell);
+		tableBuilder.exportText(text, gridCell, isShrinkToFit(text), isWrapText(text), isIgnoreTextFormatting(text));
 		XlsReportConfiguration configuration = getCurrentItemConfiguration();
 		if (!configuration.isIgnoreAnchors() && text.getAnchorName() != null)
 		{
@@ -466,14 +470,14 @@ public class JROdsExporter extends JRXlsAbstractExporter<OdsReportConfiguration,
 				tableBuilder.exportAnchor(JRStringUtil.xmlEncode(image.getAnchorName()));
 				String cellAddress = "$&apos;" + tableBuilder.getTableName() + "&apos;." + getCellAddress(rowIndex, colIndex);
 				int lastCol = Math.max(0, colIndex + gridCell.getColSpan() - 1);
-				String cellRangeAddress = getCellAddress(rowIndex + gridCell.getRowSpan() -1, lastCol);
+				String cellRangeAddress = getCellAddress(rowIndex + gridCell.getRowSpan() - 1, lastCol);
 				namedExpressions.append("<table:named-range table:name=\""+ image.getAnchorName() +"\" table:base-cell-address=\"" + cellAddress +"\" table:cell-range-address=\"" + cellAddress +":" + cellRangeAddress +"\"/>\n");
 			}
 
 			boolean startedHyperlink = tableBuilder.startHyperlink(image,false, isOnePagePerSheet);
 
 			//String cellAddress = getCellAddress(rowIndex + gridCell.getRowSpan(), colIndex + gridCell.getColSpan() - 1);
-			String cellAddress = getCellAddress(rowIndex + gridCell.getRowSpan() + 1, colIndex + gridCell.getColSpan());
+			String cellAddress = getCellAddress(rowIndex + gridCell.getRowSpan(), colIndex + gridCell.getColSpan());
 			cellAddress = cellAddress == null ? "" : "table:end-cell-address=\"" + cellAddress + "\" ";
 			
 			tempBodyWriter.write("<draw:frame text:anchor-type=\"frame\" "
@@ -513,26 +517,11 @@ public class JROdsExporter extends JRXlsAbstractExporter<OdsReportConfiguration,
 	protected String getCellAddress(int row, int col)
 	{
 		String address = null;
-
-		if(row > -1 && row < 1048577 && col > -1 && col < 16384)
+		if(row > -1 && row < 1048577 && col > -1 && col < maxColumnIndex)
 		{
-			address = "$" + getColumnName(col) + "$" + (row+1);
+			address = "$" + getColumIndexName(col, maxColumnIndex) + "$" + (row + 1);
 		}
 		return address == null ? DEFAULT_ADDRESS : address;
-	}
-	
-	protected String getColumnName(int colIndex)
-	{
-		String colName = null;
-		if(colIndex > -1 && colIndex < 16384)
-		{
-			colName = colIndex > 675 
-					? String.valueOf((char)(colIndex/676 +64)) + getColumnName(colIndex%676) 
-					: (colIndex > 25 
-							? String.valueOf((char)(colIndex/26 + 64)) + getColumnName(colIndex%26) 
-							: String.valueOf((char)(colIndex %26 + 65)));
-		}
-		return colName == null ? DEFAULT_COLUMN : colName;
 	}
 	
 	@Override
@@ -687,12 +676,6 @@ public class JROdsExporter extends JRXlsAbstractExporter<OdsReportConfiguration,
 		
 	}
 
-	@Override
-	protected void setScale(Integer scale) {
-		// TODO Auto-generated method stub
-		
-	}
-
 	
 	private static final Log log = LogFactory.getLog(JROdsExporter.class);
 	
@@ -807,6 +790,7 @@ public class JROdsExporter extends JRXlsAbstractExporter<OdsReportConfiguration,
 			
 			String ignLnkPropName = getIgnoreHyperlinkProperty();
 			Boolean ignoreHyperlink = HyperlinkUtil.getIgnoreHyperlink(ignLnkPropName, textElement);
+			boolean isIgnoreTextFormatting = isIgnoreTextFormatting(textElement);
 			if (ignoreHyperlink == null)
 			{
 				ignoreHyperlink = getPropertiesUtil().getBooleanProperty(jasperPrint, ignLnkPropName, false);
@@ -819,7 +803,7 @@ public class JROdsExporter extends JRXlsAbstractExporter<OdsReportConfiguration,
 
 			if (href == null)
 			{
-				exportStyledText(textElement, false);
+				exportStyledText(textElement, false, isIgnoreTextFormatting);
 			}
 			else
 			{
@@ -836,12 +820,15 @@ public class JROdsExporter extends JRXlsAbstractExporter<OdsReportConfiguration,
 						// ODS does not like text:span inside text:a
 						// writing one text:a inside text:span for each style run
 						String runText = text.substring(iterator.getIndex(), runLimit);
-						startTextSpan(iterator.getAttributes(), runText, locale);
+						startTextSpan(
+								iterator.getAttributes(), 
+								runText, 
+								locale,
+								isIgnoreTextFormatting);
 						writeHyperlink(textElement, href, true);
 						writeText(runText);
 						endHyperlink(true);
 						endTextSpan();
-
 						iterator.setIndex(runLimit);
 					}
 				}
@@ -984,7 +971,4 @@ public class JROdsExporter extends JRXlsAbstractExporter<OdsReportConfiguration,
 			startPage = false;
 		}
 	}
-
-	
 }
-

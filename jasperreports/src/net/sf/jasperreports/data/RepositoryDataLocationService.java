@@ -35,7 +35,6 @@ import net.sf.jasperreports.repo.RepositoryUtil;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class RepositoryDataLocationService implements DataFileService
 {
@@ -61,7 +60,7 @@ public class RepositoryDataLocationService implements DataFileService
 		}
 		
 		InputStream dataStream = repository.getInputStreamFromLocation(location);
-		return new DataFileStream(dataStream);
+		return new DataFileStreamConnection(dataStream);
 	}
 
 }

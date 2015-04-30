@@ -27,16 +27,15 @@ import net.sf.jasperreports.engine.JRParagraph;
 import net.sf.jasperreports.engine.JRPrintText;
 import net.sf.jasperreports.engine.TabStop;
 import net.sf.jasperreports.engine.export.LengthUtil;
-import net.sf.jasperreports.engine.type.HorizontalAlignEnum;
+import net.sf.jasperreports.engine.type.HorizontalTextAlignEnum;
 import net.sf.jasperreports.engine.type.RotationEnum;
 import net.sf.jasperreports.engine.type.RunDirectionEnum;
 import net.sf.jasperreports.engine.type.TabStopAlignEnum;
-import net.sf.jasperreports.engine.type.VerticalAlignEnum;
+import net.sf.jasperreports.engine.type.VerticalTextAlignEnum;
 
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class ParagraphStyle extends Style
 {
@@ -79,30 +78,43 @@ public class ParagraphStyle extends Style
 	/**
 	 *
 	 */
-	public ParagraphStyle(WriterHelper styleWriter, JRPrintText text)
+	public ParagraphStyle(WriterHelper styleWriter, JRPrintText text, boolean isIgnoreTextFormatting)
 	{
 		super(styleWriter);
 		
-		horizontalAlignment = getHorizontalAlignment(text.getHorizontalAlignmentValue(), text.getVerticalAlignmentValue(), text.getRotationValue());
-		verticalAlignment = getVerticalAlignment(text.getHorizontalAlignmentValue(), text.getVerticalAlignmentValue(), text.getRotationValue());
+		horizontalAlignment = getHorizontalAlignment(
+				text.getHorizontalTextAlign(), 
+				text.getVerticalTextAlign(), 
+				(isIgnoreTextFormatting ? RotationEnum.NONE : text.getRotationValue()));
+		verticalAlignment = getVerticalAlignment(
+				text.getHorizontalTextAlign(), 
+				text.getVerticalTextAlign(), 
+				(isIgnoreTextFormatting ? RotationEnum.NONE : text.getRotationValue()));
 		
-		switch(text.getRotationValue())
+		if(isIgnoreTextFormatting)
 		{
-			case LEFT:
+			textRotation = "0";
+		}
+		else 
+		{
+			switch(text.getRotationValue())
 			{
-				textRotation = "90";
-				break;
-			}
-			case RIGHT:
-			{
-				textRotation = "270";
-				break;
-			}
-			case UPSIDE_DOWN://FIXMEODT possible?
-			case NONE:
-			default:
-			{
-				textRotation = "0";
+				case LEFT:
+				{
+					textRotation = "90";
+					break;
+				}
+				case RIGHT:
+				{
+					textRotation = "270";
+					break;
+				}
+				case UPSIDE_DOWN://FIXMEODT possible?
+				case NONE:
+				default:
+				{
+					textRotation = "0";
+				}
 			}
 		}
 
@@ -119,8 +131,8 @@ public class ParagraphStyle extends Style
 	 *
 	 */
 	public static String getVerticalAlignment(
-		HorizontalAlignEnum horizontalAlignment, 
-		VerticalAlignEnum verticalAlignment, 
+		HorizontalTextAlignEnum horizontalAlignment, 
+		VerticalTextAlignEnum verticalAlignment, 
 		RotationEnum rotation
 		)
 	{
@@ -178,8 +190,8 @@ public class ParagraphStyle extends Style
 	 *
 	 */
 	public static String getHorizontalAlignment(
-		HorizontalAlignEnum horizontalAlignment, 
-		VerticalAlignEnum verticalAlignment, 
+		HorizontalTextAlignEnum horizontalAlignment, 
+		VerticalTextAlignEnum verticalAlignment, 
 		RotationEnum rotation
 		)
 	{

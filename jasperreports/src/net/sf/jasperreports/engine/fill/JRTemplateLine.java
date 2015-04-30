@@ -39,7 +39,6 @@ import net.sf.jasperreports.engine.util.ObjectUtils;
  * Line element information shared by multiple print line objects.
  * 
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  * @see JRTemplatePrintLine
  */
 public class JRTemplateLine extends JRTemplateGraphicElement
@@ -117,6 +116,7 @@ public class JRTemplateLine extends JRTemplateGraphicElement
 	 */
 	private byte direction;
 	
+	@SuppressWarnings("deprecation")
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
 	{
 		in.defaultReadObject();

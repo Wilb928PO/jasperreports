@@ -24,13 +24,21 @@
 package net.sf.jasperreports.engine.fill;
 
 import net.sf.jasperreports.engine.JRConstants;
+import net.sf.jasperreports.engine.JRRuntimeException;
 
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
-public class JRFillInterruptedException extends RuntimeException
+public class JRFillInterruptedException extends JRRuntimeException
 {
 	private static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
+	public static final String EXCEPTION_MESSAGE_KEY_REPORT_FILLING_PROCESS_INTERRUPTED = "fill.report.filling.process.interrupted";
+	
+	public JRFillInterruptedException() 
+	{
+		super(
+			EXCEPTION_MESSAGE_KEY_REPORT_FILLING_PROCESS_INTERRUPTED,
+			(Object[])null);
+	}
 }

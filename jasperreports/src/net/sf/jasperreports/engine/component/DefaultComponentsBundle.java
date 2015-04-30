@@ -36,13 +36,14 @@ import net.sf.jasperreports.engine.JRRuntimeException;
  * instance and a map of {@link ComponentManager component managers}.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class DefaultComponentsBundle implements ComponentsBundle
 {
 
 	private ComponentsXmlParser xmlParser;
 	private Map<String,ComponentManager> componentManagers;
+	
+	public static final String EXCEPTION_MESSAGE_KEY_COMPONENT_MANAGER_NOT_FOUND = "components.component.manager.not.found";
 
 	public ComponentsXmlParser getXmlParser()
 	{
@@ -70,8 +71,10 @@ public class DefaultComponentsBundle implements ComponentsBundle
 		ComponentManager manager = componentManagers.get(componentName);
 		if (manager == null)
 		{
-			throw new JRRuntimeException("No component manager found for name " + componentName 
-					+ ", namespace " + xmlParser.getNamespace());
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_COMPONENT_MANAGER_NOT_FOUND,
+					new Object[]{componentName, xmlParser.getNamespace()});
 		}
 		return manager;
 	}

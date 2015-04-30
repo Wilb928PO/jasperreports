@@ -2,7 +2,7 @@
 
 	<description>Helps build the JasperReports distribution files.</description>
 
-	<property name="version" value="6.0.0"/>
+	<property name="version" value="6.0.5"/>
 
 	<target name="compile" description="Compiles the java source files of the library.">
 		<mkdir dir="./build/classes"/> 
@@ -80,11 +80,11 @@
 			<fileset dir="./build/classes"/>
 		</copy>
 
-		<replace
+		<replaceregexp
 			file="./build/javaflow/default.jasperreports.properties"
-			token="net.sf.jasperreports.engine.fill.JRThreadSubreportRunnerFactory"
-			value="net.sf.jasperreports.engine.fill.JRContinuationSubreportRunnerFactory">
-		</replace>
+			match="net.sf.jasperreports.subreport.runner.factory\=[\w\.]*"
+			replace="net.sf.jasperreports.subreport.runner.factory=net.sf.jasperreports.engine.fill.JRContinuationSubreportRunnerFactory">
+		</replaceregexp>
 
 		<javaflow srcdir="./build/javaflow" dstdir="./build/javaflow" mode="bcel">
 			<include name="net/sf/jasperreports/engine/fill/BaseReportFiller.class"/>
@@ -180,7 +180,7 @@
 	</target>
 
 	<property name="sf.net" value="false"/>
-	<property name="svn" value="jr-6-0-0"/>
+	<property name="svn" value="jr-6-0-5"/>
 
 	<target name="preparedocs" description="Prepares Documentation Folder.">
 		<mkdir dir="./dist/docs"/> 

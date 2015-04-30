@@ -80,6 +80,7 @@ import net.sf.jasperreports.engine.type.ModeEnum;
 import net.sf.jasperreports.engine.type.RenderableTypeEnum;
 import net.sf.jasperreports.engine.util.JRStringUtil;
 import net.sf.jasperreports.engine.util.JRStyledText;
+import net.sf.jasperreports.export.ExportInterruptedException;
 import net.sf.jasperreports.export.ExporterInputItem;
 import net.sf.jasperreports.export.OdtExporterConfiguration;
 import net.sf.jasperreports.export.OdtReportConfiguration;
@@ -123,7 +124,6 @@ import org.apache.commons.logging.LogFactory;
  * 
  * @see net.sf.jasperreports.export.OdtReportConfiguration
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class JROdtExporter extends JRAbstractExporter<OdtReportConfiguration, OdtExporterConfiguration, OutputStreamExporterOutput, JROdtExporterContext>
 {
@@ -402,7 +402,7 @@ public class JROdtExporter extends JRAbstractExporter<OdtReportConfiguration, Od
 				{
 					if (Thread.interrupted())
 					{
-						throw new JRException("Current thread interrupted.");
+						throw new ExportInterruptedException();
 					}
 
 					PrintPageFormat pageFormat = jasperPrint.getPageFormat(pageIndex);
@@ -735,7 +735,7 @@ public class JROdtExporter extends JRAbstractExporter<OdtReportConfiguration, Od
 	 */
 	public void exportText(TableBuilder tableBuilder, JRPrintText text, JRExporterGridCell gridCell)
 	{
-		tableBuilder.exportText(text, gridCell);
+		tableBuilder.exportText(text, gridCell, false, true, false);
 	}
 
 	

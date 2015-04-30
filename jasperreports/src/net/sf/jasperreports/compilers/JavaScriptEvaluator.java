@@ -45,7 +45,6 @@ import org.apache.commons.logging.LogFactory;
  * JavaScript expression evaluator that compiles expressions at fill time.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  * @see JavaScriptCompiler
  */
 public class JavaScriptEvaluator extends JREvaluator implements JasperReportsContextAware
@@ -58,6 +57,8 @@ public class JavaScriptEvaluator extends JREvaluator implements JasperReportsCon
 	 */
 	public static final String PROPERTY_OPTIMIZATION_LEVEL = JRPropertiesUtil.PROPERTY_PREFIX 
 			+ "javascript.evaluator.optimization.level";
+	
+	public static final String EXCEPTION_MESSAGE_KEY_EVALUATOR_LOAD_ERROR = "compilers.javascript.evaluator.load.error";
 	
 	private static final Log log = LogFactory.getLog(JavaScriptEvaluator.class);
 	
@@ -144,7 +145,11 @@ public class JavaScriptEvaluator extends JREvaluator implements JasperReportsCon
 			}
 			catch (ClassNotFoundException e)
 			{
-				throw new JRRuntimeException("Unable to load class " + type, e);
+				throw 
+					new JRRuntimeException(
+						EXCEPTION_MESSAGE_KEY_EVALUATOR_LOAD_ERROR,
+						new Object[]{type},
+						e);
 			}
 			loadedTypes.put(type, typeClass);
 		}

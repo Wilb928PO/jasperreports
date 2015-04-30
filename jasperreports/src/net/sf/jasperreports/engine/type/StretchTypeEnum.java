@@ -23,12 +23,9 @@
  */
 package net.sf.jasperreports.engine.type;
 
-import net.sf.jasperreports.engine.JRConstants;
-
 
 /**
  * @author sanda zaharia (shertage@users.sourceforge.net)
- * @version $Id$
  */
 public enum StretchTypeEnum implements JREnum
 {
@@ -54,7 +51,6 @@ public enum StretchTypeEnum implements JREnum
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
 	private final transient byte value;
 	private final transient String name;
 
@@ -65,7 +61,7 @@ public enum StretchTypeEnum implements JREnum
 	}
 
 	/**
-	 *
+	 * @deprecated Used only by deprecated serialized fields.
 	 */
 	public Byte getValueByte()
 	{
@@ -73,7 +69,7 @@ public enum StretchTypeEnum implements JREnum
 	}
 	
 	/**
-	 *
+	 * @deprecated Used only by deprecated serialized fields.
 	 */
 	public final byte getValue()
 	{
@@ -93,11 +89,11 @@ public enum StretchTypeEnum implements JREnum
 	 */
 	public static StretchTypeEnum getByName(String name)
 	{
-		return (StretchTypeEnum)EnumUtil.getByName(values(), name);
+		return EnumUtil.getEnumByName(values(), name);
 	}
 	
 	/**
-	 *
+	 * @deprecated Used only by deprecated serialized fields.
 	 */
 	public static StretchTypeEnum getByValue(Byte value)
 	{
@@ -105,11 +101,10 @@ public enum StretchTypeEnum implements JREnum
 	}
 	
 	/**
-	 *
+	 * @deprecated Used only by deprecated serialized fields.
 	 */
 	public static StretchTypeEnum getByValue(byte value)
 	{
 		return getByValue(new Byte(value));
 	}
-
 }

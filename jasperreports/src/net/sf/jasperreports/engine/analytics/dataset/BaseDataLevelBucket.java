@@ -39,13 +39,14 @@ import net.sf.jasperreports.engine.util.JRCloneUtils;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class BaseDataLevelBucket implements DataLevelBucket, Serializable
 {
 	
 	private static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
 
+	public static final String EXCEPTION_MESSAGE_KEY_BUCKET_LOAD_ERROR = "engine.analytics.dataset.bucket.load.error";
+	
 	protected String valueClassName;
 	protected String valueClassRealName;
 	protected Class<?> valueClass;
@@ -122,7 +123,11 @@ public class BaseDataLevelBucket implements DataLevelBucket, Serializable
 				}
 				catch (ClassNotFoundException e)
 				{
-					throw new JRRuntimeException("Could not load bucket value class", e);
+					throw 
+						new JRRuntimeException(
+							EXCEPTION_MESSAGE_KEY_BUCKET_LOAD_ERROR,
+							(Object[])null,
+							e);
 				}
 			}
 		}

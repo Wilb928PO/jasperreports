@@ -23,12 +23,10 @@
  */
 package net.sf.jasperreports.engine.type;
 
-import net.sf.jasperreports.engine.JRConstants;
-
 
 /**
+ * @deprecated Replaced by {@link HorizontalTextAlignEnum} and {@link HorizontalImageAlignEnum}.
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public enum HorizontalAlignEnum implements JREnum
 {
@@ -55,7 +53,6 @@ public enum HorizontalAlignEnum implements JREnum
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
 	private final transient byte value;
 	private final transient String name;
 
@@ -112,5 +109,41 @@ public enum HorizontalAlignEnum implements JREnum
 	{
 		return getByValue(new Byte(value));
 	}
+	
+	/**
+	 *
+	 */
+	public static HorizontalTextAlignEnum getHorizontalTextAlignEnum(HorizontalAlignEnum horizontalAlignment)
+	{
+		return horizontalAlignment == null ? null : HorizontalTextAlignEnum.getByName(horizontalAlignment.getName());
+	}
+	
+	/**
+	 *
+	 */
+	public static HorizontalImageAlignEnum getHorizontalImageAlignEnum(HorizontalAlignEnum horizontalAlignment)
+	{
+		if (horizontalAlignment == JUSTIFIED)
+		{
+			return HorizontalImageAlignEnum.LEFT;
+		}
+		return horizontalAlignment == null ? null : HorizontalImageAlignEnum.getByName(horizontalAlignment.getName());
+	}
+	
+	/**
+	 *
+	 */
+	public static HorizontalAlignEnum getHorizontalAlignEnum(HorizontalTextAlignEnum horizontalTextAlign)
+	{
+		return horizontalTextAlign == null ? null : HorizontalAlignEnum.getByName(horizontalTextAlign.getName());
+	}
 
+	/**
+	 *
+	 */
+	public static HorizontalAlignEnum getHorizontalAlignEnum(HorizontalImageAlignEnum horizontalImageAlign)
+	{
+		return horizontalImageAlign == null ? null : HorizontalAlignEnum.getByName(horizontalImageAlign.getName());
+	}
+	
 }

@@ -1,12 +1,12 @@
 Built-By: TIBCO Software Inc.
 Specification-Title: JasperReports Library
-Specification-Version: 6.0.0
+Specification-Version: 6.0.5
 Specification-Vendor: TIBCO Software Inc.
 Implementation-Title: net.sf.jasperreports.engine
-Implementation-Version: 6.0.0
+Implementation-Version: 6.0.5
 Implementation-Vendor: TIBCO Software Inc.
 Bundle-Name: JasperReports Library
-Bundle-Version: 6.0.0
+Bundle-Version: 6.0.5
 Bundle-Vendor: TIBCO Software Inc.
 Bundle-SymbolicName: net.sf.jasperreports.engine
 Bundle-ClassPath: .
@@ -68,6 +68,7 @@ Export-Package: net.sf.jasperreports.ant,
  net.sf.jasperreports.data.excel,
  net.sf.jasperreports.data.hibernate,
  net.sf.jasperreports.data.hibernate.spring,
+ net.sf.jasperreports.data.http,
  net.sf.jasperreports.data.jdbc,
  net.sf.jasperreports.data.jndi,
  net.sf.jasperreports.data.json,
@@ -113,6 +114,7 @@ Export-Package: net.sf.jasperreports.ant,
  net.sf.jasperreports.engine.fill,
  net.sf.jasperreports.engine.fonts,
  net.sf.jasperreports.engine.images,
+ net.sf.jasperreports.engine.part,
  net.sf.jasperreports.engine.print,
  net.sf.jasperreports.engine.query,
  net.sf.jasperreports.engine.scriptlets,
@@ -141,6 +143,8 @@ Export-Package: net.sf.jasperreports.ant,
  net.sf.jasperreports.olap.olap4j,
  net.sf.jasperreports.olap.result,
  net.sf.jasperreports.olap.xmla,
+ net.sf.jasperreports.parts,
+ net.sf.jasperreports.parts.subreport,
  net.sf.jasperreports.renderers,
  net.sf.jasperreports.repo,
  net.sf.jasperreports.search,

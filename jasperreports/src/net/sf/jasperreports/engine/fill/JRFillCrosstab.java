@@ -131,12 +131,16 @@ import org.apache.commons.logging.LogFactory;
  * Fill-time implementation of a {@link net.sf.jasperreports.crosstabs.JRCrosstab crosstab}.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class JRFillCrosstab extends JRFillElement implements JRCrosstab, JROriginProvider, BucketingServiceContext
 {
 	private final static Log log = LogFactory.getLog(JRFillCrosstab.class); 
 
+	public static final String EXCEPTION_MESSAGE_KEY_BUCKETING_SERVICE_ERROR = "crosstabs.bucketing.service.error";
+	public static final String EXCEPTION_MESSAGE_KEY_EVALUATOR_LOADING_ERROR = "crosstabs.evaluator.loading.error";
+	public static final String EXCEPTION_MESSAGE_KEY_INFINITE_LOOP = "crosstabs.infinite.loop";
+	public static final String EXCEPTION_MESSAGE_KEY_NOT_ENOUGH_SPACE = "crosstabs.not.enough.space";
+	
 	public static final String PROPERTY_INTERACTIVE = JRPropertiesUtil.PROPERTY_PREFIX + "crosstab.interactive";
 
 	public static final String PROPERTY_FLOATING_HEADERS = JRPropertiesUtil.PROPERTY_PREFIX + "crosstab.floating.headers";
@@ -456,7 +460,11 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab, JROrigi
 		}
 		catch (JRException e)
 		{
-			throw new JRRuntimeException("Could not load evaluator for crosstab.", e);
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_EVALUATOR_LOADING_ERROR,
+					(Object[])null,
+					e);
 		}
 	}
 
@@ -668,7 +676,11 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab, JROrigi
 			}
 			catch (JRException e)
 			{
-				throw new JRRuntimeException("Could not create bucketing service", e);
+				throw 
+					new JRRuntimeException(
+						EXCEPTION_MESSAGE_KEY_BUCKETING_SERVICE_ERROR,
+						(Object[])null,
+						e);
 			}
 			
 			setOrderByColumnBucketValues();
@@ -759,8 +771,11 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab, JROrigi
 			}
 			else if (pageCount >= overflowStartPage + 2)
 			{
-				throw new JRRuntimeException("Crosstab has not printed anything on 3 consecutive pages, "
-						+ "likely infinite loop");
+				throw 
+					new JRRuntimeException(
+						EXCEPTION_MESSAGE_KEY_INFINITE_LOOP,  
+						(Object[])null 
+						);
 			}
 		}
 		
@@ -1150,6 +1165,8 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab, JROrigi
 	 */
 	public class JRFillCrosstabDataset extends JRFillElementDataset implements JRCrosstabDataset
 	{
+		public static final String EXCEPTION_MESSAGE_KEY_DATASET_INCREMENTING_ERROR = "crosstabs.dataset.incrementing.error";
+
 		private Object[] bucketValues;
 
 		private Object[] measureValues;
@@ -1193,7 +1210,11 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab, JROrigi
 			}
 			catch (JRException e)
 			{
-				throw new JRRuntimeException("Error incrementing crosstab dataset", e);
+				throw 
+					new JRRuntimeException(
+						EXCEPTION_MESSAGE_KEY_DATASET_INCREMENTING_ERROR,
+						(Object[])null,
+						e);
 			}
 		}
 
@@ -1432,7 +1453,11 @@ public class JRFillCrosstab extends JRFillElement implements JRCrosstab, JROrigi
 
 				if (startColumnIndex == lastColumnIndex)
 				{
-					throw new JRRuntimeException("Not enough space to render the crosstab.");
+					throw 
+						new JRRuntimeException(
+							EXCEPTION_MESSAGE_KEY_NOT_ENOUGH_SPACE,  
+							(Object[])null 
+							);
 				}
 			}
 			

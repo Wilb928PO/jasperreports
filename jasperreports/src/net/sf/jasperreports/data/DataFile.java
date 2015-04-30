@@ -23,11 +23,12 @@
  */
 package net.sf.jasperreports.data;
 
+import net.sf.jasperreports.engine.JRCloneable;
+
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
-public interface DataFile
+public interface DataFile extends JRCloneable
 {
 
 }

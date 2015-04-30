@@ -72,13 +72,16 @@ import net.sf.jasperreports.export.SimpleExporterInputItem;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public abstract class JRAbstractExporter<RC extends ReportExportConfiguration, C extends ExporterConfiguration, O extends ExporterOutput, E extends JRExporterContext> implements JRExporter<ExporterInput, RC, C, O>
 {
-	public static final String EXCEPTION_MESSAGE_KEY_START_PAGE_INDEX_OUT_OF_RANGE = JRAbstractExporter.class.getName() + ".start.page.index.out.of.range";
-	public static final String EXCEPTION_MESSAGE_KEY_END_PAGE_INDEX_OUT_OF_RANGE = JRAbstractExporter.class.getName() + ".end.page.index.out.of.range";
-	public static final String EXCEPTION_MESSAGE_KEY_PAGE_INDEX_OUT_OF_RANGE = JRAbstractExporter.class.getName() + ".page.index.out.of.range";
+	public static final String EXCEPTION_MESSAGE_KEY_START_PAGE_INDEX_OUT_OF_RANGE = "export.common.start.page.index.out.of.range";
+	public static final String EXCEPTION_MESSAGE_KEY_END_PAGE_INDEX_OUT_OF_RANGE = "export.common.end.page.index.out.of.range";
+	public static final String EXCEPTION_MESSAGE_KEY_INVALID_IMAGE_NAME = "export.common.invalid.image.name";
+	public static final String EXCEPTION_MESSAGE_KEY_INVALID_ZOOM_RATIO = "export.common.invalid.zoom.ratio";
+	public static final String EXCEPTION_MESSAGE_KEY_MIXED_CALLS_NOT_ALLOWED = "export.common.mixed.calls.not.allowed";
+	public static final String EXCEPTION_MESSAGE_KEY_PAGE_INDEX_OUT_OF_RANGE = "export.common.page.index.out.of.range";
+	public static final String EXCEPTION_MESSAGE_KEY_OUTPUT_WRITER_ERROR = "export.common.output.writer.error";
 
 	/**
 	 * The suffix applied to properties that give the default filter factory for
@@ -157,6 +160,11 @@ public abstract class JRAbstractExporter<RC extends ReportExportConfiguration, C
 		public void setValue(String key, Object value)
 		{
 			values.put(key, value);
+		}
+
+		public Map<String, Object> getValues()
+		{
+			return values;
 		}
 	}
 	
@@ -263,7 +271,11 @@ public abstract class JRAbstractExporter<RC extends ReportExportConfiguration, C
 		{
 			if (useOldApi != isOldApi)
 			{
-				throw new JRRuntimeException("Can't mix deprecated JRParameter API calls with new exporter configuration API calls.");
+				throw 
+					new JRRuntimeException(
+						EXCEPTION_MESSAGE_KEY_MIXED_CALLS_NOT_ALLOWED,  
+						(Object[])null 
+						);
 			}
 		}
 	}
@@ -753,9 +765,7 @@ public abstract class JRAbstractExporter<RC extends ReportExportConfiguration, C
 				throw 
 					new JRRuntimeException(
 						EXCEPTION_MESSAGE_KEY_START_PAGE_INDEX_OUT_OF_RANGE,  
-						new Object[]{startPageIndex, lastPageIndex}, 
-						getJasperReportsContext(), 
-						getLocale()
+						new Object[]{startPageIndex, lastPageIndex} 
 						);
 			}
 		}
@@ -770,9 +780,7 @@ public abstract class JRAbstractExporter<RC extends ReportExportConfiguration, C
 				throw 
 					new JRRuntimeException(
 						EXCEPTION_MESSAGE_KEY_END_PAGE_INDEX_OUT_OF_RANGE,  
-						new Object[]{startPage, endPageIndex, lastPageIndex}, 
-						getJasperReportsContext(), 
-						getLocale()
+						new Object[]{startPage, endPageIndex, lastPageIndex} 
 						);
 			}
 		}
@@ -785,9 +793,7 @@ public abstract class JRAbstractExporter<RC extends ReportExportConfiguration, C
 				throw 
 					new JRRuntimeException(
 						EXCEPTION_MESSAGE_KEY_PAGE_INDEX_OUT_OF_RANGE,  
-						new Object[]{pageIndex, lastPageIndex}, 
-						getJasperReportsContext(), 
-						getLocale()
+						new Object[]{pageIndex, lastPageIndex}
 						);
 			}
 			startPageIndex = pageIndex;
@@ -888,6 +894,15 @@ public abstract class JRAbstractExporter<RC extends ReportExportConfiguration, C
 		int[] offsets = elementOffsetStack.removeLast();
 		elementOffsetX = offsets[0];
 		elementOffsetY = offsets[1];
+	}
+
+	
+	/**
+	 *
+	 */
+	protected boolean insideFrame()
+	{
+		return elementOffsetStack != null && elementOffsetStack.size() > 0;
 	}
 
 	

@@ -71,6 +71,7 @@ import net.sf.jasperreports.engine.type.ModeEnum;
 import net.sf.jasperreports.engine.type.RenderableTypeEnum;
 import net.sf.jasperreports.engine.util.JRColorUtil;
 import net.sf.jasperreports.engine.util.JRStyledText;
+import net.sf.jasperreports.export.ExportInterruptedException;
 import net.sf.jasperreports.export.ExporterInputItem;
 import net.sf.jasperreports.export.OutputStreamExporterOutput;
 import net.sf.jasperreports.export.PptxExporterConfiguration;
@@ -101,7 +102,6 @@ import org.apache.commons.logging.LogFactory;
  * 
  * @see net.sf.jasperreports.export.PptxReportConfiguration
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class JRPptxExporter extends JRAbstractExporter<PptxReportConfiguration, PptxExporterConfiguration, OutputStreamExporterOutput, JRPptxExporterContext>
 {
@@ -335,7 +335,7 @@ public class JRPptxExporter extends JRAbstractExporter<PptxReportConfiguration, 
 				{
 					if (Thread.interrupted())
 					{
-						throw new JRException("Current thread interrupted.");
+						throw new ExportInterruptedException();
 					}
 
 					page = pages.get(pageIndex);
@@ -585,7 +585,17 @@ public class JRPptxExporter extends JRAbstractExporter<PptxReportConfiguration, 
 		slideHelper.write("    <a:xfrm>\n");
 		slideHelper.write("      <a:off x=\"" + LengthUtil.emu(rectangle.getX() + getOffsetX()) + "\" y=\"" + LengthUtil.emu(rectangle.getY() + getOffsetY()) + "\"/>\n");
 		slideHelper.write("      <a:ext cx=\"" + LengthUtil.emu(rectangle.getWidth()) + "\" cy=\"" + LengthUtil.emu(rectangle.getHeight()) + "\"/>\n");
-		slideHelper.write("    </a:xfrm><a:prstGeom prst=\"" + (rectangle.getRadius() == 0 ? "rect" : "roundRect") + "\"><a:avLst/></a:prstGeom>\n"); //FIXMEPPTX radius
+		slideHelper.write("    </a:xfrm><a:prstGeom prst=\"" + (rectangle.getRadius() == 0 ? "rect" : "roundRect") + "\">");
+		if(rectangle.getRadius() > 0)
+		{
+			// a rounded rectangle radius cannot exceed 1/2 of its lower side;
+			int size = Math.min(50000, (rectangle.getRadius() * 100000)/Math.min(rectangle.getHeight(), rectangle.getWidth()));
+			slideHelper.write("<a:avLst><a:gd name=\"adj\" fmla=\"val "+ size +"\"/></a:avLst></a:prstGeom>\n");
+		}
+		else
+		{
+			slideHelper.write("<a:avLst/></a:prstGeom>\n");
+		}
 		if (rectangle.getModeValue() == ModeEnum.OPAQUE && rectangle.getBackcolor() != null)
 		{
 			slideHelper.write("<a:solidFill><a:srgbClr val=\"" + JRColorUtil.getColorHexa(rectangle.getBackcolor()) + "\"/></a:solidFill>\n");
@@ -838,7 +848,7 @@ public class JRPptxExporter extends JRAbstractExporter<PptxReportConfiguration, 
 				"\" bIns=\"" +
 				LengthUtil.emu(bottomPadding) +
 				"\" rtlCol=\"0\" anchor=\"");
-		switch (text.getVerticalAlignmentValue())
+		switch (text.getVerticalTextAlign())
 		{
 			case TOP:
 				slideHelper.write("t");
@@ -868,7 +878,7 @@ public class JRPptxExporter extends JRAbstractExporter<PptxReportConfiguration, 
 
 		slideHelper.write("<a:pPr");
 		slideHelper.write(" algn=\"");
-		switch (text.getHorizontalAlignmentValue())
+		switch (text.getHorizontalTextAlign())
 		{
 			case LEFT:
 				slideHelper.write("l");
@@ -1037,7 +1047,7 @@ public class JRPptxExporter extends JRAbstractExporter<PptxReportConfiguration, 
 				{
 //					if (normalWidth > availableImageWidth)
 //					{
-						switch (image.getHorizontalAlignmentValue())
+						switch (image.getHorizontalImageAlign())
 						{
 							case RIGHT :
 							{
@@ -1072,7 +1082,7 @@ public class JRPptxExporter extends JRAbstractExporter<PptxReportConfiguration, 
 
 //					if (normalHeight > availableImageHeight)
 //					{
-						switch (image.getVerticalAlignmentValue())
+						switch (image.getVerticalImageAlign())
 						{
 							case TOP :
 							{
@@ -1119,7 +1129,7 @@ public class JRPptxExporter extends JRAbstractExporter<PptxReportConfiguration, 
 							width = availableImageWidth;
 							height = (int)(width/ratio);
 
-							switch (image.getVerticalAlignmentValue())
+							switch (image.getVerticalImageAlign())
 							{
 								case TOP :
 								{
@@ -1147,7 +1157,7 @@ public class JRPptxExporter extends JRAbstractExporter<PptxReportConfiguration, 
 							height = availableImageHeight;
 							width = (int)(ratio * height);
 
-							switch (image.getHorizontalAlignmentValue())
+							switch (image.getHorizontalImageAlign())
 							{
 								case RIGHT :
 								{
@@ -1445,7 +1455,10 @@ public class JRPptxExporter extends JRAbstractExporter<PptxReportConfiguration, 
 	{
 		if (!imageName.startsWith(IMAGE_NAME_PREFIX))
 		{
-			throw new JRRuntimeException("Invalid image name: " + imageName);
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_INVALID_IMAGE_NAME,
+					new Object[]{imageName});
 		}
 
 		return JRPrintElementIndex.parsePrintElementIndex(imageName.substring(IMAGE_NAME_PREFIX_LEGTH));

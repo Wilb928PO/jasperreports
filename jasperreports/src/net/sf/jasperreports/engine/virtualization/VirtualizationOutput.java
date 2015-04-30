@@ -37,10 +37,11 @@ import net.sf.jasperreports.engine.util.VirtualizationSerializer;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class VirtualizationOutput extends ObjectOutputStream
 {
+	public static final String EXCEPTION_MESSAGE_KEY_UNSUPPORTED_REFERENCE_TYPE = "engine.virtualization.output.unsupported.reference.type";
+	
 	private final VirtualizationSerializer virtualizationSerializer;
 	private final JRVirtualizationContext virtualizationContext;
 	
@@ -159,7 +160,10 @@ public class VirtualizationOutput extends ObjectOutputStream
 				objectsMap = new IdentityHashMap<Object, Integer>();
 				break;
 			default:
-				throw new JRRuntimeException("Unsupported reference type " + referenceType);
+				throw 
+					new JRRuntimeException(
+						EXCEPTION_MESSAGE_KEY_UNSUPPORTED_REFERENCE_TYPE,
+						new Object[]{referenceType});
 			}
 			
 			writtenObjects[typeValue - SerializationConstants.OBJECT_TYPE_OFFSET] = objectsMap;

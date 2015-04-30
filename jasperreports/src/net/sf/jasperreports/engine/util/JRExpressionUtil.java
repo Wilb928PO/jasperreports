@@ -41,11 +41,10 @@ import net.sf.jasperreports.engine.JRRuntimeException;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public final class JRExpressionUtil
 {
-
+	public static final String EXCEPTION_MESSAGE_KEY_UNKNOWN_EXPRESSION_CHUNK_TYPE = "util.expression.unknown.expression.chunk.type";
 	
 	/**
 	 *
@@ -117,7 +116,10 @@ public final class JRExpressionUtil
 					visitor.visitResourceChunk(chunk);
 					break;
 				default:
-					throw new JRRuntimeException("Unknown expression chunk type " + chunk.getType());
+					throw 
+						new JRRuntimeException(
+							EXCEPTION_MESSAGE_KEY_UNKNOWN_EXPRESSION_CHUNK_TYPE,
+							new Object[]{chunk.getType()});
 				}
 			}
 		}

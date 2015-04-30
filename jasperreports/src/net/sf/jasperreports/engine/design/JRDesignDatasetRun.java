@@ -43,11 +43,11 @@ import net.sf.jasperreports.engine.util.JRCloneUtils;
  * Implementation of {@link net.sf.jasperreports.engine.JRDatasetRun JRDatasetRun} to be used for report desing.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class JRDesignDatasetRun extends JRBaseDatasetRun implements JRChangeEventsSupport
 {
 	private static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
+	public static final String EXCEPTION_MESSAGE_KEY_DUPLICATE_PARAMETER = "design.dataset.run.duplicate.parameter";
 
 	private Map<String, JRDatasetParameter> parametersMap;
 	private List<JRDatasetParameter> parametersList;
@@ -88,7 +88,10 @@ public class JRDesignDatasetRun extends JRBaseDatasetRun implements JRChangeEven
 	{
 		if (parametersMap.containsKey(parameter.getName()))
 		{
-			throw new JRException("Duplicate declaration of dataset parameter : " + parameter.getName());
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_DUPLICATE_PARAMETER,
+					new Object[]{parameter.getName()});
 		}
 		
 		parametersMap.put(parameter.getName(), parameter);

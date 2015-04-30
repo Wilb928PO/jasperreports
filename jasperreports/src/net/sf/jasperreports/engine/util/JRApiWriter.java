@@ -152,6 +152,7 @@ import net.sf.jasperreports.engine.JRVisitor;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.ReturnValue;
 import net.sf.jasperreports.engine.TabStop;
+import net.sf.jasperreports.engine.design.JRDesignChart;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.query.JRJdbcQueryExecuterFactory;
 import net.sf.jasperreports.engine.type.BreakTypeEnum;
@@ -186,11 +187,12 @@ import org.jfree.data.time.Day;
  * A writer that generates the Java code required to produce a given report template programmatically, using the JasperReports API.
  * 
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class JRApiWriter
 {
 	private static final Log log = LogFactory.getLog(JRApiWriter.class);
+	public static final String EXCEPTION_MESSAGE_KEY_OUTPUT_STREAM_WRITE_ERROR = "util.api.writer.output.stream.write.error";
+	public static final String EXCEPTION_MESSAGE_KEY_FILE_WRITE_ERROR = "util.api.writer.file.write.error";
 
 	/**
 	 *
@@ -270,7 +272,11 @@ public class JRApiWriter
 		}
 		catch (IOException e)
 		{
-			throw new JRException("Error writing to file : " + destFileName, e);
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_FILE_WRITE_ERROR,
+					new Object[]{destFileName},
+					e);
 		}
 		finally
 		{
@@ -307,7 +313,11 @@ public class JRApiWriter
 		}
 		catch (Exception e)
 		{
-			throw new JRException("Error writing to OutputStream : " + report.getName(), e);
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_OUTPUT_STREAM_WRITE_ERROR,
+					new Object[]{report.getName()},
+					e);
 		}
 	}
 
@@ -1036,8 +1046,8 @@ public class JRApiWriter
 		{
 			write( "JRDesignImage " + imageName + " = new JRDesignImage(jasperDesign);\n");
 			write( imageName + ".setScaleImage({0});\n", image.getOwnScaleImageValue());
-			write( imageName + ".setHorizontalAlignment({0});\n", image.getOwnHorizontalAlignmentValue());
-			write( imageName + ".setVerticalAlignment({0});\n", image.getOwnVerticalAlignmentValue());
+			write( imageName + ".setHorizontalImageAlign({0});\n", image.getOwnHorizontalImageAlign());
+			write( imageName + ".setVerticalImageAlign({0});\n", image.getOwnVerticalImageAlign());
 			write( imageName + ".setUsingCache({0});\n", image.getUsingCache());
 			write( imageName + ".setLazy({0});\n", image.isLazy(), false);
 			write( imageName + ".setOnErrorType({0});\n",image.getOnErrorTypeValue(),  OnErrorTypeEnum.ERROR);
@@ -1096,8 +1106,8 @@ public class JRApiWriter
 	{
 		if(textElement != null)
 		{
-			write( textElementName + ".setHorizontalAlignment({0});\n", textElement.getOwnHorizontalAlignmentValue());
-			write( textElementName + ".setVerticalAlignment({0});\n", textElement.getOwnVerticalAlignmentValue());
+			write( textElementName + ".setHorizontalTextAlign({0});\n", textElement.getOwnHorizontalTextAlign());
+			write( textElementName + ".setVerticalTextAlign({0});\n", textElement.getOwnVerticalTextAlign());
 			write( textElementName + ".setRotation({0});\n", textElement.getOwnRotationValue());
 			write( textElementName + ".setMarkup(\"{0}\");\n", JRStringUtil.escapeJavaStringLiteral(textElement.getOwnMarkup()));
 			writeFont( textElement, textElementName);
@@ -1148,8 +1158,10 @@ public class JRApiWriter
 		write( styleName + ".setFill({0});\n", style.getOwnFillValue());
 		write( styleName + ".setRadius({0});\n", style.getOwnRadius());
 		write( styleName + ".setScaleImage({0});\n", style.getOwnScaleImageValue());
-		write( styleName + ".setHorizontalAlignment({0});\n", style.getOwnHorizontalAlignmentValue());
-		write( styleName + ".setVerticalAlignment({0});\n", style.getOwnVerticalAlignmentValue());
+		write( styleName + ".setHorizontalTextAlign({0});\n", style.getOwnHorizontalTextAlign());
+		write( styleName + ".setHorizontalImageAlign({0});\n", style.getOwnHorizontalImageAlign());
+		write( styleName + ".setVerticalTextAlign({0});\n", style.getOwnVerticalTextAlign());
+		write( styleName + ".setVerticalImageAlign({0});\n", style.getOwnVerticalImageAlign());
 		write( styleName + ".setRotation({0});\n", style.getOwnRotationValue());
 
 		write( styleName + ".setMarkup(\"{0}\");\n", JRStringUtil.escapeJavaStringLiteral(style.getOwnMarkup()));
@@ -3003,7 +3015,10 @@ public class JRApiWriter
 				writeGanttChart( chart, chartName);
 				break;
 			default:
-				throw new JRRuntimeException("Chart type not supported.");
+				throw 
+					new JRRuntimeException(
+						JRDesignChart.EXCEPTION_MESSAGE_KEY_UNSUPPORTED_CHART_TYPE,
+						(Object[])null);
 		}
 	}
 

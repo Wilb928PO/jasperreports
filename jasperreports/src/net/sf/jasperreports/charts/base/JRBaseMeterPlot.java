@@ -47,7 +47,6 @@ import net.sf.jasperreports.engine.util.JRCloneUtils;
  * An immutable representation of the layout of a Meter chart.
  *
  * @author Barry Klawans (bklawans@users.sourceforge.net)
- * @version $Id$
  */
 public class JRBaseMeterPlot extends JRBaseChartPlot implements JRMeterPlot
 {
@@ -323,6 +322,7 @@ public class JRBaseMeterPlot extends JRBaseChartPlot implements JRMeterPlot
 	 */
 	private Byte shapeByte;
 	
+	@SuppressWarnings("deprecation")
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
 	{
 		in.defaultReadObject();

@@ -37,7 +37,6 @@ import net.sf.jasperreports.repo.RepositoryService;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class LocalJasperReportsContext extends SimpleJasperReportsContext
 {
@@ -45,7 +44,7 @@ public class LocalJasperReportsContext extends SimpleJasperReportsContext
 	 *
 	 */
 	private List<RepositoryService> localRepositoryServices;
-	private DefaultRepositoryService localRepositoryService;
+	protected DefaultRepositoryService localRepositoryService;
 
 	/**
 	 *
@@ -93,7 +92,7 @@ public class LocalJasperReportsContext extends SimpleJasperReportsContext
 	/**
 	 *
 	 */
-	private DefaultRepositoryService getLocalRepositoryService()
+	protected DefaultRepositoryService getLocalRepositoryService()
 	{
 		if (localRepositoryService == null)
 		{

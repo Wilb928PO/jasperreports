@@ -41,7 +41,6 @@ import net.sf.jasperreports.engine.util.JRCloneUtils;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class JRBaseVariable implements JRVariable, Serializable
 {
@@ -309,6 +308,7 @@ public class JRBaseVariable implements JRVariable, Serializable
 	 */
 	private byte calculation;
 	
+	@SuppressWarnings("deprecation")
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
 	{
 		in.defaultReadObject();

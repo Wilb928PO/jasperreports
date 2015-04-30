@@ -27,17 +27,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.jasperreports.data.AbstractDataAdapter;
+import net.sf.jasperreports.data.DataFile;
+import net.sf.jasperreports.data.RepositoryDataLocation;
+import net.sf.jasperreports.data.StandardRepositoryDataLocation;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class XlsDataAdapterImpl extends AbstractDataAdapter implements XlsDataAdapter
 {
 	private boolean useFirstRowAsHeader = false;
 	private String datePattern = null;
 	private String numberPattern = null;
-	private String fileName;
+	private DataFile dataFile;
 	private List<String> columnNames = new ArrayList<String>();
 	private List<Integer> columnIndexes = new ArrayList<Integer>();
 	private boolean queryExecuterMode = false;
@@ -51,12 +53,26 @@ public class XlsDataAdapterImpl extends AbstractDataAdapter implements XlsDataAd
 		return numberPattern;
 	}
 
+	/**
+	 * @deprecated replaced by {@link #getDataFile()}
+	 */
+	@Deprecated
 	public String getFileName() {
-		return fileName;
+		if (dataFile instanceof RepositoryDataLocation) {
+			return ((RepositoryDataLocation) dataFile).getLocation();
+		}
+		return null;
 	}
 
+	/**
+	 * @deprecated replaced by {@link #setDataFile(net.sf.jasperreports.data.DataFile)} and {@link StandardRepositoryDataLocation}
+	 */
+	@Deprecated
 	public void setFileName(String filename) {
-		this.fileName = filename;
+		if (filename != null) {
+			StandardRepositoryDataLocation repositoryDataFile = new StandardRepositoryDataLocation(filename);
+			setDataFile(repositoryDataFile);
+		}
 	}
 	
 	public boolean isUseFirstRowAsHeader() {
@@ -107,5 +123,14 @@ public class XlsDataAdapterImpl extends AbstractDataAdapter implements XlsDataAd
 		this.sheetSelection = sheetSelection;
 	}
 	
+	public DataFile getDataFile()
+	{
+		return dataFile;
+	}
+
+	public void setDataFile(DataFile dataFile)
+	{
+		this.dataFile = dataFile;
+	}
 	
 }

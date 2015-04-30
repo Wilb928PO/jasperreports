@@ -23,14 +23,12 @@
  */
 package net.sf.jasperreports.crosstabs.type;
 
-import net.sf.jasperreports.engine.JRConstants;
 import net.sf.jasperreports.engine.type.EnumUtil;
 import net.sf.jasperreports.engine.type.JREnum;
 
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public enum CrosstabColumnPositionEnum implements JREnum
 {
@@ -57,7 +55,6 @@ public enum CrosstabColumnPositionEnum implements JREnum
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
 	private final transient byte value;
 	private final transient String name;
 
@@ -68,7 +65,7 @@ public enum CrosstabColumnPositionEnum implements JREnum
 	}
 
 	/**
-	 *
+	 * @deprecated Used only by deprecated serialized fields.
 	 */
 	public Byte getValueByte()
 	{
@@ -76,7 +73,7 @@ public enum CrosstabColumnPositionEnum implements JREnum
 	}
 	
 	/**
-	 *
+	 * @deprecated Used only by deprecated serialized fields.
 	 */
 	public final byte getValue()
 	{
@@ -96,11 +93,11 @@ public enum CrosstabColumnPositionEnum implements JREnum
 	 */
 	public static CrosstabColumnPositionEnum getByName(String name)
 	{
-		return (CrosstabColumnPositionEnum)EnumUtil.getByName(values(), name);
+		return EnumUtil.getEnumByName(values(), name);
 	}
 	
 	/**
-	 *
+	 * @deprecated Used only by deprecated serialized fields.
 	 */
 	public static CrosstabColumnPositionEnum getByValue(Byte value)
 	{
@@ -108,11 +105,10 @@ public enum CrosstabColumnPositionEnum implements JREnum
 	}
 	
 	/**
-	 *
+	 * @deprecated Used only by deprecated serialized fields.
 	 */
 	public static CrosstabColumnPositionEnum getByValue(byte value)
 	{
 		return getByValue(new Byte(value));
 	}
-	
 }

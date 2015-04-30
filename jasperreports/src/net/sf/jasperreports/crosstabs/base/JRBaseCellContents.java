@@ -44,7 +44,6 @@ import net.sf.jasperreports.engine.util.JRBoxUtil;
  * Base read-only implementation of {@link net.sf.jasperreports.crosstabs.JRCellContents JRCellContents}.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class JRBaseCellContents extends JRBaseElementGroup implements JRCellContents
 {
@@ -139,6 +138,7 @@ public class JRBaseCellContents extends JRBaseElementGroup implements JRCellCont
 	 */
 	private net.sf.jasperreports.engine.JRBox box;
 	
+	@SuppressWarnings("deprecation")
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
 	{
 		in.defaultReadObject();

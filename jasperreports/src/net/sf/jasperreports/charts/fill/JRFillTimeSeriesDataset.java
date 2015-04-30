@@ -48,11 +48,12 @@ import org.jfree.data.time.TimeSeriesCollection;
 
 /**
  * @author Flavius Sana (flavius_sana@users.sourceforge.net)
- * @version $Id$
  */
 public class JRFillTimeSeriesDataset extends JRFillChartDataset implements JRTimeSeriesDataset 
 {
 
+	public static final String EXCEPTION_MESSAGE_KEY_SERIES_NULL_NAME = "charts.time.series.dataset.series.null.name";
+	
 	/**
 	 * 
 	 */
@@ -126,7 +127,11 @@ public class JRFillTimeSeriesDataset extends JRFillChartDataset implements JRTim
 				Comparable<?> seriesName = crtTimeSeries.getSeries();
 				if (seriesName == null)
 				{
-					throw new JRRuntimeException("Time series name is null.");
+					throw 
+						new JRRuntimeException(
+							EXCEPTION_MESSAGE_KEY_SERIES_NULL_NAME,  
+							(Object[])null 
+							);
 				}
 
 				TimeSeries series = seriesMap.get(seriesName);

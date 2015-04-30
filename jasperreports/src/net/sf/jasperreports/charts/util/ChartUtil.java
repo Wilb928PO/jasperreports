@@ -62,10 +62,11 @@ import org.jfree.data.Range;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public final class ChartUtil
 {
+	public static final String EXCEPTION_MESSAGE_KEY_CHART_THEME_NOT_FOUND = "charts.util.chart.theme.not.found";
+	public static final String EXCEPTION_MESSAGE_KEY_RENDERER_FACTORY_NOT_SPECIFIED = "charts.util.renderer.factory.not.specified";
 	/**
 	 *
 	 */
@@ -209,7 +210,10 @@ public final class ChartUtil
 				return chartTheme;
 			}
 		}
-		throw new JRRuntimeException("Chart theme '" + themeName + "' not found.");
+		throw 
+			new JRRuntimeException(
+				EXCEPTION_MESSAGE_KEY_RENDERER_FACTORY_NOT_SPECIFIED,
+				new Object[]{themeName});
 	}
 
 	/**
@@ -228,7 +232,10 @@ public final class ChartUtil
 		String factoryClass = JRPropertiesUtil.getInstance(jasperReportsContext).getProperty(ChartRenderableFactory.PROPERTY_CHART_RENDERER_FACTORY_PREFIX + renderType);
 		if (factoryClass == null)
 		{
-			throw new JRRuntimeException("No chart renderer factory specifyed for '" + renderType + "' render type.");
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_RENDERER_FACTORY_NOT_SPECIFIED,
+					new Object[]{renderType});
 		}
 
 		try

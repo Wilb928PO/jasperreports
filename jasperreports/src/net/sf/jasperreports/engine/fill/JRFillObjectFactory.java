@@ -144,13 +144,15 @@ import org.apache.commons.logging.LogFactory;
  * A factory used to instantiate fill objects based on compiled report objects.
  * 
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class JRFillObjectFactory extends JRAbstractObjectFactory
 {
 
 	private static final Log log = LogFactory.getLog(JRFillObjectFactory.class);
 
+	public static final String EXCEPTION_MESSAGE_KEY_UNRESOLVED_STYLE = "fill.object.factory.unresolved.style";
+	public static final String EXCEPTION_MESSAGE_KEY_STYLE_NOT_FOUND = "fill.object.factory.style.not.found";
+	
 	/**
 	 *
 	 */
@@ -226,6 +228,7 @@ public class JRFillObjectFactory extends JRAbstractObjectFactory
 	{
 		this.parentFiller = parent;
 		this.filler = parent.filler;
+		this.reportFiller = parent.reportFiller;
 		this.evaluator = expressionEvaluator;
 	}
 
@@ -382,7 +385,11 @@ public class JRFillObjectFactory extends JRAbstractObjectFactory
 			JRStyle originalStyle = stylesMap.getStyle(nameReference);
 			if (originalStyle == null)
 			{
-				throw new JRRuntimeException("Style " + nameReference + " not found");
+				throw 
+					new JRRuntimeException(
+						EXCEPTION_MESSAGE_KEY_UNRESOLVED_STYLE,  
+						new Object[]{nameReference} 
+						);
 			}
 			
 			JRStyle externalStyle = (JRStyle) get(originalStyle);
@@ -1609,7 +1616,11 @@ public class JRFillObjectFactory extends JRAbstractObjectFactory
 					parent = allStylesMap.get(parentName);
 					if (parent == null)
 					{
-						throw new JRRuntimeException("Style " + parentName + " not found");
+						throw 
+							new JRRuntimeException(
+								EXCEPTION_MESSAGE_KEY_STYLE_NOT_FOUND,  
+								new Object[]{parentName} 
+								);
 					}
 				}
 			}
@@ -1640,7 +1651,7 @@ public class JRFillObjectFactory extends JRAbstractObjectFactory
 	{
 		if (!delayedStyleSettersByName.isEmpty())
 		{
-			StringBuffer errorMsg = new StringBuffer("Could not resolve style(s): ");
+			StringBuffer errorMsg = new StringBuffer();
 			for (Iterator<String> it = delayedStyleSettersByName.keySet().iterator(); it.hasNext();)
 			{
 				String name = it.next();
@@ -1648,7 +1659,11 @@ public class JRFillObjectFactory extends JRAbstractObjectFactory
 				errorMsg.append(", ");
 			}
 			
-			throw new JRRuntimeException(errorMsg.substring(0, errorMsg.length() - 2));
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_UNRESOLVED_STYLE,  
+					new Object[]{errorMsg.substring(0, errorMsg.length() - 2)} 
+					);
 		}
 	}
 

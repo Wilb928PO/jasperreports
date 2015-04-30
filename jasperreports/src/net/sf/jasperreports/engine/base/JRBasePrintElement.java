@@ -43,7 +43,6 @@ import net.sf.jasperreports.engine.util.JRStyleResolver;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class JRBasePrintElement implements JRPrintElement, Serializable
 {
@@ -336,6 +335,7 @@ public class JRBasePrintElement implements JRPrintElement, Serializable
 	 */
 	private Byte mode;
 	
+	@SuppressWarnings("deprecation")
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
 	{
 		in.defaultReadObject();

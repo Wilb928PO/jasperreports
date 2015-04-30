@@ -39,7 +39,6 @@ import org.krysalis.barcode4j.output.bitmap.BitmapCanvasProvider;
 /**
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class BarcodeRasterizedImageProducer implements BarcodeImageProducer
 {
@@ -57,8 +56,7 @@ public class BarcodeRasterizedImageProducer implements BarcodeImageProducer
 		JasperReportsContext jasperReportsContext,
 		JRComponentElement componentElement, 
 		BarcodeGenerator barcode, 
-		String message, 
-		int orientation
+		String message
 		)
 	{
 		try
@@ -74,8 +72,11 @@ public class BarcodeRasterizedImageProducer implements BarcodeImageProducer
 			int imageType = gray ? BufferedImage.TYPE_BYTE_GRAY 
 					: BufferedImage.TYPE_BYTE_BINARY;
 			
-			BitmapCanvasProvider provider = new BitmapCanvasProvider(
-				out, "image/x-png", resolution, imageType, antiAlias, orientation);
+			BitmapCanvasProvider provider = 
+				new BitmapCanvasProvider(
+					out, "image/x-png", resolution, imageType, antiAlias, 
+					((Barcode4jComponent)componentElement.getComponent()).getOrientationValue().getValue()
+					);
 			barcode.generateBarcode(provider, message);
 			provider.finish();
 			

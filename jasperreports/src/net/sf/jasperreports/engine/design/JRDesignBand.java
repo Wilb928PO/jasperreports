@@ -38,7 +38,6 @@ import net.sf.jasperreports.engine.type.SplitTypeEnum;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class JRDesignBand extends JRDesignElementGroup implements JRBand
 {
@@ -176,6 +175,7 @@ public class JRDesignBand extends JRDesignElementGroup implements JRBand
 	 */
 	private Byte splitType;
 	
+	@SuppressWarnings("deprecation")
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
 	{
 		in.defaultReadObject();

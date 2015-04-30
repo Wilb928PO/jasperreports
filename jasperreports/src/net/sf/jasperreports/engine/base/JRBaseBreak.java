@@ -36,7 +36,6 @@ import net.sf.jasperreports.engine.type.BreakTypeEnum;
 /**
  * The actual implementation of a break element.
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class JRBaseBreak extends JRBaseElement implements JRBreak
 {
@@ -127,6 +126,7 @@ public class JRBaseBreak extends JRBaseElement implements JRBreak
 	 */
 	private byte type;
 	
+	@SuppressWarnings("deprecation")
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
 	{
 		in.defaultReadObject();

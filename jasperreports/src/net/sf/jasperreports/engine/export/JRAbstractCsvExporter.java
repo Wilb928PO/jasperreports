@@ -44,6 +44,7 @@ import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.util.JRStyledText;
 import net.sf.jasperreports.export.CsvExporterConfiguration;
 import net.sf.jasperreports.export.CsvReportConfiguration;
+import net.sf.jasperreports.export.ExportInterruptedException;
 import net.sf.jasperreports.export.ExporterInputItem;
 import net.sf.jasperreports.export.WriterExporterOutput;
 
@@ -51,7 +52,6 @@ import net.sf.jasperreports.export.WriterExporterOutput;
 /**
  * Exports a JasperReports document to CSV format.
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public abstract class JRAbstractCsvExporter<RC extends CsvReportConfiguration, C extends CsvExporterConfiguration, E extends JRExporterContext> 
 	extends JRAbstractExporter<RC, C, WriterExporterOutput, E>
@@ -113,7 +113,11 @@ public abstract class JRAbstractCsvExporter<RC extends CsvReportConfiguration, C
 		}
 		catch (IOException e)
 		{
-			throw new JRException("Error writing to output writer : " + jasperPrint.getName(), e);
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_OUTPUT_WRITER_ERROR,
+					new Object[]{jasperPrint.getName()}, 
+					e);
 		}
 		finally
 		{
@@ -146,7 +150,7 @@ public abstract class JRAbstractCsvExporter<RC extends CsvReportConfiguration, C
 				{
 					if (Thread.interrupted())
 					{
-						throw new JRException("Current thread interrupted.");
+						throw new ExportInterruptedException();
 					}
 				
 					JRPrintPage page = pages.get(pageIndex);

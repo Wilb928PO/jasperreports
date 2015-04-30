@@ -96,6 +96,7 @@ import net.sf.jasperreports.engine.util.JRStringUtil;
 import net.sf.jasperreports.engine.util.JRStyledText;
 import net.sf.jasperreports.engine.util.JRTextAttribute;
 import net.sf.jasperreports.engine.util.Pair;
+import net.sf.jasperreports.export.ExportInterruptedException;
 import net.sf.jasperreports.export.ExporterInputItem;
 import net.sf.jasperreports.export.HtmlReportConfiguration;
 import net.sf.jasperreports.export.parameters.ParametersHtmlExporterOutput;
@@ -110,7 +111,6 @@ import org.apache.commons.logging.LogFactory;
  * 
  * @deprecated Replaced by {@link HtmlExporter}.
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class JRHtmlExporter extends AbstractHtmlExporter<JRHtmlReportConfiguration, JRHtmlExporterConfiguration>
 {
@@ -271,7 +271,11 @@ public class JRHtmlExporter extends AbstractHtmlExporter<JRHtmlReportConfigurati
 		}
 		catch (IOException e)
 		{
-			throw new JRException("Error writing to output writer : " + jasperPrint.getName(), e);
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_OUTPUT_WRITER_ERROR,
+					new Object[]{jasperPrint.getName()}, 
+					e);
 		}
 		finally
 		{
@@ -424,7 +428,7 @@ public class JRHtmlExporter extends AbstractHtmlExporter<JRHtmlReportConfigurati
 				{
 					if (Thread.interrupted())
 					{
-						throw new JRException("Current thread interrupted.");
+						throw new ExportInterruptedException();
 					}
 
 					page = pages.get(pageIndex);
@@ -575,11 +579,15 @@ public class JRHtmlExporter extends AbstractHtmlExporter<JRHtmlReportConfigurati
 		
 		boolean isRemoveEmptySpaceBetweenRows = ((HtmlReportConfiguration)getCurrentItemConfiguration()).isRemoveEmptySpaceBetweenRows();
 
+		CutsInfo yCuts = gridLayout.getYCuts();
+		
 		thDepth = 0;
 		int rowCount = grid.getRowCount();
 		for(int y = 0; y < rowCount; y++)
 		{
-			if (gridLayout.getYCuts().isCutSpanned(y) || !isRemoveEmptySpaceBetweenRows)
+			Cut yCut = yCuts.getCut(y);
+
+			if (yCut.isCutSpanned() || !isRemoveEmptySpaceBetweenRows)
 			{
 				GridRow gridRow = grid.getRow(y);
 				
@@ -1166,7 +1174,7 @@ public class JRHtmlExporter extends AbstractHtmlExporter<JRHtmlReportConfigurati
 
 		String verticalAlignment = HTML_VERTICAL_ALIGN_TOP;
 
-		switch (text.getVerticalAlignmentValue())
+		switch (text.getVerticalTextAlign())
 		{
 			case BOTTOM :
 			{
@@ -1200,7 +1208,7 @@ public class JRHtmlExporter extends AbstractHtmlExporter<JRHtmlReportConfigurati
 
 		if (textLength > 0)
 		{
-			switch (text.getHorizontalAlignmentValue())
+			switch (text.getHorizontalTextAlign())
 			{
 				case RIGHT :
 				{
@@ -1632,7 +1640,7 @@ public class JRHtmlExporter extends AbstractHtmlExporter<JRHtmlReportConfigurati
 
 		String horizontalAlignment = CSS_TEXT_ALIGN_LEFT;
 
-		switch (image.getHorizontalAlignmentValue())
+		switch (image.getHorizontalImageAlign())
 		{
 			case RIGHT :
 			{
@@ -1660,7 +1668,7 @@ public class JRHtmlExporter extends AbstractHtmlExporter<JRHtmlReportConfigurati
 
 		String verticalAlignment = HTML_VERTICAL_ALIGN_TOP;
 
-		switch (image.getVerticalAlignmentValue())
+		switch (image.getVerticalImageAlign())
 		{
 			case BOTTOM :
 			{
@@ -2295,7 +2303,11 @@ public class JRHtmlExporter extends AbstractHtmlExporter<JRHtmlReportConfigurati
 			zoom = zoomRatio.floatValue();
 			if (zoom <= 0)
 			{
-				throw new JRRuntimeException("Invalid zoom ratio : " + zoom);
+				throw 
+					new JRRuntimeException(
+						EXCEPTION_MESSAGE_KEY_INVALID_ZOOM_RATIO,  
+						new Object[]{zoom} 
+						);
 			}
 		}
 

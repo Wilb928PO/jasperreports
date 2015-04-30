@@ -43,12 +43,12 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class FileBufferedOutputStream extends OutputStream 
 {
 	
 	private static final Log log = LogFactory.getLog(FileBufferedOutputStream.class);
+	public static final String EXCEPTION_MESSAGE_KEY_OUTPUT_STREAM_ALREADY_CLOSED = "util.file.buffered.output.stream.already.closed";
 	
 	/**
 	 * Specifies the maximum in-memory buffer length that triggers the creation of a temporary file on disk to store further content sent to this output stream.  
@@ -157,7 +157,10 @@ public class FileBufferedOutputStream extends OutputStream
 
 	public void checkClosed() {
 		if (closed) {
-			throw new JRRuntimeException("Output stream already closed.");
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_OUTPUT_STREAM_ALREADY_CLOSED,
+					(Object[])null);
 		}
 	}
 

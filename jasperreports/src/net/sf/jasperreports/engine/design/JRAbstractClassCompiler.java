@@ -34,12 +34,9 @@ import net.sf.jasperreports.engine.util.JRLoader;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public abstract class JRAbstractClassCompiler extends JRAbstractJavaCompiler implements JRMultiClassCompiler
 {
-
-
 	/**
 	 * 
 	 */
@@ -106,10 +103,8 @@ public abstract class JRAbstractClassCompiler extends JRAbstractJavaCompiler imp
 		{
 			throw 
 				new JRException(
-					"Language \"" + language 
-					+ "\" not supported by this report compiler.\n"
-					+ "Expecting \"java\" instead."
-					);
+					EXCEPTION_MESSAGE_KEY_EXPECTED_JAVA_LANGUAGE,
+					new Object[]{language, JRReport.LANGUAGE_JAVA});
 		}
 	}
 

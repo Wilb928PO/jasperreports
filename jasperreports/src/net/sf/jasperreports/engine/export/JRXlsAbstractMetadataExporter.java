@@ -53,20 +53,19 @@ import net.sf.jasperreports.engine.JRPrintText;
 import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.base.JRBasePrintText;
-import net.sf.jasperreports.engine.type.HorizontalAlignEnum;
+import net.sf.jasperreports.engine.type.HorizontalTextAlignEnum;
 import net.sf.jasperreports.engine.type.RotationEnum;
-import net.sf.jasperreports.engine.type.VerticalAlignEnum;
+import net.sf.jasperreports.engine.type.VerticalTextAlignEnum;
 import net.sf.jasperreports.engine.util.JRStringUtil;
 import net.sf.jasperreports.engine.util.JRStyledText;
+import net.sf.jasperreports.export.ExportInterruptedException;
 import net.sf.jasperreports.export.ExporterInputItem;
 import net.sf.jasperreports.export.XlsMetadataExporterConfiguration;
 import net.sf.jasperreports.export.XlsMetadataReportConfiguration;
-import net.sf.jasperreports.export.XlsReportConfiguration;
 
 
 /**
  * @author sanda zaharia (shertage@users.sourceforge.net)
- * @version $Id$
  */
 public abstract class JRXlsAbstractMetadataExporter<RC extends XlsMetadataReportConfiguration, C extends XlsMetadataExporterConfiguration, E extends JRExporterContext> 
 	extends JRXlsAbstractExporter<RC, C, E>
@@ -125,6 +124,7 @@ public abstract class JRXlsAbstractMetadataExporter<RC extends XlsMetadataReport
 	public JRXlsAbstractMetadataExporter(JasperReportsContext jasperReportsContext)
 	{
 		super(jasperReportsContext);
+		maxColumnIndex = 255;
 	}
 
 
@@ -213,7 +213,7 @@ public abstract class JRXlsAbstractMetadataExporter<RC extends XlsMetadataReport
 					{
 						if (Thread.interrupted())
 						{
-							throw new JRException("Current thread interrupted.");
+							throw new ExportInterruptedException();
 						}
 
 						JRPrintPage page = pages.get(pageIndex);
@@ -260,7 +260,7 @@ public abstract class JRXlsAbstractMetadataExporter<RC extends XlsMetadataReport
 					{
 						if (Thread.interrupted())
 						{
-							throw new JRException("Current thread interrupted.");
+							throw new ExportInterruptedException();
 						}
 						JRPrintPage page = pages.get(pageIndex);
 						pageFormat = jasperPrint.getPageFormat(pageIndex);
@@ -351,6 +351,14 @@ public abstract class JRXlsAbstractMetadataExporter<RC extends XlsMetadataReport
 			}
 			
 		}
+		if(columnNames.size() > maxColumnIndex+1)
+		{
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_COLUMN_INDEX_BEYOND_LIMIT, 
+					new Object[]{columnNames.size(), maxColumnIndex+1});
+			
+		}
 		// write last row
 		if (columnNames.size() > 0)
 		{
@@ -391,62 +399,62 @@ public abstract class JRXlsAbstractMetadataExporter<RC extends XlsMetadataReport
 	 */
 	protected static TextAlignHolder getTextAlignHolder(JRPrintText textElement)
 	{
-		HorizontalAlignEnum horizontalAlignment;
-		VerticalAlignEnum verticalAlignment;
+		HorizontalTextAlignEnum horizontalAlignment;
+		VerticalTextAlignEnum verticalAlignment;
 		RotationEnum rotation = textElement.getRotationValue();
 
 		switch (textElement.getRotationValue())
 		{
 			case LEFT :
 			{
-				switch (textElement.getHorizontalAlignmentValue())
+				switch (textElement.getHorizontalTextAlign())
 				{
 					case LEFT :
 					{
-						verticalAlignment = VerticalAlignEnum.BOTTOM;
+						verticalAlignment = VerticalTextAlignEnum.BOTTOM;
 						break;
 					}
 					case CENTER :
 					{
-						verticalAlignment = VerticalAlignEnum.MIDDLE;
+						verticalAlignment = VerticalTextAlignEnum.MIDDLE;
 						break;
 					}
 					case RIGHT :
 					{
-						verticalAlignment = VerticalAlignEnum.TOP;
+						verticalAlignment = VerticalTextAlignEnum.TOP;
 						break;
 					}
 					case JUSTIFIED :
 					{
-						verticalAlignment = VerticalAlignEnum.JUSTIFIED;
+						verticalAlignment = VerticalTextAlignEnum.JUSTIFIED;
 						break;
 					}
 					default :
 					{
-						verticalAlignment = VerticalAlignEnum.BOTTOM;
+						verticalAlignment = VerticalTextAlignEnum.BOTTOM;
 					}
 				}
 
-				switch (textElement.getVerticalAlignmentValue())
+				switch (textElement.getVerticalTextAlign())
 				{
 					case TOP :
 					{
-						horizontalAlignment = HorizontalAlignEnum.LEFT;
+						horizontalAlignment = HorizontalTextAlignEnum.LEFT;
 						break;
 					}
 					case MIDDLE :
 					{
-						horizontalAlignment = HorizontalAlignEnum.CENTER;
+						horizontalAlignment = HorizontalTextAlignEnum.CENTER;
 						break;
 					}
 					case BOTTOM :
 					{
-						horizontalAlignment = HorizontalAlignEnum.RIGHT;
+						horizontalAlignment = HorizontalTextAlignEnum.RIGHT;
 						break;
 					}
 					default :
 					{
-						horizontalAlignment = HorizontalAlignEnum.LEFT;
+						horizontalAlignment = HorizontalTextAlignEnum.LEFT;
 					}
 				}
 
@@ -454,54 +462,54 @@ public abstract class JRXlsAbstractMetadataExporter<RC extends XlsMetadataReport
 			}
 			case RIGHT :
 			{
-				switch (textElement.getHorizontalAlignmentValue())
+				switch (textElement.getHorizontalTextAlign())
 				{
 					case LEFT :
 					{
-						verticalAlignment = VerticalAlignEnum.TOP;
+						verticalAlignment = VerticalTextAlignEnum.TOP;
 						break;
 					}
 					case CENTER :
 					{
-						verticalAlignment = VerticalAlignEnum.MIDDLE;
+						verticalAlignment = VerticalTextAlignEnum.MIDDLE;
 						break;
 					}
 					case RIGHT :
 					{
-						verticalAlignment = VerticalAlignEnum.BOTTOM;
+						verticalAlignment = VerticalTextAlignEnum.BOTTOM;
 						break;
 					}
 					case JUSTIFIED :
 					{
-						verticalAlignment = VerticalAlignEnum.JUSTIFIED;
+						verticalAlignment = VerticalTextAlignEnum.JUSTIFIED;
 						break;
 					}
 					default :
 					{
-						verticalAlignment = VerticalAlignEnum.TOP;
+						verticalAlignment = VerticalTextAlignEnum.TOP;
 					}
 				}
 
-				switch (textElement.getVerticalAlignmentValue())
+				switch (textElement.getVerticalTextAlign())
 				{
 					case TOP :
 					{
-						horizontalAlignment = HorizontalAlignEnum.RIGHT;
+						horizontalAlignment = HorizontalTextAlignEnum.RIGHT;
 						break;
 					}
 					case MIDDLE :
 					{
-						horizontalAlignment = HorizontalAlignEnum.CENTER;
+						horizontalAlignment = HorizontalTextAlignEnum.CENTER;
 						break;
 					}
 					case BOTTOM :
 					{
-						horizontalAlignment = HorizontalAlignEnum.LEFT;
+						horizontalAlignment = HorizontalTextAlignEnum.LEFT;
 						break;
 					}
 					default :
 					{
-						horizontalAlignment = HorizontalAlignEnum.RIGHT;
+						horizontalAlignment = HorizontalTextAlignEnum.RIGHT;
 					}
 				}
 
@@ -511,8 +519,8 @@ public abstract class JRXlsAbstractMetadataExporter<RC extends XlsMetadataReport
 			case NONE :
 			default :
 			{
-				horizontalAlignment = textElement.getHorizontalAlignmentValue();
-				verticalAlignment = textElement.getVerticalAlignmentValue();
+				horizontalAlignment = textElement.getHorizontalTextAlign();
+				verticalAlignment = textElement.getVerticalTextAlign();
 			}
 		}
 
@@ -586,40 +594,6 @@ public abstract class JRXlsAbstractMetadataExporter<RC extends XlsMetadataReport
 	/**
 	 * 
 	 */
-	protected boolean isWrapText(JRPrintElement element)
-	{
-		if (
-			element.hasProperties()
-			&& element.getPropertiesMap().containsProperty(XlsReportConfiguration.PROPERTY_WRAP_TEXT)
-			)
-		{
-			// we make this test to avoid reaching the global default value of the property directly
-			// and thus skipping the report level one, if present
-			return getPropertiesUtil().getBooleanProperty(element, XlsReportConfiguration.PROPERTY_WRAP_TEXT, getCurrentItemConfiguration().isWrapText());
-		}
-		return getCurrentItemConfiguration().isWrapText();
-	}
-
-	/**
-	 * 
-	 */
-	protected boolean isCellLocked(JRPrintElement element)
-	{
-		if (
-			element.hasProperties()
-			&& element.getPropertiesMap().containsProperty(XlsReportConfiguration.PROPERTY_CELL_LOCKED)
-			)
-		{
-			// we make this test to avoid reaching the global default value of the property directly
-			// and thus skipping the report level one, if present
-			return getPropertiesUtil().getBooleanProperty(element, XlsReportConfiguration.PROPERTY_CELL_LOCKED, getCurrentItemConfiguration().isCellLocked());
-		}
-		return getCurrentItemConfiguration().isCellLocked();
-	}
-
-	/**
-	 * 
-	 */
 	protected String getFormula(JRPrintText text)
 	{
 		String formula = text.getPropertiesMap().getProperty(JRXlsAbstractExporter.PROPERTY_CELL_FORMULA);
@@ -634,23 +608,6 @@ public abstract class JRXlsAbstractMetadataExporter<RC extends XlsMetadataReport
 		return formula;
 	}
 	
-	/**
-	 * 
-	 */
-	protected boolean isCellHidden(JRPrintElement element)
-	{
-		if (
-			element.hasProperties()
-			&& element.getPropertiesMap().containsProperty(XlsReportConfiguration.PROPERTY_CELL_HIDDEN)
-			)
-		{
-			// we make this test to avoid reaching the global default value of the property directly
-			// and thus skipping the report level one, if present
-			return getPropertiesUtil().getBooleanProperty(element, XlsReportConfiguration.PROPERTY_CELL_HIDDEN, getCurrentItemConfiguration().isCellHidden());
-		}
-		return getCurrentItemConfiguration().isCellHidden();
-	}
-
 	/**
 	 * Compares the highest index of the currentRow's columns with the index of the column to be inserted
 	 * to determine if the current column is read in the proper order

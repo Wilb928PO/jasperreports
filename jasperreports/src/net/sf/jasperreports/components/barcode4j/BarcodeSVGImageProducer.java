@@ -45,7 +45,6 @@ import org.w3c.dom.Document;
 /**
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class BarcodeSVGImageProducer implements BarcodeImageProducer
 {
@@ -54,13 +53,16 @@ public class BarcodeSVGImageProducer implements BarcodeImageProducer
 		JasperReportsContext jasperReportsContext,
 		JRComponentElement componentElement,
 		BarcodeGenerator barcode, 
-		String message, 
-		int orientation
+		String message
 		)
 	{
 		try
 		{
-			SVGCanvasProvider provider = new SVGCanvasProvider(false, orientation);
+			SVGCanvasProvider provider = 
+				new SVGCanvasProvider(
+					false, 
+					((Barcode4jComponent)componentElement.getComponent()).getOrientationValue().getValue()
+					);
 			barcode.generateBarcode(provider, message);
 			Document svgDoc = provider.getDOM();
 

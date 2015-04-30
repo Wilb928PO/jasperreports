@@ -37,7 +37,6 @@ import net.sf.jasperreports.engine.util.JRCloneUtils;
  * Base read-only implementation of crosstab column groups.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class JRBaseCrosstabColumnGroup extends JRBaseCrosstabGroup implements JRCrosstabColumnGroup
 {
@@ -90,6 +89,7 @@ public class JRBaseCrosstabColumnGroup extends JRBaseCrosstabGroup implements JR
 	 */
 	private byte position;
 	
+	@SuppressWarnings("deprecation")
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
 	{
 		in.defaultReadObject();

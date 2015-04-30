@@ -66,7 +66,6 @@ import net.sf.jasperreports.engine.type.WhenResourceMissingTypeEnum;
  * 
  * @see net.sf.jasperreports.engine.JRReport
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  * 
  */
 public class JRBaseReport implements JRReport, Serializable, JRChangeEventsSupport
@@ -820,6 +819,7 @@ public class JRBaseReport implements JRReport, Serializable, JRChangeEventsSuppo
 	 */
 	private byte orientation;
 	
+	@SuppressWarnings("deprecation")
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
 	{
 		in.defaultReadObject();

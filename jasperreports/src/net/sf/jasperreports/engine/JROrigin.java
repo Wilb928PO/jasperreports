@@ -32,7 +32,6 @@ import net.sf.jasperreports.engine.type.BandTypeEnum;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class JROrigin implements JRCloneable, Serializable
 {
@@ -176,6 +175,7 @@ public class JROrigin implements JRCloneable, Serializable
 	 */
 	private byte bandType;
 	
+	@SuppressWarnings("deprecation")
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
 	{
 		in.defaultReadObject();

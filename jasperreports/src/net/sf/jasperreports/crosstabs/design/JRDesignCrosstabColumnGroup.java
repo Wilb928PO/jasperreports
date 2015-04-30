@@ -36,7 +36,6 @@ import net.sf.jasperreports.engine.util.JRCloneUtils;
  * Crosstab column group implementation to be used for report designing. 
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class JRDesignCrosstabColumnGroup extends JRDesignCrosstabGroup implements JRCrosstabColumnGroup
 {
@@ -174,6 +173,7 @@ public class JRDesignCrosstabColumnGroup extends JRDesignCrosstabGroup implement
 	 */
 	private byte position;
 	
+	@SuppressWarnings("deprecation")
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
 	{
 		in.defaultReadObject();

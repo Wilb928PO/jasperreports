@@ -42,7 +42,6 @@ import net.sf.jasperreports.engine.util.JRCloneUtils;
 /**
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class StandardBarbecueComponent implements BarbecueComponent, Serializable, JRChangeEventsSupport
 {
@@ -285,6 +284,7 @@ public class StandardBarbecueComponent implements BarbecueComponent, Serializabl
 	 */
 	private byte evaluationTime;
 	
+	@SuppressWarnings("deprecation")
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
 	{
 		in.defaultReadObject();

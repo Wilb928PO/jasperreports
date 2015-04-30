@@ -43,7 +43,6 @@ import net.sf.jasperreports.engine.util.JRStyleResolver;
  * in <tt>JRTextElement</tt>.
  * 
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public abstract class JRDesignGraphicElement extends JRDesignElement implements JRGraphicElement
 {
@@ -147,6 +146,7 @@ public abstract class JRDesignGraphicElement extends JRDesignElement implements 
 	 */
 	private Byte fill;
 	
+	@SuppressWarnings("deprecation")
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
 	{
 		in.defaultReadObject();

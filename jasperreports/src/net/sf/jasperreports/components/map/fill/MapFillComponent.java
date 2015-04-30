@@ -49,7 +49,6 @@ import net.sf.jasperreports.engine.JRGenericPrintElement;
 import net.sf.jasperreports.engine.JRPrintElement;
 import net.sf.jasperreports.engine.JRPropertiesHolder;
 import net.sf.jasperreports.engine.JRPropertiesUtil;
-import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.component.BaseFillComponent;
 import net.sf.jasperreports.engine.component.FillContext;
 import net.sf.jasperreports.engine.component.FillPrepareResult;
@@ -66,7 +65,6 @@ import org.w3c.dom.Node;
 /**
  * 
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class MapFillComponent extends BaseFillComponent implements FillContextProvider
 {
@@ -77,6 +75,11 @@ public class MapFillComponent extends BaseFillComponent implements FillContextPr
 	public static final String LATITUDE_NODE = "/GeocodeResponse/result/geometry/location/lat";
 	public static final String LONGITUDE_NODE = "/GeocodeResponse/result/geometry/location/lng";
 	public static final String STATUS_OK = "OK";
+	
+	public static final String EXCEPTION_MESSAGE_KEY_NULL_OR_EMPTY_VALUE_NOT_ALLOWED = "components.map.null.or.empty.value.not.allowed";
+	public static final String EXCEPTION_MESSAGE_KEY_NULL_OR_EMPTY_VALUES_NOT_ALLOWED = "components.map.null.or.empty.values.not.allowed";
+	public static final String EXCEPTION_MESSAGE_KEY_INVALID_ADDRESS_COORDINATES = "components.map.invalid.address.coordinates";
+	public static final String EXCEPTION_MESSAGE_KEY_ADDRESS_REQUEST_FAILED = "components.map.address.request.failed";
 	
 	private final MapComponent mapComponent;
 	
@@ -173,7 +176,11 @@ public class MapFillComponent extends BaseFillComponent implements FillContextPr
 				latitude = coords[0];
 				longitude = coords[1];
 			} else {
-				throw new JRException("Invalid center coordinates - latitude: " + latitude +"; longitude: "+longitude);
+				throw 
+					new JRException(
+						EXCEPTION_MESSAGE_KEY_INVALID_ADDRESS_COORDINATES,  
+						new Object[]{MapComponent.PROPERTY_latitude, MapComponent.PROPERTY_longitude} 
+						);
 			}
 		}
 		zoom = (Integer)fillContext.evaluate(mapComponent.getZoomExpression(), evaluation);
@@ -236,7 +243,10 @@ public class MapFillComponent extends BaseFillComponent implements FillContextPr
 									if(MapComponent.PROPERTY_latitude.equals(key) || MapComponent.PROPERTY_longitude.equals(key)){
 										if(!coordSet){
 											if(currentItem.get(MapComponent.PROPERTY_latitude) == null || currentItem.get(MapComponent.PROPERTY_longitude) == null){
-												throw new JRException("Null values are not allowed for latitude and longitude");
+												throw new JRException(
+														EXCEPTION_MESSAGE_KEY_NULL_OR_EMPTY_VALUES_NOT_ALLOWED,  
+														new Object[]{MapComponent.PROPERTY_latitude, MapComponent.PROPERTY_longitude}
+														);
 											}
 											Map<String,Object> location = new HashMap<String,Object>();
 											location.put(MapComponent.PROPERTY_latitude, currentItem.get(MapComponent.PROPERTY_latitude));
@@ -267,7 +277,11 @@ public class MapFillComponent extends BaseFillComponent implements FillContextPr
 					for(Map<String,Object> currentStyle : currentStyleList){
 						String styleName = (String)currentStyle.get(MapComponent.PROPERTY_name);
 						if(styleName == null){
-							throw new JRException("Null value is not allowed for the style name");
+							throw 
+								new JRException(
+									EXCEPTION_MESSAGE_KEY_NULL_OR_EMPTY_VALUE_NOT_ALLOWED,  
+									new Object[]{MapComponent.PROPERTY_name}
+									);
 						}
 						Map<String,Object> styleMap = null;
 						if(styles.containsKey(styleName)){
@@ -423,7 +437,11 @@ public class MapFillComponent extends BaseFillComponent implements FillContextPr
 					Node lngNode = (Node) new DOMXPath(LONGITUDE_NODE).selectSingleNode(document);
 					coords[1] = Float.valueOf(lngNode.getTextContent());
 				} else {
-					throw new JRRuntimeException("Address request failed (see status: " + status + ")");
+					throw 
+						new JRException(
+							EXCEPTION_MESSAGE_KEY_ADDRESS_REQUEST_FAILED,  
+							new Object[]{status} 
+							);
 				}
 			} catch (Exception e) {
 				throw new JRException(e);

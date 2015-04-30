@@ -81,6 +81,7 @@ import net.sf.jasperreports.engine.type.RenderableTypeEnum;
 import net.sf.jasperreports.engine.type.RunDirectionEnum;
 import net.sf.jasperreports.engine.util.FileBufferedWriter;
 import net.sf.jasperreports.engine.util.JRStyledText;
+import net.sf.jasperreports.export.ExportInterruptedException;
 import net.sf.jasperreports.export.ExporterInputItem;
 import net.sf.jasperreports.export.RtfExporterConfiguration;
 import net.sf.jasperreports.export.RtfReportConfiguration;
@@ -110,7 +111,6 @@ import org.apache.commons.logging.LogFactory;
  * 
  * @see net.sf.jasperreports.export.RtfReportConfiguration
  * @author Flavius Sana (flavius_sana@users.sourceforge.net)
- * @version $Id$
  */
 public class JRRtfExporter extends JRAbstractExporter<RtfReportConfiguration, RtfExporterConfiguration, WriterExporterOutput, JRRtfExporterContext>
 {
@@ -118,6 +118,8 @@ public class JRRtfExporter extends JRAbstractExporter<RtfReportConfiguration, Rt
 	
 	private static final String RTF_EXPORTER_PROPERTIES_PREFIX = JRPropertiesUtil.PROPERTY_PREFIX + "export.rtf.";
 	
+	public static final String EXCEPTION_MESSAGE_KEY_INVALID_TEXT_HEIGHT = "export.rtf.invalid.text.height";
+
 	private static final int LINE_SPACING_FACTOR = 240; //(int)(240 * 2/3f);
 
 	/**
@@ -235,7 +237,11 @@ public class JRRtfExporter extends JRAbstractExporter<RtfReportConfiguration, Rt
 		}
 		catch (IOException e)
 		{
-			throw new JRException("Error writing to output writer : " + jasperPrint.getName(), e);
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_OUTPUT_WRITER_ERROR,
+					new Object[]{jasperPrint.getName()}, 
+					e);
 		}
 		finally
 		{
@@ -314,7 +320,8 @@ public class JRRtfExporter extends JRAbstractExporter<RtfReportConfiguration, Rt
 				{
 					if (Thread.interrupted())
 					{
-						throw new JRException("Current thread interrupted");
+						throw 
+							new ExportInterruptedException();
 					}
 
 					JRPrintPage page = pages.get(pageIndex);
@@ -683,7 +690,11 @@ public class JRRtfExporter extends JRAbstractExporter<RtfReportConfiguration, Rt
 
 		if(textHeight <= 0) {
 			if(height <= 0 ){
-				throw new JRException("Invalid text height");
+				throw 
+					new JRException(
+						EXCEPTION_MESSAGE_KEY_INVALID_TEXT_HEIGHT,  
+						(Object[])null 
+						);
 			}
 			textHeight = height;
 		}
@@ -703,7 +714,7 @@ public class JRRtfExporter extends JRAbstractExporter<RtfReportConfiguration, Rt
 		{
 			case LEFT :
 			{
-				switch (text.getVerticalAlignmentValue())
+				switch (text.getVerticalTextAlign())
 				{
 					case TOP:
 					{
@@ -725,7 +736,7 @@ public class JRRtfExporter extends JRAbstractExporter<RtfReportConfiguration, Rt
 			}
 			case RIGHT :
 			{
-				switch (text.getVerticalAlignmentValue())
+				switch (text.getVerticalTextAlign())
 				{
 					case TOP:
 					{
@@ -747,7 +758,7 @@ public class JRRtfExporter extends JRAbstractExporter<RtfReportConfiguration, Rt
 			}
 			case UPSIDE_DOWN :
 			{
-				switch (text.getVerticalAlignmentValue())
+				switch (text.getVerticalTextAlign())
 				{
 					case TOP:
 					{
@@ -770,7 +781,7 @@ public class JRRtfExporter extends JRAbstractExporter<RtfReportConfiguration, Rt
 			case NONE :
 			default :
 			{
-				switch (text.getVerticalAlignmentValue())
+				switch (text.getVerticalTextAlign())
 				{
 					case TOP:
 					{
@@ -864,7 +875,7 @@ public class JRRtfExporter extends JRAbstractExporter<RtfReportConfiguration, Rt
 //		writer.write("\\fs");
 //		writer.write(String.valueOf(font.getFontSize() * 2));
 
-		switch (text.getHorizontalAlignmentValue())
+		switch (text.getHorizontalTextAlign())
 		{
 			case LEFT:
 				contentWriter.write("\\ql");
@@ -1121,7 +1132,7 @@ public class JRRtfExporter extends JRAbstractExporter<RtfReportConfiguration, Rt
 			{
 				case CLIP:
 				{
-					switch (printImage.getHorizontalAlignmentValue())
+					switch (printImage.getHorizontalImageAlign())
 					{
 						case RIGHT :
 						{
@@ -1143,7 +1154,7 @@ public class JRRtfExporter extends JRAbstractExporter<RtfReportConfiguration, Rt
 							break;
 						}
 					}
-					switch (printImage.getVerticalAlignmentValue())
+					switch (printImage.getVerticalImageAlign())
 					{
 						case TOP :
 						{
@@ -1723,7 +1734,7 @@ public class JRRtfExporter extends JRAbstractExporter<RtfReportConfiguration, Rt
 	private float getXAlignFactor(JRPrintImage image)
 	{
 		float xalignFactor = 0f;
-		switch (image.getHorizontalAlignmentValue())
+		switch (image.getHorizontalImageAlign())
 		{
 			case RIGHT :
 			{
@@ -1748,7 +1759,7 @@ public class JRRtfExporter extends JRAbstractExporter<RtfReportConfiguration, Rt
 	private float getYAlignFactor(JRPrintImage image)
 	{
 		float yalignFactor = 0f;
-		switch (image.getVerticalAlignmentValue())
+		switch (image.getVerticalImageAlign())
 		{
 			case BOTTOM :
 			{

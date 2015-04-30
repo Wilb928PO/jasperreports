@@ -46,7 +46,6 @@ import net.sf.jasperreports.engine.util.JRCloneUtils;
  * 
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public abstract class StandardBaseColumn implements BaseColumn, Serializable, JRChangeEventsSupport
 {
@@ -192,7 +191,7 @@ public abstract class StandardBaseColumn implements BaseColumn, Serializable, JR
 		clone.columnHeader = JRCloneUtils.nullSafeClone(columnHeader);
 		clone.columnFooter = JRCloneUtils.nullSafeClone(columnFooter);
 		clone.printWhenExpression = JRCloneUtils.nullSafeClone(printWhenExpression);
-		//FIXMECLONE should we deal with propertyExpressions? check all
+		clone.propertyExpressions = JRCloneUtils.cloneList(propertyExpressions);
 		clone.eventSupport = null;
 		clone.uuid = null;
 		return clone;

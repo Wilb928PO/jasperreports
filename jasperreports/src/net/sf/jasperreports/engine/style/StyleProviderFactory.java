@@ -28,7 +28,6 @@ import net.sf.jasperreports.engine.JasperReportsContext;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public interface StyleProviderFactory
 {
@@ -37,6 +36,7 @@ public interface StyleProviderFactory
 	/**
 	 *
 	 */
+	//FIXME StyleProviderContext also has JasperReportsContext
 	public StyleProvider getStyleProvider(StyleProviderContext context, JasperReportsContext jasperreportsContext);
 
 

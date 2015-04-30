@@ -23,16 +23,33 @@
  */
 package net.sf.jasperreports.data.http;
 
+import java.util.List;
+
+import net.sf.jasperreports.engine.JRRuntimeException;
+import net.sf.jasperreports.engine.util.JRCloneUtils;
+
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class StandardHttpDataLocation implements HttpDataLocation
 {
 
+	private RequestMethod method;
 	private String url;
 	private String username;
 	private String password;
+	private List<HttpLocationParameter> urlParameters;
+	private List<HttpLocationParameter> postParameters;
+
+	public RequestMethod getMethod()
+	{
+		return method;
+	}
+
+	public void setMethod(RequestMethod method)
+	{
+		this.method = method;
+	}
 	
 	@Override
 	public String getUrl()
@@ -67,4 +84,41 @@ public class StandardHttpDataLocation implements HttpDataLocation
 		this.password = password;
 	}
 
+	@Override
+	public Object clone()
+	{
+		try
+		{
+			StandardHttpDataLocation clone = (StandardHttpDataLocation) super.clone();
+			clone.urlParameters = JRCloneUtils.cloneList(urlParameters);
+			clone.postParameters = JRCloneUtils.cloneList(postParameters);
+			return clone;
+		}
+		catch (CloneNotSupportedException e)
+		{
+			// should not happen
+			throw new JRRuntimeException(e);
+		}
+	}
+
+	public List<HttpLocationParameter> getUrlParameters()
+	{
+		return urlParameters;
+	}
+
+	public void setUrlParameters(List<HttpLocationParameter> urlParameters)
+	{
+		this.urlParameters = urlParameters;
+	}
+
+	public List<HttpLocationParameter> getPostParameters()
+	{
+		return postParameters;
+	}
+
+	public void setPostParameters(List<HttpLocationParameter> postParameters)
+	{
+		this.postParameters = postParameters;
+	}
+	
 }

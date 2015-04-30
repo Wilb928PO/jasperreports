@@ -34,8 +34,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 
 import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRBand;
@@ -61,9 +63,11 @@ import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.base.JRBasePrintFrame;
 import net.sf.jasperreports.engine.base.JRBasePrintPage;
 import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.fill.JRFiller;
 import net.sf.jasperreports.engine.type.LineStyleEnum;
 import net.sf.jasperreports.engine.type.PrintOrderEnum;
 import net.sf.jasperreports.engine.type.RunDirectionEnum;
+import net.sf.jasperreports.engine.util.JRDataUtils;
 import net.sf.jasperreports.engine.util.JRExpressionUtil;
 import net.sf.jasperreports.engine.xml.JRXmlTemplateLoader;
 
@@ -73,16 +77,18 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class ReportConverter 
 {
 
 	private static final Log log = LogFactory.getLog(ReportConverter.class);
 	public static final Color GRID_LINE_COLOR = new Color(170, 170, 255);
+	public static final String EXCEPTION_MESSAGE_KEY_CIRCULAR_DEPENDENCY_FOUND = "convert.report.converter.circular.dependency.found";
 	
 	private final JasperReportsContext jasperReportsContext;
 	private final JRReport report;
+	private final Locale locale;
+	private final TimeZone timezone;
 	private JasperPrint jasperPrint;
 	private JRPrintPage page;
 	int pageWidth;
@@ -109,6 +115,8 @@ public class ReportConverter
 	{
 		this.jasperReportsContext = jasperReportsContext;
 		this.report = report;
+		this.locale = readLocale();//allow to pass this explicitly?
+		this.timezone = readTimeZone();
 		
 		if (report instanceof JasperDesign)
 		{
@@ -117,13 +125,35 @@ public class ReportConverter
 		
 		convert(ignoreContent);
 	}
-	
+
 	/**
 	 * @deprecated Replaced by {@link #ReportConverter(JasperReportsContext, JRReport, boolean)}.
 	 */
 	public ReportConverter(JRReport report, boolean ignoreContent)
 	{
 		this(DefaultJasperReportsContext.getInstance(), report, ignoreContent);
+	}
+	
+	private Locale readLocale()
+	{
+		//duplicates code from JRFillDataset.defaultLocale
+		String localeCode = JRPropertiesUtil.getInstance(jasperReportsContext).getProperty(report, 
+				JRFiller.PROPERTY_DEFAULT_LOCALE);
+		Locale locale = (localeCode == null || localeCode.isEmpty()) 
+				? Locale.getDefault()
+				: JRDataUtils.getLocale(localeCode);
+		return locale;
+	}
+	
+	private TimeZone readTimeZone()
+	{
+		//duplicates code from JRFillDataset.defaultTimeZone
+		String timezoneId = JRPropertiesUtil.getInstance(jasperReportsContext).getProperty(report, 
+				JRFiller.PROPERTY_DEFAULT_TIMEZONE);
+		TimeZone timezone = (timezoneId == null || timezoneId.isEmpty()) 
+				? TimeZone.getDefault()
+				: JRDataUtils.getTimeZone(timezoneId);
+		return timezone;
 	}
 	
 	/**
@@ -304,8 +334,11 @@ public class ReportConverter
 	{
 		if (!parentLocations.add(location))
 		{
-			throw new JRRuntimeException("Circular dependency found for template at location " 
-					+ location);
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_CIRCULAR_DEPENDENCY_FOUND,  
+					new Object[]{location} 
+					);
 		}
 		
 		if (!loadedLocations.add(location))
@@ -559,6 +592,16 @@ public class ReportConverter
 		//printElement.setKey(element.getKey());
 		converted.setMode(source.getOwnModeValue());
 		converted.setStyle(resolveStyle(source));
+	}
+
+	public Locale getLocale()
+	{
+		return locale;
+	}
+
+	public TimeZone getTimeZone()
+	{
+		return timezone;
 	}
 	
 }

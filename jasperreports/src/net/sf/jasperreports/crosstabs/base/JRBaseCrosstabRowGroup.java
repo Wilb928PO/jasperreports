@@ -35,7 +35,6 @@ import net.sf.jasperreports.engine.base.JRBaseObjectFactory;
  * Base read-only implementation of crosstab row groups.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class JRBaseCrosstabRowGroup extends JRBaseCrosstabGroup implements JRCrosstabRowGroup
 {
@@ -72,6 +71,7 @@ public class JRBaseCrosstabRowGroup extends JRBaseCrosstabGroup implements JRCro
 	 */
 	private byte position;
 	
+	@SuppressWarnings("deprecation")
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
 	{
 		in.defaultReadObject();

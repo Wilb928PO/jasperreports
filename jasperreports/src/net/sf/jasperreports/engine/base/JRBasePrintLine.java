@@ -35,7 +35,6 @@ import net.sf.jasperreports.engine.type.LineDirectionEnum;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class JRBasePrintLine extends JRBasePrintGraphicElement implements JRPrintLine
 {
@@ -112,6 +111,7 @@ public class JRBasePrintLine extends JRBasePrintGraphicElement implements JRPrin
 	 */
 	private byte direction;
 	
+	@SuppressWarnings("deprecation")
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
 	{
 		in.defaultReadObject();

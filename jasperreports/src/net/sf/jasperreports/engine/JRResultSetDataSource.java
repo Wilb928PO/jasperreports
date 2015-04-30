@@ -64,7 +64,6 @@ import net.sf.jasperreports.engine.util.JRImageLoader;
  * present) through JDBC.
 
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class JRResultSetDataSource implements JRDataSource
 {
@@ -73,6 +72,14 @@ public class JRResultSetDataSource implements JRDataSource
 	public static final String INDEXED_COLUMN_PREFIX = "COLUMN_";
 	private static final int INDEXED_COLUMN_PREFIX_LENGTH = INDEXED_COLUMN_PREFIX.length();
 	
+	public static final String EXCEPTION_MESSAGE_KEY_RESULT_SET_CLOB_VALUE_READ_FAILURE = "data.result.set.clob.value.read.failure";
+	public static final String EXCEPTION_MESSAGE_KEY_RESULT_SET_COLUMN_INDEX_OUT_OF_RANGE = "data.result.set.column.index.out.of.range";
+	public static final String EXCEPTION_MESSAGE_KEY_RESULT_SET_FIELD_VALUE_NOT_RETRIEVED = "data.result.set.field.value.not.retrieved";
+	public static final String EXCEPTION_MESSAGE_KEY_RESULT_SET_METADATA_NOT_RETRIEVED = "data.result.set.metadata.not.retrieved";
+	public static final String EXCEPTION_MESSAGE_KEY_RESULT_SET_UNKNOWN_COLUMN_NAME = "data.result.set.unknown.column.name";
+	public static final String EXCEPTION_MESSAGE_KEY_RESULT_SET_NEXT_RECORD_NOT_RETRIEVED = "data.result.set.next.record.not.retrieved";
+
+
 	/**
 	 *
 	 */
@@ -82,6 +89,7 @@ public class JRResultSetDataSource implements JRDataSource
 
 	private TimeZone timeZone;
 	private boolean timeZoneOverride;
+	private TimeZone reportTimeZone;
 	private Map<JRField, Calendar> fieldCalendars = new HashMap<JRField, Calendar>();
 
 
@@ -119,7 +127,11 @@ public class JRResultSetDataSource implements JRDataSource
 			}
 			catch (SQLException e)
 			{
-				throw new JRException("Unable to get next record.", e);
+				throw 
+					new JRException(
+						EXCEPTION_MESSAGE_KEY_RESULT_SET_NEXT_RECORD_NOT_RETRIEVED, 
+						null,
+						e);
 			}
 		}
 		
@@ -144,6 +156,10 @@ public class JRResultSetDataSource implements JRDataSource
 				if (clazz.equals(java.lang.Boolean.class))
 				{
 					objValue = resultSet.getBoolean(columnIndex.intValue()) ? Boolean.TRUE : Boolean.FALSE;
+					if(resultSet.wasNull())
+					{
+						objValue = null;
+					}
 				}
 				else if (clazz.equals(java.lang.Byte.class))
 				{
@@ -325,7 +341,11 @@ public class JRResultSetDataSource implements JRDataSource
 			}
 			catch (Exception e)
 			{
-				throw new JRException("Unable to get value for field '" + field.getName() + "' of class '" + clazz.getName() + "'", e);
+				throw 
+					new JRException(
+						EXCEPTION_MESSAGE_KEY_RESULT_SET_FIELD_VALUE_NOT_RETRIEVED,
+						new Object[]{field.getName(), clazz.getName()}, 
+						e);
 			}
 		}
 		
@@ -400,18 +420,28 @@ public class JRResultSetDataSource implements JRDataSource
 						|| columnIndex.intValue() > resultSet.getMetaData().getColumnCount()
 						)
 					{
-						throw new JRException("Column index out of range : " + columnIndex);
+						throw 
+							new JRException(
+								EXCEPTION_MESSAGE_KEY_RESULT_SET_COLUMN_INDEX_OUT_OF_RANGE,
+								new Object[]{columnIndex});
 					}
 				}
 				
 				if (columnIndex == null)
 				{
-					throw new JRException("Unknown column name : " + fieldName);
+					throw 
+						new JRException(
+							EXCEPTION_MESSAGE_KEY_RESULT_SET_UNKNOWN_COLUMN_NAME,
+							new Object[]{fieldName});
 				}
 			}
 			catch (SQLException e)
 			{
-				throw new JRException("Unable to retrieve result set metadata.", e);
+				throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_RESULT_SET_METADATA_NOT_RETRIEVED, 
+					null, 
+					e);
 			}
 
 			columnIndexMap.put(fieldName, columnIndex);
@@ -474,11 +504,19 @@ public class JRResultSetDataSource implements JRDataSource
 		}
 		catch (SQLException e)
 		{
-			throw new JRException("Unable to read clob value", e);
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_RESULT_SET_CLOB_VALUE_READ_FAILURE, 
+					null, 
+					e);
 		}
 		catch (IOException e)
 		{
-			throw new JRException("Unable to read clob value", e);
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_RESULT_SET_CLOB_VALUE_READ_FAILURE, 
+					null, 
+					e);
 		}
 	}
 
@@ -575,6 +613,19 @@ public class JRResultSetDataSource implements JRDataSource
 		this.timeZoneOverride = override;
 	}
 	
+	/**
+	 * Sets the report time zone, which is the one used to display datetime values in the report.
+	 * 
+	 * The time zone is used when the {@link JRJdbcQueryExecuterFactory#PROPERTY_TIME_ZONE} property
+	 * is set to REPORT_TIME_ZONE.
+	 * 
+	 * @param reportTimeZone the time zone used to display datetime values in the report
+	 */
+	public void setReportTimeZone(TimeZone reportTimeZone)
+	{
+		this.reportTimeZone = reportTimeZone;
+	}
+	
 	protected Calendar getFieldCalendar(JRField field)
 	{
 		if (fieldCalendars.containsKey(field))
@@ -603,8 +654,7 @@ public class JRResultSetDataSource implements JRDataSource
 				// read the field level property
 				String timezoneId = JRPropertiesUtil.getInstance(jasperReportsContext).getProperty(field, 
 						JRJdbcQueryExecuterFactory.PROPERTY_TIME_ZONE);
-				tz = (timezoneId == null || timezoneId.length() == 0) ? null 
-						: TimeZone.getTimeZone(timezoneId);
+				tz = resolveTimeZone(timezoneId);
 			}
 			else
 			{
@@ -617,4 +667,25 @@ public class JRResultSetDataSource implements JRDataSource
 		Calendar cal = tz == null ? null : Calendar.getInstance(tz);
 		return cal;
 	}
+	
+	protected TimeZone resolveTimeZone(String timezoneId)
+	{
+		TimeZone tz;
+		if (timezoneId == null || timezoneId.length() == 0)
+		{
+			tz = null;
+		}
+		else if (timezoneId.equals(JRParameter.REPORT_TIME_ZONE))
+		{
+			// using the report timezone
+			tz = reportTimeZone;
+		}
+		else
+		{
+			// resolving as tz ID
+			tz = TimeZone.getTimeZone(timezoneId);
+		}
+		return tz;
+	}
+
 }

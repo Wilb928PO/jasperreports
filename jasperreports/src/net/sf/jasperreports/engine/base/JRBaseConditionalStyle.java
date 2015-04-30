@@ -33,7 +33,6 @@ import net.sf.jasperreports.engine.util.ObjectUtils;
 
 /**
  * @author Ionut Nedelcu (ionutned@users.sourceforge.net)
- * @version $Id$
  */
 public class JRBaseConditionalStyle extends JRBaseStyle implements JRConditionalStyle
 {
@@ -67,8 +66,10 @@ public class JRBaseConditionalStyle extends JRBaseStyle implements JRConditional
 		radius = style.getOwnRadius();
 
 		scaleImageValue = style.getOwnScaleImageValue();
-		horizontalAlignmentValue = style.getOwnHorizontalAlignmentValue();
-		verticalAlignmentValue = style.getOwnVerticalAlignmentValue();
+		horizontalTextAlign = style.getOwnHorizontalTextAlign();
+		verticalTextAlign = style.getOwnVerticalTextAlign();
+		horizontalImageAlign = style.getOwnHorizontalImageAlign();
+		verticalImageAlign = style.getOwnVerticalImageAlign();
 
 		lineBox = style.getLineBox().clone(this);
 		paragraph = style.getParagraph().clone(this);

@@ -42,8 +42,8 @@ import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 
 /**
+ * @deprecated Replaced by {@link XmlDataAdapterService}.
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class RemoteXmlDataAdapterService extends XmlDataAdapterService
 {
@@ -150,7 +150,7 @@ public class RemoteXmlDataAdapterService extends XmlDataAdapterService
 			}
 		}
 		catch (Exception e) {
-			throw new JRException(e.getMessage());
+			throw new JRException(e);
 		} finally {
 
 			if (is != null) {

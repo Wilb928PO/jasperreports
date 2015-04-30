@@ -23,12 +23,10 @@
  */
 package net.sf.jasperreports.engine.type;
 
-import net.sf.jasperreports.engine.JRConstants;
-
 
 /**
+ * @deprecated Replaced by {@link VerticalTextAlignEnum} and {@link VerticalImageAlignEnum}.
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public enum VerticalAlignEnum implements JREnum
 {
@@ -55,7 +53,6 @@ public enum VerticalAlignEnum implements JREnum
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
 	private final transient byte value;
 	private final transient String name;
 
@@ -113,4 +110,43 @@ public enum VerticalAlignEnum implements JREnum
 		return getByValue(new Byte(value));
 	}
 	
+	/**
+	 *
+	 */
+	public static VerticalTextAlignEnum getVerticalTextAlignEnum(VerticalAlignEnum verticalAlignment)
+	{
+		if (verticalAlignment == JUSTIFIED)
+		{
+			return VerticalTextAlignEnum.TOP;
+		}
+		return verticalAlignment == null ? null : VerticalTextAlignEnum.getByName(verticalAlignment.getName());
+	}
+	
+	/**
+	 *
+	 */
+	public static VerticalImageAlignEnum getVerticalImageAlignEnum(VerticalAlignEnum verticalAlignment)
+	{
+		if (verticalAlignment == JUSTIFIED)
+		{
+			return VerticalImageAlignEnum.TOP;
+		}
+		return verticalAlignment == null ? null : VerticalImageAlignEnum.getByName(verticalAlignment.getName());
+	}
+	
+	/**
+	 *
+	 */
+	public static VerticalAlignEnum getVerticalAlignEnum(VerticalTextAlignEnum verticalTextAlign)
+	{
+		return verticalTextAlign == null ? null : VerticalAlignEnum.getByName(verticalTextAlign.getName());
+	}
+	
+	/**
+	 *
+	 */
+	public static VerticalAlignEnum getVerticalAlignEnum(VerticalImageAlignEnum verticalImageAlign)
+	{
+		return verticalImageAlign == null ? null : VerticalAlignEnum.getByName(verticalImageAlign.getName());
+	}
 }

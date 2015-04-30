@@ -54,7 +54,6 @@ import net.sf.jasperreports.engine.util.JRStyleResolver;
  * the most common element properties, and their getter/setter methods. It also has a constructor for initializing
  * these properties.
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public abstract class JRBaseElement implements JRElement, Serializable, JRChangeEventsSupport
 {
@@ -529,6 +528,7 @@ public abstract class JRBaseElement implements JRElement, Serializable, JRChange
 
 		clone.printWhenExpression = JRCloneUtils.nullSafeClone(printWhenExpression);
 		clone.propertiesMap = JRPropertiesMap.getPropertiesClone(this);
+		clone.propertyExpressions = JRCloneUtils.cloneArray(propertyExpressions);
 		clone.eventSupport = null;
 		
 		return clone;
@@ -598,6 +598,7 @@ public abstract class JRBaseElement implements JRElement, Serializable, JRChange
 	 */
 	private byte stretchType;
 	
+	@SuppressWarnings("deprecation")
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
 	{
 		in.defaultReadObject();

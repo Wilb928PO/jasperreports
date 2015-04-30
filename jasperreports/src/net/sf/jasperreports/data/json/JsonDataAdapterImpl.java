@@ -27,14 +27,16 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import net.sf.jasperreports.data.AbstractDataAdapter;
+import net.sf.jasperreports.data.DataFile;
+import net.sf.jasperreports.data.RepositoryDataLocation;
+import net.sf.jasperreports.data.StandardRepositoryDataLocation;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class JsonDataAdapterImpl extends AbstractDataAdapter implements
 		JsonDataAdapter {
-	private String fileName;
+	private DataFile dataFile;
 	private String datePattern = null;
 	private String numberPattern = null;
 	private String selectExpression;
@@ -42,12 +44,26 @@ public class JsonDataAdapterImpl extends AbstractDataAdapter implements
 	private TimeZone timeZone;
 	private boolean useConnection = false;
 
+	/**
+	 * @deprecated replaced by {@link #getDataFile()}
+	 */
+	@Deprecated
 	public String getFileName() {
-		return fileName;
+		if (dataFile instanceof RepositoryDataLocation) {
+			return ((RepositoryDataLocation) dataFile).getLocation();
+		}
+		return null;
 	}
 
+	/**
+	 * @deprecated replaced by {@link #setDataFile(net.sf.jasperreports.data.DataFile)} and {@link StandardRepositoryDataLocation}
+	 */
+	@Deprecated
 	public void setFileName(String fileName) {
-		this.fileName = fileName;
+		if (fileName != null) {
+			StandardRepositoryDataLocation repositoryDataFile = new StandardRepositoryDataLocation(fileName);
+			setDataFile(repositoryDataFile);
+		}
 	}
 
 	public String getDatePattern() {
@@ -96,5 +112,15 @@ public class JsonDataAdapterImpl extends AbstractDataAdapter implements
 
 	public void setUseConnection(boolean useConnection) {
 		this.useConnection = useConnection;
+	}
+	
+	public DataFile getDataFile()
+	{
+		return dataFile;
+	}
+
+	public void setDataFile(DataFile dataFile)
+	{
+		this.dataFile = dataFile;
 	}
 }

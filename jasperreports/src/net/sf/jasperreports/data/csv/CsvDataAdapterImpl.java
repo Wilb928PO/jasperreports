@@ -27,14 +27,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.jasperreports.data.AbstractDataAdapter;
+import net.sf.jasperreports.data.DataFile;
+import net.sf.jasperreports.data.RepositoryDataLocation;
+import net.sf.jasperreports.data.StandardRepositoryDataLocation;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class CsvDataAdapterImpl extends AbstractDataAdapter implements CsvDataAdapter
 {
-	private String fileName;
+	private DataFile dataFile;
 	private String encoding;
 	private String recordDelimiter = "\n";
 	private String fieldDelimiter = ",";
@@ -44,12 +46,26 @@ public class CsvDataAdapterImpl extends AbstractDataAdapter implements CsvDataAd
 	private boolean queryExecuterMode = false;
 	private List<String> columnNames = new ArrayList<String>();
 	
+	/**
+	 * @deprecated replaced by {@link #getDataFile()}
+	 */
+	@Deprecated
 	public String getFileName() {
-		return fileName;
+		if (dataFile instanceof RepositoryDataLocation) {
+			return ((RepositoryDataLocation) dataFile).getLocation();
+		}
+		return null;
 	}
 
+	/**
+	 * @deprecated replaced by {@link #setDataFile(net.sf.jasperreports.data.DataFile)} and {@link StandardRepositoryDataLocation}
+	 */
+	@Deprecated
 	public void setFileName(String fileName) {
-		this.fileName = fileName;
+		if (fileName != null) {
+			StandardRepositoryDataLocation repositoryDataFile = new StandardRepositoryDataLocation(fileName);
+			setDataFile(repositoryDataFile);
+		}
 	}
 
 	public String getEncoding() {
@@ -114,5 +130,16 @@ public class CsvDataAdapterImpl extends AbstractDataAdapter implements CsvDataAd
 
 	public void setColumnNames(List<String> columnNames) {
 		this.columnNames = columnNames;
+	}
+
+	// FIXME lucianc use auto-naming="deriveByClass" in Castor?
+	public DataFile getDataFile()
+	{
+		return dataFile;
+	}
+
+	public void setDataFile(DataFile dataFile)
+	{
+		this.dataFile = dataFile;
 	}
 }

@@ -31,7 +31,6 @@ import net.sf.jasperreports.engine.type.RunDirectionEnum;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class AbstractXlsReportConfiguration extends SimpleReportExportConfiguration implements XlsReportConfiguration
 {
@@ -71,7 +70,11 @@ public class AbstractXlsReportConfiguration extends SimpleReportExportConfigurat
 	private Integer firstPageNumber;
 	private Boolean isShowGridLines;
 	private ImageAnchorTypeEnum imageAnchorType;
-	
+	private Boolean isAutoFitPageHeight;
+	private Boolean isForcePageBreaks;
+	private Boolean isShrinkToFit;
+	private Boolean isIgnoreTextFormatting;
+
 	
 	/**
 	 * 
@@ -727,4 +730,67 @@ public class AbstractXlsReportConfiguration extends SimpleReportExportConfigurat
 	{
 		this.imageAnchorType = imageAnchorType;
 	}
+	
+	/**
+	 * 
+	 */
+	public Boolean isAutoFitPageHeight()
+	{
+		return isAutoFitPageHeight;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setAutoFitPageHeight(Boolean isAutoFitPageHeight)
+	{
+		this.isAutoFitPageHeight = isAutoFitPageHeight;
+	}
+	
+	/**
+	 * 
+	 */
+	public Boolean isForcePageBreaks()
+	{
+		return isForcePageBreaks;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setForcePageBreaks(Boolean isForcePageBreaks)
+	{
+		this.isForcePageBreaks = isForcePageBreaks;
+	}
+
+
+	public Boolean isShrinkToFit() 
+	{
+		return isShrinkToFit;
+	}
+
+
+	public void setShrinkToFit(Boolean isShrinkToFit) 
+	{
+		this.isShrinkToFit = isShrinkToFit;
+	}
+
+
+	/**
+	 * 
+	 */
+	public Boolean isIgnoreTextFormatting() 
+	{
+		return isIgnoreTextFormatting;
+	}
+
+
+	/**
+	 * 
+	 */
+	public void setIgnoreTextFormatting(Boolean isIgnoreTextFormatting) 
+	{
+		this.isIgnoreTextFormatting = isIgnoreTextFormatting;
+	}
+	
 }

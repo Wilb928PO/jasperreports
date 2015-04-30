@@ -32,12 +32,9 @@ package net.sf.jasperreports.engine;
  * </p><p>
  * JasperReports provides default implementations of result set, bean collections and bean arrays data sources.
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public interface JRDataSource
 {
-
-
 	/**
 	 * Tries to position the cursor on the next element in the data source.
 	 * @return true if there is a next record, false otherwise

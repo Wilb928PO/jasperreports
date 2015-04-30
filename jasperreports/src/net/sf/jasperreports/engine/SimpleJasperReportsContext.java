@@ -32,7 +32,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class SimpleJasperReportsContext implements JasperReportsContext
 {
@@ -83,6 +82,12 @@ public class SimpleJasperReportsContext implements JasperReportsContext
 			return parent.getValue(key);
 		}
 		return null;
+	}
+
+	@Override
+	public Object getOwnValue(String key)
+	{
+		return values.get(key);
 	}
 
 	/**

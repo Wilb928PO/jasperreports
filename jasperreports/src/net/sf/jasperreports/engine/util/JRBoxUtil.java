@@ -32,7 +32,6 @@ import net.sf.jasperreports.engine.type.RotationEnum;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public final class JRBoxUtil
 {
@@ -56,6 +55,7 @@ public final class JRBoxUtil
 			{
 				clone.getLeftPen().setLineWidth(complementaryBox.getLeftPen().getLineWidth());
 				clone.getLeftPen().setLineColor(complementaryBox.getLeftPen().getLineColor());
+				clone.getLeftPen().setLineStyle(complementaryBox.getLeftPen().getLineStyleValue());
 				//clone.setLeftPadding(complementaryBox.getLeftPadding());
 			}
 			else
@@ -70,6 +70,7 @@ public final class JRBoxUtil
 			{
 				clone.getRightPen().setLineWidth(complementaryBox.getRightPen().getLineWidth());
 				clone.getRightPen().setLineColor(complementaryBox.getRightPen().getLineColor());
+				clone.getRightPen().setLineStyle(complementaryBox.getRightPen().getLineStyleValue());
 				//clone.setRightPadding(complementaryBox.getRightPadding());
 			}
 			else
@@ -84,6 +85,7 @@ public final class JRBoxUtil
 			{
 				clone.getTopPen().setLineWidth(complementaryBox.getTopPen().getLineWidth());
 				clone.getTopPen().setLineColor(complementaryBox.getTopPen().getLineColor());
+				clone.getTopPen().setLineStyle(complementaryBox.getTopPen().getLineStyleValue());
 				//clone.setTopPadding(complementaryBox.getTopPadding());
 			}
 			else
@@ -98,6 +100,7 @@ public final class JRBoxUtil
 			{
 				clone.getBottomPen().setLineWidth(complementaryBox.getBottomPen().getLineWidth());
 				clone.getBottomPen().setLineColor(complementaryBox.getBottomPen().getLineColor());
+				clone.getBottomPen().setLineStyle(complementaryBox.getBottomPen().getLineStyleValue());
 				//clone.setBottomPadding(complementaryBox.getBottomPadding());
 			}
 			else
@@ -138,7 +141,7 @@ public final class JRBoxUtil
 	
 
 	/**
-	 * 
+	 * @deprecated Used only by deprecated serialized fields.
 	 */
 	public static void setToBox(
 		Byte border,
@@ -273,9 +276,8 @@ public final class JRBoxUtil
 	
 
 	/**
-	 * 
+	 * @deprecated Used only by deprecated serialized fields.
 	 */
-	@SuppressWarnings("deprecation")
 	public static void setBoxToLineBox(
 		net.sf.jasperreports.engine.JRBox box,
 		JRLineBox lineBox

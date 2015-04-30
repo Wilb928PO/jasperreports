@@ -31,10 +31,10 @@ import net.sf.jasperreports.engine.type.EvaluationTimeEnum;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class EvaluationTimeSerializer implements ObjectSerializer<JREvaluationTime>
 {
+	public static final String EXCEPTION_MESSAGE_KEY_UNKNOWN_EVALUATION_TIME = "engine.virtualization.unknown.evaluation.time";
 
 	@Override
 	public int typeValue()
@@ -59,7 +59,9 @@ public class EvaluationTimeSerializer implements ObjectSerializer<JREvaluationTi
 	{
 		//FIXME we should have keep these in memory and only write an ID/index
 		EvaluationTimeEnum type = value.getType();
-		out.writeByte(type.getValue());
+		@SuppressWarnings("deprecation")
+		byte byteType = type.getValue(); 
+		out.writeByte(byteType);
 		if (type == EvaluationTimeEnum.BAND)
 		{
 			out.writeInt(value.getBandId());
@@ -74,6 +76,7 @@ public class EvaluationTimeSerializer implements ObjectSerializer<JREvaluationTi
 	public JREvaluationTime read(VirtualizationInput in) throws IOException
 	{
 		byte byteType = in.readByte();
+		@SuppressWarnings("deprecation")
 		EvaluationTimeEnum type = EvaluationTimeEnum.getByValue(byteType);
 		JREvaluationTime value;
 		switch (type)
@@ -103,7 +106,10 @@ public class EvaluationTimeSerializer implements ObjectSerializer<JREvaluationTi
 			break;
 		case AUTO:
 		default:
-			throw new JRRuntimeException("Unknown evaluation time " + type);
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_UNKNOWN_EVALUATION_TIME,
+					new Object[]{type});
 		}
 		return value;
 	}

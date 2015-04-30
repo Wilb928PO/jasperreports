@@ -62,12 +62,13 @@ import net.sf.jasperreports.parts.PartFillerParent;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class SubreportFillPart extends BasePartFillComponent
 {
 
 	public static final String PROPERTY_BOOKMARKS_DATA_SOURCE_PARAMETER = JRPropertiesUtil.PROPERTY_PREFIX + "bookmarks.data.source.parameter";
+	public static final String EXCEPTION_MESSAGE_KEY_UNKNOWN_REPORT_PRINT_ORDER = "parts.subreport.unknown.report.print.order";
+	public static final String EXCEPTION_MESSAGE_KEY_UNKNOWN_REPORT_SECTION_TYPE = "parts.subreport.unknown.report.section.type";
 	
 	private SubreportPartComponent subreportPart;
 	private JRFillExpressionEvaluator expressionEvaluator;
@@ -183,7 +184,10 @@ public class SubreportFillPart extends BasePartFillComponent
 			filler = createPartSubfiller(output);
 			break;
 		default:
-			throw new JRRuntimeException("Unknown report section type " + sectionType);
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_UNKNOWN_REPORT_SECTION_TYPE,
+					new Object[]{sectionType});
 		}
 		
 		return filler;
@@ -202,7 +206,10 @@ public class SubreportFillPart extends BasePartFillComponent
 			bandFiller = new JRVerticalFiller(getJasperReportsContext(), jasperReport, bandParent);
 			break;
 		default:
-			throw new JRRuntimeException("Unknown report print order " + jasperReport.getPrintOrderValue());
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_UNKNOWN_REPORT_PRINT_ORDER,
+					new Object[]{jasperReport.getPrintOrderValue()});
 		}
 		
 		bandFiller.addFillListener(new FillListener()

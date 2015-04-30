@@ -116,10 +116,14 @@ import net.sf.jasperreports.web.util.JacksonUtil;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class TableReport implements JRReport
 {
+	public static final String EXCEPTION_MESSAGE_KEY_UNKNOWN_CHILD_TYPE = "fill.table.report.unknown.child.type";
+	public static final String EXCEPTION_MESSAGE_KEY_FIELD_NOT_FOUND = "fill.table.report.field.not.found";
+	public static final String EXCEPTION_MESSAGE_KEY_VARIABLE_NOT_FOUND = "fill.table.report.variable.not.found";
+	public static final String EXCEPTION_MESSAGE_KEY_UNRECOGNIZED_FILTER_EXPRESSION_TYPE = "fill.table.report.unrecognized.filter.expression.type";
+	
 	/**
 	 * Global property that specifies the character to be used on the column header when the tables's column is sorted ascending
 	 */
@@ -635,9 +639,11 @@ public class TableReport implements JRReport
 				SortFieldTypeEnum columnType = null;
 				FilterTypesEnum filterType = null;
 				String suffix = "";
+				boolean hasFieldOrVariable = false;
 				
 				if (column.getPropertiesMap().containsProperty(PROPERTY_COLUMN_FIELD))
 				{
+					hasFieldOrVariable = true;
 					fieldOrVariableName = column.getPropertiesMap().getProperty(PROPERTY_COLUMN_FIELD);
 					columnType = SortFieldTypeEnum.FIELD;
 					JRField field = getField(fieldOrVariableName);
@@ -646,10 +652,15 @@ public class TableReport implements JRReport
 						filterType = HeaderToolbarElementUtils.getFilterType(field.getValueClass());
 					} else 
 					{
-						throw new JRRuntimeException("Could not find field '" + fieldOrVariableName + "'");
+						throw 
+							new JRRuntimeException(
+								EXCEPTION_MESSAGE_KEY_FIELD_NOT_FOUND,  
+								new Object[]{fieldOrVariableName} 
+								);
 					}
 				} else if (column.getPropertiesMap().containsProperty(PROPERTY_COLUMN_VARIABLE))
 				{
+					hasFieldOrVariable = true;
 					fieldOrVariableName = column.getPropertiesMap().getProperty(PROPERTY_COLUMN_VARIABLE);
 					columnType = SortFieldTypeEnum.VARIABLE;
 					JRVariable variable = getVariable(fieldOrVariableName);
@@ -658,7 +669,11 @@ public class TableReport implements JRReport
 						filterType = HeaderToolbarElementUtils.getFilterType(variable.getValueClass());
 					} else
 					{
-						throw new JRRuntimeException("Could not find variable '" + fieldOrVariableName + "'");
+						throw 
+							new JRRuntimeException(
+								EXCEPTION_MESSAGE_KEY_VARIABLE_NOT_FOUND,  
+								new Object[]{fieldOrVariableName} 
+								);
 					}
 				} else if (TableUtil.hasSingleChunkExpression(sortTextField))
 				{
@@ -681,7 +696,11 @@ public class TableReport implements JRReport
 						
 					default:
 						// never
-						throw new JRRuntimeException("Unrecognized filter expression type " + sortExpression.getType());
+						throw 
+							new JRRuntimeException(
+								EXCEPTION_MESSAGE_KEY_UNRECOGNIZED_FILTER_EXPRESSION_TYPE,  
+								new Object[]{sortExpression.getType()} 
+								);
 					}	
 				}
 				
@@ -760,9 +779,14 @@ public class TableReport implements JRReport
 					genericElement.getPropertiesMap().setProperty(HeaderToolbarElement.PROPERTY_COLUMN_TYPE, columnType.getName());
 				}
 				
-				if (filterType != null && isFilterable)
+				if (filterType != null)
 				{
 					genericElement.getPropertiesMap().setProperty(HeaderToolbarElement.PROPERTY_FILTER_TYPE, filterType.getName());
+				}
+
+				if (columnType != null && hasFieldOrVariable) {
+					String property = SortFieldTypeEnum.FIELD.equals(columnType) ? HeaderToolbarElement.PROPERTY_COLUMN_FIELD : HeaderToolbarElement.PROPERTY_COLUMN_VARIABLE;
+					genericElement.getPropertiesMap().setProperty(property, fieldOrVariableName);
 				}
 				
 				String columnName = fieldOrVariableName != null ? fieldOrVariableName : String.valueOf(columnIndex);
@@ -1316,8 +1340,11 @@ public class TableReport implements JRReport
 			}
 			else
 			{
-				throw new JRRuntimeException("Uknown child type " 
-						+ childClone.getClass().getName());
+				throw 
+					new JRRuntimeException(
+						EXCEPTION_MESSAGE_KEY_UNKNOWN_CHILD_TYPE,  
+						new Object[]{childClone.getClass().getName()} 
+						);
 			}
 		}
 		
@@ -1401,7 +1428,11 @@ public class TableReport implements JRReport
 			}
 			else
 			{
-				throw new JRRuntimeException("Unknown JRChild type " + child.getClass().getName());
+				throw 
+					new JRRuntimeException(
+						EXCEPTION_MESSAGE_KEY_UNKNOWN_CHILD_TYPE,  
+						new Object[]{child.getClass().getName()} 
+						);
 			}
 		}
 		

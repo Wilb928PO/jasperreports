@@ -33,9 +33,8 @@ import net.sf.jasperreports.engine.util.JRStyledTextUtil;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
-public interface JRPrintText extends JRPrintElement, JRAlignment, JRPrintAnchor, JRPrintHyperlink, JRFont, JRCommonText, TextFormat
+public interface JRPrintText extends JRPrintElement, JRAlignment, JRTextAlignment, JRPrintAnchor, JRPrintHyperlink, JRFont, JRCommonText, TextFormat
 {
 
 	/**

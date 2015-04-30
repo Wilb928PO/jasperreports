@@ -38,7 +38,6 @@ import net.sf.jasperreports.engine.type.SortOrderEnum;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class JRBaseSortField implements JRSortField, Serializable, JRChangeEventsSupport
 {
@@ -156,6 +155,7 @@ public class JRBaseSortField implements JRSortField, Serializable, JRChangeEvent
 	 */
 	private byte order;
 	
+	@SuppressWarnings("deprecation")
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
 	{
 		in.defaultReadObject();

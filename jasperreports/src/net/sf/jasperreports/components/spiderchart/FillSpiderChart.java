@@ -53,10 +53,10 @@ import net.sf.jasperreports.engine.util.JRStringUtil;
 /**
  * 
  * @author sanda zaharia (shertage@users.sourceforge.net)
- * @version $Id$
  */
 public class FillSpiderChart extends BaseFillComponent implements JRFillCloneable
 {
+	public static final String EXCEPTION_MESSAGE_KEY_CUSTOMIZER_INSTANCE_ERROR = "components.spiderchart.customizer.instance.error";
 
 	private final SpiderChartComponent chartComponent;
 	private final FillChartSettings chartSettings;
@@ -145,7 +145,11 @@ public class FillSpiderChart extends BaseFillComponent implements JRFillCloneabl
 				Class<?> myClass = JRClassLoader.loadClassForName(customizerClass);
 				chartCustomizer = (ChartCustomizer) myClass.newInstance();
 			} catch (Exception e) {
-				throw new JRRuntimeException("Could not create chart customizer instance.", e);
+				throw 
+					new JRRuntimeException(
+						EXCEPTION_MESSAGE_KEY_CUSTOMIZER_INSTANCE_ERROR,
+						(Object[])null,
+						e);
 			}
 
 			if (chartCustomizer instanceof AbstractChartCustomizer)

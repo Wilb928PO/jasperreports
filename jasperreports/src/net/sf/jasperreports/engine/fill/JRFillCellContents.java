@@ -55,10 +55,11 @@ import org.apache.commons.collections.map.ReferenceMap;
  * Crosstab cell contents filler.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class JRFillCellContents extends JRFillElementContainer implements JRCellContents, JRStyleSetter
 {
+	public static final String EXCEPTION_MESSAGE_KEY_CANNOT_SHRINK_CONTENTS = "fill.cell.contents.cannot.shrink.contents";
+
 	private final Map<StretchedContents,JRFillCellContents> transformedContentsCache;
 	private final Map<BoxContents,JRFillCellContents> boxContentsCache;
 	private final JRClonePool clonePool;
@@ -268,7 +269,11 @@ public class JRFillCellContents extends JRFillElementContainer implements JRCell
 		
 		if (newHeight < getHeight() || newWidth < getWidth())
 		{
-			throw new JRException("Cannot shrink cell contents.");
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_CANNOT_SHRINK_CONTENTS,  
+					(Object[])null 
+					);
 		}
 		
 		Object key = new StretchedContents(newWidth, newHeight, xPosition, yPosition);
@@ -567,8 +572,8 @@ public class JRFillCellContents extends JRFillElementContainer implements JRCell
 			
 			int hash = newHeight;
 			hash = 31*hash + newWidth;
-			hash = 31*hash + xPosition.getValue();
-			hash = 31*hash + yPosition.getValue();
+			hash = 31*hash + xPosition.ordinal();
+			hash = 31*hash + yPosition.ordinal();
 			hashCode = hash;
 		}
 		

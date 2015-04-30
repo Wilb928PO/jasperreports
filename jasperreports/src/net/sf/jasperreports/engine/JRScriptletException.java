@@ -27,7 +27,6 @@ package net.sf.jasperreports.engine;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class JRScriptletException extends JRException
 {
@@ -60,5 +59,20 @@ public class JRScriptletException extends JRException
 		super(message, e);
 	}
 
+	/**
+	 * 
+	 */
+	public JRScriptletException(String messageKey, Object[] args, Throwable t)
+	{
+		super(messageKey, args, t);
+	}
+
+	/**
+	 * 
+	 */
+	public JRScriptletException(String messageKey, Object[] args)
+	{
+		super(messageKey, args);
+	}
 
 }

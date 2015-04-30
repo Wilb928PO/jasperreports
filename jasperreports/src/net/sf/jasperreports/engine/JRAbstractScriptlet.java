@@ -36,11 +36,13 @@ import net.sf.jasperreports.engine.fill.JRFillVariable;
  * in certain moments of the report filling process, such as report, column or group initialization. Scriptlets must implement
  * the abstract methods that define the behavior at the specified moments.
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public abstract class JRAbstractScriptlet
 {
-
+	public static final String EXCEPTION_MESSAGE_KEY_FIELD_NOT_FOUND = "scriptlets.field.not.found";
+	public static final String EXCEPTION_MESSAGE_KEY_PARAMETER_NOT_FOUND = "scriptlets.parameter.not.found";
+	public static final String EXCEPTION_MESSAGE_KEY_VARIABLE_NOT_FOUND = "scriptlets.variable.not.found";
+	public static final String EXCEPTION_MESSAGE_KEY_VARIABLE_VALUE_INCOMPATIBLE = "scriptlets.variable.value.incompatible";
 
 	/**
 	 *
@@ -95,7 +97,10 @@ public abstract class JRAbstractScriptlet
 		{
 			if (mustBeDeclared)
 			{
-				throw new JRScriptletException("Parameter not found : " + parameterName);
+				throw 
+					new JRScriptletException(
+						EXCEPTION_MESSAGE_KEY_PARAMETER_NOT_FOUND,
+						new Object[]{parameterName});
 			}
 			return ((Map<String,?>)this.parametersMap.get(JRParameter.REPORT_PARAMETERS_MAP).getValue()).get(parameterName);
 		}
@@ -111,7 +116,10 @@ public abstract class JRAbstractScriptlet
 		JRFillField field = this.fieldsMap.get(fieldName);
 		if (field == null)
 		{
-			throw new JRScriptletException("Field not found : " + fieldName);
+			throw 
+				new JRScriptletException(
+					EXCEPTION_MESSAGE_KEY_FIELD_NOT_FOUND,
+					new Object[]{fieldName});
 		}
 		return field.getValue();
 	}
@@ -125,7 +133,10 @@ public abstract class JRAbstractScriptlet
 		JRFillVariable variable = this.variablesMap.get(variableName);
 		if (variable == null)
 		{
-			throw new JRScriptletException("Variable not found : " + variableName);
+			throw 
+				new JRScriptletException(
+					EXCEPTION_MESSAGE_KEY_VARIABLE_NOT_FOUND,
+					new Object[]{variableName});
 		}
 		return variable.getValue();
 	}
@@ -139,12 +150,18 @@ public abstract class JRAbstractScriptlet
 		JRFillVariable variable = this.variablesMap.get(variableName);
 		if (variable == null)
 		{
-			throw new JRScriptletException("Variable not found : " + variableName);
+			throw 
+				new JRScriptletException(
+					EXCEPTION_MESSAGE_KEY_VARIABLE_NOT_FOUND,
+					new Object[]{variableName});
 		}
 		
 		if (value != null && !variable.getValueClass().isInstance(value) )
 		{
-			throw new JRScriptletException("Incompatible value assigned to variable " + variableName + ". Expected " + variable.getValueClassName() + ".");
+			throw 
+				new JRScriptletException(
+					EXCEPTION_MESSAGE_KEY_VARIABLE_NOT_FOUND,
+					new Object[]{variableName, variable.getValueClassName()});
 		}
 		
 		variable.setValue(value);

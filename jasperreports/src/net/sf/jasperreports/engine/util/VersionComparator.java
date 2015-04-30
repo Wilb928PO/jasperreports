@@ -27,11 +27,12 @@ import java.util.Comparator;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class VersionComparator implements Comparator<String>
 {
 
+	public static final String LOWEST_VERSION = "0";
+	
 	@Override
 	public int compare(String currentVersion, String oldVersion) 
 	{

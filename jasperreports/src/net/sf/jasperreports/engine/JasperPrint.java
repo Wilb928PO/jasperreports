@@ -55,11 +55,12 @@ import net.sf.jasperreports.engine.type.OrientationEnum;
  * other formats like PDF, HTML, XLS, CSV or XML.
  * 
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class JasperPrint implements Serializable, JRPropertiesHolder
 {
 
+	public static final String EXCEPTION_MESSAGE_KEY_DUPLICATE_STYLE = "engine.jasper.print.duplicate.style";
+	
 	/**
 	 * Prefix for JasperReports properties that specify properties to be
 	 * transfered from report templates to print objects.
@@ -116,10 +117,10 @@ public class JasperPrint implements Serializable, JRPropertiesHolder
 	private String name;
 	private int pageWidth;
 	private int pageHeight;
-	private Integer topMargin;
-	private Integer leftMargin;
-	private Integer bottomMargin;
-	private Integer rightMargin;
+	private Integer topMargin = 0;
+	private Integer leftMargin = 0;
+	private Integer bottomMargin = 0;
+	private Integer rightMargin = 0;
 	private OrientationEnum orientationValue = OrientationEnum.PORTRAIT;
 	
 	private transient PrintPageFormat pageFormat;
@@ -494,7 +495,10 @@ public class JasperPrint implements Serializable, JRPropertiesHolder
 		{
 			if (!isIgnoreDuplicate)
 			{
-				throw new JRException("Duplicate declaration of report style : " + style.getName());
+				throw 
+					new JRException(
+						EXCEPTION_MESSAGE_KEY_DUPLICATE_STYLE,
+						new Object[]{style.getName()});
 			}
 		}
 		else
@@ -839,6 +843,7 @@ public class JasperPrint implements Serializable, JRPropertiesHolder
 	 */
 	private byte orientation;
 	
+	@SuppressWarnings("deprecation")
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
 	{
 		in.defaultReadObject();

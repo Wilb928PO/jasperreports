@@ -31,7 +31,6 @@ import net.sf.jasperreports.web.commands.ResetInCacheCommand;
 
 /**
  * @author Narcis Marcu (narcism@users.sourceforge.net)
- * @version $Id$
  */
 public class MoveColumnAction extends AbstractVerifiableTableAction {
 
@@ -62,7 +61,7 @@ public class MoveColumnAction extends AbstractVerifiableTableAction {
 					)
 				);
 		} catch (CommandException e) {
-			throw new ActionException(e.getMessage());
+			throw new ActionException(e);
 		}
 	}
 

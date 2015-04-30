@@ -51,11 +51,13 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class JRPrinterAWT implements Printable
 {
 	private static final Log log = LogFactory.getLog(JRPrinterAWT.class);
+
+	public static final String EXCEPTION_MESSAGE_KEY_INVALID_PAGE_RANGE = "print.invalid.page.range";
+	public static final String EXCEPTION_MESSAGE_KEY_ERROR_PRINTING_REPORT = "print.error.printing.report";
 
 	/**
 	 *
@@ -136,12 +138,11 @@ public class JRPrinterAWT implements Printable
 			lastPageIndex >= jasperPrint.getPages().size()
 			)
 		{
-			throw new JRException(
-				"Invalid page index range : " +
-				firstPageIndex + " - " +
-				lastPageIndex + " of " +
-				jasperPrint.getPages().size()
-				);
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_INVALID_PAGE_RANGE,  
+					new Object[]{firstPageIndex, lastPageIndex, jasperPrint.getPages().size()}
+					);
 		}
 
 		pageOffset = firstPageIndex;
@@ -210,7 +211,11 @@ public class JRPrinterAWT implements Printable
 		}
 		catch (Exception ex)
 		{
-			throw new JRException("Error printing report.", ex);
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_ERROR_PRINTING_REPORT,
+					null, 
+					ex);
 		}
 
 		return isOK;

@@ -52,7 +52,6 @@ import net.sf.jasperreports.engine.util.JRLoader;
  * </p> 
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public final class JRPropertiesUtil
 {
@@ -60,6 +59,8 @@ public final class JRPropertiesUtil
 	 * The prefix used by all properties.
 	 */
 	public static final String PROPERTY_PREFIX = "net.sf.jasperreports.";
+	public static final String EXCEPTION_MESSAGE_KEY_LOAD_PROPERTIES_FILE_FAILURE = "engine.load.properties.file.failure";
+	public static final String EXCEPTION_MESSAGE_KEY_LOAD_PROPERTIES_FAILURE = "engine.load.properties.failure";
 
 	private JasperReportsContext jasperReportsContext;
 
@@ -117,7 +118,11 @@ public final class JRPropertiesUtil
 			}
 			catch (IOException e)
 			{
-				throw new JRException("Failed to load properties file \"" + name + "\"", e);
+				throw 
+					new JRException(
+						EXCEPTION_MESSAGE_KEY_LOAD_PROPERTIES_FILE_FAILURE, 
+						new Object[]{name}, 
+						e);
 			}
 			finally
 			{

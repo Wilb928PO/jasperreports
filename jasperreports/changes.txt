@@ -2,6 +2,69 @@
 JasperReports Library Change Log
 =============================================
 
+JasperReports 6.0.5 (2015-0x-xx)
+---------------------------------------------
+
+- minor bug fixes and improvements;
+
+
+
+
+
+JasperReports 6.0.4 (2015-04-15)
+---------------------------------------------
+
+- support for pluggable data file locations in file-based data adapters, with default 
+implementations for remote HTTP data files;
+
+- new report data source implementation able to consume a list of JSON files provided as input;
+
+- internationalization of exceptions raised by the JasperReports Library with the introduction
+of exception error codes that serve as message keys in translation bundles;
+
+- downgrade to iText version 2.1.7 and distribution of this third party library under 
+the terms of the Mozilla Public License version 1.1;
+
+- support for gutter margins in PDF export with the introduction of export configuration 
+properties to allow setting different left and right margins for odd and even pages;
+
+- ability to ignore text formatting in all Excel exporters using newly added export 
+configuration property;
+
+- minor bug fixes and improvements;
+
+
+
+
+
+JasperReports 6.0.3 (2015-02-06)
+---------------------------------------------
+
+- minor bug fixes and improvements;
+
+
+
+
+
+JasperReports 6.0.2 (2015-02-04)
+---------------------------------------------
+
+- throw specific exception net.sf.jasperreports.export.ExportInterruptedException on all 
+report export interruption events;
+
+- differentiate between text align properties and image align properties by adding specific 
+properties and enumerations in object model and deprecating the existing ones;
+
+- support for QR Code barcodes in barcode4j component;
+
+- support for pluggable remote file provider in all file-based data adapters;
+
+- minor bug fixes and improvements;
+
+
+
+
+
 JasperReports 6.0.0 (2014-11-25)
 ---------------------------------------------
 

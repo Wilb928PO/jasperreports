@@ -26,6 +26,8 @@ package net.sf.jasperreports.data.ds;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Map;
 
 import net.sf.jasperreports.data.AbstractClasspathAwareDataAdapterService;
@@ -38,11 +40,12 @@ import net.sf.jasperreports.engine.util.JRClassLoader;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class DataSourceDataAdapterService extends
 		AbstractClasspathAwareDataAdapterService {
 
+	public static final String EXCEPTION_MESSAGE_KEY_INVALID_OBJECT_RETURNED = "data.ds.invalid.object.returned";
+	
 	/**
 	 * 
 	 */
@@ -64,6 +67,17 @@ public class DataSourceDataAdapterService extends
 	}
 
 	@Override
+	protected ClassLoader getClassLoader(ClassLoader cloader) {
+		Object obj = getJasperReportsContext().getValue(CURRENT_CLASS_LOADER);
+		if (obj != null && obj instanceof ClassLoader)
+			cloader = (ClassLoader) obj;
+		URL[] localURLs = getPathClassloader();
+		if (localURLs == null || localURLs.length == 0)
+			return cloader;
+		return new URLClassLoader(localURLs, cloader);
+	}
+	
+	@Override
 	public void contributeParameters(Map<String, Object> parameters) throws JRException 
 	{
 		DataSourceDataAdapter dsDataAdapter = getDataSourceDataAdapter();
@@ -83,9 +97,16 @@ public class DataSourceDataAdapterService extends
 				if(!Modifier.isStatic(method.getModifiers()))
 					obj = clazz.newInstance();
 				if(JRDataSource.class.isAssignableFrom(method.getReturnType()))
+				{
 					ds = (JRDataSource) method.invoke(obj,new Object[0]);
+				}
 				else
-					throw new JRException("Method " + dsDataAdapter.getMethodToCall() + " in " + dsDataAdapter.getFactoryClass() + " class does not return a JRDataSource object.");
+				{
+					throw 
+					new JRException(
+						EXCEPTION_MESSAGE_KEY_INVALID_OBJECT_RETURNED,
+						new Object[]{dsDataAdapter.getMethodToCall(), dsDataAdapter.getFactoryClass()});
+				}
 			}
 			catch (ClassNotFoundException e)
 			{

@@ -23,9 +23,10 @@
  */
 package net.sf.jasperreports.data;
 
+import net.sf.jasperreports.engine.JRRuntimeException;
+
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class StandardRepositoryDataLocation implements RepositoryDataLocation
 {
@@ -50,6 +51,20 @@ public class StandardRepositoryDataLocation implements RepositoryDataLocation
 	public void setLocation(String location)
 	{
 		this.location = location;
+	}
+
+	@Override
+	public Object clone()
+	{
+		try
+		{
+			return super.clone();
+		}
+		catch (CloneNotSupportedException e)
+		{
+			// should not happen
+			throw new JRRuntimeException(e);
+		}
 	}
 
 }

@@ -29,13 +29,11 @@ import net.sf.jasperreports.engine.type.EvaluationTimeEnum;
 
 import org.krysalis.barcode4j.BaselineAlignment;
 import org.krysalis.barcode4j.ChecksumMode;
-import org.krysalis.barcode4j.HumanReadablePlacement;
 import org.krysalis.barcode4j.impl.datamatrix.SymbolShapeHint;
 
 /**
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class BarcodeVerifier implements BarcodeVisitor
 {
@@ -54,9 +52,6 @@ public class BarcodeVerifier implements BarcodeVisitor
 		{
 			verifier.addBrokenRule("Barcode expression is null", barcode);
 		}
-		
-		verifyTextPosition(barcode);
-		verifyOrientation(barcode);
 		
 		EvaluationTimeEnum evaluationTime = barcode.getEvaluationTimeValue();
 		if (evaluationTime == EvaluationTimeEnum.AUTO)
@@ -90,35 +85,6 @@ public class BarcodeVerifier implements BarcodeVisitor
 		catch (Exception e)
 		{
 			verifier.addBrokenRule(e, barcode);
-		}
-	}
-
-	protected void verifyTextPosition(BarcodeComponent barcode)
-	{
-		try
-		{
-			String position = barcode.getTextPosition();
-			if (position != null)
-			{
-				HumanReadablePlacement.byName(position);
-			}
-		}
-		catch (Exception e)
-		{
-			verifier.addBrokenRule(e, barcode);
-		}
-	}
-
-	protected void verifyOrientation(BarcodeComponent barcode)
-	{
-		int orientation = barcode.getOrientation();
-		if (!(orientation == BarcodeComponent.ORIENTATION_UP 
-				|| orientation == BarcodeComponent.ORIENTATION_LEFT 
-				|| orientation == BarcodeComponent.ORIENTATION_DOWN 
-				|| orientation == BarcodeComponent.ORIENTATION_RIGHT))
-		{
-			verifier.addBrokenRule("Invalid barcode orientation, supported values are 0, 90, 180, 270", 
-					barcode);
 		}
 	}
 
@@ -228,5 +194,9 @@ public class BarcodeVerifier implements BarcodeVisitor
 	{
 		verifyBarcode(pdf417);
 	}
-
+	
+	public void visitQRCode(QRCodeComponent qrCode)
+	{
+		verifyBarcode(qrCode);
+	}
 }

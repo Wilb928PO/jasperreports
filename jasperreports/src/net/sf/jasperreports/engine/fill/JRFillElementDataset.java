@@ -45,7 +45,6 @@ import net.sf.jasperreports.engine.type.ResetTypeEnum;
  * evaluate and increment the dataset.
  * 
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  * @see JRFillObjectFactory#registerElementDataset(JRFillElementDataset)
  */
 public abstract class JRFillElementDataset implements JRElementDataset
@@ -125,6 +124,14 @@ public abstract class JRFillElementDataset implements JRElementDataset
 		return incrementGroup;
 	}
 		
+	/**
+	 *
+	 */
+	protected JRBaseFiller getFiller()
+	{
+		return filler;
+	}
+
 	/**
 	 *
 	 */

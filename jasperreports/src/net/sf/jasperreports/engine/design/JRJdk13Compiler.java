@@ -40,7 +40,6 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class JRJdk13Compiler extends JRAbstractMultiClassCompiler
 {
@@ -132,7 +131,11 @@ public class JRJdk13Compiler extends JRAbstractMultiClassCompiler
 				files.append(sourceFiles[i].getPath());
 				files.append(' ');
 			}
-			throw new JRException("Error compiling report java source files : " + files, e);
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_JAVA_SOURCE_COMPILE_ERROR,
+					new Object[]{files}, 
+					e);
 		}
 		
 		return errors;

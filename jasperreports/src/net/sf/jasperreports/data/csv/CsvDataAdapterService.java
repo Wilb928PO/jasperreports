@@ -29,6 +29,8 @@ import java.text.SimpleDateFormat;
 import java.util.Map;
 
 import net.sf.jasperreports.data.AbstractDataAdapterService;
+import net.sf.jasperreports.data.DataFileStream;
+import net.sf.jasperreports.data.DataFileUtils;
 import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRParameter;
@@ -38,10 +40,11 @@ import net.sf.jasperreports.engine.query.JRCsvQueryExecuterFactory;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class CsvDataAdapterService extends AbstractDataAdapterService 
 {
+	
+	private DataFileStream dataStream;
 	
 	/**
 	 * 
@@ -70,11 +73,14 @@ public class CsvDataAdapterService extends AbstractDataAdapterService
 		CsvDataAdapter csvDataAdapter = getCsvDataAdapter();
 		if (csvDataAdapter != null)
 		{
+			dataStream = DataFileUtils.instance(getJasperReportsContext()).getDataStream(
+					csvDataAdapter.getDataFile(), parameters);
+			
 			String datePattern = csvDataAdapter.getDatePattern();
 			String numberPattern = csvDataAdapter.getNumberPattern();
 			if (csvDataAdapter.isQueryExecuterMode())
 			{	
-				parameters.put(JRCsvQueryExecuterFactory.CSV_SOURCE, csvDataAdapter.getFileName());
+				parameters.put(JRCsvQueryExecuterFactory.CSV_INPUT_STREAM, dataStream);
 				if (csvDataAdapter.getEncoding() != null)
 				{
 					parameters.put(JRCsvQueryExecuterFactory.CSV_ENCODING, csvDataAdapter.getEncoding());
@@ -99,13 +105,13 @@ public class CsvDataAdapterService extends AbstractDataAdapterService
 				JRCsvDataSource ds = null;
 				if (csvDataAdapter.getEncoding() == null)
 				{
-					ds = new JRCsvDataSource(getJasperReportsContext(), csvDataAdapter.getFileName());
+					ds = new JRCsvDataSource(dataStream);
 				}
 				else
 				{
 					try
 					{
-						ds = new JRCsvDataSource(getJasperReportsContext(), csvDataAdapter.getFileName(), csvDataAdapter.getEncoding());
+						ds = new JRCsvDataSource(dataStream, csvDataAdapter.getEncoding());
 					}
 					catch (UnsupportedEncodingException e)
 					{
@@ -141,6 +147,17 @@ public class CsvDataAdapterService extends AbstractDataAdapterService
 			names[i] = "" + csvDataAdapter.getColumnNames().get(i);
 		}
 		return names;
+	}
+
+	@Override
+	public void dispose()
+	{
+		if (dataStream != null)
+		{
+			dataStream.dispose();
+		}
+		
+		super.dispose();
 	}
 	
 }

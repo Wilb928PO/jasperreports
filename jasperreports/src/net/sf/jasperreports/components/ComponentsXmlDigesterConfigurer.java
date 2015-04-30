@@ -31,10 +31,14 @@ import net.sf.jasperreports.components.barcode4j.DataMatrixComponent;
 import net.sf.jasperreports.components.barcode4j.EAN128Component;
 import net.sf.jasperreports.components.barcode4j.EAN13Component;
 import net.sf.jasperreports.components.barcode4j.EAN8Component;
+import net.sf.jasperreports.components.barcode4j.ErrorCorrectionLevelEnum;
 import net.sf.jasperreports.components.barcode4j.Interleaved2Of5Component;
+import net.sf.jasperreports.components.barcode4j.OrientationEnum;
 import net.sf.jasperreports.components.barcode4j.PDF417Component;
 import net.sf.jasperreports.components.barcode4j.POSTNETComponent;
+import net.sf.jasperreports.components.barcode4j.QRCodeComponent;
 import net.sf.jasperreports.components.barcode4j.RoyalMailCustomerComponent;
+import net.sf.jasperreports.components.barcode4j.TextPositionEnum;
 import net.sf.jasperreports.components.barcode4j.UPCAComponent;
 import net.sf.jasperreports.components.barcode4j.UPCEComponent;
 import net.sf.jasperreports.components.barcode4j.USPSIntelligentMailComponent;
@@ -76,7 +80,6 @@ import org.apache.commons.digester.Digester;
  * XML digester for built-in component implementations.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  * @see ComponentsExtensionsRegistryFactory
  */
 public class ComponentsXmlDigesterConfigurer implements XmlDigesterConfigurer
@@ -183,16 +186,50 @@ public class ComponentsXmlDigesterConfigurer implements XmlDigesterConfigurer
 				"*/componentElement/POSTNET", POSTNETComponent.class);
 		addBaseBarcode4jRules(digester, 
 				"*/componentElement/PDF417", PDF417Component.class);
+		addQRCodeRules(digester, 
+				"*/componentElement/QRCode", QRCodeComponent.class);
+	}
+	
+	protected <T> void addBaseBarcode4jRules(Digester digester, 
+			String barcodePattern, Class<T> barcodeComponentClass)
+	{
+		addBarcodeRules(digester, barcodePattern, barcodeComponentClass);
+		addPatternExpressionRules(digester, barcodePattern);
+		
+		digester.addRule(barcodePattern, 
+				new XmlConstantPropertyRule(
+						"orientation", "orientationValue",
+						OrientationEnum.values()));
+		digester.addRule(barcodePattern, 
+				new XmlConstantPropertyRule(
+						"textPosition", "textPositionValue",
+						TextPositionEnum.values()));
 	}
 	
 	@SuppressWarnings("deprecation")
-	protected <T> void addBaseBarcode4jRules(Digester digester, 
+	protected <T> void addPatternExpressionRules(Digester digester, String barcodePattern)
+	{
+		String patternExpressionPattern = barcodePattern + "/patternExpression";
+		digester.addFactoryCreate(patternExpressionPattern, 
+				JRExpressionFactory.StringExpressionFactory.class.getName());
+		digester.addCallMethod(patternExpressionPattern, "setText", 0);
+		digester.addSetNext(patternExpressionPattern, "setPatternExpression", 
+				JRExpression.class.getName());
+	}
+	
+	@SuppressWarnings("deprecation")
+	protected <T> void addBarcodeRules(Digester digester, 
 			String barcodePattern, Class<T> barcodeComponentClass)
 	{
 		digester.addObjectCreate(barcodePattern, barcodeComponentClass);
 		digester.addSetProperties(barcodePattern,
 				//properties to be ignored by this rule
-				new String[]{JRXmlConstants.ATTRIBUTE_evaluationTime}, 
+				new String[]{
+					JRXmlConstants.ATTRIBUTE_evaluationTime,
+					"orientation",
+					"textPosition",
+					"errorCorrectionLevel"
+					}, 
 				new String[0]);
 		//rule to set evaluation time
 		digester.addRule(barcodePattern, 
@@ -206,13 +243,17 @@ public class ComponentsXmlDigesterConfigurer implements XmlDigesterConfigurer
 		digester.addCallMethod(codeExpressionPattern, "setText", 0);
 		digester.addSetNext(codeExpressionPattern, "setCodeExpression", 
 				JRExpression.class.getName());
-		
-		String patternExpressionPattern = barcodePattern + "/patternExpression";
-		digester.addFactoryCreate(patternExpressionPattern, 
-				JRExpressionFactory.StringExpressionFactory.class.getName());
-		digester.addCallMethod(patternExpressionPattern, "setText", 0);
-		digester.addSetNext(patternExpressionPattern, "setPatternExpression", 
-				JRExpression.class.getName());
+	}
+
+	protected <T> void addQRCodeRules(Digester digester, 
+			String barcodePattern, Class<T> barcodeComponentClass)
+	{
+		addBarcodeRules(digester, barcodePattern, barcodeComponentClass);
+
+		digester.addRule(barcodePattern, 
+				new XmlConstantPropertyRule(
+						"errorCorrectionLevel", "errorCorrectionLevel",
+						ErrorCorrectionLevelEnum.values()));
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -229,7 +270,6 @@ public class ComponentsXmlDigesterConfigurer implements XmlDigesterConfigurer
 	@SuppressWarnings("deprecation")
 	protected void addMapRules(Digester digester)
 	{
-		int one = digester.getRules().rules().size();
 		String mapPattern = "*/componentElement/map";
 		digester.addFactoryCreate(mapPattern, MapXmlFactory.class);
 

@@ -89,12 +89,17 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class JRFillDataset implements JRDataset, DatasetFillContext
 {
 	
 	private static final Log log = LogFactory.getLog(JRFillDataset.class);
+	
+	public static final String EXCEPTION_MESSAGE_KEY_NO_SUCH_FIELD = "fill.dataset.no.such.field";
+	public static final String EXCEPTION_MESSAGE_KEY_NO_SUCH_PARAMETER = "fill.dataset.no.such.parameter";
+	public static final String EXCEPTION_MESSAGE_KEY_NO_SUCH_SNAPSHOT_DATA = "fill.dataset.no.such.snapshot.data";
+	public static final String EXCEPTION_MESSAGE_KEY_NO_SUCH_SNAPSHOT_PARAMETER = "fill.dataset.no.such.snapshot.parameter";
+	public static final String EXCEPTION_MESSAGE_KEY_NO_SUCH_VARIABLE = "fill.dataset.no.such.variable";
 	
 	/**
 	 * The filler that created this object.
@@ -478,12 +483,12 @@ public class JRFillDataset implements JRDataset, DatasetFillContext
 	/**
 	 * Inherits properties from the report.
 	 */
-	protected void inheritFromMain()
+	public void inheritFromMain()
 	{
 		if (resourceBundleBaseName == null && !isMain)
 		{
-			resourceBundleBaseName = filler.mainDataset.resourceBundleBaseName;
-			whenResourceMissingType = filler.mainDataset.whenResourceMissingType;
+			resourceBundleBaseName = filler.jasperReport.getResourceBundle();
+			whenResourceMissingType = filler.jasperReport.getWhenResourceMissingTypeValue();
 		}
 	}
 	
@@ -768,7 +773,10 @@ public class JRFillDataset implements JRDataset, DatasetFillContext
 			cachedDataset = dataSnapshot.getCachedData(fillPosition);
 			if (cachedDataset == null)
 			{
-				throw new DataSnapshotException("No snapshot data found for position " + fillPosition);
+				throw 
+					new DataSnapshotException(
+						EXCEPTION_MESSAGE_KEY_NO_SUCH_SNAPSHOT_DATA,
+						new Object[]{fillPosition});
 			}
 			
 			if (log.isDebugEnabled())
@@ -985,8 +993,10 @@ public class JRFillDataset implements JRDataset, DatasetFillContext
 						if (!cachedDataset.hasParameter(paramName))
 						{
 							// cached data is invalid
-							throw new DataSnapshotException("A value for parameter " + paramName 
-									+ " was not found in the data snapshot");
+							throw 
+								new DataSnapshotException(
+									EXCEPTION_MESSAGE_KEY_NO_SUCH_SNAPSHOT_PARAMETER,
+									new Object[]{paramName});
 						}
 						
 						if (log.isDebugEnabled())
@@ -1484,7 +1494,11 @@ public class JRFillDataset implements JRDataset, DatasetFillContext
 		JRFillVariable var = variablesMap.get(variableName);
 		if (var == null)
 		{
-			throw new JRRuntimeException("No such variable " + variableName);
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_NO_SUCH_VARIABLE,  
+					new Object[]{variableName} 
+					);
 		}
 		return var.getValue(evaluation.getType());
 	}
@@ -1521,7 +1535,11 @@ public class JRFillDataset implements JRDataset, DatasetFillContext
 		{
 			if (!ignoreMissing)
 			{
-				throw new JRRuntimeException("No such parameter " + parameterName);
+				throw 
+					new JRRuntimeException(
+						EXCEPTION_MESSAGE_KEY_NO_SUCH_PARAMETER,  
+						new Object[]{parameterName} 
+						);
 			}
 			
 			// look into REPORT_PARAMETERS_MAP
@@ -1552,7 +1570,11 @@ public class JRFillDataset implements JRDataset, DatasetFillContext
 		JRFillField field = fieldsMap.get(fieldName);
 		if (field == null)
 		{
-			throw new JRRuntimeException("No such field " + fieldName);
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_NO_SUCH_FIELD,  
+					new Object[]{fieldName} 
+					);
 		}
 		return field.getValue(evaluation.getType());
 	}
@@ -1591,7 +1613,7 @@ public class JRFillDataset implements JRDataset, DatasetFillContext
 
 		public int hashCode()
 		{
-			return 31 * calculation.getValue() + variableName.hashCode();
+			return 31 * calculation.ordinal() + variableName.hashCode();
 		}
 	}
 	

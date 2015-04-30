@@ -34,7 +34,6 @@ import org.krysalis.barcode4j.impl.code128.EAN128Bean;
 /**
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class BarcodeEvaluator extends AbstractBarcodeEvaluator
 {
@@ -57,11 +56,16 @@ public class BarcodeEvaluator extends AbstractBarcodeEvaluator
 	protected void evaluateBaseBarcode(BarcodeComponent barcodeComponent)
 	{
 		message = JRStringUtil.getString(evaluateExpression(barcodeComponent.getCodeExpression()));
+	}
+	
+	protected void evaluateBaseBarcode(Barcode4jComponent barcodeComponent)
+	{
+		evaluateBaseBarcode((BarcodeComponent)barcodeComponent);
 		
 		String pattern = JRStringUtil.getString(evaluateExpression(barcodeComponent.getPatternExpression()));
 		if (pattern != null) 
 		{
-			barcode.setPattern(pattern);
+			barcodeBean.setPattern(pattern);
 		}
 	}
 	
@@ -98,7 +102,7 @@ public class BarcodeEvaluator extends AbstractBarcodeEvaluator
 		String template = JRStringUtil.getString(evaluateExpression(ean128.getTemplateExpression()));
 		if (template != null) 
 		{
-			((EAN128Bean)barcode).setTemplate(template);
+			((EAN128Bean)barcodeBean).setTemplate(template);
 		}
 	}
 
@@ -152,6 +156,11 @@ public class BarcodeEvaluator extends AbstractBarcodeEvaluator
 	protected void evaluatePDF417(PDF417Component pdf417)
 	{
 		evaluateBaseBarcode(pdf417);
+	}
+	
+	protected void evaluateQRCode(QRCodeComponent qrCode)
+	{
+		evaluateBaseBarcode(qrCode);
 	}
 
 }

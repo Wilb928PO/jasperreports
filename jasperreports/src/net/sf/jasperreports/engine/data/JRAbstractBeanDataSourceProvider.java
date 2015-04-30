@@ -43,10 +43,10 @@ import net.sf.jasperreports.engine.design.JRDesignField;
  * implementation for bean properties introspection.
  * 
  * @author Peter Severin (peter_s@sourceforge.net, contact@jasperassistant.com)
- * @version $Id$
  */
 public abstract class JRAbstractBeanDataSourceProvider implements JRDataSourceProvider 
 {
+	public static final String EXCEPTION_MESSAGE_KEY_NULL_BEAN_CLASS = "data.bean.constructor.argument.cannot.be.null";
 
 	/** The introspected bean class */
 	private Class<?> beanClass;
@@ -59,7 +59,10 @@ public abstract class JRAbstractBeanDataSourceProvider implements JRDataSourcePr
 	public JRAbstractBeanDataSourceProvider(Class<?> beanClass) {
 		if (beanClass == null)
 		{
-			throw new JRRuntimeException("beanClass must not be null");
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_NULL_BEAN_CLASS,
+					new Object[]{"beanClass"});
 		}
 
 		this.beanClass = beanClass;

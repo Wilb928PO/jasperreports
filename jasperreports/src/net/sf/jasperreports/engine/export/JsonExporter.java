@@ -46,6 +46,7 @@ import net.sf.jasperreports.engine.PrintPart;
 import net.sf.jasperreports.engine.PrintParts;
 import net.sf.jasperreports.engine.ReportContext;
 import net.sf.jasperreports.engine.util.HyperlinkData;
+import net.sf.jasperreports.export.ExportInterruptedException;
 import net.sf.jasperreports.export.ExporterInputItem;
 import net.sf.jasperreports.export.HtmlReportConfiguration;
 import net.sf.jasperreports.export.JsonExporterConfiguration;
@@ -64,7 +65,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class JsonExporter extends JRAbstractExporter<JsonReportConfiguration, JsonExporterConfiguration, WriterExporterOutput, JsonExporterContext>
 {
@@ -167,7 +167,11 @@ public class JsonExporter extends JRAbstractExporter<JsonReportConfiguration, Js
 		}
 		catch (IOException e)
 		{
-			throw new JRException("Error writing to output writer : " + jasperPrint.getName(), e);
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_OUTPUT_WRITER_ERROR,
+					new Object[]{jasperPrint.getName()}, 
+					e);
 		}
 		finally
 		{
@@ -212,7 +216,7 @@ public class JsonExporter extends JRAbstractExporter<JsonReportConfiguration, Js
 				{
 					if (Thread.interrupted())
 					{
-						throw new JRException("Current thread interrupted.");
+						throw new ExportInterruptedException();
 					}
 
 					page = pages.get(pageIndex);

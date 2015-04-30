@@ -117,6 +117,7 @@ import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Hyperlink;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellReference;
 
@@ -129,7 +130,6 @@ import org.apache.poi.ss.util.CellReference;
  * @see net.sf.jasperreports.export.XlsExporterConfiguration
  * @see net.sf.jasperreports.export.XlsReportConfiguration
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class JRXlsExporter extends JRXlsAbstractExporter<XlsReportConfiguration, XlsExporterConfiguration, JRXlsExporterContext>
 {
@@ -198,6 +198,8 @@ public class JRXlsExporter extends JRXlsAbstractExporter<XlsReportConfiguration,
 		super(jasperReportsContext);
 		
 		exporterContext = new ExporterContext();
+		
+		maxColumnIndex = 255;
 	}
 
 
@@ -223,6 +225,8 @@ public class JRXlsExporter extends JRXlsAbstractExporter<XlsReportConfiguration,
 	protected void initExport()
 	{
 		super.initExport();
+		
+		sheet = null;
 	}
 	
 
@@ -264,7 +268,11 @@ public class JRXlsExporter extends JRXlsAbstractExporter<XlsReportConfiguration,
 				templateIs = RepositoryUtil.getInstance(jasperReportsContext).getInputStreamFromLocation(lcWorkbookTemplate);
 				if (templateIs == null)
 				{
-					throw new JRRuntimeException("Workbook template not found at : " + lcWorkbookTemplate);
+					throw 
+						new JRRuntimeException(
+							EXCEPTION_MESSAGE_KEY_TEMPLATE_NOT_FOUND,  
+							new Object[]{lcWorkbookTemplate} 
+							);
 				}
 				else
 				{
@@ -338,41 +346,11 @@ public class JRXlsExporter extends JRXlsAbstractExporter<XlsReportConfiguration,
 			sheet.protectSheet(password);
 		}
 		
-		boolean isIgnorePageMargins = configuration.isIgnorePageMargins();
-		if (pageFormat.getLeftMargin() != null)
-		{
-			sheet.setMargin((short)0, LengthUtil.inchNoRound(isIgnorePageMargins ? 0 : pageFormat.getLeftMargin()));
-		}
-		
-		if (pageFormat.getRightMargin() != null)
-		{
-			sheet.setMargin((short)1, LengthUtil.inchNoRound(isIgnorePageMargins ? 0 : pageFormat.getRightMargin()));
-		}
-		
-		if (pageFormat.getTopMargin() != null)
-		{
-			sheet.setMargin((short)2, LengthUtil.inchNoRound(isIgnorePageMargins ? 0 : pageFormat.getTopMargin()));
-		}
-		
-		if (pageFormat.getBottomMargin() != null)
-		{
-			sheet.setMargin((short)3, LengthUtil.inchNoRound(isIgnorePageMargins ? 0 : pageFormat.getBottomMargin()));
-		}
+		sheet.setMargin(Sheet.LeftMargin, 0.0);
+		sheet.setMargin(Sheet.RightMargin, 0.0);
+		sheet.setMargin(Sheet.TopMargin, 0.0);
+		sheet.setMargin(Sheet.BottomMargin, 0.0);
 
-		Integer fitWidth = configuration.getFitWidth();
-		if(!isValidScale(sheetInfo.sheetPageScale) && fitWidth != null)
-		{
-			printSetup.setFitWidth(fitWidth.shortValue());
-			sheet.setAutobreaks(true);
-		}
-		
-		Integer fitHeight = configuration.getFitHeight();
-		if(!isValidScale(sheetInfo.sheetPageScale) && fitHeight != null)
-		{
-			printSetup.setFitHeight(fitHeight.shortValue());
-			sheet.setAutobreaks(true);
-		}
-		
 		String sheetHeaderLeft = configuration.getSheetHeaderLeft();
 		if(sheetHeaderLeft != null)
 		{
@@ -459,6 +437,45 @@ public class JRXlsExporter extends JRXlsAbstractExporter<XlsReportConfiguration,
 		sheetsBeforeCurrentReportMap.put(sheetIndex, sheetsBeforeCurrentReport);
 	}
 
+	protected void closeSheet()
+	{
+		if (sheet == null)
+		{
+			return;
+		}
+		
+		HSSFPrintSetup printSetup = sheet.getPrintSetup();
+
+		if (isValidScale(sheetInfo.sheetPageScale))
+		{
+			printSetup.setScale((short)sheetInfo.sheetPageScale.intValue());
+		}
+		else
+		{
+			XlsReportConfiguration configuration = getCurrentItemConfiguration();
+
+			Integer fitWidth = configuration.getFitWidth();
+			if (fitWidth != null)
+			{
+				printSetup.setFitWidth(fitWidth.shortValue());
+				sheet.setAutobreaks(true);
+			}
+
+			Integer fitHeight = configuration.getFitHeight();
+			fitHeight = 
+				fitHeight == null
+				? (Boolean.TRUE == configuration.isAutoFitPageHeight() 
+					? (pageIndex - sheetInfo.sheetFirstPageIndex)
+					: null)
+				: fitHeight;
+			if (fitHeight != null)
+			{
+				printSetup.setFitHeight(fitHeight.shortValue());
+				sheet.setAutobreaks(true);
+			}
+		}
+	}
+	
 	protected void closeWorkbook(OutputStream os) throws JRException
 	{
 		try
@@ -511,7 +528,11 @@ public class JRXlsExporter extends JRXlsAbstractExporter<XlsReportConfiguration,
 		}
 		catch (IOException e)
 		{
-			throw new JRException("Error generating XLS report : " + jasperPrint.getName(), e);
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_REPORT_GENERATION_ERROR,
+					new Object[]{jasperPrint.getName()}, 
+					e);
 		}
 	}
 
@@ -545,6 +566,11 @@ public class JRXlsExporter extends JRXlsAbstractExporter<XlsReportConfiguration,
 		{
 			row.setHeightInPoints(lastRowHeight);
 		}
+	}
+
+	protected void addRowBreak(int rowIndex)
+	{
+		sheet.setRowBreak(rowIndex);
 	}
 
 //	protected void setCell(JRExporterGridCell gridCell, int colIndex, int rowIndex)
@@ -586,7 +612,11 @@ public class JRXlsExporter extends JRXlsAbstractExporter<XlsReportConfiguration,
 				HSSFCellStyle.VERTICAL_TOP,
 				(short)0,
 				getLoadedFont(getDefaultFont(), forecolor, null, getLocale()),
-				gridCell
+				gridCell,
+				true, 
+				true, 
+				false, 
+				false
 				);
 
 		cell.setCellStyle(cellStyle);
@@ -647,8 +677,10 @@ public class JRXlsExporter extends JRXlsAbstractExporter<XlsReportConfiguration,
 				(short)0,
 				getLoadedFont(getDefaultFont(), forecolor, null, getLocale()),
 				boxStyle,
+				false,
 				isCellLocked(line),
-				isCellHidden(line)
+				isCellHidden(line),
+				isShrinkToFit(line)
 				);
 
 		createMergeRegion(gridCell, colIndex, rowIndex, cellStyle);
@@ -683,8 +715,10 @@ public class JRXlsExporter extends JRXlsAbstractExporter<XlsReportConfiguration,
 				(short)0,
 				getLoadedFont(getDefaultFont(), forecolor, null, getLocale()),
 				gridCell,
+				isWrapText(element),
 				isCellLocked(element),
-				isCellHidden(element)
+				isCellHidden(element),
+				isShrinkToFit(element)
 				);
 
 		createMergeRegion(gridCell, colIndex, rowIndex, cellStyle);
@@ -720,19 +754,33 @@ public class JRXlsExporter extends JRXlsAbstractExporter<XlsReportConfiguration,
 			backcolor = getWorkbookColor(gridCell.getCellBackcolor()).getIndex();
 		}
 
-		StyleInfo baseStyle =
-			new StyleInfo(
-				mode,
-				backcolor,
-				horizontalAlignment,
-				verticalAlignment,
-				rotation,
-				getLoadedFont(textElement, forecolor, null, getTextLocale(textElement)),
-				gridCell, 
-				isWrapText(textElement) || Boolean.TRUE.equals(((JRXlsExporterNature)nature).getColumnAutoFit(textElement)),
-				isCellLocked(textElement),
-				isCellHidden(textElement)
-				);
+		StyleInfo baseStyle = isIgnoreTextFormatting(textElement) 
+				? new StyleInfo(
+						mode,
+						whiteIndex,
+						horizontalAlignment,
+						verticalAlignment,
+						(short)0,
+						null,
+						(JRExporterGridCell)null, 
+						isWrapText(textElement) || Boolean.TRUE.equals(((JRXlsExporterNature)nature).getColumnAutoFit(textElement)),
+						isCellLocked(textElement),
+						isCellHidden(textElement),
+						isShrinkToFit(textElement)
+						)
+				: new StyleInfo(
+					mode,
+					backcolor,
+					horizontalAlignment,
+					verticalAlignment,
+					rotation,
+					getLoadedFont(textElement, forecolor, null, getTextLocale(textElement)),
+					gridCell, 
+					isWrapText(textElement) || Boolean.TRUE.equals(((JRXlsExporterNature)nature).getColumnAutoFit(textElement)),
+					isCellLocked(textElement),
+					isCellHidden(textElement),
+					isShrinkToFit(textElement)
+					);
 		createTextCell(textElement, gridCell, colIndex, rowIndex, styledText, baseStyle, forecolor);
 	}
 
@@ -829,11 +877,13 @@ public class JRXlsExporter extends JRXlsAbstractExporter<XlsReportConfiguration,
 
 				public void handle(DateTextValue textValue)
 				{
-					baseStyle.setDataFormat(
-						dataFormat.getFormat(
-							getConvertedPattern(textElement, textValue.getPattern())//FIXMEFORMAT why no null test like in numeric above?
-							)
-						);
+					String convertedPattern = getConvertedPattern(textElement, textValue.getPattern());
+					if (convertedPattern != null)
+					{
+						baseStyle.setDataFormat(
+							dataFormat.getFormat(convertedPattern)
+							);
+					}
 					HSSFCellStyle cellStyle = initCreateCell(gridCell, colIndex, rowIndex, baseStyle);
 					Date date = textValue.getValue();
 					if (date == null)
@@ -894,8 +944,7 @@ public class JRXlsExporter extends JRXlsAbstractExporter<XlsReportConfiguration,
 
 		setHyperlinkCell(textElement);
 	}
-
-
+	
 	protected HSSFCellStyle initCreateCell(JRExporterGridCell gridCell, int colIndex, int rowIndex, StyleInfo baseStyle)
 	{
 		HSSFCellStyle cellStyle = getLoadedCellStyle(baseStyle);
@@ -1205,23 +1254,27 @@ public class JRXlsExporter extends JRXlsAbstractExporter<XlsReportConfiguration,
 		if (cellStyle == null)
 		{
 			cellStyle = workbook.createCellStyle();
-
+			
 			cellStyle.setFillForegroundColor(style.backcolor);
 			cellStyle.setFillPattern(style.mode);
 			cellStyle.setAlignment(style.horizontalAlignment);
 			cellStyle.setVerticalAlignment(style.verticalAlignment);
 			cellStyle.setRotation(style.rotation);
-			cellStyle.setFont(style.font);
+			if(style.font != null)
+			{
+				cellStyle.setFont(style.font);
+			}
 			cellStyle.setWrapText(style.lcWrapText);
 			cellStyle.setLocked(style.lcCellLocked);
 			cellStyle.setHidden(style.lcCellHidden);
-
+			cellStyle.setShrinkToFit(style.lcShrinkToFit);
+			
 			if (style.hasDataFormat())
 			{
 				cellStyle.setDataFormat(style.getDataFormat());
 			}
-
-			boolean isIgnoreCellBorder = getCurrentItemConfiguration().isIgnoreCellBorder();
+			
+			boolean isIgnoreCellBorder = getCurrentItemConfiguration().isIgnoreCellBorder() || style.box ==null;
 			if (!isIgnoreCellBorder)
 			{
 				BoxStyle box = style.box;
@@ -1234,25 +1287,11 @@ public class JRXlsExporter extends JRXlsAbstractExporter<XlsReportConfiguration,
 				cellStyle.setBorderRight(box.borderStyle[BoxStyle.RIGHT]);
 				cellStyle.setRightBorderColor(box.borderColour[BoxStyle.RIGHT]);
 			}
-
+			
 			loadedCellStyles.put(style, cellStyle);
 		}
 		return cellStyle;
 	}
-
-	protected HSSFCellStyle getLoadedCellStyle(
-			short mode,
-			short backcolor,
-			short horizontalAlignment,
-			short verticalAlignment,
-			short rotation,
-			HSSFFont font,
-			JRExporterGridCell gridCell
-			)
-	{
-		return getLoadedCellStyle(mode, backcolor, horizontalAlignment, verticalAlignment, rotation, font, gridCell, true, false);
-	}
-
 	protected HSSFCellStyle getLoadedCellStyle(
 			short mode,
 			short backcolor,
@@ -1261,26 +1300,26 @@ public class JRXlsExporter extends JRXlsAbstractExporter<XlsReportConfiguration,
 			short rotation,
 			HSSFFont font,
 			JRExporterGridCell gridCell,
+			boolean isWrapText,
 			boolean isCellLocked,
-			boolean isCellHidden
+			boolean isCellHidden,
+			boolean isShrinkToFit
 			)
 	{
-		StyleInfo style = new StyleInfo(mode, backcolor, horizontalAlignment, verticalAlignment, rotation, font, gridCell, isCellLocked, isCellHidden);
-		return getLoadedCellStyle(style);
+		return getLoadedCellStyle(
+				new StyleInfo(
+						mode, 
+						backcolor, 
+						horizontalAlignment, 
+						verticalAlignment, 
+						rotation, 
+						font, 
+						gridCell, 
+						isWrapText, 
+						isCellLocked, 
+						isCellHidden, 
+						isShrinkToFit));
 	}
-
-	protected HSSFCellStyle getLoadedCellStyle(
-			short mode,
-			short backcolor,
-			short horizontalAlignment,
-			short verticalAlignment,
-			short rotation,
-			HSSFFont font,
-			BoxStyle box
-			)
-		{
-			return getLoadedCellStyle(mode, backcolor, horizontalAlignment, verticalAlignment, rotation, font, box, true, false);
-		}
 
 	protected HSSFCellStyle getLoadedCellStyle(
 			short mode,
@@ -1290,11 +1329,13 @@ public class JRXlsExporter extends JRXlsAbstractExporter<XlsReportConfiguration,
 			short rotation,
 			HSSFFont font,
 			BoxStyle box,
+			boolean isWrapText,
 			boolean isCellLocked,
-			boolean isCellHidden
+			boolean isCellHidden,
+			boolean isShrinkToFit
 			)
 		{
-			StyleInfo style = new StyleInfo(mode, backcolor, horizontalAlignment, verticalAlignment, rotation, font, box, isCellLocked, isCellHidden);
+			StyleInfo style = new StyleInfo(mode, backcolor, horizontalAlignment, verticalAlignment, rotation, font, box, isWrapText, isCellLocked, isCellHidden, isShrinkToFit);
 			return getLoadedCellStyle(style);
 		}
 
@@ -1425,7 +1466,7 @@ public class JRXlsExporter extends JRXlsAbstractExporter<XlsReportConfiguration,
 				}
 
 				float xalignFactor = 0f;
-				switch (element.getHorizontalAlignmentValue())
+				switch (element.getHorizontalImageAlign())
 				{
 					case RIGHT:
 					{
@@ -1446,7 +1487,7 @@ public class JRXlsExporter extends JRXlsAbstractExporter<XlsReportConfiguration,
 				}
 
 				float yalignFactor = 0f;
-				switch (element.getVerticalAlignmentValue())
+				switch (element.getVerticalImageAlign())
 				{
 					case BOTTOM:
 					{
@@ -1584,8 +1625,10 @@ public class JRXlsExporter extends JRXlsAbstractExporter<XlsReportConfiguration,
 						(short)0,
 						getLoadedFont(getDefaultFont(), forecolor, null, getLocale()),
 						gridCell,
+						isWrapText(element),
 						isCellLocked(element),
-						isCellHidden(element)
+						isCellHidden(element),
+						isShrinkToFit(element)
 						);
 
 				createMergeRegion(gridCell, colIndex, rowIndex, cellStyle);
@@ -1634,11 +1677,19 @@ public class JRXlsExporter extends JRXlsAbstractExporter<XlsReportConfiguration,
 		}
 		catch (Exception ex)
 		{
-			throw new JRException("The cell cannot be added", ex);
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_CANNOT_ADD_CELL, 
+					null,
+					ex);
 		}
 		catch (Error err)
 		{
-			throw new JRException("The cell cannot be added", err);
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_CANNOT_ADD_CELL, 
+					null,
+					err);
 		}
 	}
 	
@@ -1720,8 +1771,10 @@ public class JRXlsExporter extends JRXlsAbstractExporter<XlsReportConfiguration,
 				(short)0,
 				getLoadedFont(getDefaultFont(), forecolor, null, getLocale()),
 				gridCell,
+				isWrapText(frame),
 				isCellLocked(frame),
-				isCellHidden(frame)
+				isCellHidden(frame),
+				isShrinkToFit(frame)
 				);
 
 		createMergeRegion(gridCell, x, y, cellStyle);
@@ -1954,6 +2007,13 @@ public class JRXlsExporter extends JRXlsAbstractExporter<XlsReportConfiguration,
 		}
 	}
 
+	@Override
+	protected Integer getMaxRowsPerSheet()
+	{
+		Integer maxRowsPerSheet = super.getMaxRowsPerSheet();
+		return maxRowsPerSheet == null || maxRowsPerSheet == 0  || maxRowsPerSheet > 65536 ? 65536 : maxRowsPerSheet;
+	}
+
 
 	/**
 	 *
@@ -2022,7 +2082,7 @@ public class JRXlsExporter extends JRXlsAbstractExporter<XlsReportConfiguration,
 				if (level == null || l.compareTo(level) >= 0)
 				{
 					Integer startIndex = levelMap.get(l);
-					if(levelInfo.getEndIndex() > startIndex)
+					if(levelInfo.getEndIndex() >= startIndex)
 					{
 						sheet.groupRow(startIndex, levelInfo.getEndIndex());
 					}
@@ -2032,15 +2092,6 @@ public class JRXlsExporter extends JRXlsAbstractExporter<XlsReportConfiguration,
 		}
 	}
 	
-	protected void setScale(Integer scale)
-	{
-		if (isValidScale(scale))
-		{
-			HSSFPrintSetup printSetup = sheet.getPrintSetup();
-			printSetup.setScale((short)scale.intValue());
-		}
-	}
-
 
 	/**
 	 * 
@@ -2066,18 +2117,21 @@ public class JRXlsExporter extends JRXlsAbstractExporter<XlsReportConfiguration,
 
 		public BoxStyle(JRExporterGridCell gridCell)
 		{
-			JRLineBox lineBox = gridCell.getBox();
-			if (lineBox != null)
+			if(gridCell != null)
 			{
-				setBox(lineBox);
+				JRLineBox lineBox = gridCell.getBox();
+				if (lineBox != null)
+				{
+					setBox(lineBox);
+				}
+				JRPrintElement element = gridCell.getElement();
+				if (element instanceof JRCommonGraphicElement)
+				{
+					setPen(((JRCommonGraphicElement)element).getLinePen());
+				}
+	
+				hash = computeHash();
 			}
-			JRPrintElement element = gridCell.getElement();
-			if (element instanceof JRCommonGraphicElement)
-			{
-				setPen(((JRCommonGraphicElement)element).getLinePen());
-			}
-
-			hash = computeHash();
 		}
 
 		public void setBox(JRLineBox box)
@@ -2182,187 +2236,37 @@ public class JRXlsExporter extends JRXlsAbstractExporter<XlsReportConfiguration,
 		protected final boolean lcWrapText;
 		protected final boolean lcCellLocked;
 		protected final boolean lcCellHidden;
+		protected final boolean lcShrinkToFit;
 		private short lcDataFormat = -1;
 		private int hashCode;
-	
+
 		public StyleInfo(
-			short mode,
-			short backcolor,
-			short horizontalAlignment,
-			short verticalAlignment,
-			short rotation,
-			HSSFFont font,
-			JRExporterGridCell gridCell
-			)
+				short mode,
+				short backcolor,
+				short horizontalAlignment,
+				short verticalAlignment,
+				short rotation,
+				HSSFFont font,
+				JRExporterGridCell gridCell,
+				boolean wrapText,
+				boolean cellLocked,
+				boolean cellHidden,
+				boolean shrinkToFit
+				)
 		{
-			this(
-				mode,
-				backcolor,
-				horizontalAlignment,
-				verticalAlignment,
-				rotation,
-				font,
-				new BoxStyle(gridCell),
-				true,
-				true,
-				false
-				);
+			this(mode, 
+				backcolor, 
+				horizontalAlignment, 
+				verticalAlignment, 
+				rotation, 
+				font, 
+				(gridCell == null ? null : new BoxStyle(gridCell)), 
+				wrapText, 
+				cellLocked, 
+				cellHidden, 
+				shrinkToFit);
 		}
-	
-		public StyleInfo(
-			short mode,
-			short backcolor,
-			short horizontalAlignment,
-			short verticalAlignment,
-			short rotation,
-			HSSFFont font,
-			JRExporterGridCell gridCell,
-			boolean wrapText,
-			boolean cellLocked,
-			boolean cellHidden
-			)
-		{
-			this(
-				mode,
-				backcolor,
-				horizontalAlignment,
-				verticalAlignment,
-				rotation,
-				font,
-				new BoxStyle(gridCell),
-				wrapText,
-				cellLocked,
-				cellHidden
-				);
-		}
-	
-		public StyleInfo(
-			short mode,
-			short backcolor,
-			short horizontalAlignment,
-			short verticalAlignment,
-			short rotation,
-			HSSFFont font,
-			JRExporterGridCell gridCell,
-			boolean cellLocked,
-			boolean cellHidden
-			)
-		{
-			this(
-				mode,
-				backcolor,
-				horizontalAlignment,
-				verticalAlignment,
-				rotation,
-				font,
-				new BoxStyle(gridCell),
-				true,
-				cellLocked,
-				cellHidden
-				);
-		}
-	
-		public StyleInfo(
-			short mode,
-			short backcolor,
-			short horizontalAlignment,
-			short verticalAlignment,
-			short rotation,
-			HSSFFont font,
-			JRExporterGridCell gridCell,
-			boolean wrapText
-			)
-		{
-			this(
-				mode,
-				backcolor,
-				horizontalAlignment,
-				verticalAlignment,
-				rotation,
-				font,
-				new BoxStyle(gridCell),
-				wrapText,
-				true,
-				false
-				);
-		}
-	
-		public StyleInfo(
-			short mode,
-			short backcolor,
-			short horizontalAlignment,
-			short verticalAlignment,
-			short rotation,
-			HSSFFont font,
-			BoxStyle box
-			)
-		{
-		this(
-				mode,
-				backcolor,
-				horizontalAlignment,
-				verticalAlignment,
-				rotation,
-				font,
-				box,
-				true,
-				true,
-				false
-				);
-		}
-	
-		public StyleInfo(
-			short mode,
-			short backcolor,
-			short horizontalAlignment,
-			short verticalAlignment,
-			short rotation,
-			HSSFFont font,
-			BoxStyle box,
-			boolean wrapText
-			)
-		{
-			this(
-				mode,
-				backcolor,
-				horizontalAlignment,
-				verticalAlignment,
-				rotation,
-				font,
-				box,
-				wrapText,
-				true,
-				false
-				);
-		}
-	
-	
-		public StyleInfo(
-			short mode,
-			short backcolor,
-			short horizontalAlignment,
-			short verticalAlignment,
-			short rotation,
-			HSSFFont font,
-			BoxStyle box,
-			boolean cellLocked,
-			boolean cellHidden
-			)
-		{
-			this(
-				mode,
-				backcolor,
-				horizontalAlignment,
-				verticalAlignment,
-				rotation,
-				font,
-				box,
-				true,
-				cellLocked,
-				cellHidden
-				);
-		}
-	
+		
 		public StyleInfo(
 			short mode,
 			short backcolor,
@@ -2373,7 +2277,8 @@ public class JRXlsExporter extends JRXlsAbstractExporter<XlsReportConfiguration,
 			BoxStyle box,
 			boolean wrapText,
 			boolean cellLocked,
-			boolean cellHidden
+			boolean cellHidden,
+			boolean shrinkToFit
 			)
 		{
 			this.mode = mode;
@@ -2382,12 +2287,12 @@ public class JRXlsExporter extends JRXlsAbstractExporter<XlsReportConfiguration,
 			this.verticalAlignment = verticalAlignment;
 			this.rotation = rotation;
 			this.font = font;
-	
+				
 			this.box = box;
-			this.lcWrapText = wrapText;
+			this.lcWrapText = shrinkToFit ? false : wrapText;
 			this.lcCellLocked = cellLocked;
 			this.lcCellHidden = cellHidden;
-	
+			this.lcShrinkToFit = shrinkToFit;
 			hashCode = computeHash();
 		}
 	
@@ -2404,6 +2309,7 @@ public class JRXlsExporter extends JRXlsAbstractExporter<XlsReportConfiguration,
 			hash = 31*hash + (lcWrapText ? 0 : 1);
 			hash = 31*hash + (lcCellLocked ? 0 : 1);
 			hash = 31*hash + (lcCellHidden ? 0 : 1);
+			hash = 31*hash + (lcShrinkToFit ? 0 : 1);
 			return hash;
 		}
 	
@@ -2440,7 +2346,8 @@ public class JRXlsExporter extends JRXlsAbstractExporter<XlsReportConfiguration,
 					&& (s.font == null ? font == null : (font != null && s.font.getIndex() == font.getIndex()))
 					&& (s.box == null ? box == null : (box != null && s.box.equals(box)))
 					&& s.rotation == rotation && s.lcWrapText == lcWrapText 
-					&& s.lcCellLocked == lcCellLocked && s.lcCellHidden == lcCellHidden;//FIXME should dataformat be part of equals? it is part of toString()...
+					&& s.lcCellLocked == lcCellLocked && s.lcCellHidden == lcCellHidden
+					&& s.lcShrinkToFit == lcShrinkToFit;	//FIXME should dataformat be part of equals? it is part of toString()...
 		}
 	
 		public String toString()
@@ -2449,9 +2356,8 @@ public class JRXlsExporter extends JRXlsAbstractExporter<XlsReportConfiguration,
 				mode + "," + backcolor + "," +
 				horizontalAlignment + "," + verticalAlignment + "," +
 				rotation + "," + font + "," +
-				box + "," + lcDataFormat + "," + lcWrapText + "," + lcCellLocked + "," + lcCellHidden + ")";
+				box + "," + lcDataFormat + "," + lcWrapText + "," + lcCellLocked + "," + lcCellHidden + "," + lcShrinkToFit + ")";
 		}
 	}
-
 
 }

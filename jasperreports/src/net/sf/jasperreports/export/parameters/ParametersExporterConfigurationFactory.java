@@ -28,6 +28,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import net.sf.jasperreports.engine.JRAbstractExporter;
 import net.sf.jasperreports.engine.JRExporterParameter;
@@ -35,7 +36,7 @@ import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReportsContext;
-import net.sf.jasperreports.engine.type.JREnum;
+import net.sf.jasperreports.engine.type.NamedEnum;
 import net.sf.jasperreports.export.CommonExportConfiguration;
 import net.sf.jasperreports.export.PropertiesExporterConfigurationFactory;
 import net.sf.jasperreports.export.annotations.ExporterParameter;
@@ -45,7 +46,6 @@ import net.sf.jasperreports.export.annotations.ExporterProperty;
 /**
  * @deprecated To be removed.
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class ParametersExporterConfigurationFactory<C extends CommonExportConfiguration>
 {
@@ -137,17 +137,23 @@ public class ParametersExporterConfigurationFactory<C extends CommonExportConfig
 		return proxy;
 	}
 
+	private static final Object NULL_VALUE_PLACEHOLDER = new Object();
 
 	/**
 	 * 
 	 */
 	class ParametersInvocationHandler implements InvocationHandler
 	{
+		
+		private final Map<Method, Object> values;
+		
 		/**
 		 * 
 		 */
 		public ParametersInvocationHandler()
 		{
+			//concurrency might not be involved, but let's be safe
+			values = new ConcurrentHashMap<Method, Object>(16, 0.75f, 1);
 		}
 		
 		/**
@@ -159,10 +165,21 @@ public class ParametersExporterConfigurationFactory<C extends CommonExportConfig
 			Object[] args
 			) throws Throwable 
 		{
-			return getPropertyValue(method);
+			Object cachedValue = values.get(method);
+			if (cachedValue == null)
+			{
+				Object value = getPropertyValue(method);
+				
+				//caching the result as getPropertyValue is not that cheap.
+				//the result is not expected to change from one invocation to another.
+				//(in theory someone might change context properties during an export, but that's not a supported scenario)
+				cachedValue = value == null ? NULL_VALUE_PLACEHOLDER : value;
+				values.put(method, cachedValue);
+			}
+			
+			return cachedValue == NULL_VALUE_PLACEHOLDER ? null : cachedValue;
 		}
 	}
-	
 	
 	/**
 	 * 
@@ -251,7 +268,7 @@ public class ParametersExporterConfigurationFactory<C extends CommonExportConfig
 				{
 					value = parameterResolver.getBooleanParameter(parameter, propertyName, exporterProperty.booleanDefault());
 				}
-				else if (JREnum.class.isAssignableFrom(type))
+				else if (NamedEnum.class.isAssignableFrom(type))
 				{
 					if (exporterParameter.acceptNull())
 					{

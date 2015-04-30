@@ -35,10 +35,11 @@ import net.sf.jasperreports.export.ExporterOutput;
 /**
  * @deprecated To be removed.
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public abstract class AbstractParametersExporterOutput implements ExporterOutput
 {
+	public static final String EXCEPTION_MESSAGE_KEY_NO_OUTPUT_SPECIFIED = "export.parameters.no.output.specified";
+
 	/**
 	 * 
 	 */

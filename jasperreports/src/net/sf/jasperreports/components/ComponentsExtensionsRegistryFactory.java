@@ -71,7 +71,6 @@ import net.sf.jasperreports.extensions.ListExtensionsRegistry;
  * This registry factory is registered by default in JasperReports.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  * @see ListComponent
  */
 public class ComponentsExtensionsRegistryFactory implements
@@ -91,7 +90,7 @@ public class ComponentsExtensionsRegistryFactory implements
 	public static final List<String> BARCODE4J_COMPONENT_NAMES = Collections.unmodifiableList(Arrays.asList(
 			"Codabar", "Code128", "EAN128", "DataMatrix", "Code39", "Interleaved2Of5",
 			"UPCA", "UPCE", "EAN13", "EAN8", "USPSIntelligentMail", "RoyalMailCustomer", 
-			"POSTNET", "PDF417"));
+			"POSTNET", "PDF417", "QRCode"));
 	public static final String SPIDERCHART_COMPONENT_NAME = "spiderChart";
 	public static final String MAP_COMPONENT_NAME = "map";
 	public static final String SORT_COMPONENT_NAME = "sort";

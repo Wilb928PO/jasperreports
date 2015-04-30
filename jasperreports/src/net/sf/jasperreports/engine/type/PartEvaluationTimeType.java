@@ -23,12 +23,10 @@
  */
 package net.sf.jasperreports.engine.type;
 
-import net.sf.jasperreports.engine.JRConstants;
 import net.sf.jasperreports.engine.part.PartEvaluationTime;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public enum PartEvaluationTimeType implements NamedEnum
 {
@@ -46,8 +44,6 @@ public enum PartEvaluationTimeType implements NamedEnum
 	 * Evaluate the part when the report ends.
 	 */
 	REPORT("Report");
-	
-	private static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
 	
 	private final String name;
 	

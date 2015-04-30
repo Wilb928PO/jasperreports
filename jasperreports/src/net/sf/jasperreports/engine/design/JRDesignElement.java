@@ -40,6 +40,7 @@ import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.base.JRBaseElement;
 import net.sf.jasperreports.engine.type.PositionTypeEnum;
 import net.sf.jasperreports.engine.type.StretchTypeEnum;
+import net.sf.jasperreports.engine.util.JRCloneUtils;
 
 
 /**
@@ -47,7 +48,6 @@ import net.sf.jasperreports.engine.type.StretchTypeEnum;
  * and compiled elements is that at design time they are more customizable. This class contains setters for properties
  * that can be only modified at design time.
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public abstract class JRDesignElement extends JRBaseElement
 {
@@ -284,6 +284,7 @@ public abstract class JRDesignElement extends JRBaseElement
 	{
 		JRDesignElement clone = (JRDesignElement) super.clone();
 		clone.uuid = null;
+		clone.propertyExpressions = JRCloneUtils.cloneList(propertyExpressions);
 		return clone;
 	}
 	

@@ -41,10 +41,10 @@ import net.sf.jasperreports.engine.JRRuntimeException;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class CrosstabBucketingService extends BucketingService implements BucketingData
 {
+	public static final String EXCEPTION_MESSAGE_KEY_DATA_NOT_PROCESSED = "crosstabs.calculation.data.not.processed";
 	
 	protected HeaderCell[][] colHeaders;
 	protected HeaderCell[][] rowHeaders;
@@ -64,7 +64,10 @@ public class CrosstabBucketingService extends BucketingService implements Bucket
 	{
 		if (!processed)
 		{
-			throw new JRRuntimeException("Crosstab data needs to be processed first");
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_DATA_NOT_PROCESSED,
+					(Object[])null);
 		}
 		
 		if (!hasData())
@@ -570,6 +573,7 @@ public class CrosstabBucketingService extends BucketingService implements Bucket
 	
 	protected static class CollectedListComparator implements Comparator<CollectedList>
 	{
+		final String EXCEPTION_MESSAGE_KEY_TWO_TOTAL_KEYS_IN_SAME_LIST = "crosstabs.calculation.two.total.keys.in.same.list";
 		final BucketOrderer bucketOrderer;
 		final boolean totalFirst;
 		
@@ -593,7 +597,10 @@ public class CrosstabBucketingService extends BucketingService implements Bucket
 				if (l2.key.isTotal())
 				{
 					// this should not happen
-					throw new JRRuntimeException("Two total keys in the same list");
+					throw 
+						new JRRuntimeException(
+							EXCEPTION_MESSAGE_KEY_TWO_TOTAL_KEYS_IN_SAME_LIST,
+							(Object[])null);
 				}
 				
 				order = totalFirst ? -1 : 1;

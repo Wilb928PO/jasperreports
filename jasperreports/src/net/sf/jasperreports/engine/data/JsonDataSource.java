@@ -50,9 +50,13 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
  * JSON data source implementation
  * 
  * @author Narcis Marcu (narcism@users.sourceforge.net)
- * @version $Id$
  */
 public class JsonDataSource extends JRAbstractTextDataSource implements JsonData {
+
+	public static final String EXCEPTION_MESSAGE_KEY_JSON_FIELD_VALUE_NOT_RETRIEVED = "data.json.field.value.not.retrieved";
+	public static final String EXCEPTION_MESSAGE_KEY_INVALID_ATTRIBUTE_SELECTION = "data.json.invalid.attribute.selection";
+	public static final String EXCEPTION_MESSAGE_KEY_INVALID_EXPRESSION = "data.json.invalid.expression";
+	public static final String EXCEPTION_MESSAGE_KEY_NO_DATA = "data.json.no.data";
 
 	// the JSON select expression that gives the nodes to iterate
 	private String selectExpression;
@@ -130,7 +134,10 @@ public class JsonDataSource extends JRAbstractTextDataSource implements JsonData
 	 */
 	public void moveFirst() throws JRException {
 		if (jsonTree == null || jsonTree.isMissingNode()) {
-			throw new JRException("No JSON data to operate on!");
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_NO_DATA,
+					(Object[])null);
 		}
 
 		currentJsonNode = null;
@@ -203,8 +210,12 @@ public class JsonDataSource extends JRAbstractTextDataSource implements JsonData
 			{
 				try {
 					if (valueClass.equals(String.class)) {
-						value = selectedObject.asText();
-						
+                        if (selectedObject.isArray()) {
+                            value = selectedObject.toString();
+                        } else {
+                            value = selectedObject.asText();
+                        }
+
 					} else if (valueClass.equals(Boolean.class)) {
 						value = selectedObject.booleanValue();
 						
@@ -217,10 +228,17 @@ public class JsonDataSource extends JRAbstractTextDataSource implements JsonData
 							value = convertStringValue(selectedObject.asText(), valueClass);
 							
 					} else {
-						throw new JRException("Field '" + jrField.getName() + "' is of class '" + valueClass.getName() + "' and cannot be converted");
+						throw 
+							new JRException(
+								EXCEPTION_MESSAGE_KEY_CANNOT_CONVERT_FIELD_TYPE,
+								new Object[]{jrField.getName(), valueClass.getName()});
 					}
 				} catch (Exception e) {
-					throw new JRException("Unable to get value for field '" + jrField.getName() + "' of class '" + valueClass.getName() + "'", e);
+					throw 
+						new JRException(
+							EXCEPTION_MESSAGE_KEY_JSON_FIELD_VALUE_NOT_RETRIEVED,
+							new Object[]{jrField.getName(), valueClass.getName()}, 
+							e);
 				}
 			}
 		}
@@ -255,7 +273,10 @@ public class JsonDataSource extends JRAbstractTextDataSource implements JsonData
 			if (indexOfLeftSquareBracket != -1) {
 				// a Right Square Bracket must be the last character in the current token
 				if(currentToken.lastIndexOf(ARRAY_RIGHT) != (currentTokenLength-1)) {
-					throw new JRException("Invalid expression: " + jsonExpression + "; current token " + currentToken + " not ended properly");
+					throw 
+						new JRException(
+							EXCEPTION_MESSAGE_KEY_INVALID_EXPRESSION,
+							new Object[]{jsonExpression, currentToken});
 				}
 				
 				// LSB not first character
@@ -305,7 +326,10 @@ public class JsonDataSource extends JRAbstractTextDataSource implements JsonData
 			
 			// a Right Round Bracket must be the last character in the current pathWithAttribute
 			if(pathWithAttributeExpression.indexOf(ATTRIBUTE_RIGHT) != (pathWithAttributeExpression.length() - 1)) {
-				throw new JRException("Invalid attribute selection expression: " + pathWithAttributeExpression);
+				throw 
+					new JRException(
+						EXCEPTION_MESSAGE_KEY_INVALID_ATTRIBUTE_SELECTION,
+						new Object[]{pathWithAttributeExpression});
 			}
 			
 			if(rootNode != null && !rootNode.isMissingNode()) {
@@ -428,7 +452,10 @@ public class JsonDataSource extends JRAbstractTextDataSource implements JsonData
 	public JsonDataSource subDataSource(String selectExpression) throws JRException {
 		if(currentJsonNode == null)
 		{
-			throw new JRException("No node available. Iterate or rewind the data source.");
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_NODE_NOT_AVAILABLE,
+					(Object[])null);
 		}
 
 		try {

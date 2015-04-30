@@ -23,16 +23,17 @@
  */
 package net.sf.jasperreports.components.barcode4j;
 
+
 /**
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public abstract class UniformBarcodeVisitor implements BarcodeVisitor
 {
-
 	protected abstract void visitBarcode(BarcodeComponent barcode);
 	
+	protected abstract void visitBarcode(Barcode4jComponent barcode);
+
 	public void visitCodabar(CodabarComponent codabar)
 	{
 		visitBarcode(codabar);
@@ -104,5 +105,9 @@ public abstract class UniformBarcodeVisitor implements BarcodeVisitor
 	{
 		visitBarcode(pdf417);
 	}
-
+	
+	public void visitQRCode(QRCodeComponent qrCode)
+	{
+		visitBarcode(qrCode);
+	}
 }

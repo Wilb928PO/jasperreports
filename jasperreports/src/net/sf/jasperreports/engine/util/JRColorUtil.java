@@ -31,10 +31,10 @@ import net.sf.jasperreports.engine.type.ColorEnum;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public final class JRColorUtil
 {
+	public static final String EXCEPTION_MESSAGE_KEY_INVALID_COLOR = "util.color.invalid.color";
 
 	/**
 	 *
@@ -116,7 +116,10 @@ public final class JRColorUtil
 					}
 					else
 					{
-						throw new JRRuntimeException("Invalid color : " + strColor);
+						throw 
+							new JRRuntimeException(
+								EXCEPTION_MESSAGE_KEY_INVALID_COLOR,
+								new Object[]{strColor});
 					}
 					
 					String numStr = strColor.substring(prefix.length(), strColor.length() - RGBA_SUFFIX.length());
@@ -124,7 +127,10 @@ public final class JRColorUtil
 					
 					if (numArray == null || numArray.length != numArrayLength)
 					{
-						throw new JRRuntimeException("Invalid color : " + strColor);
+						throw 
+							new JRRuntimeException(
+								EXCEPTION_MESSAGE_KEY_INVALID_COLOR,
+								new Object[]{strColor});
 					}
 					else
 					{
@@ -133,7 +139,10 @@ public final class JRColorUtil
 							numArray[i] = numArray[i].trim();
 							if (numArray[i].length() == 0)
 							{
-								throw new JRRuntimeException("Invalid color : " + strColor);
+								throw 
+									new JRRuntimeException(
+										EXCEPTION_MESSAGE_KEY_INVALID_COLOR,
+										new Object[]{strColor});
 							}
 						}
 
@@ -170,6 +179,10 @@ public final class JRColorUtil
 		return color;
 	}
 
+	public static int getOpaqueArgb(Color color, Color defaultColor) {
+		Color result = color == null ? defaultColor : color;
+		return result == null ? 0x00000000 : result.getRGB() & 0xffffffff;
+	}
 
 	private JRColorUtil()
 	{

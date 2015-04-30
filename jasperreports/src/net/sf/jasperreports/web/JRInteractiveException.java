@@ -28,7 +28,6 @@ import net.sf.jasperreports.engine.JRException;
 
 /**
  * @author Narcis Marcu (narcism@users.sourceforge.net)
- * @version $Id$
  */
 public class JRInteractiveException extends JRException
 {
@@ -47,5 +46,15 @@ public class JRInteractiveException extends JRException
 	public JRInteractiveException(String message, Throwable t)
 	{
 		super(message, t);
+	}
+	
+	public JRInteractiveException(String messageKey, Object[] args, Throwable t)
+	{
+		super(messageKey, args, t);
+	}
+
+	public JRInteractiveException(String messageKey, Object[] args)
+	{
+		super(messageKey, args);
 	}
 }

@@ -49,7 +49,6 @@ import org.apache.commons.logging.LogFactory;
  * JSON query executer implementation.
  * 
  * @author Narcis Marcu (narcism@users.sourceforge.net)
- * @version $Id$
  */
 public class JsonQueryExecuter extends JRAbstractQueryExecuter
 {

@@ -43,7 +43,6 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class JRHorizontalFiller extends JRBaseFiller
 {
@@ -424,7 +423,10 @@ public class JRHorizontalFiller extends JRBaseFiller
 
 			if (!filled)
 			{
-				throw new JRRuntimeException("Infinite loop creating new page due to page header overflow.");
+				throw 
+					new JRRuntimeException(
+						EXCEPTION_MESSAGE_KEY_PAGE_HEADER_OVERFLOW_INFINITE_LOOP,
+						(Object[])null);
 			}
 		}
 
@@ -510,7 +512,10 @@ public class JRHorizontalFiller extends JRBaseFiller
 
 				if (!fits)
 				{
-					throw new JRRuntimeException("Infinite loop creating new page due to column header size.");
+					throw 
+						new JRRuntimeException(
+							EXCEPTION_MESSAGE_KEY_COLUMN_HEADER_OVERFLOW_INFINITE_LOOP,
+							(Object[])null);
 				}
 
 				setOffsetX();
@@ -1955,7 +1960,11 @@ public class JRHorizontalFiller extends JRBaseFiller
 	{
 		if (isCreatingNewPage)
 		{
-			throw new JRException("Infinite loop creating new page.");
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_INFINITE_LOOP_CREATING_NEW_PAGE,  
+					(Object[])null 
+					);
 		}
 
 		if (keepTogetherSavePoint != null)

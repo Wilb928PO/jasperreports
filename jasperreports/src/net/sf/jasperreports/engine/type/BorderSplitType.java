@@ -23,14 +23,12 @@
  */
 package net.sf.jasperreports.engine.type;
 
-import net.sf.jasperreports.engine.JRConstants;
 import net.sf.jasperreports.engine.JRFrame;
 
 /**
  * Specifies the way the frame border is to be drawn when the frame element splits.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  * @see JRFrame#getBorderSplitType()
  */
 public enum BorderSplitType implements NamedEnum
@@ -43,8 +41,6 @@ public enum BorderSplitType implements NamedEnum
 	 * When the frame splits, both fragments are drawn with borders on all sides.
 	 */
 	DRAW_BORDERS("DrawBorders");
-	
-	private static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
 	
 	private final String name;
 	
@@ -63,5 +59,4 @@ public enum BorderSplitType implements NamedEnum
 	{
 		return EnumUtil.getEnumByName(values(), name);
 	}
-
 }

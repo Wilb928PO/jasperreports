@@ -40,6 +40,7 @@ import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.util.JRStyledText;
+import net.sf.jasperreports.export.ExportInterruptedException;
 import net.sf.jasperreports.export.ExporterInputItem;
 import net.sf.jasperreports.export.TextExporterConfiguration;
 import net.sf.jasperreports.export.TextReportConfiguration;
@@ -110,11 +111,14 @@ import net.sf.jasperreports.export.WriterExporterOutput;
  * @see net.sf.jasperreports.export.TextExporterConfiguration
  * @see net.sf.jasperreports.export.TextReportConfiguration
  * @author Ionut Nedelcu (ionutned@users.sourceforge.net)
- * @version $Id$
  */
 public class JRTextExporter extends JRAbstractExporter<TextReportConfiguration, TextExporterConfiguration, WriterExporterOutput, JRTextExporterContext>
 {
 	private static final String TXT_EXPORTER_PROPERTIES_PREFIX = JRPropertiesUtil.PROPERTY_PREFIX + "export.txt.";
+	public static final String EXCEPTION_MESSAGE_KEY_REQUIRED_POSITIVE_PAGE_OR_CHARACTER_WIDTH = "export.text.required.positive.page.or.character.width";
+	public static final String EXCEPTION_MESSAGE_KEY_CHARACTER_WIDTH_NEGATIVE = "export.text.character.width.negative";
+	public static final String EXCEPTION_MESSAGE_KEY_REQUIRED_POSITIVE_PAGE_OR_CHARACTER_HEIGHT = "export.text.required.positive.page.or.character.height";
+	public static final String EXCEPTION_MESSAGE_KEY_CHARACTER_HEIGHT_NEGATIVE = "export.text.character.height.negative";
 
 	protected Writer writer;
 	char[][] pageData;
@@ -209,7 +213,11 @@ public class JRTextExporter extends JRAbstractExporter<TextReportConfiguration, 
 		}
 		catch (IOException e)
 		{
-			throw new JRException("Error writing to output writer : " + jasperPrint.getName(), e);
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_OUTPUT_WRITER_ERROR,
+					new Object[]{jasperPrint.getName()}, 
+					e);
 		}
 		finally
 		{
@@ -252,7 +260,11 @@ public class JRTextExporter extends JRAbstractExporter<TextReportConfiguration, 
 		charWidth = charWidthValue == null ? 0 : charWidthValue;
 		if (charWidth < 0)
 		{
-			throw new JRRuntimeException("Character width in pixels must be greater than zero.");
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_CHARACTER_WIDTH_NEGATIVE,  
+					(Object[])null 
+					);
 		}
 		else if (charWidth == 0)
 		{
@@ -261,7 +273,11 @@ public class JRTextExporter extends JRAbstractExporter<TextReportConfiguration, 
 			
 			if (pageWidthInChars <= 0)
 			{
-				throw new JRRuntimeException("Character width in pixels or page width in characters must be specified and must be greater than zero.");
+				throw 
+					new JRRuntimeException(
+						EXCEPTION_MESSAGE_KEY_REQUIRED_POSITIVE_PAGE_OR_CHARACTER_WIDTH,  
+						(Object[])null 
+						);
 			}
 			
 			charWidth = jasperPrint.getPageWidth() / (float)pageWidthInChars;
@@ -276,7 +292,11 @@ public class JRTextExporter extends JRAbstractExporter<TextReportConfiguration, 
 		charHeight = charHeightValue == null ? 0 : charHeightValue; 
 		if (charHeight < 0)
 		{
-			throw new JRRuntimeException("Character height in pixels must be greater than zero.");
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_CHARACTER_HEIGHT_NEGATIVE,  
+					(Object[])null 
+					);
 		}
 		else if (charHeight == 0)
 		{
@@ -284,7 +304,11 @@ public class JRTextExporter extends JRAbstractExporter<TextReportConfiguration, 
 			pageHeightInChars = pageHeightInCharsValue == null ? 0 : pageHeightInCharsValue;
 			if (pageHeightInChars <= 0)
 			{
-				throw new JRRuntimeException("Character height in pixels or page height in characters must be specified and must be greater than zero.");
+				throw 
+					new JRRuntimeException(
+						EXCEPTION_MESSAGE_KEY_REQUIRED_POSITIVE_PAGE_OR_CHARACTER_HEIGHT,  
+						(Object[])null 
+						);
 			}
 
 			charHeight = jasperPrint.getPageHeight() / (float)pageHeightInChars;
@@ -320,7 +344,7 @@ public class JRTextExporter extends JRAbstractExporter<TextReportConfiguration, 
 				{
 					if (Thread.interrupted())
 					{
-						throw new JRException("Current thread interrupted.");
+						throw new ExportInterruptedException();
 					}
 
 					JRPrintPage page = pages.get(i);
@@ -560,7 +584,7 @@ public class JRTextExporter extends JRAbstractExporter<TextReportConfiguration, 
 		int colOffset = 0;
 		int rowOffset = 0;
 
-		switch (element.getVerticalAlignmentValue())
+		switch (element.getVerticalTextAlign())
 		{
 			case BOTTOM :
 			{
@@ -582,7 +606,7 @@ public class JRTextExporter extends JRAbstractExporter<TextReportConfiguration, 
 				pos--;
 			}
 			line = line.substring(0, pos + 1);
-			switch (element.getHorizontalAlignmentValue())
+			switch (element.getHorizontalTextAlign())
 			{
 				case RIGHT :
 				{

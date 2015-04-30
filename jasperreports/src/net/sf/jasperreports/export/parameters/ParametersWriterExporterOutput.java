@@ -42,7 +42,6 @@ import net.sf.jasperreports.export.WriterExporterOutput;
 /**
  * @deprecated To be removed.
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class ParametersWriterExporterOutput extends AbstractParametersExporterOutput implements WriterExporterOutput
 {
@@ -107,7 +106,10 @@ public class ParametersWriterExporterOutput extends AbstractParametersExporterOu
 						}
 						else
 						{
-							throw new JRRuntimeException("No output specified for the exporter.");
+							throw 
+								new JRRuntimeException(
+									EXCEPTION_MESSAGE_KEY_NO_OUTPUT_SPECIFIED,
+									(Object[])null);
 						}
 					}
 

@@ -29,11 +29,12 @@ import net.sf.jasperreports.engine.JRConstants;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class MaxPagesGovernorException extends GovernorException
 {
 	private static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
+	
+	public static final String EXCEPTION_MESSAGE_KEY_MAX_PAGES_LIMIT_EXCEEDED = "governors.max.pages.limit.exceeded";
 
 	private int maxPages;
 	
@@ -42,8 +43,9 @@ public class MaxPagesGovernorException extends GovernorException
 	 */
 	public MaxPagesGovernorException(String reportName, int maxPages)
 	{
-		super("Report '" + reportName + "' exceeded the limit of " + maxPages + " maximum pages.");
-
+		super(
+			EXCEPTION_MESSAGE_KEY_MAX_PAGES_LIMIT_EXCEEDED,
+			new Object[]{reportName, maxPages});
 		this.maxPages = maxPages;
 	}
 	

@@ -25,6 +25,8 @@ package net.sf.jasperreports.engine.export.ooxml;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.JRRuntimeException;
@@ -33,7 +35,6 @@ import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.PrintPageFormat;
 import net.sf.jasperreports.engine.export.Cut;
 import net.sf.jasperreports.engine.export.JRXlsAbstractExporter;
-import net.sf.jasperreports.engine.export.LengthUtil;
 import net.sf.jasperreports.engine.export.XlsRowLevelInfo;
 import net.sf.jasperreports.engine.export.ooxml.type.PaperSizeEnum;
 import net.sf.jasperreports.engine.util.FileBufferedWriter;
@@ -42,7 +43,6 @@ import net.sf.jasperreports.export.XlsReportConfiguration;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class XlsxSheetHelper extends BaseHelper
 {
@@ -58,6 +58,8 @@ public class XlsxSheetHelper extends BaseHelper
 	private XlsxSheetRelsHelper sheetRelsHelper;//FIXMEXLSX truly embed the rels helper here and no longer have it available from outside; check drawing rels too
 	private final JRPropertiesUtil propertiesUtil;
 	private final XlsReportConfiguration configuration;
+	
+	private List<Integer> rowBreaks = new ArrayList<Integer>();
 
 	/**
 	 * 
@@ -79,28 +81,6 @@ public class XlsxSheetHelper extends BaseHelper
 	/**
 	 *
 	 */
-	public void exportHeader()
-	{
-		write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-		write("<worksheet\n");
-		write(" xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\"\n");
-		write(" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">\n");
-
-		write("<dimension ref=\"A1\"/><sheetViews><sheetView workbookViewId=\"0\"/></sheetViews>\n");
-		write("<sheetFormatPr/>\n");
-	}
-	
-	/**
-	 *
-	 */
-	public void exportHeader(int rowFreeze, int columnFreeze, JasperPrint jasperPrint)
-	{
-		exportHeader(0, rowFreeze, columnFreeze, jasperPrint);
-	}
-	
-	/**
-	 *
-	 */
 	public void exportHeader(boolean showGridlines, int scale, int rowFreeze, int columnFreeze, JasperPrint jasperPrint)
 	{
 		write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
@@ -108,12 +88,23 @@ public class XlsxSheetHelper extends BaseHelper
 		write(" xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\"\n");
 		write(" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">\n");
 		
+		write("<sheetPr><outlinePr summaryBelow=\"0\"/>");
+		
 		/* the scale factor takes precedence over fitWidth and fitHeight properties */
-		boolean noScale = scale < 10 || scale > 400;
-		Integer fitWidth = configuration.getFitWidth();
-		Integer fitHeight = configuration.getFitHeight();
-		String fitToPage = noScale && (fitHeight != null || fitWidth != null) ? "<pageSetUpPr fitToPage=\"1\"/>" : "";
-		write("<sheetPr><outlinePr summaryBelow=\"0\"/>" + fitToPage + "</sheetPr><dimension ref=\"A1\"/><sheetViews><sheetView workbookViewId=\"0\"");
+		if (
+			(scale < 10 || scale > 400)
+			&& (
+				configuration.getFitWidth() != null 
+				|| configuration.getFitHeight() != null
+				|| Boolean.TRUE == configuration.isAutoFitPageHeight()
+				)
+			)
+		{
+			write("<pageSetUpPr fitToPage=\"1\"/>");
+		}
+		
+		write("</sheetPr><dimension ref=\"A1\"/><sheetViews><sheetView workbookViewId=\"0\"");
+		
 		if(!showGridlines)
 		{
 			write(" showGridLines=\"0\"");
@@ -141,53 +132,20 @@ public class XlsxSheetHelper extends BaseHelper
 		write("<sheetFormatPr defaultRowHeight=\"15\"/>\n");
 	}
 	
-	
-	/**
-	 *
-	 */
-	public void exportHeader(int scale, int rowFreeze, int columnFreeze, JasperPrint jasperPrint)
-	{
-		exportHeader(true, scale, rowFreeze, columnFreeze, jasperPrint);
-	}
-	
-
-	/**
-	 *
-	 *
-	public void exportFooter(int index, JasperPrint jasperPrint, boolean isIgnorePageMargins)//FIXMEODT no longer used?
-	{
-		exportFooter(index, jasperPrint, isIgnorePageMargins, null, null);
-	}
-	
-	
-	/**
-	 *
-	 *
-	public void exportFooter(int index, JasperPrint jasperPrint, boolean isIgnorePageMargins, String autoFilter)//FIXMEODT no longer used?
-	{
-		exportFooter(index, jasperPrint, isIgnorePageMargins, autoFilter, null);
-	}
-	
-	/**
-	 *
-	 *
-	public void exportFooter(int index, JasperPrint jasperPrint, boolean isIgnorePageMargins, String autoFilter, Integer scale)//FIXMEODT no longer used?
-	{
-		exportFooter(index, jasperPrint, isIgnorePageMargins, autoFilter, null, null, true);
-	}
-
 
 	/**
 	 *
 	 */
 	public void exportFooter(
-			int index, 
-			PrintPageFormat jasperPrint, 
-			boolean isIgnorePageMargins, 
-			String autoFilter,
-			Integer scale,
-			Integer firstPageNumber,
-			boolean firstPageNotSet)
+		int index, 
+		PrintPageFormat jasperPrint, 
+		boolean isIgnorePageMargins, 
+		String autoFilter,
+		Integer scale,
+		Integer firstPageNumber,
+		boolean firstPageNotSet, 
+		Integer sheetPageCount
+		)
 	{
 		if (rowIndex > 0)
 		{
@@ -224,13 +182,17 @@ public class XlsxSheetHelper extends BaseHelper
 		}
 
 		write("<pageMargins left=\"");
-		write(String.valueOf(jasperPrint.getLeftMargin() == null ? 0.7f : LengthUtil.inchNoRound(isIgnorePageMargins ? 0 : jasperPrint.getLeftMargin()))); 
+//		write(String.valueOf(jasperPrint.getLeftMargin() == null ? 0.7f : LengthUtil.inchNoRound(isIgnorePageMargins ? 0 : jasperPrint.getLeftMargin()))); 
+		write("0");
 		write("\" right=\"");
-		write(String.valueOf(jasperPrint.getRightMargin() == null ? 0.7f : LengthUtil.inchNoRound(isIgnorePageMargins ? 0 : jasperPrint.getRightMargin()))); 
+//		write(String.valueOf(jasperPrint.getRightMargin() == null ? 0.7f : LengthUtil.inchNoRound(isIgnorePageMargins ? 0 : jasperPrint.getRightMargin()))); 
+		write("0");
 		write("\" top=\"");
-		write(String.valueOf(jasperPrint.getTopMargin() == null ? 0.75f : LengthUtil.inchNoRound(isIgnorePageMargins ? 0 : jasperPrint.getTopMargin()))); 
+//		write(String.valueOf(jasperPrint.getTopMargin() == null ? 0.75f : LengthUtil.inchNoRound(isIgnorePageMargins ? 0 : jasperPrint.getTopMargin()))); 
+		write("0");
 		write("\" bottom=\"");
-		write(String.valueOf(jasperPrint.getBottomMargin() == null ? 0.75f : LengthUtil.inchNoRound(isIgnorePageMargins ? 0 : jasperPrint.getBottomMargin()))); 
+//		write(String.valueOf(jasperPrint.getBottomMargin() == null ? 0.75f : LengthUtil.inchNoRound(isIgnorePageMargins ? 0 : jasperPrint.getBottomMargin()))); 
+		write("0");
 		write("\" header=\"0.0\" footer=\"0.0\"/>\n");
 		
 		write("<pageSetup");	
@@ -248,19 +210,25 @@ public class XlsxSheetHelper extends BaseHelper
 		else
 		{
 			Integer fitWidth = configuration.getFitWidth();
-			if(fitWidth != null && fitWidth !=  1)
+			if (fitWidth != null && fitWidth !=  1)
 			{
 				write(" fitToWidth=\"" + fitWidth + "\"");
 			}
 			Integer fitHeight = configuration.getFitHeight();
-			if(fitHeight != null && fitHeight != 1)
+			fitHeight = 
+				fitHeight == null
+				? (Boolean.TRUE == configuration.isAutoFitPageHeight() 
+					? sheetPageCount
+					: null)
+				: fitHeight;
+			if (fitHeight != null && fitHeight != 1)
 			{
 				write(" fitToHeight=\"" + fitHeight + "\"");
 			}
 		}
 		
-		byte pSize = getSuitablePaperSize(jasperPrint);
-		String paperSize = pSize == PaperSizeEnum.UNDEFINED.getValue() ? "" : " paperSize=\"" + pSize + "\"";
+		PaperSizeEnum pSize = getSuitablePaperSize(jasperPrint);
+		String paperSize = pSize == PaperSizeEnum.UNDEFINED ? "" : " paperSize=\"" + pSize.getOoxmlValue() + "\"";
 		write(paperSize);	
 		
 		if(firstPageNumber!= null && firstPageNumber > 0)
@@ -273,13 +241,24 @@ public class XlsxSheetHelper extends BaseHelper
 			write("/>\n");	
 		}
 		
+		if (rowBreaks.size() > 0)
+		{
+			write("<rowBreaks count=\"" + rowBreaks.size() + "\" manualBreakCount=\"" + rowBreaks.size() + "\">");
+			for (Integer rowBreakIndex : rowBreaks)
+			{
+				write("<brk id=\"" + (rowBreakIndex + 1) + "\" man=\"1\"/>");
+			}
+			write("</rowBreaks>");
+		}
+
 		if(!firstPageNotSet)
 		{
 			//TODO: support for customized headers/footers in XLSX
 			write("<headerFooter><oddFooter>Page &amp;P</oddFooter></headerFooter>\n");
 		}
 		
-		write("<drawing r:id=\"rIdDr" + index + "\"/></worksheet>");		
+		write("<drawing r:id=\"rIdDr" + index + "\"/>");
+		write("</worksheet>");		
 	}
 
 
@@ -331,42 +310,19 @@ public class XlsxSheetHelper extends BaseHelper
 		write(">\n");
 	}
 	
-	/**
-	 *
-	 */
-	public void exportRow(int rowHeight) //FIXMEODT check how this ended up being no longer used
-	{
-		if (rowIndex > 0)
-		{
-			write("</row>\n");
-		}
-		else
-		{
-			if (!colsWriter.isEmpty())
-			{
-				write("<cols>\n");
-				colsWriter.writeData(writer);
-				write("</cols>\n");
-			}
-			write("<sheetData>\n");
-		}
-		rowIndex++;
-		write("<row r=\"" + rowIndex + "\" customHeight=\"1\" ht=\"" + rowHeight + "\">\n");
-	}
-	
 	
 	/**
 	 *
 	 */
-	public void exportMergedCells(int row, int col, int rowSpan, int colSpan) 
+	public void exportMergedCells(int row, int col, int maxColumnIndex, int rowSpan, int colSpan) 
 	{
 		rowSpan = configuration.isCollapseRowSpan() ? 1 : rowSpan;
 		
 		if (rowSpan > 1	|| colSpan > 1)
 		{
 			String ref = 
-				XlsxCellHelper.getColumIndexLetter(col) + (row + 1)
-				+ ":" + XlsxCellHelper.getColumIndexLetter(col + colSpan - 1) + (row + rowSpan); //FIXMEXLSX reuse this utility method
+				JRXlsAbstractExporter.getColumIndexName(col, maxColumnIndex) + (row + 1)
+				+ ":" + JRXlsAbstractExporter.getColumIndexName(col + colSpan - 1, maxColumnIndex) + (row + rowSpan); //FIXMEXLSX reuse this utility method
 			
 			try
 			{
@@ -378,22 +334,14 @@ public class XlsxSheetHelper extends BaseHelper
 			}
 		}
 	}
-
-	/**
-	 *
-	 */
-	public void exportHyperlink(int row, int col, String href) 
-	{
-		exportHyperlink(row, col, href, false);
-	}
 	
 	/**
 	 *
 	 */
-	public void exportHyperlink(int row, int col, String href, boolean isLocal) 
+	public void exportHyperlink(int row, int col, int maxColumnIndex, String href, boolean isLocal) 
 	{
 		String ref = 
-			XlsxCellHelper.getColumIndexLetter(col) + (row + 1);
+				JRXlsAbstractExporter.getColumIndexName(col, maxColumnIndex) + (row + 1);
 		
 		try
 		{
@@ -409,80 +357,31 @@ public class XlsxSheetHelper extends BaseHelper
 		}
 	}
 	
-	private final byte getSuitablePaperSize(PrintPageFormat jasP)
+	public void addRowBreak(int rowIndex)
 	{
+		rowBreaks.add(rowIndex);
+	}
 
-		if (jasP == null)
+	private final PaperSizeEnum getSuitablePaperSize(PrintPageFormat jasP)
+	{
+		if (jasP != null && jasP.getPageWidth() != 0 && jasP.getPageHeight() != 0)
 		{
-			return -1;
-		}
-		long width = 0;
-		long height = 0;
+			long mmPageWidth = Math.round(((double)jasP.getPageWidth() / 72.0d) * 25.4d);
+			long mmPageHeight = Math.round(((double)jasP.getPageHeight() / 72.0d) * 24.4d);
 
-		if ((jasP.getPageWidth() != 0) && (jasP.getPageHeight() != 0))
-		{
-
-			double dWidth = (jasP.getPageWidth() / 72.0);
-			double dHeight = (jasP.getPageHeight() / 72.0);
-
-			height = Math.round(dHeight * 25.4);
-			width = Math.round(dWidth * 25.4);
-
-			// Compare to ISO 216 A-Series (A3-A5). All other ISO 216 formats
-			// not supported by POI Api yet.
-			// A3 papersize also not supported by POI Api yet.
-			for (int i = 3; i < 6; i++)
+			for (PaperSizeEnum paperSize : PaperSizeEnum.values())
 			{
-				int w = calculateWidthForDinAN(i);
-				int h = calculateHeightForDinAN(i);
-
-				if (((w == width) && (h == height)) || ((h == width) && (w == height)))
+				if (
+					((paperSize.getWidth() == mmPageWidth) && (paperSize.getHeight() == mmPageHeight)) 
+					|| ((paperSize.getHeight() == mmPageWidth) && (paperSize.getWidth() == mmPageHeight))
+					)
 				{
-					return i == 3 ?  PaperSizeEnum.A3.getValue() : (i == 4 ? PaperSizeEnum.A4.getValue() : PaperSizeEnum.A5.getValue());
+					return paperSize;
 				}
 			}
-			
-			// ISO 269 sizes - "Envelope DL" (110 � 220 mm)
-			if (((width == 110) && (height == 220)) || ((width == 220) && (height == 110)))
-			{
-				return PaperSizeEnum.ENVELOPE_DL.getValue();
-			}
-
-			// Compare to common North American Paper Sizes (ANSI X3.151-1987).
-			// ANSI X3.151-1987 - "Letter" (216 � 279 mm)
-			if (((width == 216) && (height == 279)) || ((width == 279) && (height == 216)))
-			{
-				return PaperSizeEnum.LETTER.getValue();
-			}
-			// ANSI X3.151-1987 - "Legal" (216 � 356 mm)
-			if (((width == 216) && (height == 356)) || ((width == 356) && (height == 216)))
-			{
-				return PaperSizeEnum.LEGAL.getValue();
-			}
-			// ANSI X3.151-1987 - "Executive" (190 � 254 mm)
-			else if (((width == 190) && (height == 254)) || ((width == 254) && (height == 190)))
-			{
-				return PaperSizeEnum.EXECUTIVE.getValue();
-			}
-			// ANSI X3.151-1987 - "Ledger/Tabloid" (279 � 432 mm)
-			// Not supported by POI Api yet.
-				
 		}
-		return PaperSizeEnum.UNDEFINED.getValue();
-	}
-	
-	// Berechnungsvorschriften f�r die DIN Formate A, B, und C.
-	// Die Angabe der Breite/H�he erfolgt in [mm].
 
-	protected final int calculateWidthForDinAN(int n)
-	{
-		return (int) (Math.pow(2.0, (-0.25 - (n / 2.0))) * 1000.0);
+		return PaperSizeEnum.UNDEFINED;
 	}
-
-	protected final int calculateHeightForDinAN(int n)
-	{
-		return (int) (Math.pow(2.0, (0.25 - (n / 2.0))) * 1000.0);
-	}
-
 	
 }

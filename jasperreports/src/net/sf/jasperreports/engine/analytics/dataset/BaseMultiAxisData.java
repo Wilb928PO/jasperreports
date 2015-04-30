@@ -35,12 +35,13 @@ import net.sf.jasperreports.engine.util.JRCloneUtils;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class BaseMultiAxisData implements MultiAxisData, Serializable
 {
 
 	private static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
+	public static final String EXCEPTION_MESSAGE_KEY_DATA_AXIS_LEVEL_NOT_SPECIFIED = "engine.analytics.dataset.data.axis.level.not.specified";
+	public static final String EXCEPTION_MESSAGE_KEY_DUPLICATE_AXIS = "engine.analytics.dataset.duplicate.axis";
 
 	protected MultiAxisDataset dataset;
 	private DataAxis[] axes = new DataAxis[Axis.axisCount()];
@@ -80,7 +81,10 @@ public class BaseMultiAxisData implements MultiAxisData, Serializable
 	{
 		if (axis.getAxis() == null)
 		{
-			throw new JRRuntimeException("Data axis level needs to be specified");
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_DATA_AXIS_LEVEL_NOT_SPECIFIED,
+					(Object[])null);
 		}
 		
 		int axisIndex = axis.getAxis().ordinal();
@@ -92,7 +96,10 @@ public class BaseMultiAxisData implements MultiAxisData, Serializable
 		}
 		else if (existingAxis != axis)// testing for object identity
 		{
-			throw new JRRuntimeException("Axis " + axis.getAxis() + " already exists");
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_DUPLICATE_AXIS,
+					new Object[]{axis.getAxis()});
 		}
 	}
 	

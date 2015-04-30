@@ -37,10 +37,10 @@ import org.w3c.tools.codec.Base64Decoder;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class JRPrintImageSourceObject
 {
+	public static final String EXCEPTION_MESSAGE_KEY_DECODING_ERROR = "xml.print.image.decoding.error";
 
 
 	/**
@@ -91,7 +91,11 @@ public class JRPrintImageSourceObject
 			}
 			catch (Exception e)
 			{
-				throw new JRException("Error decoding embedded image.", e);
+				throw 
+					new JRException(
+						EXCEPTION_MESSAGE_KEY_DECODING_ERROR,
+						null,
+						e);
 			}
 		}
 		else

@@ -73,12 +73,13 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class MultiAxisDataService
 {
 	
 	protected static final Log log = LogFactory.getLog(MultiAxisDataService.class);
+	
+	public static final String EXCEPTION_MESSAGE_KEY_INCREMENT_BIDIMENSIONAL_DATASET_ERROR = "engine.analytics.dataset.increment.bidimensional.dataset.error";
 
 	private final BucketingServiceContext serviceContext;
 	private final MultiAxisData data;
@@ -357,7 +358,11 @@ public class MultiAxisDataService
 		}
 		catch (JRException e)
 		{
-			throw new JRRuntimeException("Error incrementing bidimensional dataset", e);
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_INCREMENT_BIDIMENSIONAL_DATASET_ERROR,
+					(Object[])null,
+					e);
 		}
 	}
 	
@@ -436,6 +441,7 @@ public class MultiAxisDataService
 	protected class DataSource implements MultiAxisDataSource
 	{
 		private final List<List<AxisLevel>> axisDataLevels;
+		public static final String EXCEPTION_MESSAGE_KEY_UNKNOWN_AXIS = "engine.analytics.dataset.unknown.axis";
 		
 		public DataSource()
 		{
@@ -472,7 +478,10 @@ public class MultiAxisDataService
 				rootChildren = bucketingService.getColumnRootChildren();
 				break;
 			default:
-				throw new JRRuntimeException("Unknown axis " + axis);
+				throw 
+					new JRRuntimeException(
+						EXCEPTION_MESSAGE_KEY_UNKNOWN_AXIS,
+						new Object[]{axis});
 			}
 			
 			Bucket rootBucket = axisRoots[axis.ordinal()];

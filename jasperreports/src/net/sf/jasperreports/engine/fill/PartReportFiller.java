@@ -69,11 +69,14 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class PartReportFiller extends BaseReportFiller
 {
 	private static final Log log = LogFactory.getLog(PartReportFiller.class);
+	
+	public static final String EXCEPTION_MESSAGE_KEY_EVALUATION_GROUP_NOT_FOUND = "fill.part.filler.evaluation.group.not.found";
+	public static final String EXCEPTION_MESSAGE_KEY_UNKNOWN_EVALUATION_TIME_TYPE = "fill.part.filler.unknown.evaluation.time.type";
+	public static final String EXCEPTION_MESSAGE_KEY_UNSUPPORTED_SECTION_TYPE = "fill.part.filler.unsupported.section.type";
 	
 	private FillParts detailParts;
 	private List<GroupFillParts> groupParts;
@@ -95,7 +98,10 @@ public class PartReportFiller extends BaseReportFiller
 		
 		if (jasperReport.getSectionType() != SectionTypeEnum.PART)
 		{
-			throw new JRRuntimeException("Unsupported report section type " + jasperReport.getSectionType());
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_UNSUPPORTED_SECTION_TYPE,
+					new Object[]{jasperReport.getSectionType()});
 		}
 		
 		detailParts = new FillParts(jasperReport.getDetailSection(), factory);
@@ -411,7 +417,10 @@ public class PartReportFiller extends BaseReportFiller
 			GroupFillParts groupFillParts = groupPartsByName.get(evaluationTime.getEvaluationGroup());
 			if (groupFillParts == null)//verified at compile time, checking twice nonetheless
 			{
-				throw new JRRuntimeException("Part evaluation group " + evaluationTime.getEvaluationGroup() + " not found");
+				throw 
+					new JRRuntimeException(
+						EXCEPTION_MESSAGE_KEY_EVALUATION_GROUP_NOT_FOUND,
+						new Object[]{evaluationTime.getEvaluationGroup()});
 			}
 			
 			DelayedPrintPart delayedPart = partQueue.appendDelayed(part);
@@ -419,7 +428,10 @@ public class PartReportFiller extends BaseReportFiller
 			break;
 		}
 		default:
-			throw new JRRuntimeException("Unknown evaluation time type " + evaluationTime.getEvaluationTimeType());
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_UNKNOWN_EVALUATION_TIME_TYPE,
+					new Object[]{evaluationTime.getEvaluationTimeType()});
 		}
 	}
 

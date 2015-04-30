@@ -41,11 +41,12 @@ import net.sf.jasperreports.engine.util.JRCloneUtils;
  * Base read-only implementation of {@link net.sf.jasperreports.crosstabs.JRCrosstabBucket JRCrosstabBucket}.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class JRBaseCrosstabBucket implements JRCrosstabBucket, Serializable
 {
 	private static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
+	
+	public static final String EXCEPTION_MESSAGE_KEY_BUCKET_LOAD_ERROR = "crosstabs.bucket.load.error";
 
 	protected String valueClassName;
 	protected String valueClassRealName;
@@ -120,7 +121,11 @@ public class JRBaseCrosstabBucket implements JRCrosstabBucket, Serializable
 				}
 				catch (ClassNotFoundException e)
 				{
-					throw new JRRuntimeException("Could not load bucket value class", e);
+					throw 
+						new JRRuntimeException(
+							EXCEPTION_MESSAGE_KEY_BUCKET_LOAD_ERROR,
+							(Object[])null,
+							e);
 				}
 			}
 		}

@@ -32,7 +32,6 @@ import net.sf.jasperreports.web.commands.MultiActionCommand;
 
 /**
  * @author Narcis Marcu (narcism@users.sourceforge.net)
- * @version $Id$
  */
 public class MultiAction extends AbstractAction {
 
@@ -47,7 +46,7 @@ public class MultiAction extends AbstractAction {
 		try{
 			getCommandStack().execute(new MultiActionCommand(actions, getJasperReportsContext(), getReportContext()));
 		} catch (CommandException e) {
-			throw new ActionException(e.getMessage());
+			throw new ActionException(e);
 		}
 	}
 

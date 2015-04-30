@@ -43,7 +43,6 @@ import net.sf.jasperreports.web.util.WebHtmlResourceHandler;
 /**
  * @deprecated To be removed.
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class ParametersHtmlExporterOutput extends ParametersWriterExporterOutput implements HtmlExporterOutput
 {
@@ -117,7 +116,10 @@ public class ParametersHtmlExporterOutput extends ParametersWriterExporterOutput
 						}
 						else
 						{
-							throw new JRRuntimeException("No output specified for the exporter.");
+							throw 
+								new JRRuntimeException(
+									EXCEPTION_MESSAGE_KEY_NO_OUTPUT_SPECIFIED,
+									(Object[])null);
 						}
 					}
 

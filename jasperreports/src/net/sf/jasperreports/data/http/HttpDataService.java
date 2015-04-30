@@ -41,6 +41,7 @@ import net.sf.jasperreports.util.SecretsUtil;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -49,6 +50,7 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.client.utils.URIBuilder;
@@ -61,12 +63,14 @@ import org.apache.http.message.BasicNameValuePair;
 
 /**
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class HttpDataService implements DataFileService
 {
 	
 	private static final Log log = LogFactory.getLog(HttpDataService.class);
+	
+	public static final String EXCEPTION_MESSAGE_KEY_NO_HTTP_URL_SET = "data.http.no.http.url.set";
+	public static final String EXCEPTION_MESSAGE_KEY_UNKNOWN_REQUEST_METHOD = "data.http.unknown.request.method";
 	
 	public static final String PARAMETER_URL = "HTTP_DATA_URL";
 	
@@ -164,14 +168,34 @@ public class HttpDataService implements DataFileService
 		List<NameValuePair> postParameters = collectPostParameters(parameters);
 
 		URI requestURI = getRequestURI(parameters);
-		HttpRequestBase request;
-		if (postParameters.isEmpty())
+		
+		RequestMethod method = dataLocation.getMethod();
+		if (method == null)
 		{
-			request = createGetRequest(requestURI);
+			method = postParameters.isEmpty() ? RequestMethod.GET : RequestMethod.POST;
 		}
-		else
+		
+		HttpRequestBase request;
+		switch (method)
 		{
+		case GET:
+			if (!postParameters.isEmpty())
+			{
+				log.warn("Ignoring POST parameters for GET request to " + dataLocation.getUrl());
+			}
+			request = createGetRequest(requestURI);
+			break;
+		case POST:
 			request = createPostRequest(requestURI, postParameters);
+			break;
+		case PUT:
+			request = createPutRequest(requestURI, postParameters);
+			break;
+		default:
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_UNKNOWN_REQUEST_METHOD,
+					new Object[]{method});
 		}
 		
 		return request;
@@ -186,34 +210,88 @@ public class HttpDataService implements DataFileService
 	protected HttpPost createPostRequest(URI requestURI, List<NameValuePair> postParameters)
 	{
 		HttpPost httpPost = new HttpPost(requestURI);
-		
+		HttpEntity entity = createRequestEntity(postParameters);
+		httpPost.setEntity(entity);
+		return httpPost;
+	}
+
+	protected HttpPut createPutRequest(URI requestURI, List<NameValuePair> postParameters)
+	{
+		HttpPut httpPost = new HttpPut(requestURI);
+		HttpEntity entity = createRequestEntity(postParameters);
+		httpPost.setEntity(entity);
+		return httpPost;
+	}
+
+	protected HttpEntity createRequestEntity(List<NameValuePair> postParameters)
+	{
+		UrlEncodedFormEntity formEntity;
 		try
 		{
-			UrlEncodedFormEntity formEntity = new UrlEncodedFormEntity(postParameters, "UTF-8");//allow custom?
-			httpPost.setEntity(formEntity);
+			formEntity = new UrlEncodedFormEntity(postParameters, "UTF-8");//allow custom?
 		}
 		catch (UnsupportedEncodingException e)
 		{
 			// should not happen
 			throw new JRRuntimeException(e);
 		}
-		return httpPost;
+		return formEntity;
 	}
 
-	protected List<NameValuePair> collectPostParameters(Map<String, Object> parameters)
+	protected List<NameValuePair> collectUrlParameters(Map<String, Object> reportParameters)
+	{
+		return collectParameters(dataLocation.getUrlParameters(), reportParameters, PARAMETER_PREFIX_URL_PARAMETER);
+	}
+
+	protected List<NameValuePair> collectPostParameters(Map<String, Object> reportParameters)
+	{
+		return collectParameters(dataLocation.getPostParameters(), reportParameters, PARAMETER_PREFIX_POST_PARAMETER);
+	}
+	
+	protected List<NameValuePair> collectParameters(List<HttpLocationParameter> staticParameters,
+			Map<String, Object> reportParameters, String reportParameterPrefix)
 	{
 		List<NameValuePair> postParameters = new ArrayList<NameValuePair>();
-		for (Entry<String, Object> paramEntry : parameters.entrySet())
+		
+		if (staticParameters != null && !staticParameters.isEmpty())
+		{
+			for (HttpLocationParameter parameter : staticParameters)
+			{
+				String name = parameter.getName();
+				String paramValue = parameter.getValue();
+				if (paramValue != null)
+				{
+					String reportParameterName = reportParameterPrefix + parameter.getName();
+					if (!reportParameters.containsKey(reportParameterName))
+					{
+						if (log.isDebugEnabled())
+						{
+							log.debug("adding parameter " + name + " with value " + paramValue);
+						}
+						postParameters.add(new BasicNameValuePair(name, paramValue));
+					}
+					else
+					{
+						if (log.isDebugEnabled())
+						{
+							log.debug("static parameter " + parameter.getName() + " overridden by the report");
+						}
+					}
+				}
+			}
+		}
+		
+		for (Entry<String, Object> paramEntry : reportParameters.entrySet())
 		{
 			String paramName = paramEntry.getKey();
 			Object value = paramEntry.getValue();
-			if (paramName.startsWith(PARAMETER_PREFIX_POST_PARAMETER) && value != null)
+			if (paramName.startsWith(reportParameterPrefix) && value != null)
 			{
-				String name = paramName.substring(PARAMETER_PREFIX_POST_PARAMETER.length(), paramName.length());
+				String name = paramName.substring(reportParameterPrefix.length(), paramName.length());
 				String paramValue = toHttpParameterValue(value);
 				if (log.isDebugEnabled())
 				{
-					log.debug("adding post parameter " + name + " with value " + paramValue);
+					log.debug("adding parameter " + name + " with value " + paramValue);
 				}
 				postParameters.add(new BasicNameValuePair(name, paramValue));
 			}
@@ -226,26 +304,19 @@ public class HttpDataService implements DataFileService
 		String url = getURL(parameters);
 		if (url == null)
 		{
-			throw new JRRuntimeException("No HTTP URL set");
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_NO_HTTP_URL_SET,
+					(Object[])null);
 		}
 		
 		try
 		{
 			URIBuilder uriBuilder = new URIBuilder(url);
-			for (Entry<String, Object> paramEntry : parameters.entrySet())
+			List<NameValuePair> urlParameters = collectUrlParameters(parameters);
+			if (!urlParameters.isEmpty())
 			{
-				String paramName = paramEntry.getKey();
-				Object value = paramEntry.getValue();
-				if (paramName.startsWith(PARAMETER_PREFIX_URL_PARAMETER) && value != null)
-				{
-					String name = paramName.substring(PARAMETER_PREFIX_URL_PARAMETER.length(), paramName.length());
-					String paramValue = toHttpParameterValue(value);
-					if (log.isDebugEnabled())
-					{
-						log.debug("adding URL parameter " + name + " with value " + paramValue);
-					}
-					uriBuilder.addParameter(name, paramValue);
-				}
+				uriBuilder.addParameters(urlParameters);
 			}
 			
 			URI uri = uriBuilder.build();

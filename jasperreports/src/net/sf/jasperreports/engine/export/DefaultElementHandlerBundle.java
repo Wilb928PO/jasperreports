@@ -37,12 +37,12 @@ import org.apache.commons.logging.LogFactory;
  * This implementation uses a {@link Map map} to keep element handlers.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class DefaultElementHandlerBundle implements GenericElementHandlerBundle
 {
 
 	private static final Log log = LogFactory.getLog(DefaultElementHandlerBundle.class);
+	public static final String EXCEPTION_MESSAGE_KEY_HANDLERS_NOT_FOUND_FOR_TYPE = "export.common.handlers.not.found.for.type";
 	
 	private String namespace;
 	private Map<String, Map<String,GenericElementHandler>> elementHandlers;
@@ -59,8 +59,10 @@ public class DefaultElementHandlerBundle implements GenericElementHandlerBundle
 		Map<String,GenericElementHandler> handlers = elementHandlers.get(elementName);
 		if (handlers == null)
 		{
-			throw new JRRuntimeException("No handlers for generic elements of type "
-					+ namespace + "#" + elementName);
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_HANDLERS_NOT_FOUND_FOR_TYPE,
+					new Object[]{namespace, elementName});
 		}
 		
 		GenericElementHandler handler = handlers.get(exporterKey);

@@ -42,10 +42,11 @@ import org.xml.sax.SAXException;
  * Produces a <code>org.w3c.dom.Document</code> based on a <code>java.io.File</code>, <code>java.io.InputStream</code> or a <code>java.lang.String</code> uri
  * 
  * @author Narcis Marcu (narcism@users.sourceforge.net)
- * @version $Id$
  */
 public class JRXmlDocumentProducer {
 	
+	public static final String EXCEPTION_MESSAGE_KEY_DOCUMENT_BUILDER_CREATION_FAILURE = "util.xml.document.builder.creation.failure";
+
 	private File file;
 	
 	private InputStream inputStream;
@@ -105,9 +106,17 @@ public class JRXmlDocumentProducer {
 				return getDocumentBuilder().parse(uri);
 			}
 		} catch (SAXException e) {
-			throw new JRException("Failed to parse the xml document", e);
+			throw 
+				new JRException(
+					JRXmlUtils.EXCEPTION_MESSAGE_KEY_DOCUMENT_PARSING_FAILURE, 
+					null,
+					e);
 		} catch (IOException e) {
-			throw new JRException("Failed to parse the xml document", e);
+			throw 
+				new JRException(
+					JRXmlUtils.EXCEPTION_MESSAGE_KEY_DOCUMENT_PARSING_FAILURE, 
+					null,
+					e);
 		}
 		return null;
 	}
@@ -139,7 +148,11 @@ public class JRXmlDocumentProducer {
 			}
 		} catch (ParserConfigurationException e)
 		{
-			throw new JRException("Failed to create a document builder", e);
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_DOCUMENT_BUILDER_CREATION_FAILURE, 
+					null,
+					e);
 		}
 	}
 	

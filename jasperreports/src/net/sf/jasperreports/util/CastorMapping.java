@@ -28,10 +28,13 @@ package net.sf.jasperreports.util;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class CastorMapping
 {
+	private String key;
+	// the version at which the mapping became effective
+	// null version means that mapping is the initial mapping
+	private String version;
 	private String path;
 	
 	/**
@@ -39,6 +42,13 @@ public class CastorMapping
 	 */
 	public CastorMapping(String path)
 	{
+		this.path = path;
+	}
+	
+	public CastorMapping(String key, String version, String path)
+	{
+		this.key = key;
+		this.version = version;
 		this.path = path;
 	}
 
@@ -56,5 +66,25 @@ public class CastorMapping
 	public void setPath(String path)
 	{
 		this.path = path;
+	}
+
+	public String getKey()
+	{
+		return key;
+	}
+
+	public void setKey(String key)
+	{
+		this.key = key;
+	}
+
+	public String getVersion()
+	{
+		return version;
+	}
+
+	public void setVersion(String version)
+	{
+		this.version = version;
 	}
 }

@@ -46,7 +46,6 @@ import net.sf.jasperreports.engine.util.ObjectUtils.HashCode;
  * print element instances.
  * 
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public abstract class JRTemplateGraphicElement extends JRTemplateElement implements JRCommonGraphicElement
 {
@@ -165,6 +164,7 @@ public abstract class JRTemplateGraphicElement extends JRTemplateElement impleme
 	 */
 	private Byte fill;
 	
+	@SuppressWarnings("deprecation")
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
 	{
 		in.defaultReadObject();

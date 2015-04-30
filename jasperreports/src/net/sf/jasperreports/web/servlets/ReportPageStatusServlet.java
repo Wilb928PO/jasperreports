@@ -46,7 +46,6 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * @author Narcis Marcu(nmarcu@users.sourceforge.net)
- * @version $Id$
  */
 public class ReportPageStatusServlet extends AbstractServlet
 {
@@ -54,7 +53,6 @@ public class ReportPageStatusServlet extends AbstractServlet
 	
 	private static final Log log = LogFactory.getLog(ReportPageStatusServlet.class);
 		
-
 	/**
 	 *
 	 */
@@ -100,7 +98,10 @@ public class ReportPageStatusServlet extends AbstractServlet
 				WebReportContext.REPORT_CONTEXT_PARAMETER_JASPER_PRINT_ACCESSOR);
 		if (jasperPrintAccessor == null)
 		{
-			throw new JRRuntimeException("Did not find the report on the session.");
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_REPORT_NOT_FOUND,
+					(Object[])null);
 		}
 		
 		String pageIdxParam = request.getParameter(WebUtil.REQUEST_PARAMETER_PAGE);
@@ -206,7 +207,11 @@ public class ReportPageStatusServlet extends AbstractServlet
 		{
 			throw (JRRuntimeException) error;
 		}
-		throw new JRRuntimeException("Error generating report", error);
+		throw 
+			new JRRuntimeException(
+				EXCEPTION_MESSAGE_KEY_REPORT_GENERATION_ERROR,
+				(Object[])null,
+				error);
 	}
 
 }

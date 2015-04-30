@@ -27,16 +27,17 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.JRRewindableDataSource;
 
+import org.apache.commons.beanutils.NestedNullException;
 import org.apache.commons.beanutils.PropertyUtils;
 
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public abstract class JRAbstractBeanDataSource implements JRRewindableDataSource
 {
 	
+	public static final String EXCEPTION_MESSAGE_KEY_BEAN_FIELD_VALUE_NOT_RETRIEVED = "data.bean.field.value.not.retrieved";
 	/**
 	 * Field mapping that produces the current bean.
 	 * <p/>
@@ -112,23 +113,31 @@ public abstract class JRAbstractBeanDataSource implements JRRewindableDataSource
 			}
 			catch (java.lang.IllegalAccessException e)
 			{
-				throw new JRException("Error retrieving field value from bean : " + propertyName, e);
+				throw 
+					new JRException(
+						EXCEPTION_MESSAGE_KEY_BEAN_FIELD_VALUE_NOT_RETRIEVED,
+						new Object[]{propertyName}, 
+						e);
 			}
 			catch (java.lang.reflect.InvocationTargetException e)
 			{
-				throw new JRException("Error retrieving field value from bean : " + propertyName, e);
+				throw 
+					new JRException(
+						EXCEPTION_MESSAGE_KEY_BEAN_FIELD_VALUE_NOT_RETRIEVED,
+						new Object[]{propertyName}, 
+						e);
 			}
 			catch (java.lang.NoSuchMethodException e)
 			{
-				throw new JRException("Error retrieving field value from bean : " + propertyName, e);
+				throw 
+					new JRException(
+						EXCEPTION_MESSAGE_KEY_BEAN_FIELD_VALUE_NOT_RETRIEVED,
+						new Object[]{propertyName}, 
+						e);
 			}
-			catch (IllegalArgumentException e)
+			catch (NestedNullException e)
 			{
-				//FIXME replace with NestedNullException when upgrading to BeanUtils 1.7
-				if (!e.getMessage().startsWith("Null property value for ")) 
-				{
-					throw e;
-				}
+				// deliberately to be ignored
 			}
 		}
 

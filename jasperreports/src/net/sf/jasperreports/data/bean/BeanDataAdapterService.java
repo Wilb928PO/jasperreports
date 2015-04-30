@@ -40,11 +40,12 @@ import net.sf.jasperreports.engine.util.JRClassLoader;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class BeanDataAdapterService extends AbstractClasspathAwareDataAdapterService 
 {
 
+	public static final String EXCEPTION_MESSAGE_KEY_INVALID_RETURN_TYPE = "data.bean.invalid.return.type";
+	
 	/**
 	 * 
 	 */
@@ -90,9 +91,10 @@ public class BeanDataAdapterService extends AbstractClasspathAwareDataAdapterSer
 					beanDataSource = new JRBeanArrayDataSource((Object[]) res,
 							beanDataAdapter.isUseFieldDescription());
 				} else {
-					throw new JRException(
-							"Factory method must return Collection<?> or Object[] not: "
-									+ clazz.getName());
+					throw 
+						new JRException(
+							EXCEPTION_MESSAGE_KEY_INVALID_RETURN_TYPE,
+							new Object[]{clazz.getName()});
 				}
 			}
 			catch (ClassNotFoundException e) {

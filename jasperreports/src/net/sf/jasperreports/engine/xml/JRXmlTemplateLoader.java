@@ -53,12 +53,16 @@ import org.xml.sax.SAXException;
  * Utility class that loads {@link JRTemplate templates} from XML representations.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public class JRXmlTemplateLoader
 {
 	
 	private static final Log log = LogFactory.getLog(JRXmlTemplateLoader.class);
+	
+	public static final String EXCEPTION_MESSAGE_KEY_TEMPLATE_NOT_FOUND = "xml.template.loader.template.not.found";
+	public static final String EXCEPTION_MESSAGE_KEY_TEMPLATE_PARSING_ERROR = "xml.template.loader.template.parsing.error";
+	public static final String EXCEPTION_MESSAGE_KEY_TEMPLATE_READING_ERROR = "xml.template.loader.template.reading.error";
+	public static final String EXCEPTION_MESSAGE_KEY_URL_CONNECTION_ERROR = "xml.template.loader.url.connection.error";
 	
 	private JasperReportsContext jasperReportsContext;
 	
@@ -126,7 +130,11 @@ public class JRXmlTemplateLoader
 		}
 		catch (FileNotFoundException e)
 		{
-			throw new JRRuntimeException("Template XML file not found", e);
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_TEMPLATE_NOT_FOUND,
+					(Object[])null,
+					e);
 		}
 
 		try
@@ -161,7 +169,11 @@ public class JRXmlTemplateLoader
 		}
 		catch (IOException e)
 		{
-			throw new JRRuntimeException("Error opening connection to template URL " + url, e);
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_URL_CONNECTION_ERROR,
+					new Object[]{url},
+					e);
 		}
 
 		try
@@ -196,11 +208,19 @@ public class JRXmlTemplateLoader
 		}
 		catch (IOException e)
 		{
-			throw new JRRuntimeException("Error reading template XML", e);
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_TEMPLATE_READING_ERROR,
+					(Object[])null,
+					e);
 		}
 		catch (SAXException e)
 		{
-			throw new JRRuntimeException("Error parsing template XML", e);
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_TEMPLATE_PARSING_ERROR,
+					(Object[])null,
+					e);
 		}
 	}
 	

@@ -29,11 +29,12 @@ import net.sf.jasperreports.engine.JRConstants;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class TimeoutGovernorException extends GovernorException
 {
 	private static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
+	
+	public static final String EXCEPTION_MESSAGE_KEY_TIMEOUT_LIMIT_EXCEEDED = "governors.timeout.limit.exceeded";
 
 	private long timeout;
 	
@@ -42,8 +43,9 @@ public class TimeoutGovernorException extends GovernorException
 	 */
 	public TimeoutGovernorException(String reportName, long timeout)
 	{
-		super("Report '" + reportName + "' exceeded the timeout limit of " + timeout + " milliseconds.");
-
+		super(
+			EXCEPTION_MESSAGE_KEY_TIMEOUT_LIMIT_EXCEEDED,
+			new Object[]{reportName, timeout});
 		this.timeout = timeout;
 	}
 	

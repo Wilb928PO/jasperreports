@@ -35,10 +35,11 @@ import net.sf.jasperreports.export.Graphics2DExporterOutput;
 /**
  * @deprecated To be removed.
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class ParametersGraphics2DExporterOutput implements Graphics2DExporterOutput
 {
+	public static final String EXCEPTION_MESSAGE_KEY_NO_OUTPUT_SPECIFIED = "export.parameters.graphics2d.no.output.specified";
+	
 	/**
 	 * 
 	 */
@@ -52,7 +53,10 @@ public class ParametersGraphics2DExporterOutput implements Graphics2DExporterOut
 		grx = (Graphics2D)parameters.get(JRGraphics2DExporterParameter.GRAPHICS_2D);
 		if (grx == null)
 		{
-			throw new JRRuntimeException("No output specified for the exporter. java.awt.Graphics2D object expected.");
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_NO_OUTPUT_SPECIFIED,
+					(Object[])null);
 		}
 	}
 

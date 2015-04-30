@@ -55,10 +55,14 @@ import org.jfree.data.general.DefaultPieDataset;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class JRFillPieDataset extends JRFillChartDataset implements JRPieDataset
 {
+	/**
+	 * 
+	 */
+	public static final String EXCEPTION_MESSAGE_KEY_DUPLICATED_KEY = "charts.pie.dataset.duplicated.key";
+	public static final String EXCEPTION_MESSAGE_KEY_NULL_KEY = "charts.pie.dataset.null.key";
 
 	/**
 	 *
@@ -71,6 +75,7 @@ public class JRFillPieDataset extends JRFillChartDataset implements JRPieDataset
 	private Map<Comparable<?>, Number> values;
 	private Map<Comparable<?>, String> labels;
 	private Map<Comparable<?>, JRPrintHyperlink> sectionHyperlinks;
+	private boolean ignoreDuplicatedKey = false;
 	
 	private Comparable<?> otherKey;
 	private String otherLabel;
@@ -171,6 +176,14 @@ public class JRFillPieDataset extends JRFillChartDataset implements JRPieDataset
 		values = new LinkedHashMap<Comparable<?>, Number>();
 		labels = new HashMap<Comparable<?>, String>();
 		sectionHyperlinks = new HashMap<Comparable<?>, JRPrintHyperlink>();
+		
+		// read property here because fill dataset is null on constructor
+		ignoreDuplicatedKey = 
+			getFiller().getPropertiesUtil().getBooleanProperty(
+				getFillDataset(), 
+				PROPERTY_IGNORE_DUPLICATED_KEY, 
+				false
+				);
 	}
 
 	/**
@@ -226,7 +239,23 @@ public class JRFillPieDataset extends JRFillChartDataset implements JRPieDataset
 				Comparable<?> key = crtPieSeries.getKey();
 				if (key == null)
 				{
-					throw new JRRuntimeException("Key is null in pie dataset.");
+					throw 
+						new JRRuntimeException(
+							EXCEPTION_MESSAGE_KEY_NULL_KEY,
+							(Object[])null 
+							);
+				}
+
+				if (
+					!ignoreDuplicatedKey
+					&& values.containsKey(key)
+					)
+				{
+					throw 
+						new JRRuntimeException(
+							EXCEPTION_MESSAGE_KEY_DUPLICATED_KEY,
+							new Object[]{key} 
+							);
 				}
 
 				values.put(key, crtPieSeries.getValue());

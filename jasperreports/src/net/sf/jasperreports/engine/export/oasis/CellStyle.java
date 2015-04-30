@@ -23,20 +23,19 @@
  */
 package net.sf.jasperreports.engine.export.oasis;
 
-import net.sf.jasperreports.engine.JRAlignment;
 import net.sf.jasperreports.engine.JRPrintElement;
 import net.sf.jasperreports.engine.JRPrintText;
+import net.sf.jasperreports.engine.JRTextAlignment;
 import net.sf.jasperreports.engine.export.JRExporterGridCell;
-import net.sf.jasperreports.engine.type.HorizontalAlignEnum;
+import net.sf.jasperreports.engine.type.HorizontalTextAlignEnum;
 import net.sf.jasperreports.engine.type.ModeEnum;
 import net.sf.jasperreports.engine.type.RotationEnum;
-import net.sf.jasperreports.engine.type.VerticalAlignEnum;
+import net.sf.jasperreports.engine.type.VerticalTextAlignEnum;
 import net.sf.jasperreports.engine.util.JRColorUtil;
 
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class CellStyle extends BorderStyle
 {
@@ -45,12 +44,14 @@ public class CellStyle extends BorderStyle
 	
 	private final String horizontalAlignment;
 	private final String verticalAlignment;
+	private final boolean shrinkToFit;
+	private final boolean wrapText;
 
 	
 	/**
 	 *
 	 */
-	public CellStyle(WriterHelper styleWriter, JRExporterGridCell gridCell)
+	public CellStyle(WriterHelper styleWriter, JRExporterGridCell gridCell, boolean shrinkToFit, boolean wrapText)
 	{
 		super(styleWriter);
 
@@ -71,19 +72,20 @@ public class CellStyle extends BorderStyle
 		}
 
 		RotationEnum rotation = element instanceof JRPrintText ? ((JRPrintText)element).getRotationValue() : RotationEnum.NONE;
-		VerticalAlignEnum vAlign = VerticalAlignEnum.TOP;
-		HorizontalAlignEnum hAlign = HorizontalAlignEnum.LEFT;
+		VerticalTextAlignEnum vAlign = VerticalTextAlignEnum.TOP;
+		HorizontalTextAlignEnum hAlign = HorizontalTextAlignEnum.LEFT;
 
-		JRAlignment alignment = element instanceof JRAlignment ? (JRAlignment)element : null;
+		JRTextAlignment alignment = element instanceof JRTextAlignment ? (JRTextAlignment)element : null;
 		if (alignment != null)
 		{
-			vAlign = alignment.getVerticalAlignmentValue();
-			hAlign = alignment.getHorizontalAlignmentValue();
+			vAlign = alignment.getVerticalTextAlign();
+			hAlign = alignment.getHorizontalTextAlign();
 		}
 		
 		horizontalAlignment = ParagraphStyle.getHorizontalAlignment(hAlign, vAlign, rotation);
 		verticalAlignment = ParagraphStyle.getVerticalAlignment(hAlign, vAlign, rotation);
-		
+		this.shrinkToFit = shrinkToFit;
+		this.wrapText = wrapText;
 		setBox(gridCell.getBox());
 	}
 	
@@ -92,7 +94,7 @@ public class CellStyle extends BorderStyle
 	 */
 	public String getId()
 	{
-		return backcolor + super.getId() + "|" + horizontalAlignment + "|" + verticalAlignment; 
+		return backcolor + super.getId() + "|" + horizontalAlignment + "|" + verticalAlignment + "|" + shrinkToFit + "|" + wrapText; 
 	}
 
 	/**
@@ -104,9 +106,9 @@ public class CellStyle extends BorderStyle
 		styleWriter.write(cellStyleName);
 		styleWriter.write("\"");
 		styleWriter.write(" style:family=\"table-cell\">\n");
-		styleWriter.write(" <style:table-cell-properties");		
-		styleWriter.write(" fo:wrap-option=\"wrap\"");
-		styleWriter.write(" style:shrink-to-fit=\"false\"");
+		styleWriter.write(" <style:table-cell-properties");	
+		styleWriter.write(" style:shrink-to-fit=\""	+ shrinkToFit + "\"");
+		styleWriter.write(" fo:wrap-option=\"" + (!wrapText ||  shrinkToFit ? "no-" : "") + "wrap\"");
 		if (backcolor != null)
 		{
 			styleWriter.write(" fo:background-color=\"#");
@@ -141,4 +143,3 @@ public class CellStyle extends BorderStyle
 	}
 
 }
-

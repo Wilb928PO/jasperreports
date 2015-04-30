@@ -35,10 +35,10 @@ import org.xml.sax.Attributes;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class JRPrintFontFactory extends JRBaseFactory
 {
+	public static final String EXCEPTION_MESSAGE_KEY_UNKNOWN_STYLE = "xml.print.font.factory.unknown.style";
 
 	/**
 	 *
@@ -61,7 +61,12 @@ public class JRPrintFontFactory extends JRBaseFactory
 
 				if (!stylesMap.containsKey(styleName))
 				{
-					printXmlLoader.addError(new JRRuntimeException("Unknown report style : " + styleName));
+					printXmlLoader.addError(					
+						new JRRuntimeException(
+							EXCEPTION_MESSAGE_KEY_UNKNOWN_REPORT_STYLE,
+							new Object[]{styleName}
+						)
+					);
 				}
 
 				element.setStyle(stylesMap.get(styleName));

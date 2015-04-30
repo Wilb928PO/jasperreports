@@ -83,6 +83,7 @@ Some of the 2D symbologies are enumerated below:
 <li><code>Data Matrix</code> - Used throughout the United States. Standard ISO/IEC 16022:2000(E)</li>
 <li><code>EZcode</code> - Designed for decoding by cameraphones.</li>
 <li><code>PDF417</code> - Standard ISO/IEC 15438:2001(E)</li>
+<li><code>QRCode</code> - Standard ISO/IEC 18004:2006</li>
 <li>etc.</li>
 </ul>
     </content>
@@ -109,7 +110,7 @@ Today barcodes are present almost everywhere: in wholesales as well as in retail
 amusement parks, on the internet, and the list could continue... Due to this ubiquity, there is an increasing need of barcode components in the reporting area. 
 Powerful reporting engines should now provide support for as many as possible barcode symbologies. To cover a large category of customer needs, JR comes with 2 
 built-in barcode components, and in addition, it also makes room for other complementary implementations. This sample illustrates how to use the built-in 
-component based on the open source Barcode4J library.
+component mostly based on the open source Barcode4J library.
 <br/>
 The Barcode4J library supports the following symbologies:
 <ul>
@@ -135,7 +136,10 @@ The Barcode4J library supports the following symbologies:
 </ul>
 </li>
 </ul>
-It also provides support for multiple output formats:
+<b>Note: </b>The <code>QRCode</code> 2D-symbology being not yet supported in Barcode4J, its related component implementation in JasperReports is based on the iText library.
+<br/>
+<br/>
+Multiple output formats are also supported:
 <ul>
 <li><code>SVG</code></li>
 <li><code>EPS</code></li>
@@ -146,7 +150,7 @@ It also provides support for multiple output formats:
 <b>The Barcode4J Component</b>
 <br/>
 <br/>
-Each of supported symbologies enumerated above is characterized by a specific structure of elements and attributes described 
+Each of Barcode4J supported symbologies enumerated above is characterized by a specific structure of elements and attributes described 
 in the <a href="../../components.schema.reference.html">components.xsd</a> 
 schema. All of them are based on the same 
 <a href="../../components.schema.reference.html#Barcode4j">Barcode4j</a> 
@@ -162,6 +166,7 @@ parent element, and differences are given by their specific extracontent:
 <li><a href="../../components.schema.reference.html#Interleaved2Of5">Interleaved2Of5</a></li>
 <li><a href="../../components.schema.reference.html#PDF417">PDF417</a></li>
 <li><a href="../../components.schema.reference.html#POSTNET">POSTNET</a></li>
+<li><a href="../../components.schema.reference.html#QRCode">QRCode</a></li>
 <li><a href="../../components.schema.reference.html#RoyalMailCustomer">RoyalMailCustomer</a></li>
 <li><a href="../../components.schema.reference.html#UPCA">UPCA</a></li>
 <li><a href="../../components.schema.reference.html#UPCE">UPCE</a></li>
@@ -202,13 +207,36 @@ must conform to rules specified in the <a href="http://barcode4j.sourceforge.net
 include the AI in the check digit calculation (used for USPS). Multiple field parts can be separated by &quot;+&quot; characters.&apos;
 <br/>
 <br/>
+<b>The QRCode component</b>
+<br/>
+<br/>
+This barcode component depends on iText library. It shares some common features with the other barcode components:
+<ul>
+<li>Common expressions: 
+<ul>
+<li><code>codeExpression</code> - provides the text content used to generate the barcode object.</li>
+</ul> 
+</li>
+<li>Common attributes:
+<ul>
+<li><code>evaluationTime</code></li>
+<li><code>evaluationGroup</code></li>
+</ul>
+</li>
+</ul>
+Specific attributes for this component are enumerated below:
+<ul>
+<li><code>margin</code> - number of pixels reserved as margin around the barcode graphic.</li>
+<li><code>errorCorrectionLevel</code> - enabled; single uppercase character representing the error correction level. 
+Possible values are: <code>L</code>, <code>M</code>, <code>Q</code>, <code>H</code>. Default is <code>L</code>.</li>
+</ul>
 <b>Barcode4J Samples</b>
 <br/>
 <br/>
 Some examples of howto use the available <code>Barcode4j</code> components are given in the JRXML sample:
 <pre><![CDATA[
 <componentElement>
-  <reportElement style="Barcode" x="130" y="100" width="200" height="30"/>
+  <reportElement style="Barcode" x="230" y="100" width="200" height="30"/>
   <c:Code128 xmlns:c="http://jasperreports.sourceforge.net/jasperreports/components" 
     xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components 
     http://jasperreports.sourceforge.net/xsd/components.xsd" 
@@ -218,7 +246,7 @@ Some examples of howto use the available <code>Barcode4j</code> components are g
 </componentElement>
 ...
 <componentElement>
-  <reportElement style="Barcode" x="130" y="135" width="200" height="30"/>
+  <reportElement style="Barcode" x="230" y="135" width="200" height="30"/>
   <c:Codabar xmlns:c="http://jasperreports.sourceforge.net/jasperreports/components" 
     xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components 
     http://jasperreports.sourceforge.net/xsd/components.xsd" moduleWidth="1.2" 
@@ -228,7 +256,7 @@ Some examples of howto use the available <code>Barcode4j</code> components are g
 </componentElement>
 ...
 <componentElement>
-  <reportElement style="Barcode" x="130" y="170" width="70" height="40"/>
+  <reportElement style="Barcode" x="230" y="170" width="70" height="40"/>
   <c:DataMatrix xmlns:c="http://jasperreports.sourceforge.net/jasperreports/components" 
     xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components 
     http://jasperreports.sourceforge.net/xsd/components.xsd" 
@@ -238,7 +266,7 @@ Some examples of howto use the available <code>Barcode4j</code> components are g
 </componentElement>
 ...
 <componentElement>
-  <reportElement style="Barcode" x="130" y="215" width="250" height="30"/>
+  <reportElement style="Barcode" x="230" y="215" width="250" height="30"/>
   <c:EAN128 xmlns:c="http://jasperreports.sourceforge.net/jasperreports/components" 
     xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components 
     http://jasperreports.sourceforge.net/xsd/components.xsd" 
@@ -248,7 +276,7 @@ Some examples of howto use the available <code>Barcode4j</code> components are g
 </componentElement>
 ...
 <componentElement>
-  <reportElement style="Barcode" x="130" y="250" width="400" height="30"/>
+  <reportElement style="Barcode" x="230" y="250" width="300" height="30"/>
   <c:Code39 xmlns:c="http://jasperreports.sourceforge.net/jasperreports/components" 
     xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components 
     http://jasperreports.sourceforge.net/xsd/components.xsd">
@@ -257,7 +285,7 @@ Some examples of howto use the available <code>Barcode4j</code> components are g
 </componentElement>
 ...
 <componentElement>
-  <reportElement style="Barcode" x="130" y="285" width="400" height="30"/>
+  <reportElement style="Barcode" x="230" y="285" width="300" height="30"/>
   <c:USPSIntelligentMail xmlns:c="http://jasperreports.sourceforge.net/jasperreports/components" 
     xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components 
     http://jasperreports.sourceforge.net/xsd/components.xsd" 
@@ -267,7 +295,7 @@ Some examples of howto use the available <code>Barcode4j</code> components are g
 </componentElement>
 ...
 <componentElement>
-  <reportElement style="Barcode" x="130" y="320" width="400" height="30"/>
+  <reportElement style="Barcode" x="230" y="320" width="300" height="30"/>
   <c:RoyalMailCustomer xmlns:c="http://jasperreports.sourceforge.net/jasperreports/components" 
     xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components 
     http://jasperreports.sourceforge.net/xsd/components.xsd" 
@@ -277,7 +305,7 @@ Some examples of howto use the available <code>Barcode4j</code> components are g
 </componentElement>
 ...
 <componentElement>
-  <reportElement style="Barcode" x="130" y="355" width="400" height="30"/>
+  <reportElement style="Barcode" x="230" y="355" width="300" height="30"/>
   <c:Interleaved2Of5 xmlns:c="http://jasperreports.sourceforge.net/jasperreports/components" 
     xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components 
     http://jasperreports.sourceforge.net/xsd/components.xsd">
@@ -286,7 +314,7 @@ Some examples of howto use the available <code>Barcode4j</code> components are g
 </componentElement>
 ...
 <componentElement>
-  <reportElement style="Barcode" x="130" y="390" width="400" height="30"/>
+  <reportElement style="Barcode" x="230" y="390" width="300" height="30"/>
   <c:UPCA xmlns:c="http://jasperreports.sourceforge.net/jasperreports/components" 
     xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components 
     http://jasperreports.sourceforge.net/xsd/components.xsd">
@@ -295,7 +323,7 @@ Some examples of howto use the available <code>Barcode4j</code> components are g
 </componentElement>
 ...
 <componentElement>
-  <reportElement style="Barcode" x="130" y="425" width="400" height="30"/>
+  <reportElement style="Barcode" x="230" y="425" width="300" height="30"/>
   <c:UPCE xmlns:c="http://jasperreports.sourceforge.net/jasperreports/components" 
     xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components 
     http://jasperreports.sourceforge.net/xsd/components.xsd">
@@ -304,7 +332,7 @@ Some examples of howto use the available <code>Barcode4j</code> components are g
 </componentElement>
 ....
 <componentElement>
-  <reportElement style="Barcode" x="130" y="460" width="400" height="30"/>
+  <reportElement style="Barcode" x="230" y="460" width="300" height="30"/>
   <c:EAN13 xmlns:c="http://jasperreports.sourceforge.net/jasperreports/components" 
     xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components 
     http://jasperreports.sourceforge.net/xsd/components.xsd">
@@ -313,7 +341,7 @@ Some examples of howto use the available <code>Barcode4j</code> components are g
 </componentElement>
 ...
 <componentElement>
-  <reportElement style="Barcode" x="130" y="495" width="400" height="30"/>
+  <reportElement style="Barcode" x="230" y="495" width="300" height="30"/>
   <c:EAN8 xmlns:c="http://jasperreports.sourceforge.net/jasperreports/components" 
     xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components 
     http://jasperreports.sourceforge.net/xsd/components.xsd">
@@ -322,7 +350,7 @@ Some examples of howto use the available <code>Barcode4j</code> components are g
 </componentElement>
 ...
 <componentElement>
-  <reportElement style="Barcode" x="130" y="530" width="400" height="20"/>
+  <reportElement style="Barcode" x="230" y="530" width="300" height="20"/>
   <c:POSTNET xmlns:c="http://jasperreports.sourceforge.net/jasperreports/components" 
     xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components 
     http://jasperreports.sourceforge.net/xsd/components.xsd" 
@@ -332,14 +360,25 @@ Some examples of howto use the available <code>Barcode4j</code> components are g
 </componentElement>
 ...
 <componentElement>
-  <reportElement style="Barcode" x="130" y="555" width="400" height="30"/>
+  <reportElement style="Barcode" x="230" y="555" width="300" height="30"/>
   <c:PDF417 xmlns:c="http://jasperreports.sourceforge.net/jasperreports/components" 
     xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components 
     http://jasperreports.sourceforge.net/xsd/components.xsd" 
     moduleWidth="4.0">
     <c:codeExpression><![CDATA["JasperReports"]] ></c:codeExpression>
   </c:PDF417>
-</componentElement>]]></pre>
+</componentElement>
+...
+<componentElement>
+  <reportElement style="Barcode" x="230" y="600" width="80" height="80" forecolor="#0000FF" backcolor="yellow" />
+  <c:QRCode xmlns:c="http://jasperreports.sourceforge.net/jasperreports/components" 
+    xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components 
+    http://jasperreports.sourceforge.net/xsd/components.xsd" 
+    errorCorrectionLevel="M" margin="2">
+    <c:codeExpression><![CDATA["http://barcode4j.sourceforge.net/"]] ></c:codeExpression>
+  </c:QRCode>
+</componentElement>
+]]></pre>
 <b>Running the Sample</b>
 <br/>
 <br/>

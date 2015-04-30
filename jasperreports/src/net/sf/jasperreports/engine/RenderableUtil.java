@@ -43,12 +43,13 @@ import net.sf.jasperreports.repo.RepositoryUtil;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class RenderableUtil
 {
 	
 	private static final Log log = LogFactory.getLog(RenderableUtil.class);
+	
+	public static final String EXCEPTION_MESSAGE_KEY_IMAGE_ERROR = "engine.renderable.util.image.error";
 	
 	/**
 	 *
@@ -340,7 +341,11 @@ public class RenderableUtil
 				log.debug("got unexpected image exception of type " + error.getClass().getName(), error);
 			}
 			
-			throw new JRRuntimeException("Image error", error);
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_IMAGE_ERROR,
+					(Object[])null,
+					error);
 		}
 		return errorRenderable;
 	}

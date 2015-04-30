@@ -33,10 +33,10 @@ import net.sf.jasperreports.engine.JRRuntimeException;
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public final class JRGraphEnvInitializer
 {
+	public static final String EXCEPTION_MESSAGE_KEY_INITIALIZATION_ERROR = "util.graphic.environment.initialization.error";
 
 	/**
 	 *
@@ -60,7 +60,11 @@ public final class JRGraphEnvInitializer
 			}
 			catch(Exception e)
 			{
-				throw new JRRuntimeException("Error initializing graphic environment.", e);
+				throw 
+					new JRRuntimeException(
+						EXCEPTION_MESSAGE_KEY_INITIALIZATION_ERROR,
+						(Object[])null,
+						e);
 			}
 		}
 	}

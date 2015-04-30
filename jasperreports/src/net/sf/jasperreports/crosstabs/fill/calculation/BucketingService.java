@@ -44,12 +44,12 @@ import net.sf.jasperreports.engine.type.CalculationEnum;
  * Bidimensional bucketing engine.
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public abstract class BucketingService
 {
 	
-	public static final String EXCEPTION_MESSAGE_KEY_BUCKET_MEASURE_LIMIT = BucketingService.class.getName() + ".crosstab.bucket.measure.limit";
+	public static final String EXCEPTION_MESSAGE_KEY_BUCKET_MEASURE_LIMIT = "crosstabs.bucket.measure.limit";
+	public static final String EXCEPTION_MESSAGE_KEY_BUCKET_DATA_PROCESSED = "crosstabs.bucket.data.processed";
 	public static final String PROPERTY_BUCKET_MEASURE_LIMIT = JRPropertiesUtil.PROPERTY_PREFIX + "crosstab.bucket.measure.limit";
 	
 	protected static final byte DIMENSION_ROW = 0;
@@ -314,7 +314,11 @@ public abstract class BucketingService
 	{
 		if (processed)
 		{
-			throw new JRException("Crosstab data has already been processed.");
+			throw 
+				new JRException(
+					EXCEPTION_MESSAGE_KEY_BUCKET_DATA_PROCESSED,  
+					(Object[])null 
+					);
 		}
 		
 		++dataCount;
@@ -944,9 +948,7 @@ public abstract class BucketingService
 			throw 
 				new JRRuntimeException(
 					EXCEPTION_MESSAGE_KEY_BUCKET_MEASURE_LIMIT,  
-					new Object[]{bucketMeasureLimit}, 
-					serviceContext.getJasperReportsContext(),
-					serviceContext.getExpressionEvaluator().getFillDataset().getLocale()
+					new Object[]{bucketMeasureLimit} 
 					);
 		}
 	}

@@ -32,10 +32,10 @@ import net.sf.jasperreports.engine.JasperReport;
  * 
  * 
  * @author Lucian Chirita (lucianc@users.sourceforge.net)
- * @version $Id$
  */
 public final class JRReportUtils
 {
+	public static final String EXCEPTION_MESSAGE_KEY_REPORT_SUBDATASET_NOT_FOUND = "util.report.subdataset.not.found";
 	
 	public static JRDataset findSubdataset(JRDatasetRun datasetRun, 
 			JasperReport report)
@@ -57,9 +57,10 @@ public final class JRReportUtils
 		
 		if (reportDataset == null)
 		{
-			throw new JRRuntimeException("Could not find subdataset named \"" 
-					+ datasetRun.getDatasetName() + "\" in report \"" 
-					+ report.getName() + "\"");
+			throw 
+				new JRRuntimeException(
+					EXCEPTION_MESSAGE_KEY_REPORT_SUBDATASET_NOT_FOUND,
+					new Object[]{datasetRun.getDatasetName(), report.getName()});
 		}
 		return reportDataset;
 	}

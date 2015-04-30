@@ -27,16 +27,20 @@ import java.io.Writer;
 
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.PrintPageFormat;
+import net.sf.jasperreports.engine.export.Cut;
+import net.sf.jasperreports.engine.export.CutsInfo;
+import net.sf.jasperreports.engine.export.JRGridLayout;
 import net.sf.jasperreports.engine.export.LengthUtil;
 import net.sf.jasperreports.engine.type.OrientationEnum;
 
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public class DocxDocumentHelper extends BaseHelper
 {
+	protected static int DEFAULT_LINE_PITCH = 360;
+
 	/**
 	 * 
 	 */
@@ -69,7 +73,7 @@ public class DocxDocumentHelper extends BaseHelper
 	/**
 	 *
 	 */
-	public void exportSection(PrintPageFormat pageFormat, boolean lastPage)
+	public void exportSection(PrintPageFormat pageFormat, JRGridLayout pageGridLayout, boolean lastPage)
 	{
 		if (!lastPage)
 		{
@@ -80,9 +84,43 @@ public class DocxDocumentHelper extends BaseHelper
 		write("   <w:pgSz w:w=\"" + LengthUtil.twip(pageFormat.getPageWidth()) + "\" w:h=\"" + LengthUtil.twip(pageFormat.getPageHeight()) + "\"");
 		write(" w:orient=\"" + (pageFormat.getOrientation() == OrientationEnum.LANDSCAPE ? "landscape" : "portrait") + "\"");
 		write("/>\n");
-		write("   <w:pgMar w:top=\"0\" w:right=\"0\" w:bottom=\"0\" w:left=\"0\" w:header=\"0\" w:footer=\"0\" w:gutter=\"0\" />\n");
+		
+		CutsInfo xCuts = pageGridLayout.getXCuts();
+		
+		Cut leftCut = xCuts.getCut(0);
+		int gridLeftPadding = leftCut.isCutNotEmpty() ? 0 : pageGridLayout.getColumnWidth(0);
+		int leftMargin = Math.min(gridLeftPadding, pageFormat.getLeftMargin());
+
+		Cut rightCut = xCuts.getCut(xCuts.size() - 2);
+		int gridRightPadding = rightCut.isCutNotEmpty() ? 0 : pageGridLayout.getColumnWidth(xCuts.size() - 2);
+		int rightMargin = Math.min(gridRightPadding, pageFormat.getRightMargin());
+
+		CutsInfo yCuts = pageGridLayout.getYCuts();
+		
+		int topMargin = pageFormat.getTopMargin();
+		if (yCuts.size() > 1)
+		{
+			Cut topCut = yCuts.getCut(0);
+			int gridTopPadding = topCut.isCutNotEmpty() ? 0 : pageGridLayout.getRowHeight(0);
+			topMargin = Math.min(gridTopPadding, pageFormat.getTopMargin());
+		}
+
+		//last y cut is from bottom element, not page height
+		int gridBottomPadding = pageFormat.getPageHeight() - yCuts.getLastCutOffset();
+		int bottomMargin = LengthUtil.twip(Math.min(gridBottomPadding, pageFormat.getBottomMargin())) - DEFAULT_LINE_PITCH;
+		bottomMargin = bottomMargin < 0 ? 0 : bottomMargin;
+
+		write("   <w:pgMar w:top=\""
+				+ LengthUtil.twip(topMargin)
+				+ "\" w:right=\""
+				+ LengthUtil.twip(rightMargin)
+				+ "\" w:bottom=\""
+				+ bottomMargin
+				+ "\" w:left=\""
+				+ LengthUtil.twip(leftMargin)
+				+ "\" w:header=\"0\" w:footer=\"0\" w:gutter=\"0\" />\n");
 //		write("   <w:cols w:space=\"720\" />\n");
-		write("   <w:docGrid w:linePitch=\"360\" />\n");
+		write("   <w:docGrid w:linePitch=\"" + DEFAULT_LINE_PITCH + "\" />\n");
 		write("  </w:sectPr>\n");
 		if (!lastPage)
 		{

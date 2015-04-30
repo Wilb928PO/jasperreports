@@ -23,12 +23,9 @@
  */
 package net.sf.jasperreports.engine.type;
 
-import net.sf.jasperreports.engine.JRConstants;
-
 
 /**
  * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id$
  */
 public enum ImageTypeEnum implements JREnum
 {
@@ -60,7 +57,6 @@ public enum ImageTypeEnum implements JREnum
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = JRConstants.SERIAL_VERSION_UID;
 	private final transient byte value;
 	private final transient String name;
 	private final transient String mimeType;
@@ -73,7 +69,7 @@ public enum ImageTypeEnum implements JREnum
 	}
 
 	/**
-	 *
+	 * @deprecated Used only by deprecated serialized fields.
 	 */
 	public Byte getValueByte()
 	{
@@ -81,7 +77,7 @@ public enum ImageTypeEnum implements JREnum
 	}
 	
 	/**
-	 *
+	 * @deprecated Used only by deprecated serialized fields.
 	 */
 	public final byte getValue()
 	{
@@ -109,11 +105,11 @@ public enum ImageTypeEnum implements JREnum
 	 */
 	public static ImageTypeEnum getByName(String name)
 	{
-		return (ImageTypeEnum)EnumUtil.getByName(values(), name);
+		return EnumUtil.getEnumByName(values(), name);
 	}
 	
 	/**
-	 *
+	 * @deprecated Used only by deprecated serialized fields.
 	 */
 	public static ImageTypeEnum getByValue(Byte value)
 	{
@@ -121,11 +117,10 @@ public enum ImageTypeEnum implements JREnum
 	}
 	
 	/**
-	 *
+	 * @deprecated Used only by deprecated serialized fields.
 	 */
 	public static ImageTypeEnum getByValue(byte value)
 	{
 		return getByValue(new Byte(value));
 	}
-	
 }

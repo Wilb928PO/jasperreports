@@ -42,7 +42,6 @@ import net.sf.jasperreports.web.commands.ResetInCacheCommand;
 
 /**
  * @author Narcis Marcu (narcism@users.sourceforge.net)
- * @version $Id$
  */
 public class ConditionalFormattingAction extends AbstractVerifiableTableAction {
 	
@@ -69,7 +68,7 @@ public class ConditionalFormattingAction extends AbstractVerifiableTableAction {
 					)
 				);
 		} catch (CommandException e) {
-			throw new ActionException(e.getMessage());
+			throw new ActionException(e);
 		}
 	}
 
